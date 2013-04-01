@@ -1,0 +1,85 @@
+Used reader; PC/SC terminal Gemalto GemPC Twin 00 00,
+Card ATR; 3b fa 18 00 ff 81 31 fe 45 4a 43 4f 50 34 31 56 32 33 31 63 ,
+,
+JCSystem.getVersion()[Major.Minor]; 2. 2;,
+JCSystem.isObjectDeletionSupported; yes;,
+JCSystem.MEMORY_TYPE_PERSISTENT;  17008 B;,
+JCSystem.MEMORY_TYPE_TRANSIENT_RESET;  146 B;,
+JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT;  146 B;,
+JCSystem.getMaxCommitCapacity;512 B;,
+,
+javacardx.crypto.Cipher;,
+ALG_DES_CBC_NOPAD;yes;,
+ALG_DES_CBC_ISO9797_M1;yes;,
+ALG_DES_CBC_ISO9797_M2;yes;,
+ALG_DES_CBC_PKCS5;no;,
+ALG_DES_ECB_NOPAD;yes;,
+ALG_DES_ECB_ISO9797_M1;yes;,
+ALG_DES_ECB_ISO9797_M2;yes;,
+ALG_DES_ECB_PKCS5;no;,
+ALG_RSA_ISO14888;no;,
+ALG_RSA_PKCS1;yes;,
+ALG_RSA_ISO9796;no;,
+ALG_RSA_NOPAD;yes;,
+ALG_AES_BLOCK_128_CBC_NOPAD;yes;,
+ALG_AES_BLOCK_128_ECB_NOPAD;yes;,
+ALG_RSA_PKCS1_OAEP;no;,
+ALG_KOREAN_SEED_ECB_NOPAD;no;,
+ALG_KOREAN_SEED_CBC_NOPAD;no;,
+,
+javacard.security.RandomData;,
+ALG_PSEUDO_RANDOM;yes;,
+ALG_SECURE_RANDOM;yes;,
+,
+javacard.security.KeyPair ALG_RSA on-card generation;,
+ALG_RSA LENGTH_RSA_512;no;,
+ALG_RSA LENGTH_RSA_736;no;,
+ALG_RSA LENGTH_RSA_768;no;,
+ALG_RSA LENGTH_RSA_896;no;,
+ALG_RSA LENGTH_RSA_1024;no;,
+ALG_RSA LENGTH_RSA_1280;no;,
+ALG_RSA LENGTH_RSA_1536;no;,
+ALG_RSA LENGTH_RSA_1984;no;,
+ALG_RSA LENGTH_RSA_2048;no;,
+,
+javacard.security.KeyPair ALG_RSA_CRT on-card generation;,
+ALG_RSA_CRT LENGTH_RSA_512;yes;0,672000
+ALG_RSA_CRT LENGTH_RSA_736;no;,
+ALG_RSA_CRT LENGTH_RSA_768;yes;1,238000
+ALG_RSA_CRT LENGTH_RSA_896;yes;0,663000
+ALG_RSA_CRT LENGTH_RSA_1024;yes;5,67000
+ALG_RSA_CRT LENGTH_RSA_1280;yes;0,932000
+ALG_RSA_CRT LENGTH_RSA_1536;yes;11,883000
+ALG_RSA_CRT LENGTH_RSA_1984;yes;8,258000
+ALG_RSA_CRT LENGTH_RSA_2048;yes;7,421000
+,
+javacard.security.KeyPair ALG_DSA on-card generation;,
+ALG_DSA LENGTH_DSA_512;no;,
+ALG_DSA LENGTH_DSA_768;no;,
+ALG_DSA LENGTH_DSA_1024;no;,
+,
+javacard.security.KeyPair ALG_EC_F2M on-card generation;,
+ALG_EC_F2M LENGTH_EC_F2M_113;yes;0,727000
+ALG_EC_F2M LENGTH_EC_F2M_131;yes;0,745000
+ALG_EC_F2M LENGTH_EC_F2M_163;yes;0,762000
+ALG_EC_F2M LENGTH_EC_F2M_193;yes;0,781000
+,
+javacard.security.KeyPair ALG_EC_FP on-card generation;,
+ALG_EC_FP LENGTH_EC_FP_112;no;,
+ALG_EC_FP LENGTH_EC_FP_128;no;,
+ALG_EC_FP LENGTH_EC_FP_160;no;,
+ALG_EC_FP LENGTH_EC_FP_192;no;,
+,
+javacard.security.Checksum;,
+ALG_ISO3309_CRC16;yes;,
+ALG_ISO3309_CRC32;no;,
+,
+Support for variable public exponent for RSA 1024. If supported, user-defined fast modular exponentiation can be executed on the smart card via cryptographic coprocessor. This is very specific feature and you will probably not need it;
+Allocate RSA 1024 objects;yes;0,293000 sec;
+Set random modulus;yes;0,053000 sec;
+Set random public exponent;yes;3,630000 sec;
+Initialize cipher with public key with random exponent;yes;0,081000 sec;
+Use random public exponent;yes;0,396000 sec;
+,
+"Available RAM memory;1845 B;""\r\n",
+Available EEPROM memory;52176 B;,

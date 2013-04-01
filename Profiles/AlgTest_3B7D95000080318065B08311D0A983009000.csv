@@ -1,0 +1,6 @@
+Used reader;Gemplus USB Key Smart Card Reader 0
+Card ATR;3B:7D:95:00:00:80:31:80:65:B0:83:11:D0:A9:83:00:90:00
+
+JCSystem.getVersion()[Major.Minor]; 2.2;
+JCSystem.isObjectDeletionSupported; yes;
+JCSystem.MEMORY_TYPE_PERSISTENT; more then 32767 B;

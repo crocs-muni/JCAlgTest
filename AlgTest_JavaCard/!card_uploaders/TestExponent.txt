@@ -1,0 +1,19 @@
+enable_trace
+establish_context
+card_connect
+
+select -AID 6D7970616330303031
+
+send_apdu -sc 0 -APDU B07201000100 
+send_apdu -sc 0 -APDU B07202000100 
+send_apdu -sc 0 -APDU B07203000100 
+send_apdu -sc 0 -APDU B07204000100 
+send_apdu -sc 0 -APDU B07205000100 
+
+
+card_disconnect
+release_context
+
+
+
+ 

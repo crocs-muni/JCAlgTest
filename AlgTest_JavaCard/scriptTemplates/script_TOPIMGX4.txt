@@ -1,0 +1,20 @@
+# Usable for: Gemalto TOP IM GXP4, mother key
+
+
+mode_201 
+gemXpressoPro
+enable_trace
+establish_context
+card_connect
+
+select -AID A000000018434D00
+open_sc -security 3 -keyind 0 -keyver 0 -key 47454d5850524553534f53414d504c45
+
+delete -AID ${jc.applet.AID_GPShell}
+
+delete -AID ${jc.package.AID_GPShell} 
+install -file ${build.classes.dir}/${jc.package.path}/javacard/${jc.package.shortName}.cap -nvDataLimit 2000 -instParam 00 -priv 2
+select -AID ${jc.applet.AID_GPShell}
+
+card_disconnect
+release_context

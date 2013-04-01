@@ -1,0 +1,213 @@
+// converted by version 1.3
+// on Sat Sep 03 19:04:58 CEST 2011
+
+.package AlgTest {
+	.aid 0x6D:0x79:0x70:0x61:0x63:0x6B:0x61:0x67:0x31;
+	.version 1.0;
+
+	.imports {
+		0xA0:0x0:0x0:0x0:0x62:0x1:0x1 1.2;		//javacard/framework
+	}
+
+	.applet {
+		0x6D:0x79:0x70:0x61:0x63:0x30:0x30:0x30:0x31 AlgTest;
+	}
+
+	.constantPool {
+		// 0
+		instanceFieldRef byte[] AlgTest/m_installData;
+		// 1
+		staticMethodRef 0.3.0()V;		// javacard/framework/Applet.<init>()V
+		// 2
+		staticMethodRef 0.16.2([BS[BSS)S;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+		// 3
+		virtualMethodRef 0.3.2([BSB)V;		// javacard/framework/Applet.register([BSB)V
+		// 4
+		virtualMethodRef 0.3.1()V;		// javacard/framework/Applet.register()V
+		// 5
+		classRef AlgTest;
+		// 6
+		staticMethodRef AlgTest/<init>([BSB)V;
+		// 7
+		virtualMethodRef 0.10.1()[B;		// javacard/framework/APDU.getBuffer()[B
+		// 8
+		virtualMethodRef 0.3.3()Z;		// javacard/framework/Applet.selectingApplet()Z
+		// 9
+		virtualMethodRef AlgTest/GetInstallData(Ljavacard/framework/APDU;)V;
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
+		// 10
+		staticMethodRef 0.7.1(S)V;		// javacard/framework/ISOException.throwIt(S)V
+		// 11
+		virtualMethodRef 0.10.6()S;		// javacard/framework/APDU.setIncomingAndReceive()S
+		// 12
+		virtualMethodRef 0.10.8(SS)V;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
+	}
+
+	.class public AlgTest 0 extends 0.3 {		// extends javacard/framework/Applet
+
+		.fields {
+			private byte[] m_installData 0;		// [B
+			static final byte CLA_CARD_ALGTEST = -80;		// B
+			static final byte INS_CARD_GETINSTALLDATA = 112;		// B
+		}
+
+		.publicMethodTable 7 {
+			equals(Ljava/lang/Object;)Z;
+			register()V;
+			register([BSB)V;
+			selectingApplet()Z;
+			deselect()V;
+			getShareableInterfaceObject(Ljavacard/framework/AID;B)Ljavacard/framework/Shareable;;
+			select()Z;
+			process(Ljavacard/framework/APDU;)V;
+		}
+
+		.packageMethodTable 0 {
+			GetInstallData(Ljavacard/framework/APDU;)V;
+		}
+
+		.method protected <init>([BSB)V 0 {
+			.stack 6;
+			.locals 2;
+
+				L0:	aload_0;
+					invokespecial 1;		// javacard/framework/Applet.<init>()V
+					aload_0;
+					aconst_null;
+					putfield_a 0;		// reference AlgTest/AlgTest.m_installData
+					sload_2;
+					sstore 4;
+					sconst_0;
+					sstore 5;
+					sload_3;
+					bspush 9;
+					if_scmple L2;
+				L1:	sload 4;
+					sconst_1;
+					aload_1;
+					sload_2;
+					baload;
+					sadd;
+					sadd;
+					sstore 4;
+					sload 4;
+					sconst_1;
+					aload_1;
+					sload 4;
+					baload;
+					sadd;
+					sadd;
+					sstore 4;
+					aload_0;
+					aload_1;
+					sload 4;
+					baload;
+					newarray 11;
+					putfield_a 0;		// reference AlgTest/AlgTest.m_installData
+					aload_1;
+					sload 4;
+					sconst_1;
+					sadd;
+					getfield_a_this 0;		// reference AlgTest/AlgTest.m_installData
+					sconst_0;
+					aload_1;
+					sload 4;
+					baload;
+					invokestatic 2;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					pop;
+					sconst_1;
+					sstore 5;
+				L2:	sload 5;
+					ifeq L4;
+				L3:	aload_0;
+					aload_1;
+					sload_2;
+					sconst_1;
+					sadd;
+					aload_1;
+					sload_2;
+					baload;
+					invokevirtual 3;		// javacard/framework/Applet.register([BSB)V
+					goto L5;
+				L4:	aload_0;
+					invokevirtual 4;		// javacard/framework/Applet.register()V
+				L5:	return;
+		}
+
+		.method public static install([BSB)V 1 {
+			.stack 5;
+			.locals 0;
+
+				L0:	new 5;		// AlgTest/AlgTest
+					dup;
+					aload_0;
+					sload_1;
+					sload_2;
+					invokespecial 6;		// AlgTest/AlgTest.<init>([BSB)V
+					pop;
+					return;
+		}
+
+		.method public process(Ljavacard/framework/APDU;)V 7 {
+			.stack 2;
+			.locals 1;
+
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
+				L0:	aload_1;
+					invokevirtual 7;		// javacard/framework/APDU.getBuffer()[B
+					astore_2;
+					aload_0;
+					invokevirtual 8;		// javacard/framework/Applet.selectingApplet()Z
+					ifeq L2;
+				L1:	return;
+				L2:	aload_2;
+					sconst_0;
+					baload;
+					bspush -80;
+					if_scmpne L6;
+				L3:	aload_2;
+					sconst_1;
+					baload;
+					slookupswitch L5 1 112 L4;
+				L4:	aload_0;
+					aload_1;
+					invokevirtual 9;		// AlgTest/AlgTest.GetInstallData(Ljavacard/framework/APDU;)V
+					goto L6;
+				L5:	sspush 27904;
+					invokestatic 10;		// javacard/framework/ISOException.throwIt(S)V
+				L6:	return;
+		}
+
+		.method  GetInstallData(Ljavacard/framework/APDU;)V 128 {
+			.stack 5;
+			.locals 2;
+
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
+				L0:	aload_1;
+					invokevirtual 7;		// javacard/framework/APDU.getBuffer()[B
+					astore_2;
+					aload_1;
+					invokevirtual 11;		// javacard/framework/APDU.setIncomingAndReceive()S
+					sstore_3;
+					getfield_a_this 0;		// reference AlgTest/AlgTest.m_installData
+					sconst_0;
+					aload_2;
+					sconst_0;
+					getfield_a_this 0;		// reference AlgTest/AlgTest.m_installData
+					arraylength;
+					invokestatic 2;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					pop;
+					aload_1;
+					sconst_0;
+					getfield_a_this 0;		// reference AlgTest/AlgTest.m_installData
+					arraylength;
+					invokevirtual 12;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
+					return;
+		}
+
+	}
+
+}

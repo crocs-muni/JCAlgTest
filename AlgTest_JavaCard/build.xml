@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- You may freely edit this file. See commented blocks below for -->
+<!-- some examples of how to customize the build. -->
+<!-- (If you delete it and reopen the project it will be recreated.) -->
+<!-- By default, only the Clean and Build commands use this build script. -->
+<!-- Commands such as Run, Debug, and Test only use this build script if -->
+<!-- the Compile on Save feature is turned off for the project. -->
+<!-- You can turn off the Compile on Save (or Deploy on Save) setting -->
+<!-- in the project's Project Properties dialog box.-->
+    <project name="AlgTest" default="default" basedir="." xmlns:j2seproject3="http://www.netbeans.org/ns/j2se-project/3">
+        <description>Builds, tests, and runs the project SmartHelloWorld.</description>
+          <import file="nbproject/build-impl.xml"/>
+          <target name="-post-init">
+    	    <!-- Java Card Ant Tasks definition -->
+            <path id="jc-tasks" >
+                <pathelement path="${jctasks.path}"/>
+            </path>    
+            <taskdef name="convert" 
+                classname="com.sun.javacard.ant.tasks.ConverterTask"
+                classpathref="jc-tasks" />
+            <taskdef name="verifycap" 
+                classname="com.sun.javacard.ant.tasks.VerifyCapTask"
+                classpathref="jc-tasks" />
+            <!-- Java Card classpath -->
+            <path id="jc-classpath" >
+                <pathelement path="${jc.home}/lib/converter.jar"/>
+                <pathelement path="${jc.home}/lib/offcardverifier.jar"/>
+                <pathelement path="${jc.home}/lib/scriptgen.jar"/>
+                <pathelement path="${jc.home}/lib/apdutool.jar"/>
+                <pathelement path="${jc.home}/lib/apduio.jar"/>            
+                <pathelement path="."/>
+            </path>
+        </target>
+     
+        <!-- Target responsible for conversion and verification of the applet -->
+        <target name="convert" depends="init">
+            <convert
+                dir="${build.classes.dir}"
+                nobanner="true"            
+                JCA="true"
+                EXP="true"
+                CAP="true"
+                packagename="${jc.package.name}"
+                packageaid="${jc.package.AID}"
+                majorminorversion="${jc.package.version}">
+                <AppletNameAID
+                    appletname="${jc.package.name}.${jc.applet.name}"
+                    aid="${jc.applet.AID}"/>
+     
+                <exportpath>
+                    <pathelement path="${jc.export_files}"/>
+                </exportpath>            
+     
+                <classpath refid="jc-classpath"/>
+            </convert>
+     
+            <verifycap Verbose="true" CapFile="${build.classes.dir}/${jc.package.path}/javacard/${jc.package.shortName}.cap">
+                <exportfiles file="${jc.export_files}/java/lang/javacard/lang.exp" />
+                <exportfiles file="${jc.export_files}/javacard/framework/javacard/framework.exp" />
+                <exportfiles file="${jc.export_files}/javacard/security/javacard/security.exp" />
+                <exportfiles file="${jc.export_files}/javacardx/crypto/javacard/crypto.exp" />
+                <exportfiles file="${build.classes.dir}/${jc.package.path}/javacard/${jc.package.shortName}.exp" />
+                <classpath refid="jc-classpath"/>
+            </verifycap>
+        </target>
+     
+        <!-- Overriding target, which runs conversion and verification instead of creating JAR file -->
+        <target name="jar" depends="init,compile,convert">
+        </target>
+     
+        <!-- Target, which runs specific script via GPShell -->
+        <target name="run-script" depends="init">
+            <!-- Generate and execute build script -->
+            <copy file="${gpshell.templatepath}\\${gpshell.script}" todir="build//scripts" overwrite="true">
+                <filterchain>
+                    <expandproperties/>
+                </filterchain>
+            </copy>
+            <exec executable="${gpshell.cmd}">
+                <arg value="build//scripts//${gpshell.script}"/>
+            </exec>
+        </target>
+     
+        <!-- Overriding target, which runs script during testing -->
+        <target name="test" depends="jar,run-script">
+        </target>
+
+
+
+<!--
+        <target name="-post-jar">
+	     <exec dir="d:\Documents\Develop\AlgTest\" executable="d:\Documents\Develop\AlgTest\post_build.bat">
+	     </exec> 
+        </target>
+-->
+</project>
