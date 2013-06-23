@@ -557,7 +557,7 @@ public class CardMngr {
                                 }
                                 default: {
                                     // OTHER VALUE, IGNORE 
-                                    System.out.println("Unknown value detected in AlgTest applet. Possibly, old version of AlTestJClient is used (try update)");
+                                    System.out.println("Unknown value detected in AlgTest applet" + suppAlg[i] + ". Possibly, old version of AlTestJClient is used (try update)");
                                     break;
                                 }
                             }
