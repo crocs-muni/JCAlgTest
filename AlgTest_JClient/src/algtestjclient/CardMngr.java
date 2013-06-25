@@ -43,6 +43,7 @@ public class CardMngr {
 
     public static final int MAX_SUPP_ALG          = 240;    
     public static final byte SUPP_ALG_UNTOUCHED    = 5;
+    public static final short SUPP_ALG_SEPARATOR    = 0xff;
 
     public static final byte ALGTEST_AID_LEN       = 9;
 
@@ -233,12 +234,13 @@ public class CardMngr {
 
     public static String KEYPAIR_RSA_STR[] = {"javacard.security.KeyPair ALG_RSA on-card generation", 
         "ALG_RSA LENGTH_RSA_512", "ALG_RSA LENGTH_RSA_736", "ALG_RSA LENGTH_RSA_768", "ALG_RSA LENGTH_RSA_896",
-        "ALG_RSA LENGTH_RSA_1024", "ALG_RSA LENGTH_RSA_1280", "ALG_RSA LENGTH_RSA_1536", "ALG_RSA LENGTH_RSA_1984", "ALG_RSA LENGTH_RSA_2048"
+        "ALG_RSA LENGTH_RSA_1024", "ALG_RSA LENGTH_RSA_1280", "ALG_RSA LENGTH_RSA_1536", "ALG_RSA LENGTH_RSA_1984", "ALG_RSA LENGTH_RSA_2048", "ALG_RSA LENGTH_RSA_3072", "ALG_RSA LENGTH_RSA_4096"
         };
 
     public static String KEYPAIR_RSACRT_STR[] = {"javacard.security.KeyPair ALG_RSA_CRT on-card generation", 
         "ALG_RSA_CRT LENGTH_RSA_512", "ALG_RSA_CRT LENGTH_RSA_736", "ALG_RSA_CRT LENGTH_RSA_768", "ALG_RSA_CRT LENGTH_RSA_896",
-        "ALG_RSA_CRT LENGTH_RSA_1024", "ALG_RSA_CRT LENGTH_RSA_1280", "ALG_RSA_CRT LENGTH_RSA_1536", "ALG_RSA_CRT LENGTH_RSA_1984", "ALG_RSA_CRT LENGTH_RSA_2048"
+        "ALG_RSA_CRT LENGTH_RSA_1024", "ALG_RSA_CRT LENGTH_RSA_1280", "ALG_RSA_CRT LENGTH_RSA_1536", "ALG_RSA_CRT LENGTH_RSA_1984", "ALG_RSA_CRT LENGTH_RSA_2048", 
+        "ALG_RSA_CRT LENGTH_RSA_3072", "ALG_RSA_CRT LENGTH_RSA_4096"
     };    
     public static String KEYPAIR_DSA_STR[] = {"javacard.security.KeyPair ALG_DSA on-card generation", 
         "ALG_DSA LENGTH_DSA_512", "ALG_DSA LENGTH_DSA_768", "ALG_DSA LENGTH_DSA_1024"
@@ -250,8 +252,8 @@ public class CardMngr {
         "ALG_EC_FP LENGTH_EC_FP_112", "ALG_EC_FP LENGTH_EC_FP_128", "ALG_EC_FP LENGTH_EC_FP_160", "ALG_EC_FP LENGTH_EC_FP_192"
     };
 
-    public static final byte CLASS_KEYPAIR_RSA_P2          = 9;
-    public static final byte CLASS_KEYPAIR_RSACRT_P2       = 9;
+    public static final byte CLASS_KEYPAIR_RSA_P2          = 11;
+    public static final byte CLASS_KEYPAIR_RSACRT_P2       = 11;
     public static final byte CLASS_KEYPAIR_DSA_P2          = 3;
     public static final byte CLASS_KEYPAIR_EC_F2M_P2       = 4;
     public static final byte CLASS_KEYPAIR_EC_FP_P2        = 4;
@@ -535,7 +537,7 @@ public class CardMngr {
 
                     for (int i = 1; i < temp.length; i++) {
                         // ONLY FILLED RESPONSES ARE STORED
-                        if (temp[i] != SUPP_ALG_UNTOUCHED) {
+                        if ((temp[i] != SUPP_ALG_UNTOUCHED) && ((short) (temp[i]&0xff) != SUPP_ALG_SEPARATOR)) {
                             suppAlg[i] = temp[i];    
 
                             // ALG NAME
@@ -559,7 +561,7 @@ public class CardMngr {
                                 }
                                 default: {
                                     // OTHER VALUE, IGNORE 
-                                    System.out.println("Unknown value detected in AlgTest applet" + suppAlg[i] + ". Possibly, old version of AlTestJClient is used (try update)");
+                                    System.out.println("Unknown value detected in AlgTest applet (0x" + Integer.toHexString(suppAlg[i] & 0xff) + "). Possibly, old version of AlTestJClient is used (try update)");
                                     break;
                                 }
                             }
