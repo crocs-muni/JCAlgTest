@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2004-2010  Petr Svenda <petr@svenda.com>
+    Copyright (c) 2004-2012  Petr Svenda <petr@svenda.com>
 
      LICENSE TERMS
 
@@ -43,14 +43,19 @@ import javacard.framework.*;
 import javacard.security.*;
 import javacardx.crypto.*;
 
-public class AlgTest extends javacard.framework.Applet
+// JC 2.2.2 only
+//import javacardx.apdu.ExtendedLength; 
+//public class AlgTest extends javacard.framework.Applet implements ExtendedLength 
+
+public class AlgTest extends javacard.framework.Applet 
 {
 
   final static byte CLA_CARD_ALGTEST               = (byte) 0xB0;
   final static byte INS_CARD_TESTSUPPORTEDMODES    = (byte) 0x70;
   final static byte INS_CARD_TESTAVAILABLE_MEMORY  = (byte) 0x71;
   final static byte INS_CARD_TESTRSAEXPONENTSET    = (byte) 0x72;
-  final static byte INS_CARD_JCSYSTEM_INFO    = (byte) 0x73;
+  final static byte INS_CARD_JCSYSTEM_INFO         = (byte) 0x73;
+  final static byte INS_CARD_TESTEXTAPDU           = (byte) 0x74;
 
 
   //
@@ -336,6 +341,7 @@ public class AlgTest extends javacard.framework.Applet
                 case INS_CARD_TESTAVAILABLE_MEMORY: TestAvailableMemory(apdu); break;
                 case INS_CARD_TESTRSAEXPONENTSET: TestRSAExponentSet(apdu); break;
                 case INS_CARD_JCSYSTEM_INFO: JCSystemInfo(apdu); break;
+                case INS_CARD_TESTEXTAPDU: TestExtendedAPDUSupport(apdu); break;
 
                 default : {
                     // The INS code is not supported by the dispatcher
@@ -1527,7 +1533,34 @@ void JCSystemInfo(APDU apdu) {
     Util.setShort(apdubuf, offset, JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT));
     offset = (short)(offset + 2);
     apdu.setOutgoingAndSend((byte) 0, offset);
-}
+  }
+
+
+  void TestExtendedAPDUSupport(APDU apdu) {
+/* ONLY FOR JC2.2.2  
+    byte[]    apdubuf = apdu.getBuffer();
+    short     LC = apdu.getIncomingLength();
+    short     receivedDataTotal = 0;
+    short     dataLen = apdu.setIncomingAndReceive();
+    short     dataOffset = apdu.getOffsetCdata();
+    short     offset = (short) 0;
+
+    // Receive all chunks of data
+    while (dataLen > 0) {
+        receivedDataTotal += dataLen;
+        dataLen = apdu.receiveBytes(dataOffset);
+    }
+
+    // Write length indicated by apdu.getIncomingLength()
+    Util.setShort(apdubuf, offset, LC);
+    offset = (short)(offset + 2);
+    
+    // Write actual length received
+    Util.setShort(apdubuf, offset, receivedDataTotal);
+    offset = (short)(offset + 2);
+
+    apdu.setOutgoingAndSend((byte) 0, offset);
+*/   }
 
    void PerformanceTests(APDU apdu) {
        byte[]    apdubuf = apdu.getBuffer();

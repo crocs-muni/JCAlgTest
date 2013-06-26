@@ -201,6 +201,20 @@ public class AlgTestJClient {
                         file.flush();
                 }
                 
+/* DISABLED FOR NOW AS new CommandAPDU(apdu) will fail with incorrect apdu length when 1024B apdu is used
+                System.out.println("\n\n#########################");
+                System.out.println("\n\nQ: Do you like to test support for extended APDU?");
+                System.out.println("Type 1 for yes, 0 for no: ");	
+                answ = Integer.decode(br.readLine());                
+                if (answ == 1) {
+                        // Extended APDU support
+                        value.setLength(0);
+                        if (cardManager.TestExtendedAPDUSupportSupport(value, file, (byte) 0) == STAT_OK) {}
+                        else { System.out.println("\nERROR: Test extended APDU support fail\n"); }
+                        file.flush();
+                }                
+                
+*/ 
                 file.close();
 
                 cardManager.DisconnectFromCard();

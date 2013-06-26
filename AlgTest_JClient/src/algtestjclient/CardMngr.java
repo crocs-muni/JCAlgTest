@@ -304,6 +304,8 @@ public class CardMngr {
     public static final byte OFFSET_LC = 0x04;
     public static final byte OFFSET_DATA = 0x05;
     public static final byte HEADER_LENGTH = 0x05;
+    public static final short EXTENDED_APDU_TEST_LENGTH = 0x400; // 1024
+    
     
     public final static int STAT_OK = 0;
     public final static int STAT_DATA_CORRUPTED = 10;
@@ -747,8 +749,52 @@ public class CardMngr {
         TestAction("Initialize cipher with public key with random exponent", apdu, pValue,pFile);
         // Try to encrypt block of data
         apdu[OFFSET_P1] = 0x05;	
-        TestAction("Use random public exponent", apdu, pValue,pFile);
+        TestAction("Use random public exponent", apdu, pValue,pFile);        
+ 
+        return status;
+    }
+    
+    public int TestExtendedAPDUSupportSupport(StringBuilder pValue, FileOutputStream pFile, byte algPartP2) throws Exception {
+        int         status = STAT_OK;
+        
+        byte apdu[] = new byte[HEADER_LENGTH + 2 + EXTENDED_APDU_TEST_LENGTH]; // + 2 is because of encoding of LC length into three bytes total
+        apdu[OFFSET_CLA] = (byte) 0xB0;
+        apdu[OFFSET_INS] = (byte) 0x74;
+        apdu[OFFSET_P1] = 0x00;
+        apdu[OFFSET_P2] = 0x00;
+        apdu[OFFSET_LC] = 0x00;
+        apdu[OFFSET_LC+1] = EXTENDED_APDU_TEST_LENGTH & 0xff00 >> 8;
+        apdu[OFFSET_LC+2] = EXTENDED_APDU_TEST_LENGTH & 0xff;
+            
+        String message;
+        message = "\r\nSupport for extended APDU. If supported, APDU longer than 255 bytes can be send.;"; 
+        System.out.println(message);
+        pFile.write(message.getBytes());
+        pValue.append(message);
+        
+        ResponseAPDU resp = sendAPDU(apdu);
+        if (resp.getSW() != 0x9000) {
+            message = String.format("no;"); 
+        }
+        else {
+            // OK, STORE RESPONSE TO suppAlg ARRAY
+            byte temp[] = resp.getData();
+            
+            short LC = (short) ((temp[0] << 8) + (temp[1] & 0xff));
+            short realLC = (short) ((temp[2] << 8) + (temp[3] & 0xff));
+            
+            if (LC == EXTENDED_APDU_TEST_LENGTH && realLC == EXTENDED_APDU_TEST_LENGTH) {
+                message = String.format("yes;"); 
+            }
+            else {
+                message = String.format("no;");                 
+            }
+        }
+        System.out.println(message);
+        pFile.write(message.getBytes());
+        pValue.append(message);            
 
         return status;
     }
+    
 }
