@@ -99,7 +99,7 @@ public class CardMngr {
     public static final byte ALG_RSA_RIPEMD160_ISO9796_MR        = 31;
     public static final byte ALG_SEED_MAC_NOPAD                  = 32;
 
-    public static String SIGNATURE_STR[] = {"javacard.crypto.Signature", "ALG_DES_MAC4_NOPAD", "ALG_DES_MAC8_NOPAD", 
+    public static final String SIGNATURE_STR[] = {"javacard.crypto.Signature", "ALG_DES_MAC4_NOPAD", "ALG_DES_MAC8_NOPAD", 
         "ALG_DES_MAC4_ISO9797_M1", "ALG_DES_MAC8_ISO9797_M1", "ALG_DES_MAC4_ISO9797_M2", "ALG_DES_MAC8_ISO9797_M2", 
         "ALG_DES_MAC4_PKCS5", "ALG_DES_MAC8_PKCS5", "ALG_RSA_SHA_ISO9796", "ALG_RSA_SHA_PKCS1", "ALG_RSA_MD5_PKCS1", 
         "ALG_RSA_RIPEMD160_ISO9796", "ALG_RSA_RIPEMD160_PKCS1", "ALG_DSA_SHA", "ALG_RSA_SHA_RFC2409", 
@@ -131,7 +131,7 @@ public class CardMngr {
     public static final byte ALG_KOREAN_SEED_ECB_NOPAD             = 16;
     public static final byte ALG_KOREAN_SEED_CBC_NOPAD             = 17;
 
-    public static String CIPHER_STR[] = {"javacardx.crypto.Cipher", "ALG_DES_CBC_NOPAD", "ALG_DES_CBC_ISO9797_M1", "ALG_DES_CBC_ISO9797_M2", "ALG_DES_CBC_PKCS5", 
+    public static final String CIPHER_STR[] = {"javacardx.crypto.Cipher", "ALG_DES_CBC_NOPAD", "ALG_DES_CBC_ISO9797_M1", "ALG_DES_CBC_ISO9797_M2", "ALG_DES_CBC_PKCS5", 
         "ALG_DES_ECB_NOPAD", "ALG_DES_ECB_ISO9797_M1", "ALG_DES_ECB_ISO9797_M2", "ALG_DES_ECB_PKCS5",
         "ALG_RSA_ISO14888", "ALG_RSA_PKCS1", "ALG_RSA_ISO9796", "ALG_RSA_NOPAD", "ALG_AES_BLOCK_128_CBC_NOPAD", 
         "ALG_AES_BLOCK_128_ECB_NOPAD", "ALG_RSA_PKCS1_OAEP", "ALG_KOREAN_SEED_ECB_NOPAD", "ALG_KOREAN_SEED_CBC_NOPAD"
@@ -143,7 +143,7 @@ public class CardMngr {
     public static final byte ALG_EC_SVDP_DH                        = 1;
     public static final byte ALG_EC_SVDP_DHC                       = 2;
     ;
-    public static String KEYAGREEMENT_STR[] = {"javacard.security.KeyAgreement", "ALG_EC_SVDP_DH", "ALG_EC_SVDP_DHC"}; 
+    public static final String KEYAGREEMENT_STR[] = {"javacard.security.KeyAgreement", "ALG_EC_SVDP_DH", "ALG_EC_SVDP_DHC"}; 
 
       //
       //Class javacard.security.KeyBuilder
@@ -206,7 +206,7 @@ public class CardMngr {
     private final int LENGTH_HMAC_SHA_384_BLOCK_64  = 128;
     private final int LENGTH_HMAC_SHA_512_BLOCK_64  = 128;
 
-    public static String KEYBUILDER_STR[] = {"javacard.security.KeyBuilder", 
+    public static final String KEYBUILDER_STR[] = {"javacard.security.KeyBuilder", 
         "###DES_KEY###", "TYPE_DES_TRANSIENT_RESET", "TYPE_DES_TRANSIENT_DESELECT", "TYPE_DES LENGTH_DES", "TYPE_DES LENGTH_DES3_2KEY", "TYPE_DES LENGTH_DES3_3KEY",
         "###AES_KEY###", "TYPE_AES_TRANSIENT_RESET", "TYPE_AES_TRANSIENT_DESELECT", "TYPE_AES LENGTH_AES_128", "TYPE_AES LENGTH_AES_192", "TYPE_AES LENGTH_AES_256",
         "###RSA_PUBLIC_KEY###", "TYPE_RSA_PUBLIC LENGTH_RSA_512", "TYPE_RSA_PUBLIC LENGTH_RSA_736", "TYPE_RSA_PUBLIC LENGTH_RSA_768", "TYPE_RSA_PUBLIC LENGTH_RSA_896",
@@ -232,23 +232,23 @@ public class CardMngr {
     public static final byte ALG_EC_F2M                    = 4;
     public static final byte ALG_EC_FP                     = 5;
 
-    public static String KEYPAIR_RSA_STR[] = {"javacard.security.KeyPair ALG_RSA on-card generation", 
+    public static final String KEYPAIR_RSA_STR[] = {"javacard.security.KeyPair ALG_RSA on-card generation", 
         "ALG_RSA LENGTH_RSA_512", "ALG_RSA LENGTH_RSA_736", "ALG_RSA LENGTH_RSA_768", "ALG_RSA LENGTH_RSA_896",
         "ALG_RSA LENGTH_RSA_1024", "ALG_RSA LENGTH_RSA_1280", "ALG_RSA LENGTH_RSA_1536", "ALG_RSA LENGTH_RSA_1984", "ALG_RSA LENGTH_RSA_2048", "ALG_RSA LENGTH_RSA_3072", "ALG_RSA LENGTH_RSA_4096"
         };
 
-    public static String KEYPAIR_RSACRT_STR[] = {"javacard.security.KeyPair ALG_RSA_CRT on-card generation", 
+    public static final String KEYPAIR_RSACRT_STR[] = {"javacard.security.KeyPair ALG_RSA_CRT on-card generation", 
         "ALG_RSA_CRT LENGTH_RSA_512", "ALG_RSA_CRT LENGTH_RSA_736", "ALG_RSA_CRT LENGTH_RSA_768", "ALG_RSA_CRT LENGTH_RSA_896",
         "ALG_RSA_CRT LENGTH_RSA_1024", "ALG_RSA_CRT LENGTH_RSA_1280", "ALG_RSA_CRT LENGTH_RSA_1536", "ALG_RSA_CRT LENGTH_RSA_1984", "ALG_RSA_CRT LENGTH_RSA_2048", 
         "ALG_RSA_CRT LENGTH_RSA_3072", "ALG_RSA_CRT LENGTH_RSA_4096"
     };    
-    public static String KEYPAIR_DSA_STR[] = {"javacard.security.KeyPair ALG_DSA on-card generation", 
+    public static final String KEYPAIR_DSA_STR[] = {"javacard.security.KeyPair ALG_DSA on-card generation", 
         "ALG_DSA LENGTH_DSA_512", "ALG_DSA LENGTH_DSA_768", "ALG_DSA LENGTH_DSA_1024"
     };
-    public static String KEYPAIR_EC_F2M_STR[] = {"javacard.security.KeyPair ALG_EC_F2M on-card generation", 
+    public static final String KEYPAIR_EC_F2M_STR[] = {"javacard.security.KeyPair ALG_EC_F2M on-card generation", 
         "ALG_EC_F2M LENGTH_EC_F2M_113", "ALG_EC_F2M LENGTH_EC_F2M_131", "ALG_EC_F2M LENGTH_EC_F2M_163", "ALG_EC_F2M LENGTH_EC_F2M_193"
     };
-    public static String KEYPAIR_EC_FP_STR[] = {"javacard.security.KeyPair ALG_EC_FP on-card generation", 
+    public static final String KEYPAIR_EC_FP_STR[] = {"javacard.security.KeyPair ALG_EC_FP on-card generation", 
         "ALG_EC_FP LENGTH_EC_FP_112", "ALG_EC_FP LENGTH_EC_FP_128", "ALG_EC_FP LENGTH_EC_FP_160", "ALG_EC_FP LENGTH_EC_FP_192"
     };
 
@@ -268,7 +268,7 @@ public class CardMngr {
     public static final byte ALG_SHA_384                   = 5;
     public static final byte ALG_SHA_512                   = 6;
 
-    public static String MESSAGEDIGEST_STR[] = {"javacard.security.MessageDigest", "ALG_SHA", "ALG_MD5", "ALG_RIPEMD160", 
+    public static final String MESSAGEDIGEST_STR[] = {"javacard.security.MessageDigest", "ALG_SHA", "ALG_MD5", "ALG_RIPEMD160", 
         "ALG_SHA_256", "ALG_SHA_384", "ALG_SHA_512"
     }; 
 
@@ -277,15 +277,28 @@ public class CardMngr {
     public static final byte ALG_PSEUDO_RANDOM             = 1;
     public static final byte ALG_SECURE_RANDOM             = 2;
 
-    public static String RANDOMDATA_STR[] = {"javacard.security.RandomData", "ALG_PSEUDO_RANDOM", "ALG_SECURE_RANDOM"}; 
+    public static final String RANDOMDATA_STR[] = {"javacard.security.RandomData", "ALG_PSEUDO_RANDOM", "ALG_SECURE_RANDOM"}; 
 
       // Class javacard.security.Checksum
     public static final byte ALG_ISO3309_CRC16             = 1;
     public static final byte ALG_ISO3309_CRC32             = 2;
 
-    public static String CHECKSUM_STR[] = {"javacard.security.Checksum", "ALG_ISO3309_CRC16", "ALG_ISO3309_CRC32"}; 
+    public static final String CHECKSUM_STR[] = {"javacard.security.Checksum", "ALG_ISO3309_CRC16", "ALG_ISO3309_CRC32"}; 
 
+    public static final String JCSYSTEM_STR[] = {"javacard.framework.JCSystem", "JCSystem.getVersion()[Major.Minor]", 
+        "JCSystem.isObjectDeletionSupported", "JCSystem.MEMORY_TYPE_PERSISTENT", "JCSystem.MEMORY_TYPE_TRANSIENT_RESET", 
+        "JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT"}; 
 
+    public static final String RAWRSA_1024_STR[] = {"Variable RSA 1024 - support for variable public exponent. If supported, user-defined fast modular exponentiation can be executed on the smart card via cryptographic coprocessor. This is very specific feature and you will probably not need it", 
+        "Allocate RSA 1024 objects", "Set random modulus", "Set random public exponent", "Initialize cipher with public key with random exponent", "Use random public exponent"}; 
+
+   public static final String EXTENDEDAPDU_STR[] = {"javacardx.apdu.ExtendedLength", "Extended APDU"}; 
+
+    public static final String[] ALL_CLASSES_STR[] = {
+        JCSYSTEM_STR, EXTENDEDAPDU_STR, CIPHER_STR, SIGNATURE_STR, MESSAGEDIGEST_STR, RANDOMDATA_STR, KEYBUILDER_STR, 
+        KEYPAIR_RSA_STR, KEYPAIR_RSACRT_STR, KEYPAIR_DSA_STR, KEYPAIR_EC_F2M_STR, 
+        KEYPAIR_EC_FP_STR, KEYAGREEMENT_STR, CHECKSUM_STR, RAWRSA_1024_STR
+    };
     
     
     
@@ -459,24 +472,24 @@ public class CardMngr {
            
             
             String message;
-            message = String.format("\r\nJCSystem.getVersion()[Major.Minor]; %1d.%2d;", versionMajor, versionMinor); 
+            message = String.format("\r\n%1s;%2d.%3d;", JCSYSTEM_STR[1], versionMajor, versionMinor); 
             System.out.println(message);
             pFile.write(message.getBytes());
             pValue.append(message);
-            message = String.format("\r\nJCSystem.isObjectDeletionSupported; %1s;", (bDeletionSupported != 0) ? "yes" : "no"); 
+            message = String.format("\r\n%1s;%2s;", JCSYSTEM_STR[2],(bDeletionSupported != 0) ? "yes" : "no"); 
 
             System.out.println(message);
             pFile.write(message.getBytes());
             pValue.append(message);
-            message = String.format("\r\nJCSystem.MEMORY_TYPE_PERSISTENT; %1s%2d B;", (eepromSize == 32767) ? "more then " : "", eepromSize); 
+            message = String.format("\r\n%1s;%2s%3dB;", JCSYSTEM_STR[3],(eepromSize == 32767) ? ">" : "", eepromSize); 
             System.out.println(message);
             pFile.write(message.getBytes());
             pValue.append(message);
-            message = String.format("\r\nJCSystem.MEMORY_TYPE_TRANSIENT_RESET; %1s%2d B;", (ramResetSize == 32767) ? "more then " : "", ramResetSize); 
+            message = String.format("\r\n%1s;%2s%3dB;", JCSYSTEM_STR[4],(ramResetSize == 32767) ? ">" : "", ramResetSize); 
             System.out.println(message);
             pFile.write(message.getBytes());
             pValue.append(message);
-            message = String.format("\r\nJCSystem.MEMORY_TYPE_TRANSIENT_DESELECT; %1s%2d B;\n", (ramDeselectSize == 32767) ? "more then " : "", ramDeselectSize); 
+            message = String.format("\r\n%1s;%2s%3dB;\n", JCSYSTEM_STR[5],(ramDeselectSize == 32767) ? ">" : "", ramDeselectSize); 
             System.out.println(message);
             pFile.write(message.getBytes());
             pValue.append(message);
