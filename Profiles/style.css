@@ -1,0 +1,139 @@
+a:link { text-decoration: none; }
+
+h2 { color: black; }
+
+
+th { font-family: sans-serif; }
+
+th.dark {
+  color: black;
+  background: #7d9fc4 none;
+  font-family: sans-serif;
+  font-size: smaller;
+}
+
+th.darkname {
+  color: black;
+  background: #7d9fc4 none;
+  font-family: sans-serif;
+  font-size: smaller;
+}
+
+th.pgpdark {
+  color: white;
+  background: #7d9fc4 none;
+  font-family: sans-serif;
+  font-size: smaller;
+  font-weight: bold;
+}
+
+td.light {
+	color: black;
+	background: #E0E0E0 none;
+	font-family: sans-serif;
+	font-size: smaller;
+}
+td.light_yes {
+	color: black;
+	background: #c0E0c0 none;
+	font-family: sans-serif;
+	font-size: smaller;
+	text-align: center;
+}
+td.light_no {
+	color: black;
+	background: #E0C0c0 none;
+	font-family: sans-serif;
+	font-size: smaller;
+	text-align: center;
+}
+td.light_info {
+	color: black;
+	background: #F0F0F0 none;
+	font-family: sans-serif;
+	font-size: smaller;
+	text-align: center;
+}
+td.light_error {
+	color: black;
+	background: #FAFAFA none;
+	font-family: sans-serif;
+	font-size: smaller;
+	text-align: center;
+}
+
+td.lightbolt {
+	color: black;
+	background: #E0E0E0 none;
+	font-family: sans-serif;
+	font-size: smaller;
+   font-weight: bold;
+}
+
+
+td.dark {
+	color: black;
+	background: #7d9fc4 none;
+	font-family: sans-serif;
+	font-size: smaller;
+    font-weight: bold;
+}
+
+td.dark_index {
+	color: black;
+	background: #7d9fc4 none;
+	font-family: sans-serif;
+	font-size: smaller;
+	font-weight: bold;
+	text-align: center;
+}
+
+td.pgplight {
+	color: black;
+	background: #E0E0E0 none;
+	font-family: sans-serif;
+	font-size: smaller;
+    font-weight: bold;
+}
+
+td.complete {
+	color: black;
+	background: #BEBEBE none;
+	font-family: sans-serif;
+	font-size: smaller;
+}
+
+td.normaltext {
+	color: black;
+	font-family: sans-serif;
+	font-size: smaller;
+}
+
+.hex {
+  font-family: monospace;
+  font-size: smaller;
+}
+
+#header {
+  font-family: sans-serif;
+  font-size: xx-large;
+  font-weight: bold;
+}
+
+#pgpheader {
+  font-family: sans-serif;
+  font-size: middle;
+  font-weight: bold;
+}
+td.header {
+	color: black;
+	background: #E0E0E0 none;
+	font-family: sans-serif;
+	font-size: small;
+	font-weight: bold;
+}
+
+td.header a {
+  color: black;
+  text-decoration: none;
+}
