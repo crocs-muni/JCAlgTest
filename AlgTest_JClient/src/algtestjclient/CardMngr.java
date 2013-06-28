@@ -435,6 +435,31 @@ public class CardMngr {
     }
     
     
+    public int GetAppletVersion(StringBuilder pValue) throws Exception {
+        int         status = STAT_OK;
+    
+	// Prepare test memory apdu
+        byte apdu[] = new byte[HEADER_LENGTH];
+        apdu[OFFSET_CLA] = (byte) 0xB0;
+        apdu[OFFSET_INS] = (byte) 0x60;
+        apdu[OFFSET_P1] = 0x00;
+        apdu[OFFSET_P2] = 0x00;
+        apdu[OFFSET_LC] = 0x00;
+
+        ResponseAPDU resp = sendAPDU(apdu);
+        if (resp.getSW() != 0x9000) {
+            System.out.println("Fail to obtain Applet version");
+        } else {
+            byte temp[] = resp.getData();
+            char version[] = new char[temp.length]; 
+            for (int i = 0; i < temp.length; i++) { version[i] = (char) temp[i]; }
+            pValue.append(version);
+         }        
+        
+                
+	return status;
+    }
+
     
     public int GetJCSystemInfo(StringBuilder pValue, FileOutputStream pFile) throws Exception {
         int         status = STAT_OK;
@@ -472,25 +497,27 @@ public class CardMngr {
            
             
             String message;
-            message = String.format("\r\n%1s;%2d.%3d;", JCSYSTEM_STR[1], versionMajor, versionMinor); 
+            message = String.format("\r\n%1s;%d.%d;", JCSYSTEM_STR[1], versionMajor, versionMinor); 
             System.out.println(message);
             pFile.write(message.getBytes());
             pValue.append(message);
-            message = String.format("\r\n%1s;%2s;", JCSYSTEM_STR[2],(bDeletionSupported != 0) ? "yes" : "no"); 
+            message = String.format("\r\n%s;%s;", JCSYSTEM_STR[2],(bDeletionSupported != 0) ? "yes" : "no"); 
 
             System.out.println(message);
             pFile.write(message.getBytes());
             pValue.append(message);
-            message = String.format("\r\n%1s;%2s%3dB;", JCSYSTEM_STR[3],(eepromSize == 32767) ? ">" : "", eepromSize); 
+            message = String.format("\r\n%s;%s%dB;", JCSYSTEM_STR[3],(eepromSize == 32767) ? ">" : "", eepromSize); 
             System.out.println(message);
             pFile.write(message.getBytes());
             pValue.append(message);
-            message = String.format("\r\n%1s;%2s%3dB;", JCSYSTEM_STR[4],(ramResetSize == 32767) ? ">" : "", ramResetSize); 
+            message = String.format("\r\n%s;%s%dB;", JCSYSTEM_STR[4],(ramResetSize == 32767) ? ">" : "", ramResetSize); 
             System.out.println(message);
             pFile.write(message.getBytes());
             pValue.append(message);
-            message = String.format("\r\n%1s;%2s%3dB;\n", JCSYSTEM_STR[5],(ramDeselectSize == 32767) ? ">" : "", ramDeselectSize); 
+            message = String.format("\r\n%s;%s%dB;\n", JCSYSTEM_STR[5],(ramDeselectSize == 32767) ? ">" : "", ramDeselectSize); 
             System.out.println(message);
+            message += "\r\n";
+                    
             pFile.write(message.getBytes());
             pValue.append(message);
         }        

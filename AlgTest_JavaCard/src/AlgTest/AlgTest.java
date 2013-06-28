@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2004-2012  Petr Svenda <petr@svenda.com>
+    Copyright (c) 2004-2013  Petr Svenda <petr@svenda.com>
 
      LICENSE TERMS
 
@@ -49,198 +49,211 @@ import javacardx.crypto.*;
 
 public class AlgTest extends javacard.framework.Applet 
 {
-
-  final static byte CLA_CARD_ALGTEST               = (byte) 0xB0;
-  final static byte INS_CARD_TESTSUPPORTEDMODES    = (byte) 0x70;
-  final static byte INS_CARD_TESTAVAILABLE_MEMORY  = (byte) 0x71;
-  final static byte INS_CARD_TESTRSAEXPONENTSET    = (byte) 0x72;
-  final static byte INS_CARD_JCSYSTEM_INFO         = (byte) 0x73;
-  final static byte INS_CARD_TESTEXTAPDU           = (byte) 0x74;
-
-
-  //
-  // CONSTANTS OF ALGORITHMS. USED FOR CARD SUPPORT TEST. TAKEN FROM JavaCard specification
-  // Was defined separatelly so we can use single source code even when card do not support
-  // particular algorithms and export files do not contain them.
-  //
-  //
-  //Class javacard.security.Signature
-  //
-  public static final byte ALG_DES_MAC4_NOPAD = 1;
-  public static final byte ALG_DES_MAC8_NOPAD = 2;
-  public static final byte ALG_DES_MAC4_ISO9797_M1 = 3;
-  public static final byte ALG_DES_MAC8_ISO9797_M1 = 4;
-  public static final byte ALG_DES_MAC4_ISO9797_M2 = 5;
-  public static final byte ALG_DES_MAC8_ISO9797_M2 = 6;
-  public static final byte ALG_DES_MAC4_PKCS5 = 7;
-  public static final byte ALG_DES_MAC8_PKCS5 = 8;
-  public static final byte ALG_RSA_SHA_ISO9796 = 9;
-  public static final byte ALG_RSA_SHA_PKCS1 = 10;
-  public static final byte ALG_RSA_MD5_PKCS1 = 11;
-  public static final byte ALG_RSA_RIPEMD160_ISO9796 = 12;
-  public static final byte ALG_RSA_RIPEMD160_PKCS1 = 13;
-  public static final byte ALG_DSA_SHA = 14;
-  public static final byte ALG_RSA_SHA_RFC2409 = 15;
-  public static final byte ALG_RSA_MD5_RFC2409 = 16;
-  public static final byte ALG_ECDSA_SHA = 17;
-  public static final byte ALG_AES_MAC_128_NOPAD = 18;
-  public static final byte ALG_DES_MAC4_ISO9797_1_M2_ALG3 = 19;
-  public static final byte ALG_DES_MAC8_ISO9797_1_M2_ALG3 = 20;
-  public static final byte ALG_RSA_SHA_PKCS1_PSS = 21;
-  public static final byte ALG_RSA_MD5_PKCS1_PSS = 22;
-  public static final byte ALG_RSA_RIPEMD160_PKCS1_PSS = 23;
-  // JC2.2.2
-  public static final byte ALG_HMAC_SHA1 = 24;
-  public static final byte ALG_HMAC_SHA_256 = 25;
-  public static final byte ALG_HMAC_SHA_384 = 26;
-  public static final byte ALG_HMAC_SHA_512 = 27;
-  public static final byte ALG_HMAC_MD5 = 28;
-  public static final byte ALG_HMAC_RIPEMD160 = 29;
-  public static final byte ALG_RSA_SHA_ISO9796_MR = 30;
-  public static final byte ALG_RSA_RIPEMD160_ISO9796_MR = 31;
-  public static final byte ALG_SEED_MAC_NOPAD = 32;
+    // NOTE: when incrementing version, don't forget to update GetVersion() method
+    /**
+     * Version 1.1 (28.6.2013)
+     * + information about version added, command for version retrieval
+     */
+    final static byte ALGTEST_JAVACARD_VERSION_1_1[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x31};
+    /**
+     * Version 1.0 (2004-2013)
+     * + initial version for versioning enabled (all features implemented in 2004-2013)
+     */
+    final static byte ALGTEST_JAVACARD_VERSION_1_0[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x30};
 
 
-  //
-  //Class javacardx.crypto.Cipher
-  //
-  public static final byte ALG_DES_CBC_NOPAD = 1;
-  public static final byte ALG_DES_CBC_ISO9797_M1 = 2;
-  public static final byte ALG_DES_CBC_ISO9797_M2 = 3;
-  public static final byte ALG_DES_CBC_PKCS5 = 4;
-  public static final byte ALG_DES_ECB_NOPAD = 5;
-  public static final byte ALG_DES_ECB_ISO9797_M1 = 6;
-  public static final byte ALG_DES_ECB_ISO9797_M2 = 7;
-  public static final byte ALG_DES_ECB_PKCS5 = 8;
-  public static final byte ALG_RSA_ISO14888 = 9;
-  public static final byte ALG_RSA_PKCS1 = 10;
-  public static final byte ALG_RSA_ISO9796 = 11;
-  public static final byte ALG_RSA_NOPAD = 12;
-  public static final byte ALG_AES_BLOCK_128_CBC_NOPAD = 13;
-  public static final byte ALG_AES_BLOCK_128_ECB_NOPAD = 14;
-  public static final byte ALG_RSA_PKCS1_OAEP = 15;
-  // JC2.2.2
-  public static final byte ALG_KOREAN_SEED_ECB_NOPAD = 16;
-  public static final byte ALG_KOREAN_SEED_CBC_NOPAD = 17;
+    final static byte CLA_CARD_ALGTEST               = (byte) 0xB0;
+    final static byte INS_CARD_GETVERSION            = (byte) 0x60;
+    final static byte INS_CARD_TESTSUPPORTEDMODES    = (byte) 0x70;
+    final static byte INS_CARD_TESTAVAILABLE_MEMORY  = (byte) 0x71;
+    final static byte INS_CARD_TESTRSAEXPONENTSET    = (byte) 0x72;
+    final static byte INS_CARD_JCSYSTEM_INFO         = (byte) 0x73;
+    final static byte INS_CARD_TESTEXTAPDU           = (byte) 0x74;
 
 
-  //
-  //Class javacard.security.KeyAgreement
-  //
-  public static final byte ALG_EC_SVDP_DH = 1;
-  public static final byte ALG_EC_SVDP_DHC = 2;
-
-  //
-  //Class javacard.security.KeyBuilder
-  //
-  public static final byte TYPE_DES_TRANSIENT_RESET = 1;
-  public static final byte TYPE_DES_TRANSIENT_DESELECT = 2;
-  public static final byte TYPE_DES = 3;
-  public static final byte TYPE_RSA_PUBLIC = 4;
-  public static final byte TYPE_RSA_PRIVATE = 5;
-  public static final byte TYPE_RSA_CRT_PRIVATE = 6;
-  public static final byte TYPE_DSA_PUBLIC = 7;
-  public static final byte TYPE_DSA_PRIVATE = 8;
-  public static final byte TYPE_EC_F2M_PUBLIC = 9;
-  public static final byte TYPE_EC_F2M_PRIVATE = 10;
-  public static final byte TYPE_EC_FP_PUBLIC = 11;
-  public static final byte TYPE_EC_FP_PRIVATE = 12;
-  public static final byte TYPE_AES_TRANSIENT_RESET = 13;
-  public static final byte TYPE_AES_TRANSIENT_DESELECT = 14;
-  public static final byte TYPE_AES = 15;
-  // JC2.2.2
-  public static final byte TYPE_KOREAN_SEED_TRANSIENT_RESET = 16;
-  public static final byte TYPE_KOREAN_SEED_TRANSIENT_DESELECT = 17;
-  public static final byte TYPE_KOREAN_SEED = 18;
-  public static final byte TYPE_HMAC_TRANSIENT_RESET = 19;
-  public static final byte TYPE_HMAC_TRANSIENT_DESELECT = 20;
-  public static final byte TYPE_HMAC = 21;
-
-  public static final short LENGTH_DES = 64;
-  public static final short LENGTH_DES3_2KEY = 128;
-  public static final short LENGTH_DES3_3KEY = 192;
-  public static final short LENGTH_RSA_512 = 512;
-  public static final short LENGTH_RSA_736 = 736;
-  public static final short LENGTH_RSA_768 = 768;
-  public static final short LENGTH_RSA_896 = 896;
-  public static final short LENGTH_RSA_1024 = 1024;
-  public static final short LENGTH_RSA_1280 = 1280;
-  public static final short LENGTH_RSA_1536 = 1536;
-  public static final short LENGTH_RSA_1984 = 1984;
-  public static final short LENGTH_RSA_2048 = 2048;
-  public static final short LENGTH_RSA_3072 = 3072;
-  public static final short LENGTH_RSA_4096 = 4096;
-  public static final short LENGTH_DSA_512 = 512;
-  public static final short LENGTH_DSA_768 = 768;
-  public static final short LENGTH_DSA_1024 = 1024;
-  public static final short LENGTH_EC_FP_112 = 112;
-  public static final short LENGTH_EC_F2M_113 = 113;
-  public static final short LENGTH_EC_FP_128 = 128;
-  public static final short LENGTH_EC_F2M_131 = 131;
-  public static final short LENGTH_EC_FP_160 = 160;
-  public static final short LENGTH_EC_F2M_163 = 163;
-  public static final short LENGTH_EC_FP_192 = 192;
-  public static final short LENGTH_EC_F2M_193 = 193;
-  public static final short LENGTH_AES_128 = 128;
-  public static final short LENGTH_AES_192 = 192;
-  public static final short LENGTH_AES_256 = 256;
-  // JC2.2.2
-  public static final short LENGTH_KOREAN_SEED_128= 128;
-  public static final short LENGTH_HMAC_SHA_1_BLOCK_64= 64;
-  public static final short LENGTH_HMAC_SHA_256_BLOCK_64= 64;
-  public static final short LENGTH_HMAC_SHA_384_BLOCK_64= 128;
-  public static final short LENGTH_HMAC_SHA_512_BLOCK_64= 128;
-
-  //
-  //Class javacard.security.KeyPair
-  //
-  public static final byte ALG_RSA = 1;
-  public static final byte ALG_RSA_CRT = 2;
-  public static final byte ALG_DSA = 3;
-  public static final byte ALG_EC_F2M = 4;
-  public static final byte ALG_EC_FP = 5;
-
-  //Class javacard.security.MessageDigest
-  public static final byte ALG_SHA = 1;
-  public static final byte ALG_MD5 = 2;
-  public static final byte ALG_RIPEMD160 = 3;
-  // JC2.2.2
-  public static final byte ALG_SHA_256 = 4;
-  public static final byte ALG_SHA_384 = 5;
-  public static final byte ALG_SHA_512 = 6;
+    //
+    // CONSTANTS OF ALGORITHMS. USED FOR CARD SUPPORT TEST. TAKEN FROM JavaCard specification
+    // Was defined separatelly so we can use single source code even when card do not support
+    // particular algorithms and export files do not contain them.
+    //
+    //
+    //Class javacard.security.Signature
+    //
+    public static final byte ALG_DES_MAC4_NOPAD = 1;
+    public static final byte ALG_DES_MAC8_NOPAD = 2;
+    public static final byte ALG_DES_MAC4_ISO9797_M1 = 3;
+    public static final byte ALG_DES_MAC8_ISO9797_M1 = 4;
+    public static final byte ALG_DES_MAC4_ISO9797_M2 = 5;
+    public static final byte ALG_DES_MAC8_ISO9797_M2 = 6;
+    public static final byte ALG_DES_MAC4_PKCS5 = 7;
+    public static final byte ALG_DES_MAC8_PKCS5 = 8;
+    public static final byte ALG_RSA_SHA_ISO9796 = 9;
+    public static final byte ALG_RSA_SHA_PKCS1 = 10;
+    public static final byte ALG_RSA_MD5_PKCS1 = 11;
+    public static final byte ALG_RSA_RIPEMD160_ISO9796 = 12;
+    public static final byte ALG_RSA_RIPEMD160_PKCS1 = 13;
+    public static final byte ALG_DSA_SHA = 14;
+    public static final byte ALG_RSA_SHA_RFC2409 = 15;
+    public static final byte ALG_RSA_MD5_RFC2409 = 16;
+    public static final byte ALG_ECDSA_SHA = 17;
+    public static final byte ALG_AES_MAC_128_NOPAD = 18;
+    public static final byte ALG_DES_MAC4_ISO9797_1_M2_ALG3 = 19;
+    public static final byte ALG_DES_MAC8_ISO9797_1_M2_ALG3 = 20;
+    public static final byte ALG_RSA_SHA_PKCS1_PSS = 21;
+    public static final byte ALG_RSA_MD5_PKCS1_PSS = 22;
+    public static final byte ALG_RSA_RIPEMD160_PKCS1_PSS = 23;
+    // JC2.2.2
+    public static final byte ALG_HMAC_SHA1 = 24;
+    public static final byte ALG_HMAC_SHA_256 = 25;
+    public static final byte ALG_HMAC_SHA_384 = 26;
+    public static final byte ALG_HMAC_SHA_512 = 27;
+    public static final byte ALG_HMAC_MD5 = 28;
+    public static final byte ALG_HMAC_RIPEMD160 = 29;
+    public static final byte ALG_RSA_SHA_ISO9796_MR = 30;
+    public static final byte ALG_RSA_RIPEMD160_ISO9796_MR = 31;
+    public static final byte ALG_SEED_MAC_NOPAD = 32;
 
 
-  //Class javacard.security.RandomData
-  public static final byte ALG_PSEUDO_RANDOM = 1;
-  public static final byte ALG_SECURE_RANDOM = 2;
+    //
+    //Class javacardx.crypto.Cipher
+    //
+    public static final byte ALG_DES_CBC_NOPAD = 1;
+    public static final byte ALG_DES_CBC_ISO9797_M1 = 2;
+    public static final byte ALG_DES_CBC_ISO9797_M2 = 3;
+    public static final byte ALG_DES_CBC_PKCS5 = 4;
+    public static final byte ALG_DES_ECB_NOPAD = 5;
+    public static final byte ALG_DES_ECB_ISO9797_M1 = 6;
+    public static final byte ALG_DES_ECB_ISO9797_M2 = 7;
+    public static final byte ALG_DES_ECB_PKCS5 = 8;
+    public static final byte ALG_RSA_ISO14888 = 9;
+    public static final byte ALG_RSA_PKCS1 = 10;
+    public static final byte ALG_RSA_ISO9796 = 11;
+    public static final byte ALG_RSA_NOPAD = 12;
+    public static final byte ALG_AES_BLOCK_128_CBC_NOPAD = 13;
+    public static final byte ALG_AES_BLOCK_128_ECB_NOPAD = 14;
+    public static final byte ALG_RSA_PKCS1_OAEP = 15;
+    // JC2.2.2
+    public static final byte ALG_KOREAN_SEED_ECB_NOPAD = 16;
+    public static final byte ALG_KOREAN_SEED_CBC_NOPAD = 17;
 
-  // Class javacard.security.Checksum
-  public static final byte ALG_ISO3309_CRC16 = 1;
-  public static final byte ALG_ISO3309_CRC32 = 2;
+
+    //
+    //Class javacard.security.KeyAgreement
+    //
+    public static final byte ALG_EC_SVDP_DH = 1;
+    public static final byte ALG_EC_SVDP_DHC = 2;
+
+    //
+    //Class javacard.security.KeyBuilder
+    //
+    public static final byte TYPE_DES_TRANSIENT_RESET = 1;
+    public static final byte TYPE_DES_TRANSIENT_DESELECT = 2;
+    public static final byte TYPE_DES = 3;
+    public static final byte TYPE_RSA_PUBLIC = 4;
+    public static final byte TYPE_RSA_PRIVATE = 5;
+    public static final byte TYPE_RSA_CRT_PRIVATE = 6;
+    public static final byte TYPE_DSA_PUBLIC = 7;
+    public static final byte TYPE_DSA_PRIVATE = 8;
+    public static final byte TYPE_EC_F2M_PUBLIC = 9;
+    public static final byte TYPE_EC_F2M_PRIVATE = 10;
+    public static final byte TYPE_EC_FP_PUBLIC = 11;
+    public static final byte TYPE_EC_FP_PRIVATE = 12;
+    public static final byte TYPE_AES_TRANSIENT_RESET = 13;
+    public static final byte TYPE_AES_TRANSIENT_DESELECT = 14;
+    public static final byte TYPE_AES = 15;
+    // JC2.2.2
+    public static final byte TYPE_KOREAN_SEED_TRANSIENT_RESET = 16;
+    public static final byte TYPE_KOREAN_SEED_TRANSIENT_DESELECT = 17;
+    public static final byte TYPE_KOREAN_SEED = 18;
+    public static final byte TYPE_HMAC_TRANSIENT_RESET = 19;
+    public static final byte TYPE_HMAC_TRANSIENT_DESELECT = 20;
+    public static final byte TYPE_HMAC = 21;
+
+    public static final short LENGTH_DES = 64;
+    public static final short LENGTH_DES3_2KEY = 128;
+    public static final short LENGTH_DES3_3KEY = 192;
+    public static final short LENGTH_RSA_512 = 512;
+    public static final short LENGTH_RSA_736 = 736;
+    public static final short LENGTH_RSA_768 = 768;
+    public static final short LENGTH_RSA_896 = 896;
+    public static final short LENGTH_RSA_1024 = 1024;
+    public static final short LENGTH_RSA_1280 = 1280;
+    public static final short LENGTH_RSA_1536 = 1536;
+    public static final short LENGTH_RSA_1984 = 1984;
+    public static final short LENGTH_RSA_2048 = 2048;
+    public static final short LENGTH_RSA_3072 = 3072;
+    public static final short LENGTH_RSA_4096 = 4096;
+    public static final short LENGTH_DSA_512 = 512;
+    public static final short LENGTH_DSA_768 = 768;
+    public static final short LENGTH_DSA_1024 = 1024;
+    public static final short LENGTH_EC_FP_112 = 112;
+    public static final short LENGTH_EC_F2M_113 = 113;
+    public static final short LENGTH_EC_FP_128 = 128;
+    public static final short LENGTH_EC_F2M_131 = 131;
+    public static final short LENGTH_EC_FP_160 = 160;
+    public static final short LENGTH_EC_F2M_163 = 163;
+    public static final short LENGTH_EC_FP_192 = 192;
+    public static final short LENGTH_EC_F2M_193 = 193;
+    public static final short LENGTH_AES_128 = 128;
+    public static final short LENGTH_AES_192 = 192;
+    public static final short LENGTH_AES_256 = 256;
+    // JC2.2.2
+    public static final short LENGTH_KOREAN_SEED_128= 128;
+    public static final short LENGTH_HMAC_SHA_1_BLOCK_64= 64;
+    public static final short LENGTH_HMAC_SHA_256_BLOCK_64= 64;
+    public static final short LENGTH_HMAC_SHA_384_BLOCK_64= 128;
+    public static final short LENGTH_HMAC_SHA_512_BLOCK_64= 128;
+
+    //
+    //Class javacard.security.KeyPair
+    //
+    public static final byte ALG_RSA = 1;
+    public static final byte ALG_RSA_CRT = 2;
+    public static final byte ALG_DSA = 3;
+    public static final byte ALG_EC_F2M = 4;
+    public static final byte ALG_EC_FP = 5;
+
+    //Class javacard.security.MessageDigest
+    public static final byte ALG_SHA = 1;
+    public static final byte ALG_MD5 = 2;
+    public static final byte ALG_RIPEMD160 = 3;
+    // JC2.2.2
+    public static final byte ALG_SHA_256 = 4;
+    public static final byte ALG_SHA_384 = 5;
+    public static final byte ALG_SHA_512 = 6;
+
+
+    //Class javacard.security.RandomData
+    public static final byte ALG_PSEUDO_RANDOM = 1;
+    public static final byte ALG_SECURE_RANDOM = 2;
+
+    // Class javacard.security.Checksum
+    public static final byte ALG_ISO3309_CRC16 = 1;
+    public static final byte ALG_ISO3309_CRC32 = 2;
 
 
 
-  private   Cipher           m_encryptCipher = null;
-  private   Cipher           m_encryptCipherRSA = null;
-  private   Signature        m_sign = null;
-  private   Key              m_key = null;
-  private   MessageDigest    m_digest = null;
-  private   RandomData       m_random = null;
-  private   Object           m_object = null;
-  private   KeyPair          m_keyPair = null;
-  private   byte[]           m_ramArray = null;
-  private   byte[]           m_eepromArray1 = null;
-  private   byte[]           m_eepromArray2 = null;
-  private   byte[]           m_eepromArray3 = null;
-  private   byte[]           m_eepromArray4 = null;
-  private   byte[]           m_eepromArray5 = null;
-  private   byte[]           m_eepromArray6 = null;
-  private   byte[]           m_eepromArray7 = null;
-  private   byte[]           m_eepromArray8 = null;
-  private   RSAPublicKey     rsa_PublicKey = null;
+    private   Cipher           m_encryptCipher = null;
+    private   Cipher           m_encryptCipherRSA = null;
+    private   Signature        m_sign = null;
+    private   Key              m_key = null;
+    private   MessageDigest    m_digest = null;
+    private   RandomData       m_random = null;
+    private   Object           m_object = null;
+    private   KeyPair          m_keyPair = null;
+    private   byte[]           m_ramArray = null;
+    private   byte[]           m_eepromArray1 = null;
+    private   byte[]           m_eepromArray2 = null;
+    private   byte[]           m_eepromArray3 = null;
+    private   byte[]           m_eepromArray4 = null;
+    private   byte[]           m_eepromArray5 = null;
+    private   byte[]           m_eepromArray6 = null;
+    private   byte[]           m_eepromArray7 = null;
+    private   byte[]           m_eepromArray8 = null;
+    private   RSAPublicKey     rsa_PublicKey = null;
 
-  final static short EXPONENT_LENGTH = (short) 128;
-  final static short MODULUS_LENGTH = (short) 128;
+    final static short EXPONENT_LENGTH = (short) 128;
+    final static short MODULUS_LENGTH = (short) 128;
 
     /**
      * AlgTest default constructor
@@ -337,6 +350,7 @@ public class AlgTest extends javacard.framework.Applet
 
         if (apduBuffer[ISO7816.OFFSET_CLA] == CLA_CARD_ALGTEST) {
             switch ( apduBuffer[ISO7816.OFFSET_INS]) {
+                case INS_CARD_GETVERSION: GetVersion(apdu); break;
                 case INS_CARD_TESTSUPPORTEDMODES: TestSupportedModes(apdu); break;
                 case INS_CARD_TESTAVAILABLE_MEMORY: TestAvailableMemory(apdu); break;
                 case INS_CARD_TESTRSAEXPONENTSET: TestRSAExponentSet(apdu); break;
@@ -352,6 +366,14 @@ public class AlgTest extends javacard.framework.Applet
         }
     }
 
+    void GetVersion(APDU apdu) {
+        byte[]    apdubuf = apdu.getBuffer();
+        apdu.setIncomingAndReceive();
+
+        Util.arrayCopyNonAtomic(ALGTEST_JAVACARD_VERSION_1_1, (short) 0, apdubuf, (short) 0, (short) ALGTEST_JAVACARD_VERSION_1_1.length);
+
+        apdu.setOutgoingAndSend((byte) 0, (short) ALGTEST_JAVACARD_VERSION_1_1.length);
+    }    
 
    void TestSupportedModes(APDU apdu) {
        byte[]    apdubuf = apdu.getBuffer();

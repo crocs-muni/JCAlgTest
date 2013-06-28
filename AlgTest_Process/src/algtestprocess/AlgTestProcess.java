@@ -48,7 +48,8 @@ public class AlgTestProcess {
      */
     public static void main(String[] args) {
         try {
-            generateHTMLTable();
+            if (args.length == 0) {PrintHelp();}
+            else { generateHTMLTable(args[0]);}
         } 
         catch (IOException ex) {
             System.out.println("IOException : " + ex);
@@ -58,13 +59,15 @@ public class AlgTestProcess {
         }
     }
     
-    private static void generateHTMLTable() throws IOException {
-        String basePath = "d:\\Documents\\Develop\\AlgTest\\Profiles\\";
-        String filesPath = basePath + "test\\";
+    private static void PrintHelp() {
+        System.out.println("Usage: java AlgTestProcess.jar base_path\n" 
+                + "  base_path\\results\\directory should contain *.csv files with results \n"
+                + "  html table will be generated into base_path\\AlgTest_html_table.html \n");
+    }
+    private static void generateHTMLTable(String basePath) throws IOException {
+        String filesPath = basePath + "results\\";
         File dir = new File(filesPath);
         String[] array = dir.list();
-        System.out.println(dir.getPath() + " directory listing");
-
 
         
         if ((array != null) && (dir.isDirectory() == true)) {    
@@ -81,21 +84,21 @@ public class AlgTestProcess {
             //
             String fileName = basePath + "AlgTest_html_table.html";
             FileOutputStream file = new FileOutputStream(fileName);                   
-            String header = "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n<html>\n<head>"
-                    + "<meta content=\"text/html; charset=utf-8\" http-equiv=\"Content-Type\">\n"
-                    + "<link type=\"text/css\" href=\"style.css\" rel=\"stylesheet\"><title>JavaCard support test</title></head>\n<body>\n\n"; 
+            String header = "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\r\n<html>\r\n<head>"
+                    + "<meta content=\"text/html; charset=utf-8\" http-equiv=\"Content-Type\">\r\n"
+                    + "<link type=\"text/css\" href=\"style.css\" rel=\"stylesheet\"><title>JavaCard support test</title></head>\r\n<body>\r\n\r\n"; 
 
-            String cardList = "<b>Tested cards abbreviations:</b><br>\n";
+            String cardList = "<b>Tested cards abbreviations:</b><br>\r\n";
             for (int i = 0; i < array.length; i++) {
-                cardList += "<b>c" + i + "</b>	" + array[i] + "<br>\n";
+                cardList += "<b>c" + i + "</b>	" + array[i] + "<br>\r\n";
             }
-            cardList += "\n\n\n"; 
+            cardList += "\r\n\r\n\r\n"; 
             
             file.write(header.getBytes());
             file.write(cardList.getBytes());
             file.flush();          
             
-            String table = "<table width=\"730\" border=\"0\" cellspacing=\"2\" cellpadding=\"4\">\n";
+            String table = "<table width=\"730\" border=\"0\" cellspacing=\"2\" cellpadding=\"4\">\r\n";
             file.write(table.getBytes()); file.flush();                  
 
             //
@@ -108,7 +111,7 @@ public class AlgTestProcess {
             //
             // FOOTER
             //
-            String footer = "</table>\n\n\n</body></html>";
+            String footer = "</table>\r\n\r\n\r\n</body></html>";
             file.write(footer.getBytes());
 
             file.flush();
@@ -123,14 +126,14 @@ public class AlgTestProcess {
     
     static void formatTableAlgorithm_HTML(String[] classInfo, HashMap[] filesSupport, FileOutputStream file) throws IOException {
         // class (e.g., javacardx.crypto.Cipher)
-        String algorithm = "<tr style='height:12.75pt'>\n" + "<td class='dark'>" + classInfo[0] + "</td>\n";
-        for (int i = 0; i < filesSupport.length; i++) { algorithm += "  <td class='dark_index'>c" + i + "</td>\n"; }
-        algorithm += "</tr>\n";
+        String algorithm = "<tr style='height:12.75pt'>\r\n" + "<td class='dark'>" + classInfo[0] + "</td>\r\n";
+        for (int i = 0; i < filesSupport.length; i++) { algorithm += "  <td class='dark_index'>c" + i + "</td>\r\n"; }
+        algorithm += "</tr>\r\n";
         // support for particular algorithm from given class
         for (int i = 1; i < classInfo.length; i++) {
             if (!classInfo[i].startsWith("###")) { // ignore special informative types
-                algorithm += "<tr style='height:12.75pt'>\n";
-                algorithm += "  <td class='light'>" + classInfo[i] + "</td>\n";
+                algorithm += "<tr style='height:12.75pt'>\r\n";
+                algorithm += "  <td class='light'>" + classInfo[i] + "</td>\r\n";
 
                 // Process all files
                 for (int fileIndex = 0; fileIndex < filesSupport.length; fileIndex++) { 
@@ -139,22 +142,22 @@ public class AlgTestProcess {
                     if (fileSuppMap.containsKey(classInfo[i])) {
                         String secondToken = (String) fileSuppMap.get(classInfo[i]);
                         switch (secondToken) {
-                            case "no": algorithm += "<td class='light_no'>no</td>\n"; break;
-                            case "yes": algorithm += "<td class='light_yes'>yes</td>\n"; break;
-                            case "error": algorithm += "<td class='light_error'>error</td>\n"; break;
-                            case "maybe": algorithm += "<td class='light_error'>maybe</td>\n"; break;
+                            case "no": algorithm += "<td class='light_no'>no</td>\r\n"; break;
+                            case "yes": algorithm += "<td class='light_yes'>yes</td>\r\n"; break;
+                            case "error": algorithm += "<td class='light_error'>error</td>\r\n"; break;
+                            case "maybe": algorithm += "<td class='light_error'>maybe</td>\r\n"; break;
                             default: {
-                                algorithm += "<td class='light_info'>" + secondToken + "</td>\n";
+                                algorithm += "<td class='light_info'>" + secondToken + "</td>\r\n";
                             }
                         }
                     }
                     else {
                         // algorithm not found in support list
-                        algorithm += "<td class='light_error'>?</td>\n";
-                        //algorithm += "<td >&nbsp;</td>\n";
+                        algorithm += "<td class='light_error'>?</td>\r\n";
+                        //algorithm += "<td >&nbsp;</td>\r\n";
                     } 
                 }
-                algorithm += "</tr>\n";
+                algorithm += "</tr>\r\n";
             }
         }
         file.write(algorithm.getBytes());            
