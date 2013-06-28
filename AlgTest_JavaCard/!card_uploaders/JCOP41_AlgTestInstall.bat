@@ -1,1 +1,0 @@
-gpshell.exe JCOP41_AlgTestInstall.txt
