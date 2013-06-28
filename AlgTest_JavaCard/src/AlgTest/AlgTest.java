@@ -1358,7 +1358,7 @@ public class AlgTest extends javacard.framework.Applet
          else offset++;
        }
 /**/
-/*
+
        //       Class javacard.security.KeyAgreement
        if (apdubuf[ISO7816.OFFSET_P1] == 0 || apdubuf[ISO7816.OFFSET_P1] == (byte) 0x13) {
          offset++;
@@ -1541,7 +1541,7 @@ void JCSystemInfo(APDU apdu) {
    byte[]    apdubuf = apdu.getBuffer();
    short     dataLen = apdu.setIncomingAndReceive();
    short     offset = (short) 0;
-/*
+
     Util.setShort(apdubuf, offset, JCSystem.getVersion());
     offset = (short)(offset + 2);
 
