@@ -368,7 +368,7 @@ public class AlgTest extends javacard.framework.Applet
 
     void GetVersion(APDU apdu) {
         byte[]    apdubuf = apdu.getBuffer();
-        apdu.setIncomingAndReceive();
+        //apdu.setIncomingAndReceive();
 
         Util.arrayCopyNonAtomic(ALGTEST_JAVACARD_VERSION_1_1, (short) 0, apdubuf, (short) 0, (short) ALGTEST_JAVACARD_VERSION_1_1.length);
 
@@ -1358,7 +1358,7 @@ public class AlgTest extends javacard.framework.Applet
          else offset++;
        }
 /**/
-
+/*
        //       Class javacard.security.KeyAgreement
        if (apdubuf[ISO7816.OFFSET_P1] == 0 || apdubuf[ISO7816.OFFSET_P1] == (byte) 0x13) {
          offset++;
@@ -1541,7 +1541,7 @@ void JCSystemInfo(APDU apdu) {
    byte[]    apdubuf = apdu.getBuffer();
    short     dataLen = apdu.setIncomingAndReceive();
    short     offset = (short) 0;
-
+/*
     Util.setShort(apdubuf, offset, JCSystem.getVersion());
     offset = (short)(offset + 2);
 
@@ -1554,6 +1554,7 @@ void JCSystemInfo(APDU apdu) {
     offset = (short)(offset + 2);
     Util.setShort(apdubuf, offset, JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT));
     offset = (short)(offset + 2);
+/**/    
     apdu.setOutgoingAndSend((byte) 0, offset);
   }
 

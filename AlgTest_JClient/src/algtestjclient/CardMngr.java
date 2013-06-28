@@ -284,7 +284,7 @@ public class CardMngr {
     public static final byte ALG_ISO3309_CRC32             = 2;
 
     public static final String CHECKSUM_STR[] = {"javacard.security.Checksum", "ALG_ISO3309_CRC16", "ALG_ISO3309_CRC32"}; 
-
+    
     public static final String JCSYSTEM_STR[] = {"javacard.framework.JCSystem", "JCSystem.getVersion()[Major.Minor]", 
         "JCSystem.isObjectDeletionSupported", "JCSystem.MEMORY_TYPE_PERSISTENT", "JCSystem.MEMORY_TYPE_TRANSIENT_RESET", 
         "JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT"}; 
@@ -292,10 +292,12 @@ public class CardMngr {
     public static final String RAWRSA_1024_STR[] = {"Variable RSA 1024 - support for variable public exponent. If supported, user-defined fast modular exponentiation can be executed on the smart card via cryptographic coprocessor. This is very specific feature and you will probably not need it", 
         "Allocate RSA 1024 objects", "Set random modulus", "Set random public exponent", "Initialize cipher with public key with random exponent", "Use random public exponent"}; 
 
-   public static final String EXTENDEDAPDU_STR[] = {"javacardx.apdu.ExtendedLength", "Extended APDU"}; 
+    public static final String EXTENDEDAPDU_STR[] = {"javacardx.apdu.ExtendedLength", "Extended APDU"}; 
 
+    public static final String BASIC_INFO[] = {"Basic info", "JavaCard support version"}; 
+   
     public static final String[] ALL_CLASSES_STR[] = {
-        JCSYSTEM_STR, EXTENDEDAPDU_STR, CIPHER_STR, SIGNATURE_STR, MESSAGEDIGEST_STR, RANDOMDATA_STR, KEYBUILDER_STR, 
+        BASIC_INFO, JCSYSTEM_STR, EXTENDEDAPDU_STR, CIPHER_STR, SIGNATURE_STR, MESSAGEDIGEST_STR, RANDOMDATA_STR, KEYBUILDER_STR, 
         KEYPAIR_RSA_STR, KEYPAIR_RSACRT_STR, KEYPAIR_DSA_STR, KEYPAIR_EC_F2M_STR, 
         KEYPAIR_EC_FP_STR, KEYAGREEMENT_STR, CHECKSUM_STR, RAWRSA_1024_STR
     };
@@ -439,23 +441,30 @@ public class CardMngr {
         int         status = STAT_OK;
     
 	// Prepare test memory apdu
-        byte apdu[] = new byte[HEADER_LENGTH];
+        byte apdu[] = new byte[HEADER_LENGTH + 1];
         apdu[OFFSET_CLA] = (byte) 0xB0;
         apdu[OFFSET_INS] = (byte) 0x60;
         apdu[OFFSET_P1] = 0x00;
         apdu[OFFSET_P2] = 0x00;
-        apdu[OFFSET_LC] = 0x00;
+        apdu[OFFSET_LC] = 0x01;
+        apdu[OFFSET_DATA] = 0x00;
 
-        ResponseAPDU resp = sendAPDU(apdu);
-        if (resp.getSW() != 0x9000) {
+        try {
+            ResponseAPDU resp = sendAPDU(apdu);
+            if (resp.getSW() != 0x9000) {
+                System.out.println("Fail to obtain Applet version");
+                pValue.append("error");
+            } else {
+                byte temp[] = resp.getData();
+                char version[] = new char[temp.length]; 
+                for (int i = 0; i < temp.length; i++) { version[i] = (char) temp[i]; }
+                pValue.append(version);
+             }        
+        }
+        catch (Exception ex) {
             System.out.println("Fail to obtain Applet version");
-        } else {
-            byte temp[] = resp.getData();
-            char version[] = new char[temp.length]; 
-            for (int i = 0; i < temp.length; i++) { version[i] = (char) temp[i]; }
-            pValue.append(version);
-         }        
-        
+            pValue.append("error");
+        }
                 
 	return status;
     }
@@ -466,62 +475,69 @@ public class CardMngr {
         long        elapsedCard = 0;
     
 	// Prepare test memory apdu
-        byte apdu[] = new byte[HEADER_LENGTH];
+        byte apdu[] = new byte[HEADER_LENGTH+1];
         apdu[OFFSET_CLA] = (byte) 0xB0;
         apdu[OFFSET_INS] = (byte) 0x73;
         apdu[OFFSET_P1] = 0x00;
         apdu[OFFSET_P2] = 0x00;
-        apdu[OFFSET_LC] = 0x00;
+        apdu[OFFSET_LC] = 0x01;
+        apdu[OFFSET_DATA] = 0x01;
 
         elapsedCard -= System.currentTimeMillis();
-        ResponseAPDU resp = sendAPDU(apdu);
-        if (resp.getSW() != 0x9000) {
+        try {
+            ResponseAPDU resp = sendAPDU(apdu);
+            if (resp.getSW() != 0x9000) {
+                System.out.println("Fail to obtain JCSystemInfo");
+            } else {
+                // SET READ DATA
+                byte temp[] = resp.getData();
+
+                // SAVE TIME OF CARD RESPONSE
+                elapsedCard += System.currentTimeMillis();
+                String elTimeStr;
+                // OUTPUT REQUIRED TIME WHEN PARTITIONED CHECk WAS PERFORMED (NOTMULTIPLE ALGORITHMS IN SINGLE RUN)
+                elTimeStr = String.valueOf((double) elapsedCard / (float) CLOCKS_PER_SEC);
+
+                int versionMajor = temp[0];
+                int versionMinor = temp[1];
+                int bDeletionSupported = temp[2];
+                int eepromSize = (temp[3] << 8) + (temp[4] & 0xff);
+                int ramResetSize = (temp[5] << 8) + (temp[6] & 0xff);
+                int ramDeselectSize = (temp[7] << 8) + (temp[8] & 0xff);
+
+
+
+                String message;
+                message = String.format("\r\n%1s;%d.%d;", JCSYSTEM_STR[1], versionMajor, versionMinor); 
+                System.out.println(message);
+                pFile.write(message.getBytes());
+                pValue.append(message);
+                message = String.format("\r\n%s;%s;", JCSYSTEM_STR[2],(bDeletionSupported != 0) ? "yes" : "no"); 
+
+                System.out.println(message);
+                pFile.write(message.getBytes());
+                pValue.append(message);
+                message = String.format("\r\n%s;%s%dB;", JCSYSTEM_STR[3],(eepromSize == 32767) ? ">" : "", eepromSize); 
+                System.out.println(message);
+                pFile.write(message.getBytes());
+                pValue.append(message);
+                message = String.format("\r\n%s;%s%dB;", JCSYSTEM_STR[4],(ramResetSize == 32767) ? ">" : "", ramResetSize); 
+                System.out.println(message);
+                pFile.write(message.getBytes());
+                pValue.append(message);
+                message = String.format("\r\n%s;%s%dB;\n", JCSYSTEM_STR[5],(ramDeselectSize == 32767) ? ">" : "", ramDeselectSize); 
+                System.out.println(message);
+                message += "\r\n";
+
+                pFile.write(message.getBytes());
+                pValue.append(message);
+            }        
+        }
+        catch (Exception ex) {
             System.out.println("Fail to obtain JCSystemInfo");
-        } else {
-            // SET READ DATA
-            byte temp[] = resp.getData();
-            
-            // SAVE TIME OF CARD RESPONSE
-            elapsedCard += System.currentTimeMillis();
-            String elTimeStr;
-            // OUTPUT REQUIRED TIME WHEN PARTITIONED CHECk WAS PERFORMED (NOTMULTIPLE ALGORITHMS IN SINGLE RUN)
-            elTimeStr = String.valueOf((double) elapsedCard / (float) CLOCKS_PER_SEC);
-
-            int versionMajor = temp[0];
-            int versionMinor = temp[1];
-            int bDeletionSupported = temp[2];
-            int eepromSize = (temp[3] << 8) + (temp[4] & 0xff);
-            int ramResetSize = (temp[5] << 8) + (temp[6] & 0xff);
-            int ramDeselectSize = (temp[7] << 8) + (temp[8] & 0xff);
-
-           
-            
-            String message;
-            message = String.format("\r\n%1s;%d.%d;", JCSYSTEM_STR[1], versionMajor, versionMinor); 
-            System.out.println(message);
-            pFile.write(message.getBytes());
-            pValue.append(message);
-            message = String.format("\r\n%s;%s;", JCSYSTEM_STR[2],(bDeletionSupported != 0) ? "yes" : "no"); 
-
-            System.out.println(message);
-            pFile.write(message.getBytes());
-            pValue.append(message);
-            message = String.format("\r\n%s;%s%dB;", JCSYSTEM_STR[3],(eepromSize == 32767) ? ">" : "", eepromSize); 
-            System.out.println(message);
-            pFile.write(message.getBytes());
-            pValue.append(message);
-            message = String.format("\r\n%s;%s%dB;", JCSYSTEM_STR[4],(ramResetSize == 32767) ? ">" : "", ramResetSize); 
-            System.out.println(message);
-            pFile.write(message.getBytes());
-            pValue.append(message);
-            message = String.format("\r\n%s;%s%dB;\n", JCSYSTEM_STR[5],(ramDeselectSize == 32767) ? ">" : "", ramDeselectSize); 
-            System.out.println(message);
-            message += "\r\n";
-                    
-            pFile.write(message.getBytes());
-            pValue.append(message);
-        }        
-        
+            pValue.append("error");
+        }
+                      
                 
 	return status;
     }

@@ -50,6 +50,8 @@ public class AlgTestProcess {
         try {
             if (args.length == 0) {PrintHelp();}
             else { generateHTMLTable(args[0]);}
+            
+            generateGPShellScripts();
         } 
         catch (IOException ex) {
             System.out.println("IOException : " + ex);
@@ -90,7 +92,12 @@ public class AlgTestProcess {
 
             String cardList = "<b>Tested cards abbreviations:</b><br>\r\n";
             for (int i = 0; i < array.length; i++) {
-                cardList += "<b>c" + i + "</b>	" + array[i] + "<br>\r\n";
+                String cardIdentification = array[i];
+                cardIdentification = cardIdentification.replace('_', ' ');
+                cardIdentification = cardIdentification.replace(".csv", "");
+                cardIdentification = cardIdentification.replace("3B", ", ATR=3B");
+                cardIdentification = cardIdentification.replace("3b", ", ATR=3b");
+                cardList += "<b>c" + i + "</b>	" + cardIdentification + "<br>\r\n";
             }
             cardList += "\r\n\r\n\r\n"; 
             
@@ -153,7 +160,7 @@ public class AlgTestProcess {
                     }
                     else {
                         // algorithm not found in support list
-                        algorithm += "<td class='light_error'>?</td>\r\n";
+                        algorithm += "<td class='light_error'>-</td>\r\n";
                         //algorithm += "<td >&nbsp;</td>\r\n";
                     } 
                 }
@@ -199,5 +206,40 @@ public class AlgTestProcess {
         catch(Exception e) {
                 System.out.println("Exception while reading csv file: " + e);                  
         }
+    }
+    
+    static void generateGPShellScripts() throws IOException {
+        
+        String capFileName = "AlgTest_v1.1_";
+        String packageAID = "6D797061636B616731";
+        String appletAID = "6D7970616330303031";
+        
+        // NXP JCOP CJ3A081
+        CardProfiles.generateScript(capFileName + "jc2.2.2.cap", packageAID, appletAID, "NXP_JCOP_CJ3A081", "mode_211", "a000000003000000", "-keyind 0 -keyver 0 -mac_key 404142434445464748494a4b4c4d4e4f -enc_key 404142434445464748494a4b4c4d4e4f");
+        // NXP JCOP CJ2A081
+        CardProfiles.generateScript(capFileName + "jc2.2.2.cap", packageAID, appletAID, "NXP_JCOP_CJ2A081", "mode_211", "a000000003000000", "-keyind 0 -keyver 0 -mac_key 404142434445464748494a4b4c4d4e4f -enc_key 404142434445464748494a4b4c4d4e4f");
+        // NXP JCOP 41 v2.2.1 72K
+        CardProfiles.generateScript(capFileName + "jc2.2.1.cap", packageAID, appletAID, "NXP_JCOP_41_v221_72K", "mode_211", "a000000003000000", "-keyind 0 -keyver 0 -mac_key 404142434445464748494a4b4c4d4e4f -enc_key 404142434445464748494a4b4c4d4e4f");
+
+        // Gemalto_TOP_IM_GXP4
+        CardProfiles.generateScript(capFileName + "jc2.2.1.cap", packageAID, appletAID, "Gemalto_TOP_IM_GXP4", "mode_201\r\ngemXpressoPro", "A000000018434D00", "-keyind 0 -keyver 0 -key 47454d5850524553534f53414d504c45");
+        // Gemalto_GXP_E64_PK
+        CardProfiles.generateScript(capFileName + "jc2.1.2.cap", packageAID, appletAID, "Gemalto_GXP_E64_PK", "mode_201", "A000000018434D00", "-keyind 0 -keyver 0 -mac_key 404142434445464748494a4b4c4d4e4f -enc_key 404142434445464748494a4b4c4d4e4f");
+        // TODO: Gemalto_GXP_R4_72K
+                
+        // Oberthur Cosmo Dual 72K
+        CardProfiles.generateScript(capFileName + "jc2.1.2.cap", packageAID, appletAID, "Oberthur_Cosmo_Dual_72K", "mode_211", "a000000003000000", "-keyind 0 -keyver 0 -mac_key 404142434445464748494a4b4c4d4e4f -enc_key 404142434445464748494a4b4c4d4e4f");
+        // TODO: Oberthur Cosmo V7
+        // NOTE: neither authentication, nor upload works
+        //CardProfiles.generateScript(capFileName + "jc2.2.2.cap", packageAID, appletAID, "Oberthur_Cosmo_V7", "mode_211", "A0000001510000", "-keyind 0 -keyver 0 -mac_key 404142434445464748494a4b4c4d4e4f -enc_key 404142434445464748494a4b4c4d4e4f");
+
+        // Infineon JTOP V2 16K
+        CardProfiles.generateScript(capFileName + "jc2.1.2.cap", packageAID, appletAID, "Infineon_JTOP_V2_16K", "mode_201", "a000000003000000", "-keyind 0 -keyver 0 -mac_key 404142434445464748494a4b4c4d4e4f -enc_key 404142434445464748494a4b4c4d4e4f");
+        // Infineon JTOP Dual Interface 80k - SLJ 52GLA080AL M8.4
+        // NOTE: authentication works, but upload fails with 'install_for_load() returns 0x80206A88 (6A88: Referenced data not found.)' 
+        CardProfiles.generateScript(capFileName + "jc2.2.2.cap", packageAID, appletAID, "Infineon_JTOP_Dual_Interface_80k", "mode_211", "", "-keyind 0 -keyver 0 -mac_key 404142434445464748494a4b4c4d4e4f -enc_key 404142434445464748494a4b4c4d4e4f");
+
+        // Cyberflex Palmera V5
+        CardProfiles.generateScript(capFileName + "jc2.1.2.cap", packageAID, appletAID, "Cyberflex_Palmera_V5", "mode_201", "a000000003000000", "-keyind 0 -keyver 0 -mac_key 404142434445464748494a4b4c4d4e4f -enc_key 404142434445464748494a4b4c4d4e4f");
     }
 }

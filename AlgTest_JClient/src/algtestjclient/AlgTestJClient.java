@@ -109,7 +109,7 @@ public class AlgTestJClient {
                 message = "AlgTestJClient version; " + ALGTEST_JCLIENT_VERSION + "\r\n";
                 System.out.println(message);
                 file.write(message.getBytes());    
-                
+             
                 value.setLength(0);
                 if (cardManager.GetAppletVersion(value) == CardMngr.STAT_OK) {
                     message = "AlgTest applet version; " + value + "\r\n";
@@ -117,6 +117,7 @@ public class AlgTestJClient {
                     file.write(message.getBytes()); 
                 }
                 else { System.out.println("\nERROR: GetAppletVersion fail"); }
+                
 
                 message = "Used reader; " + reader + "\r\n";
                 System.out.println(message);
