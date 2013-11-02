@@ -4,13 +4,12 @@ AlgTest
 Automated testing tool for algorithms supported by particular smart card with JavaCard platform. 
 
 Results for (at least) following smartcards are currently in database (http://www.fi.muni.cz/~xsvenda/jcsupport.html):
-c0	Axalto Cyberflex32 , ATR=3B 75 94 00 00 62 02 02 02 01
 
-c1	Axalto Cyberflex PalmeraV5 , ATR=3B E6 00 00 81 21 45 32 4B 01 01 01 01 7A
-
-c2	G+D SmartCafe Expert 144k Dual , ATR=3b fd 18 00 00 80 31 fe 45 73 66 74 65 20 63 64 31 34 34 2d 6e 66 d8
-c3	Gemalto TOP IM GXP4 , ATR=3b 7d 94 00 00 80 31 80 65 b0 83 11 d0 a9 83 00 90 00
-c4	Gemalto TwinGCX4 72k PK , ATR=3B 7A 94 00 00 80 65 A2 01 01 01 3D 72 D6 43
+- Axalto Cyberflex32 , ATR=3B 75 94 00 00 62 02 02 02 01
+- Axalto Cyberflex PalmeraV5 , ATR=3B E6 00 00 81 21 45 32 4B 01 01 01 01 7A
+- G+D SmartCafe Expert 144k Dual , ATR=3b fd 18 00 00 80 31 fe 45 73 66 74 65 20 63 64 31 34 34 2d 6e 66 d8
+- Gemalto TOP IM GXP4 , ATR=3b 7d 94 00 00 80 31 80 65 b0 83 11 d0 a9 83 00 90 00
+- Gemalto TwinGCX4 72k PK , ATR=3B 7A 94 00 00 80 65 A2 01 01 01 3D 72 D6 43
 c5	Gemplus GXPE64PK , ATR=3B 7E 94 00 00 80 25 A0 00 00 00 28 56 80 10 21 00 01 08
 c6	Gemplus GXPLiteGeneric , ATR=3B 7D 94 00 00 80 31 80 65 B0 83 01 02 90 83 00 90 00
 c7	Gemplus GXPR3r32 , ATR=3B 7D 94 00 00 80 31 80 65 B0 83 01 02 90 83 00 90 00
