@@ -105,6 +105,9 @@ public class AlgTestProcess {
             file.write(cardList.getBytes());
             file.flush();          
             
+            String note = "Note: If character '-' or '?' is present, particular feature was not yet tested (but usually means unsupported) and will be added in future. Error means that tested card gives permanent error other then CryptoException.NO_SUCH_ALGORITHM when called.\r\n\r\n";
+            file.write(note.getBytes());
+            
             String table = "<table width=\"730\" border=\"0\" cellspacing=\"2\" cellpadding=\"4\">\r\n";
             file.write(table.getBytes()); file.flush();                  
 

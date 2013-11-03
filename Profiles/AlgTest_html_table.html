@@ -21,7 +21,9 @@
 <b>c13</b>	NXP JCOP CJ2A081 JC222 , ATR=3b f8 18 00 ff 81 31 fe 45 4a 43 4f 50 76 32 34 31 43 <br>
 <b>c14</b>	NXP JCOP CJ3A080v241 , ATR=3B F8 13 00 00 81 31 FE 45 4A 43 4F 50 76 32 34 31 B7<br>
 <b>c15</b>	NXP JCOP CJ3A081 JC222 , ATR=3b fa 18 00 00 81 31 fe 45 4a 33 41 30 38 31 56 32 34 31 89 <br>
-<b>c16</b>	Oberthur CosmoDual72K , ATR=3B 7B 18 00 00 00 31 C0 64 77 E3 03 00 82 90 00<br>
+<b>c16</b>	NXP JCOP J2A080 , ATR=3b f6 18 00 ff 81 31 fe 45 4a 32 41 30 38 30 1b<br>
+<b>c17</b>	Oberthur CosmoDual72K , ATR=3B 7B 18 00 00 00 31 C0 64 77 E3 03 00 82 90 00<br>
+<b>c18</b>	Yubikey Neo , ATR=3b fa 13 00 00 81 31 fe 15 59 75 62 69 6b 65 79 4e 45 4f a6<br>
 
 
 
@@ -45,6 +47,8 @@
   <td class='dark_index'>c14</td>
   <td class='dark_index'>c15</td>
   <td class='dark_index'>c16</td>
+  <td class='dark_index'>c17</td>
+  <td class='dark_index'>c18</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>JavaCard support version</td>
@@ -64,7 +68,9 @@
   <td class='light_info'>2.2.2</td>
   <td class='light_info'>2.2.1</td>
   <td class='light_info'>2.2.2</td>
+  <td class='light_error'>-</td>
   <td class='light_info'>2.1.2</td>
+  <td class='light_error'>-</td>
 </tr>
 <tr style='height:12.75pt'>
 <td class='dark'>javacard.framework.JCSystem</td>
@@ -85,6 +91,8 @@
   <td class='dark_index'>c14</td>
   <td class='dark_index'>c15</td>
   <td class='dark_index'>c16</td>
+  <td class='dark_index'>c17</td>
+  <td class='dark_index'>c18</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>JCSystem.getVersion()[Major.Minor]</td>
@@ -104,7 +112,9 @@
   <td class='light_info'>2.2</td>
   <td class='light_info'>2.2</td>
   <td class='light_info'>2.2</td>
+  <td class='light_info'>2.2</td>
   <td class='light_error'>-</td>
+  <td class='light_info'>3.0</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>JCSystem.isObjectDeletionSupported</td>
@@ -124,7 +134,9 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_error'>-</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>JCSystem.MEMORY_TYPE_PERSISTENT</td>
@@ -144,7 +156,9 @@
   <td class='light_info'>>32767B</td>
   <td class='light_info'>>32767B</td>
   <td class='light_info'>>32767B</td>
+  <td class='light_info'>>32767B</td>
   <td class='light_error'>-</td>
+  <td class='light_info'>>32767B</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>JCSystem.MEMORY_TYPE_TRANSIENT_RESET</td>
@@ -164,7 +178,9 @@
   <td class='light_info'>3480B</td>
   <td class='light_info'>2208B</td>
   <td class='light_info'>3480B</td>
+  <td class='light_info'>2336B</td>
   <td class='light_error'>-</td>
+  <td class='light_info'>2915B</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT</td>
@@ -184,7 +200,9 @@
   <td class='light_info'>3480B</td>
   <td class='light_info'>2208B</td>
   <td class='light_info'>3480B</td>
+  <td class='light_info'>2336B</td>
   <td class='light_error'>-</td>
+  <td class='light_info'>2915B</td>
 </tr>
 <tr style='height:12.75pt'>
 <td class='dark'>javacardx.apdu.ExtendedLength</td>
@@ -205,6 +223,8 @@
   <td class='dark_index'>c14</td>
   <td class='dark_index'>c15</td>
   <td class='dark_index'>c16</td>
+  <td class='dark_index'>c17</td>
+  <td class='dark_index'>c18</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>Extended APDU</td>
@@ -224,7 +244,9 @@
   <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
   <td class='light_yes'>yes</td>
+  <td class='light_error'>-</td>
   <td class='light_no'>no</td>
+  <td class='light_error'>-</td>
 </tr>
 <tr style='height:12.75pt'>
 <td class='dark'>javacardx.crypto.Cipher</td>
@@ -245,9 +267,13 @@
   <td class='dark_index'>c14</td>
   <td class='dark_index'>c15</td>
   <td class='dark_index'>c16</td>
+  <td class='dark_index'>c17</td>
+  <td class='dark_index'>c18</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_DES_CBC_NOPAD</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
@@ -285,6 +311,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_DES_CBC_ISO9797_M2</td>
@@ -297,6 +325,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
@@ -324,10 +354,14 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_DES_ECB_NOPAD</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
@@ -365,6 +399,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_DES_ECB_ISO9797_M2</td>
@@ -377,6 +413,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
@@ -405,6 +443,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_RSA_ISO14888</td>
@@ -425,6 +465,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_RSA_PKCS1</td>
@@ -437,6 +479,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
@@ -465,9 +509,13 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_RSA_NOPAD</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
@@ -504,7 +552,9 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_AES_BLOCK_128_ECB_NOPAD</td>
@@ -524,7 +574,9 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_RSA_PKCS1_OAEP</td>
@@ -544,7 +596,9 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
   <td class='light_yes'>yes</td>
+  <td class='light_no'>no</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_KOREAN_SEED_ECB_NOPAD</td>
@@ -564,7 +618,9 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_KOREAN_SEED_CBC_NOPAD</td>
@@ -584,7 +640,9 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
 <td class='dark'>javacard.crypto.Signature</td>
@@ -605,6 +663,8 @@
   <td class='dark_index'>c14</td>
   <td class='dark_index'>c15</td>
   <td class='dark_index'>c16</td>
+  <td class='dark_index'>c17</td>
+  <td class='dark_index'>c18</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_DES_MAC4_NOPAD</td>
@@ -624,10 +684,14 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
   <td class='light_yes'>yes</td>
+  <td class='light_no'>no</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_DES_MAC8_NOPAD</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
@@ -664,7 +728,9 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
   <td class='light_yes'>yes</td>
+  <td class='light_no'>no</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_DES_MAC8_ISO9797_M1</td>
@@ -677,6 +743,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
@@ -704,7 +772,9 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
   <td class='light_yes'>yes</td>
+  <td class='light_no'>no</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_DES_MAC8_ISO9797_M2</td>
@@ -717,6 +787,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
@@ -745,6 +817,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_DES_MAC8_PKCS5</td>
@@ -759,6 +833,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_yes'>yes</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
@@ -785,9 +861,13 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_RSA_SHA_PKCS1</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
@@ -825,6 +905,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_RSA_RIPEMD160_ISO9796</td>
@@ -839,6 +921,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_yes'>yes</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
@@ -865,12 +949,16 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_DSA_SHA</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_yes'>yes</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
@@ -905,6 +993,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_RSA_MD5_RFC2409</td>
@@ -919,6 +1009,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_yes'>yes</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
@@ -944,7 +1036,9 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_AES_MAC_128_NOPAD</td>
@@ -964,7 +1058,9 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_DES_MAC4_ISO9797_1_M2_ALG3</td>
@@ -984,7 +1080,9 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
   <td class='light_yes'>yes</td>
+  <td class='light_no'>no</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_DES_MAC8_ISO9797_1_M2_ALG3</td>
@@ -998,6 +1096,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
@@ -1024,6 +1124,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
@@ -1044,10 +1146,14 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
   <td class='light_yes'>yes</td>
+  <td class='light_no'>no</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_RSA_RIPEMD160_PKCS1_PSS</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
@@ -1085,9 +1191,13 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_HMAC_SHA_256</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
@@ -1125,9 +1235,13 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_HMAC_SHA_512</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
@@ -1165,9 +1279,13 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_HMAC_RIPEMD160</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
@@ -1205,9 +1323,13 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_RSA_RIPEMD160_ISO9796_MR</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
@@ -1244,7 +1366,9 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
 <td class='dark'>javacard.security.MessageDigest</td>
@@ -1265,9 +1389,13 @@
   <td class='dark_index'>c14</td>
   <td class='dark_index'>c15</td>
   <td class='dark_index'>c16</td>
+  <td class='dark_index'>c17</td>
+  <td class='dark_index'>c18</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_SHA</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
@@ -1305,6 +1433,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_RIPEMD160</td>
@@ -1319,6 +1449,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_yes'>yes</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
@@ -1344,10 +1476,14 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_SHA_384</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
@@ -1385,6 +1521,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
 </tr>
 <tr style='height:12.75pt'>
 <td class='dark'>javacard.security.RandomData</td>
@@ -1405,6 +1543,8 @@
   <td class='dark_index'>c14</td>
   <td class='dark_index'>c15</td>
   <td class='dark_index'>c16</td>
+  <td class='dark_index'>c17</td>
+  <td class='dark_index'>c18</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_PSEUDO_RANDOM</td>
@@ -1425,9 +1565,13 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_SECURE_RANDOM</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
@@ -1465,6 +1609,8 @@
   <td class='dark_index'>c14</td>
   <td class='dark_index'>c15</td>
   <td class='dark_index'>c16</td>
+  <td class='dark_index'>c17</td>
+  <td class='dark_index'>c18</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_DES_TRANSIENT_RESET</td>
@@ -1478,6 +1624,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_error'>-</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
@@ -1505,6 +1653,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_DES LENGTH_DES</td>
@@ -1518,6 +1668,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_error'>-</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
@@ -1545,6 +1697,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_DES LENGTH_DES3_3KEY</td>
@@ -1558,6 +1712,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_error'>-</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
@@ -1584,7 +1740,9 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_AES_TRANSIENT_DESELECT</td>
@@ -1604,7 +1762,9 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_AES LENGTH_AES_128</td>
@@ -1624,7 +1784,9 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_AES LENGTH_AES_192</td>
@@ -1644,7 +1806,9 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_AES LENGTH_AES_256</td>
@@ -1664,7 +1828,9 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_RSA_PUBLIC LENGTH_RSA_512</td>
@@ -1678,6 +1844,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_error'>-</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
@@ -1705,6 +1873,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_RSA_PUBLIC LENGTH_RSA_768</td>
@@ -1718,6 +1888,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_error'>-</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
@@ -1745,6 +1917,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_RSA_PUBLIC LENGTH_RSA_1024</td>
@@ -1758,6 +1932,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_error'>-</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
@@ -1785,6 +1961,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_RSA_PUBLIC LENGTH_RSA_1536</td>
@@ -1798,6 +1976,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_error'>-</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
@@ -1825,6 +2005,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_RSA_PUBLIC LENGTH_RSA_2048</td>
@@ -1838,6 +2020,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
   <td class='light_error'>-</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
@@ -1865,6 +2049,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_RSA_PUBLIC LENGTH_RSA_4096</td>
@@ -1878,6 +2064,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_error'>-</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
@@ -1905,6 +2093,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_RSA_PRIVATE LENGTH_RSA_736</td>
@@ -1918,6 +2108,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_error'>-</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
@@ -1945,6 +2137,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_RSA_PRIVATE LENGTH_RSA_896</td>
@@ -1958,6 +2152,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_error'>-</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
@@ -1985,6 +2181,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_RSA_PRIVATE LENGTH_RSA_1280</td>
@@ -1998,6 +2196,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_error'>-</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
@@ -2025,6 +2225,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_RSA_PRIVATE LENGTH_RSA_1984</td>
@@ -2038,6 +2240,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_error'>-</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
@@ -2065,6 +2269,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_RSA_PRIVATE LENGTH_RSA_3072</td>
@@ -2078,6 +2284,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_error'>-</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
@@ -2105,6 +2313,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_RSA_CRT_PRIVATE LENGTH_RSA_512</td>
@@ -2118,6 +2328,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_error'>-</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
@@ -2144,6 +2356,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
@@ -2158,6 +2372,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_error'>-</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
@@ -2185,6 +2401,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1024</td>
@@ -2198,6 +2416,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_error'>-</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
@@ -2225,6 +2445,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1536</td>
@@ -2238,6 +2460,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_error'>-</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
@@ -2265,6 +2489,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_RSA_CRT_PRIVATE LENGTH_RSA_2048</td>
@@ -2278,6 +2504,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
   <td class='light_error'>-</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
@@ -2305,6 +2533,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_RSA_CRT_PRIVATE LENGTH_RSA_4096</td>
@@ -2318,6 +2548,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_error'>-</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
@@ -2345,6 +2577,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_DSA_PRIVATE LENGTH_DSA_768</td>
@@ -2358,6 +2592,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_error'>-</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
@@ -2385,6 +2621,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_DSA_PUBLIC LENGTH_DSA_512</td>
@@ -2398,6 +2636,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_error'>-</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
@@ -2425,6 +2665,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_DSA_PUBLIC LENGTH_DSA_1024</td>
@@ -2438,6 +2680,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_error'>-</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
@@ -2465,6 +2709,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_131</td>
@@ -2481,6 +2727,8 @@
   <td class='light_no'>no</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
@@ -2505,6 +2753,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_193</td>
@@ -2525,6 +2775,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_EC_FP_PRIVATE LENGTH_EC_FP_112</td>
@@ -2538,6 +2790,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_error'>-</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
@@ -2564,7 +2818,9 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_EC_FP_PRIVATE LENGTH_EC_FP_160</td>
@@ -2584,7 +2840,9 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_EC_FP_PRIVATE LENGTH_EC_FP_192</td>
@@ -2604,7 +2862,9 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_KOREAN_SEED_TRANSIENT_RESET</td>
@@ -2624,7 +2884,9 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_KOREAN_SEED_TRANSIENT_DESELECT</td>
@@ -2644,7 +2906,9 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_KOREAN_SEED LENGTH_KOREAN_SEED_128</td>
@@ -2664,7 +2928,9 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_HMAC_TRANSIENT_RESET</td>
@@ -2678,6 +2944,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_error'>-</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
@@ -2705,6 +2973,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_HMAC LENGTH_HMAC_SHA_1_BLOCK_64</td>
@@ -2718,6 +2988,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_error'>-</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
@@ -2745,6 +3017,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>TYPE_HMAC LENGTH_HMAC_SHA_384_BLOCK_64</td>
@@ -2758,6 +3032,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_error'>-</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
@@ -2785,6 +3061,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
 </tr>
 <tr style='height:12.75pt'>
 <td class='dark'>javacard.security.KeyPair ALG_RSA on-card generation</td>
@@ -2805,6 +3083,8 @@
   <td class='dark_index'>c14</td>
   <td class='dark_index'>c15</td>
   <td class='dark_index'>c16</td>
+  <td class='dark_index'>c17</td>
+  <td class='dark_index'>c18</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_RSA LENGTH_RSA_512</td>
@@ -2825,6 +3105,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_RSA LENGTH_RSA_736</td>
@@ -2845,6 +3127,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_RSA LENGTH_RSA_768</td>
@@ -2865,6 +3149,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_RSA LENGTH_RSA_896</td>
@@ -2885,6 +3171,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_RSA LENGTH_RSA_1024</td>
@@ -2905,6 +3193,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_RSA LENGTH_RSA_1280</td>
@@ -2925,6 +3215,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_RSA LENGTH_RSA_1536</td>
@@ -2945,6 +3237,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_RSA LENGTH_RSA_1984</td>
@@ -2965,6 +3259,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_RSA LENGTH_RSA_2048</td>
@@ -2985,6 +3281,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_RSA LENGTH_RSA_3072</td>
@@ -2995,6 +3293,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_error'>-</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
@@ -3025,6 +3325,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
 </tr>
 <tr style='height:12.75pt'>
 <td class='dark'>javacard.security.KeyPair ALG_RSA_CRT on-card generation</td>
@@ -3045,6 +3347,8 @@
   <td class='dark_index'>c14</td>
   <td class='dark_index'>c15</td>
   <td class='dark_index'>c16</td>
+  <td class='dark_index'>c17</td>
+  <td class='dark_index'>c18</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_RSA_CRT LENGTH_RSA_512</td>
@@ -3058,6 +3362,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
@@ -3084,6 +3390,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
@@ -3098,6 +3406,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
@@ -3125,6 +3435,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_RSA_CRT LENGTH_RSA_1024</td>
@@ -3138,6 +3450,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
@@ -3165,6 +3479,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_RSA_CRT LENGTH_RSA_1536</td>
@@ -3178,6 +3494,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
@@ -3205,6 +3523,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_RSA_CRT LENGTH_RSA_2048</td>
@@ -3225,6 +3545,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_RSA_CRT LENGTH_RSA_3072</td>
@@ -3235,6 +3557,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_error'>-</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
@@ -3265,6 +3589,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
 </tr>
 <tr style='height:12.75pt'>
 <td class='dark'>javacard.security.KeyPair ALG_DSA on-card generation</td>
@@ -3285,12 +3611,16 @@
   <td class='dark_index'>c14</td>
   <td class='dark_index'>c15</td>
   <td class='dark_index'>c16</td>
+  <td class='dark_index'>c17</td>
+  <td class='dark_index'>c18</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_DSA LENGTH_DSA_512</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_yes'>yes</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
@@ -3325,12 +3655,16 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_DSA LENGTH_DSA_1024</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_yes'>yes</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
@@ -3365,6 +3699,8 @@
   <td class='dark_index'>c14</td>
   <td class='dark_index'>c15</td>
   <td class='dark_index'>c16</td>
+  <td class='dark_index'>c17</td>
+  <td class='dark_index'>c18</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_EC_F2M LENGTH_EC_F2M_113</td>
@@ -3381,6 +3717,8 @@
   <td class='light_no'>no</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
@@ -3405,6 +3743,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_EC_F2M LENGTH_EC_F2M_163</td>
@@ -3421,6 +3761,8 @@
   <td class='light_no'>no</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
@@ -3445,6 +3787,8 @@
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
 </tr>
 <tr style='height:12.75pt'>
 <td class='dark'>javacard.security.KeyPair ALG_EC_FP on-card generation</td>
@@ -3465,9 +3809,13 @@
   <td class='dark_index'>c14</td>
   <td class='dark_index'>c15</td>
   <td class='dark_index'>c16</td>
+  <td class='dark_index'>c17</td>
+  <td class='dark_index'>c18</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_EC_FP LENGTH_EC_FP_112</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
@@ -3504,7 +3852,9 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_EC_FP LENGTH_EC_FP_160</td>
@@ -3524,7 +3874,9 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_EC_FP LENGTH_EC_FP_192</td>
@@ -3544,7 +3896,9 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
 <td class='dark'>javacard.security.KeyAgreement</td>
@@ -3565,6 +3919,8 @@
   <td class='dark_index'>c14</td>
   <td class='dark_index'>c15</td>
   <td class='dark_index'>c16</td>
+  <td class='dark_index'>c17</td>
+  <td class='dark_index'>c18</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_EC_SVDP_DH</td>
@@ -3584,7 +3940,9 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_EC_SVDP_DHC</td>
@@ -3604,6 +3962,8 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
+  <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
 <tr style='height:12.75pt'>
@@ -3625,6 +3985,8 @@
   <td class='dark_index'>c14</td>
   <td class='dark_index'>c15</td>
   <td class='dark_index'>c16</td>
+  <td class='dark_index'>c17</td>
+  <td class='dark_index'>c18</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_ISO3309_CRC16</td>
@@ -3644,7 +4006,9 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>ALG_ISO3309_CRC32</td>
@@ -3653,6 +4017,8 @@
   <td class='light_no'>no</td>
   <td class='light_info'>?</td>
   <td class='light_info'>?</td>
+  <td class='light_no'>no</td>
+  <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
@@ -3685,6 +4051,8 @@
   <td class='dark_index'>c14</td>
   <td class='dark_index'>c15</td>
   <td class='dark_index'>c16</td>
+  <td class='dark_index'>c17</td>
+  <td class='dark_index'>c18</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>Allocate RSA 1024 objects</td>
@@ -3704,7 +4072,9 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_error'>-</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>Set random modulus</td>
@@ -3724,7 +4094,9 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_error'>-</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>Set random public exponent</td>
@@ -3744,7 +4116,9 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_error'>-</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>Initialize cipher with public key with random exponent</td>
@@ -3764,7 +4138,9 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_error'>-</td>
+  <td class='light_yes'>yes</td>
 </tr>
 <tr style='height:12.75pt'>
   <td class='light'>Use random public exponent</td>
@@ -3784,7 +4160,9 @@
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
+  <td class='light_yes'>yes</td>
   <td class='light_error'>-</td>
+  <td class='light_yes'>yes</td>
 </tr>
 </table>
 

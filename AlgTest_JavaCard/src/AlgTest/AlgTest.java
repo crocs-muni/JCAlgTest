@@ -1,3 +1,5 @@
+xxx pridat zmeny Class javacard.security.KeyBuilder (alokace vsech delek klicu pro TYPE_RSA_PRIVATE_TRANSIENT_RESET a LENGTH_EC_FP_224...)
+xxx pridat kompilaci pod 3.0.1
 /*
     Copyright (c) 2004-2013  Petr Svenda <petr@svenda.com>
 
@@ -49,7 +51,15 @@ import javacardx.crypto.*;
 
 public class AlgTest extends javacard.framework.Applet 
 {
-    // NOTE: when incrementing version, don't forget to update GetVersion() method
+    // NOTE: when incrementing version, don't forget to update ALGTEST_JAVACARD_VERSION_CURRENT value
+    /**
+     * Version 1.2 (3.11.2013)
+     * + All relevant constants from JC2.2.2, JC3.0.1 & JC3.0.4 added
+     * + Refactoring of exception capture (all try with two catch)
+     * + Refactoring of version reporting
+     * + fixed incorrect test during TYPE_RSA_PRIVATE_KEY of LENGTH_RSA_3072 (mistake) of instead of LENGTH_RSA_4096 (correct)
+     */
+    final static byte ALGTEST_JAVACARD_VERSION_1_2[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x32};
     /**
      * Version 1.1 (28.6.2013)
      * + information about version added, command for version retrieval
@@ -57,11 +67,13 @@ public class AlgTest extends javacard.framework.Applet
     final static byte ALGTEST_JAVACARD_VERSION_1_1[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x31};
     /**
      * Version 1.0 (2004-2013)
-     * + initial version for versioning enabled (all features implemented in 2004-2013)
+     * + initial version for version-tracking enabled (all features implemented in 2004-2013)
      */
     final static byte ALGTEST_JAVACARD_VERSION_1_0[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x30};
 
+    final static byte ALGTEST_JAVACARD_VERSION_CURRENT[] = ALGTEST_JAVACARD_VERSION_1_2;
 
+    
     final static byte CLA_CARD_ALGTEST               = (byte) 0xB0;
     final static byte INS_CARD_GETVERSION            = (byte) 0x60;
     final static byte INS_CARD_TESTSUPPORTEDMODES    = (byte) 0x70;
@@ -111,9 +123,26 @@ public class AlgTest extends javacard.framework.Applet
     public static final byte ALG_HMAC_RIPEMD160 = 29;
     public static final byte ALG_RSA_SHA_ISO9796_MR = 30;
     public static final byte ALG_RSA_RIPEMD160_ISO9796_MR = 31;
-    public static final byte ALG_SEED_MAC_NOPAD = 32;
-
-
+    public static final byte ALG_KOREAN_SEED_MAC_NOPAD = 32;
+    // JC3.0.1
+    public static final byte ALG_ECDSA_SHA_256 = 33;  
+    public static final byte ALG_ECDSA_SHA_384 = 34;  
+    public static final byte ALG_AES_MAC_192_NOPAD = 35;  
+    public static final byte ALG_AES_MAC_256_NOPAD = 36;  
+    public static final byte ALG_ECDSA_SHA_224 = 37;  
+    public static final byte ALG_ECDSA_SHA_512 = 38;  
+    public static final byte ALG_RSA_SHA_224_PKCS1 = 39;  
+    public static final byte ALG_RSA_SHA_256_PKCS1 = 40;  
+    public static final byte ALG_RSA_SHA_384_PKCS1 = 41;  
+    public static final byte ALG_RSA_SHA_512_PKCS1 = 42;  
+    public static final byte ALG_RSA_SHA_224_PKCS1_PSS = 43;  
+    public static final byte ALG_RSA_SHA_256_PKCS1_PSS = 44;  
+    public static final byte ALG_RSA_SHA_384_PKCS1_PSS = 45;  
+    public static final byte ALG_RSA_SHA_512_PKCS1_PSS = 46;  
+    // JC3.0.4
+    public static final byte ALG_DES_MAC4_ISO9797_1_M1_ALG3 = 47;   
+    public static final byte ALG_DES_MAC8_ISO9797_1_M1_ALG3 = 48;
+    
     //
     //Class javacardx.crypto.Cipher
     //
@@ -135,6 +164,17 @@ public class AlgTest extends javacard.framework.Applet
     // JC2.2.2
     public static final byte ALG_KOREAN_SEED_ECB_NOPAD = 16;
     public static final byte ALG_KOREAN_SEED_CBC_NOPAD = 17;
+    // JC3.0.1
+    public static final byte ALG_AES_BLOCK_192_CBC_NOPAD = 18;  
+    public static final byte ALG_AES_BLOCK_192_ECB_NOPAD = 19;  
+    public static final byte ALG_AES_BLOCK_256_CBC_NOPAD = 20;  
+    public static final byte ALG_AES_BLOCK_256_ECB_NOPAD = 21;  
+    public static final byte ALG_AES_CBC_ISO9797_M1 = 22;  
+    public static final byte ALG_AES_CBC_ISO9797_M2 = 23;  
+    public static final byte ALG_AES_CBC_PKCS5 = 24;  
+    public static final byte ALG_AES_ECB_ISO9797_M1 = 25;  
+    public static final byte ALG_AES_ECB_ISO9797_M2 = 26;  
+    public static final byte ALG_AES_ECB_PKCS5 = 27;      
 
 
     //
@@ -142,7 +182,12 @@ public class AlgTest extends javacard.framework.Applet
     //
     public static final byte ALG_EC_SVDP_DH = 1;
     public static final byte ALG_EC_SVDP_DHC = 2;
-
+    // JC3.0.1
+    public static final byte ALG_EC_SVDP_DH_KDF = 1;  
+    public static final byte ALG_EC_SVDP_DH_PLAIN = 3;     
+    public static final byte ALG_EC_SVDP_DHC_KDF = 2;  
+    public static final byte ALG_EC_SVDP_DHC_PLAIN = 4;  
+    
     //
     //Class javacard.security.KeyBuilder
     //
@@ -168,7 +213,19 @@ public class AlgTest extends javacard.framework.Applet
     public static final byte TYPE_HMAC_TRANSIENT_RESET = 19;
     public static final byte TYPE_HMAC_TRANSIENT_DESELECT = 20;
     public static final byte TYPE_HMAC = 21;
+    // JC3.0.1
+    public static final byte TYPE_RSA_PRIVATE_TRANSIENT_RESET = 22;  
+    public static final byte TYPE_RSA_PRIVATE_TRANSIENT_DESELECT = 23;  
+    public static final byte TYPE_RSA_CRT_PRIVATE_TRANSIENT_RESET = 24;  
+    public static final byte TYPE_RSA_CRT_PRIVATE_TRANSIENT_DESELECT = 25;  
+    public static final byte TYPE_DSA_PRIVATE_TRANSIENT_RESET = 26;
+    public static final byte TYPE_DSA_PRIVATE_TRANSIENT_DESELECT = 27;  
+    public static final byte TYPE_EC_F2M_PRIVATE_TRANSIENT_RESET = 28;  
+    public static final byte TYPE_EC_F2M_PRIVATE_TRANSIENT_DESELECT = 29;  
+    public static final byte TYPE_EC_FP_PRIVATE_TRANSIENT_RESET = 30;  
+    public static final byte TYPE_EC_FP_PRIVATE_TRANSIENT_DESELECT = 31;  
 
+    
     public static final short LENGTH_DES = 64;
     public static final short LENGTH_DES3_2KEY = 128;
     public static final short LENGTH_DES3_3KEY = 192;
@@ -181,8 +238,6 @@ public class AlgTest extends javacard.framework.Applet
     public static final short LENGTH_RSA_1536 = 1536;
     public static final short LENGTH_RSA_1984 = 1984;
     public static final short LENGTH_RSA_2048 = 2048;
-    public static final short LENGTH_RSA_3072 = 3072;
-    public static final short LENGTH_RSA_4096 = 4096;
     public static final short LENGTH_DSA_512 = 512;
     public static final short LENGTH_DSA_768 = 768;
     public static final short LENGTH_DSA_1024 = 1024;
@@ -203,7 +258,15 @@ public class AlgTest extends javacard.framework.Applet
     public static final short LENGTH_HMAC_SHA_256_BLOCK_64= 64;
     public static final short LENGTH_HMAC_SHA_384_BLOCK_64= 128;
     public static final short LENGTH_HMAC_SHA_512_BLOCK_64= 128;
-
+    // JC3.0.1
+    public static final short LENGTH_EC_FP_224 = 224;  
+    public static final short LENGTH_EC_FP_256 = 256;  
+    public static final short LENGTH_EC_FP_384 = 384;  
+    public static final short LENGTH_RSA_3072 = 3072;
+    public static final short LENGTH_RSA_4096 = 4096;
+    //JC3.0.4
+    public static final short LENGTH_EC_FP_521 = 521;
+    
     //
     //Class javacard.security.KeyPair
     //
@@ -221,7 +284,18 @@ public class AlgTest extends javacard.framework.Applet
     public static final byte ALG_SHA_256 = 4;
     public static final byte ALG_SHA_384 = 5;
     public static final byte ALG_SHA_512 = 6;
-
+    // JC3.0.1
+    public static final byte ALG_SHA_224 = 7;
+    
+    // JC2.2.2
+    public static final byte LENGTH_MD5 = 16; 
+    public static final byte LENGTH_RIPEMD160 = 20;  
+    public static final byte LENGTH_SHA = 20;  
+    public static final byte LENGTH_SHA_256 = 32;  
+    public static final byte LENGTH_SHA_384 = 48;  
+    public static final byte LENGTH_SHA_512 = 64;  
+    // JC3.0.4
+    public static final byte LENGTH_SHA_224 = 28;  
 
     //Class javacard.security.RandomData
     public static final byte ALG_PSEUDO_RANDOM = 1;
@@ -292,10 +366,8 @@ public class AlgTest extends javacard.framework.Applet
         } else {
        }
 
-        if (isOP2)
-          register(buffer, (short)(offset + 1), (byte)buffer[offset]);
-        else
-          register();
+        if (isOP2) { register(buffer, (short)(offset + 1), (byte)buffer[offset]); }
+        else { register(); }
     }
 
     /**
@@ -329,8 +401,6 @@ public class AlgTest extends javacard.framework.Applet
     {
 
         // <PUT YOUR DESELECTION ACTION HERE>
-
-        return;
     }
 
     /**
@@ -345,8 +415,7 @@ public class AlgTest extends javacard.framework.Applet
         byte[] apduBuffer = apdu.getBuffer();
 
         // ignore the applet select command dispached to the process
-        if (selectingApplet())
-            return;
+        if (selectingApplet()) { return; }
 
         if (apduBuffer[ISO7816.OFFSET_CLA] == CLA_CARD_ALGTEST) {
             switch ( apduBuffer[ISO7816.OFFSET_INS]) {
@@ -368,11 +437,10 @@ public class AlgTest extends javacard.framework.Applet
 
     void GetVersion(APDU apdu) {
         byte[]    apdubuf = apdu.getBuffer();
-        //apdu.setIncomingAndReceive();
 
-        Util.arrayCopyNonAtomic(ALGTEST_JAVACARD_VERSION_1_1, (short) 0, apdubuf, (short) 0, (short) ALGTEST_JAVACARD_VERSION_1_1.length);
+        Util.arrayCopyNonAtomic(ALGTEST_JAVACARD_VERSION_CURRENT, (short) 0, apdubuf, (short) 0, (short) ALGTEST_JAVACARD_VERSION_CURRENT.length);
 
-        apdu.setOutgoingAndSend((byte) 0, (short) ALGTEST_JAVACARD_VERSION_1_1.length);
+        apdu.setOutgoingAndSend((byte) 0, (short) ALGTEST_JAVACARD_VERSION_CURRENT.length);
     }    
 
    void TestSupportedModes(APDU apdu) {
@@ -456,7 +524,48 @@ public class AlgTest extends javacard.framework.Applet
          try {offset++;m_encryptCipher = Cipher.getInstance(ALG_KOREAN_SEED_CBC_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
          catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;}
          catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
+         // JC3.0.1
+         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_AES_BLOCK_192_CBC_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
+         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;}
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
+         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_AES_BLOCK_192_ECB_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
+         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;}
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_AES_BLOCK_256_CBC_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
+         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;}
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_AES_BLOCK_256_ECB_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
+         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;}
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_AES_CBC_ISO9797_M1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
+         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;}
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_AES_CBC_ISO9797_M2, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
+         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;}
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_AES_CBC_PKCS5, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
+         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;}
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_AES_ECB_ISO9797_M1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
+         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;}
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_AES_ECB_ISO9797_M2, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
+         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;}
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_AES_ECB_PKCS5, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
+         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;}
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
        }
 
        if (apdubuf[ISO7816.OFFSET_P1] == 0 || apdubuf[ISO7816.OFFSET_P1] == (byte) 0x12) {
@@ -465,134 +574,199 @@ public class AlgTest extends javacard.framework.Applet
 
          //Class javacard.security.Signature
          try {offset++;m_sign = Signature.getInstance(ALG_DES_MAC4_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
          try {offset++;m_sign = Signature.getInstance(ALG_DES_MAC8_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_sign = Signature.getInstance(ALG_DES_MAC4_ISO9797_M1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_sign = Signature.getInstance(ALG_DES_MAC8_ISO9797_M1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_sign = Signature.getInstance(ALG_DES_MAC4_ISO9797_M2, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_sign = Signature.getInstance(ALG_DES_MAC8_ISO9797_M2, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_sign = Signature.getInstance(ALG_DES_MAC4_PKCS5, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_sign = Signature.getInstance(ALG_DES_MAC8_PKCS5, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_ISO9796, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_PKCS1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_sign = Signature.getInstance(ALG_RSA_MD5_PKCS1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_sign = Signature.getInstance(ALG_RSA_RIPEMD160_ISO9796, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_sign = Signature.getInstance(ALG_RSA_RIPEMD160_PKCS1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_sign = Signature.getInstance(ALG_DSA_SHA, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_RFC2409, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_sign = Signature.getInstance(ALG_RSA_MD5_RFC2409, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_sign = Signature.getInstance(ALG_ECDSA_SHA, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_sign = Signature.getInstance(ALG_AES_MAC_128_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_sign = Signature.getInstance(ALG_DES_MAC4_ISO9797_1_M2_ALG3, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_sign = Signature.getInstance(ALG_DES_MAC8_ISO9797_1_M2_ALG3, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_PKCS1_PSS, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_sign = Signature.getInstance(ALG_RSA_MD5_PKCS1_PSS, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_sign = Signature.getInstance(ALG_RSA_RIPEMD160_PKCS1_PSS, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          // JC2.2.2
          try {offset++;m_sign = Signature.getInstance(ALG_HMAC_SHA1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_sign = Signature.getInstance(ALG_HMAC_SHA_256, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_sign = Signature.getInstance(ALG_HMAC_SHA_384, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_sign = Signature.getInstance(ALG_HMAC_SHA_512, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_sign = Signature.getInstance(ALG_HMAC_MD5, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_sign = Signature.getInstance(ALG_HMAC_RIPEMD160, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_ISO9796_MR, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_sign = Signature.getInstance(ALG_RSA_RIPEMD160_ISO9796_MR, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
-         try {offset++;m_sign = Signature.getInstance(ALG_SEED_MAC_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
+         try {offset++;m_sign = Signature.getInstance(ALG_KOREAN_SEED_MAC_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
+         // JC3.0.1
+         try {offset++;m_sign = Signature.getInstance(ALG_ECDSA_SHA_256, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
+         try {offset++;m_sign = Signature.getInstance(ALG_ECDSA_SHA_384, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
+         try {offset++;m_sign = Signature.getInstance(ALG_AES_MAC_192_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
+         try {offset++;m_sign = Signature.getInstance(ALG_AES_MAC_256_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
+         try {offset++;m_sign = Signature.getInstance(ALG_ECDSA_SHA_224, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
+         try {offset++;m_sign = Signature.getInstance(ALG_ECDSA_SHA_512, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
+         try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_224_PKCS1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
+         try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_256_PKCS1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
+         try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_384_PKCS1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
+         try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_512_PKCS1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
+         try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_224_PKCS1_PSS, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
+         try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_256_PKCS1_PSS, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
+         try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_384_PKCS1_PSS, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
+         try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_512_PKCS1_PSS, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
+         try {offset++;m_sign = Signature.getInstance(ALG_DES_MAC4_ISO9797_1_M1_ALG3, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+                 
+         try {offset++;m_sign = Signature.getInstance(ALG_DES_MAC8_ISO9797_1_M1_ALG3, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+               
        }
 
        //       Class javacard.security.MessageDigest
@@ -601,30 +775,35 @@ public class AlgTest extends javacard.framework.Applet
          apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0x15;
 
          try {offset++;m_digest = MessageDigest.getInstance(ALG_SHA, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_digest = MessageDigest.getInstance(ALG_MD5, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_digest = MessageDigest.getInstance(ALG_RIPEMD160, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          //JC2.2.2
          try {offset++;m_digest = MessageDigest.getInstance(ALG_SHA_256, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_digest = MessageDigest.getInstance(ALG_SHA_384, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_digest = MessageDigest.getInstance(ALG_SHA_512, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
+         //JC3.0.1
+         try {offset++;m_digest = MessageDigest.getInstance(ALG_SHA_224, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
        }
 
        //       Class javacard.security.RandomData
@@ -633,13 +812,13 @@ public class AlgTest extends javacard.framework.Applet
          apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0x16;
 
          try {offset++;m_random = RandomData.getInstance(ALG_PSEUDO_RANDOM); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_random = RandomData.getInstance(ALG_SECURE_RANDOM); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
        }
 /**/
        //       Class javacard.security.KeyBuilder
@@ -653,314 +832,313 @@ public class AlgTest extends javacard.framework.Applet
 
 
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_DES_TRANSIENT_RESET, LENGTH_DES, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_DES_TRANSIENT_DESELECT, LENGTH_DES, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_DES, LENGTH_DES, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_DES, LENGTH_DES3_2KEY, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_DES, LENGTH_DES3_3KEY, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
 
          offset++;
          apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xB1;
 
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_AES_TRANSIENT_RESET, LENGTH_AES_128, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_AES_TRANSIENT_DESELECT, LENGTH_AES_128, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_AES, LENGTH_AES_128, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_AES, LENGTH_AES_192, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_AES, LENGTH_AES_256, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
 /**/
 
          offset++;
          apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xB2;
 
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PUBLIC, LENGTH_RSA_512, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PUBLIC, LENGTH_RSA_736, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PUBLIC, LENGTH_RSA_768, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PUBLIC, LENGTH_RSA_896, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PUBLIC, LENGTH_RSA_1024, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PUBLIC, LENGTH_RSA_1280, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PUBLIC, LENGTH_RSA_1536, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PUBLIC, LENGTH_RSA_1984, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PUBLIC, LENGTH_RSA_2048, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PUBLIC, LENGTH_RSA_3072, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PUBLIC, LENGTH_RSA_4096, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
 /**/
 
          offset++;
          apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xB3;
 
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE, LENGTH_RSA_512, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE, LENGTH_RSA_736, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE, LENGTH_RSA_768, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE, LENGTH_RSA_896, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE, LENGTH_RSA_1024, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE, LENGTH_RSA_1280, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE, LENGTH_RSA_1536, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE, LENGTH_RSA_1984, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE, LENGTH_RSA_2048, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE, LENGTH_RSA_3072, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE, LENGTH_RSA_3072, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
+         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE, LENGTH_RSA_4096, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
 
          offset++;
          apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xB4;
 
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE, LENGTH_RSA_512, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE, LENGTH_RSA_736, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE, LENGTH_RSA_768, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE, LENGTH_RSA_896, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE, LENGTH_RSA_1024, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
-
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE, LENGTH_RSA_1280, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE, LENGTH_RSA_1536, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE, LENGTH_RSA_1984, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE, LENGTH_RSA_2048, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE, LENGTH_RSA_3072, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE, LENGTH_RSA_4096, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
 /**/
 
          offset++;
          apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xB5;
 
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_DSA_PRIVATE, LENGTH_DSA_512, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_DSA_PRIVATE, LENGTH_DSA_768, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_DSA_PRIVATE, LENGTH_DSA_1024, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
 
          offset++;
          apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xB6;
 
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_DSA_PUBLIC, LENGTH_DSA_512, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_DSA_PUBLIC, LENGTH_DSA_768, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_DSA_PUBLIC, LENGTH_DSA_1024, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
-
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
+         
          offset++;
          apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xB7;
 
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_F2M_PRIVATE, LENGTH_EC_F2M_113, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_F2M_PRIVATE, LENGTH_EC_F2M_131, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_F2M_PRIVATE, LENGTH_EC_F2M_163, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_F2M_PRIVATE, LENGTH_EC_F2M_193, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
 
          offset++;
          apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xB8;
 
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_FP_PRIVATE, LENGTH_EC_FP_112, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_FP_PRIVATE, LENGTH_EC_FP_128, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_FP_PRIVATE, LENGTH_EC_FP_160, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_FP_PRIVATE, LENGTH_EC_FP_192, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
 
          //JC2.2.2
          offset++;
          apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xB9;
 
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_KOREAN_SEED_TRANSIENT_RESET, LENGTH_KOREAN_SEED_128, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_KOREAN_SEED_TRANSIENT_DESELECT, LENGTH_KOREAN_SEED_128, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_KOREAN_SEED, LENGTH_KOREAN_SEED_128, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
 
          offset++;
          apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xBA;
 
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_HMAC_TRANSIENT_RESET, LENGTH_HMAC_SHA_1_BLOCK_64, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_HMAC_TRANSIENT_DESELECT, LENGTH_HMAC_SHA_1_BLOCK_64, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_HMAC, LENGTH_HMAC_SHA_1_BLOCK_64, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_HMAC, LENGTH_HMAC_SHA_256_BLOCK_64, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_HMAC, LENGTH_HMAC_SHA_384_BLOCK_64, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_key = KeyBuilder.buildKey(TYPE_HMAC, LENGTH_HMAC_SHA_512_BLOCK_64, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
 /**/
        }
 
@@ -975,117 +1153,118 @@ public class AlgTest extends javacard.framework.Applet
            try {
              offset++;m_keyPair = new KeyPair(ALG_RSA, LENGTH_RSA_512);
              m_keyPair.genKeyPair();
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-           catch (CryptoException e) {
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
+             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;
            }
+           catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+           catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          }
-         else offset++;
+         else { offset++; }
          if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x02) {
            try {
              offset++;m_keyPair = new KeyPair(ALG_RSA, LENGTH_RSA_736);
              m_keyPair.genKeyPair();
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-           catch (CryptoException e) {
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
+             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;
            }
+           catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+           catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
          }
-         else offset++;
+         else { offset++; }
 
          if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x03) {
            try {
              offset++;m_keyPair = new KeyPair(ALG_RSA, LENGTH_RSA_768);
              m_keyPair.genKeyPair();
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-           catch (CryptoException e) {
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
+             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;
            }
+           catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+           catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
          }
-         else offset++;
+         else { offset++; }
 
          if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x04) {
            try {
              offset++;m_keyPair = new KeyPair(ALG_RSA, LENGTH_RSA_896);
              m_keyPair.genKeyPair();
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-           catch (CryptoException e) {
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
+             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;
            }
+           catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+           catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
          }
-         else offset++;
+         else { offset++; }
 
          if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x05) {
            try {
              offset++;m_keyPair = new KeyPair(ALG_RSA, LENGTH_RSA_1024);
              m_keyPair.genKeyPair();
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-           catch (CryptoException e) {
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
+             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;
            }
+           catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+           catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
          }
-         else offset++;
+         else { offset++; }
 
          if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x06) {
            try {
              offset++;m_keyPair = new KeyPair(ALG_RSA, LENGTH_RSA_1280);
              m_keyPair.genKeyPair();
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-           catch (CryptoException e) {
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
+             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;
            }
+           catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+           catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
          }
-         else offset++;
+         else { offset++; }
 
          if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x07) {
            try {
              offset++;m_keyPair = new KeyPair(ALG_RSA, LENGTH_RSA_1536);
              m_keyPair.genKeyPair();
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-           catch (CryptoException e) {
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
+             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;
            }
+           catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+           catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
          }
-         else offset++;
+         else { offset++; }
          if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x08) {
            try {
              offset++;m_keyPair = new KeyPair(ALG_RSA, LENGTH_RSA_1984);
              m_keyPair.genKeyPair();
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-           catch (CryptoException e) {
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
+             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;
            }
+           catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+           catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
          }
-         else offset++;
+         else { offset++; }
          if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x09) {
            try {
              offset++;m_keyPair = new KeyPair(ALG_RSA, LENGTH_RSA_2048);
              m_keyPair.genKeyPair();
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-           catch (CryptoException e) {
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
+             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;
            }
+           catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+           catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
          }
-         else offset++;
+         else { offset++; }
          if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x0A) {
            try {
              offset++;m_keyPair = new KeyPair(ALG_RSA, LENGTH_RSA_3072);
              m_keyPair.genKeyPair();
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-           catch (CryptoException e) {
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
+             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;
            }
+           catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+           catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
          }
-         else offset++;
+         else { offset++; }
          if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x0B) {
            try {
              offset++;m_keyPair = new KeyPair(ALG_RSA, LENGTH_RSA_4096);
              m_keyPair.genKeyPair();
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-           catch (CryptoException e) {
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
+             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;
            }
+           catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+           catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
          }
-         else offset++;
+         else { offset++; }
 
        }
 
@@ -1099,119 +1278,119 @@ public class AlgTest extends javacard.framework.Applet
            try {
              offset++;m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_512);
              m_keyPair.genKeyPair();
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-           catch (CryptoException e) {
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
+             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;
            }
+           catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+           catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
          }
-         else offset++;
+         else { offset++; }
 
          if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x02) {
            try {
              offset++;m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_736);
              m_keyPair.genKeyPair();
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-           catch (CryptoException e) {
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
+             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;
            }
+           catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+           catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
          }
-         else offset++;
+         else { offset++; }
 
          if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x03) {
            try {
              offset++;m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_768);
              m_keyPair.genKeyPair();
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-           catch (CryptoException e) {
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
+             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;
            }
+           catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+           catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
          }
-         else offset++;
+         else { offset++; }
 
          if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x04) {
            try {
              offset++;m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_896);
              m_keyPair.genKeyPair();
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-           catch (CryptoException e) {
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
+             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;
            }
+           catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+           catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
          }
-         else offset++;
+         else { offset++; }
 
          if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x05) {
            try {
              offset++;m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_1024);
              m_keyPair.genKeyPair();
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-           catch (CryptoException e) {
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
+             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;
            }
+           catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+           catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
          }
-         else offset++;
+         else { offset++; }
          if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x06) {
            try {
              offset++;m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_1280);
              m_keyPair.genKeyPair();
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-           catch (CryptoException e) {
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
+             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;
            }
+           catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+           catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
          }
-         else offset++;
+         else { offset++; }
          if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x07) {
            try {
              offset++;m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_1536);
              m_keyPair.genKeyPair();
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-           catch (CryptoException e) {
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
+             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;
            }
+           catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+           catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
          }
-         else offset++;
+         else { offset++; }
          if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x08) {
            try {
              offset++;m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_1984);
              m_keyPair.genKeyPair();
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-           catch (CryptoException e) {
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
+             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;
            }
+           catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+           catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
          }
-         else offset++;
+         else { offset++; }
 
          if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x09) {
            try {
              offset++;m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_2048);
              m_keyPair.genKeyPair();
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-           catch (CryptoException e) {
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
+             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;
            }
+           catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+           catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
          }
-         else offset++;
+         else { offset++; }
 
          if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x0A) {
            try {
              offset++;m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_3072);
              m_keyPair.genKeyPair();
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-           catch (CryptoException e) {
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
+             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;
            }
+           catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+           catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
          }
-         else offset++;
+         else { offset++; }
 
          if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x0B) {
            try {
              offset++;m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_4096);
              m_keyPair.genKeyPair();
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-           catch (CryptoException e) {
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
+             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;
            }
+           catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+           catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
          }
-         else offset++;
+         else { offset++; }
        }
 
        //       Class javacard.security.KeyPair DSA
@@ -1226,33 +1405,30 @@ public class AlgTest extends javacard.framework.Applet
              m_keyPair.genKeyPair();
              apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;
            }
-           catch (CryptoException e) {
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-           }
+           catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+           catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
          }
-         else offset++;
+         else { offset++; }
          if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x02) {
-         try {
-           offset++;m_keyPair = new KeyPair(ALG_DSA, LENGTH_DSA_768);
-           m_keyPair.genKeyPair();
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;
+            try {
+              offset++;m_keyPair = new KeyPair(ALG_DSA, LENGTH_DSA_768);
+              m_keyPair.genKeyPair();
+              apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;
+           }
+           catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+           catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
          }
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
-         }
-         else offset++;
+         else { offset++; }
          if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x03) {
            try {
              offset++;m_keyPair = new KeyPair(ALG_DSA, LENGTH_DSA_1024);
              m_keyPair.genKeyPair();
              apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;
            }
-           catch (CryptoException e) {
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-           }
+           catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+           catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
          }
-         else offset++;
+         else { offset++; }
        }
        //       Class javacard.security.KeyPair EC_F2M
        if (apdubuf[ISO7816.OFFSET_P1] == 0 || apdubuf[ISO7816.OFFSET_P1] == (byte) 0x1B) {
@@ -1266,44 +1442,40 @@ public class AlgTest extends javacard.framework.Applet
              m_keyPair.genKeyPair();
              apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;
            }
-           catch (CryptoException e) {
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-           }
+           catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+           catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
          }
-         else offset++;
+         else { offset++; }
          if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x02) {
            try {
              offset++;m_keyPair = new KeyPair(ALG_EC_F2M, LENGTH_EC_F2M_131);
              m_keyPair.genKeyPair();
              apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;
            }
-           catch (CryptoException e) {
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-           }
+           catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+           catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
          }
-         else offset++;
+         else { offset++; }
          if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x03) {
            try {
              offset++;m_keyPair = new KeyPair(ALG_EC_F2M, LENGTH_EC_F2M_163);
              m_keyPair.genKeyPair();
              apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;
            }
-           catch (CryptoException e) {
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-           }
+           catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+           catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
          }
-         else offset++;
+         else { offset++; }
          if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x04) {
            try {
              offset++;m_keyPair = new KeyPair(ALG_EC_F2M, LENGTH_EC_F2M_193);
              m_keyPair.genKeyPair();
              apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;
            }
-           catch (CryptoException e) {
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-           }
+           catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+           catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
          }
-         else offset++;
+         else { offset++; }
        }
 
        //       Class javacard.security.KeyPair EC_FP
@@ -1318,44 +1490,40 @@ public class AlgTest extends javacard.framework.Applet
              m_keyPair.genKeyPair();
              apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;
            }
-           catch (CryptoException e) {
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-           }
+           catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+           catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
          }
-         else offset++;
+         else { offset++; }
          if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x02) {
            try {
              offset++;m_keyPair = new KeyPair(ALG_EC_FP, LENGTH_EC_FP_128);
              m_keyPair.genKeyPair();
              apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;
            }
-           catch (CryptoException e) {
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-           }
+           catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+           catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
          }
-         else offset++;
+         else { offset++; }
          if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x03) {
            try {
              offset++;m_keyPair = new KeyPair(ALG_EC_FP, LENGTH_EC_FP_160);
              m_keyPair.genKeyPair();
              apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;
            }
-           catch (CryptoException e) {
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-           }
+           catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+           catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
          }
-         else offset++;
+         else { offset++; }
          if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x04) {
            try {
              offset++;m_keyPair = new KeyPair(ALG_EC_FP, LENGTH_EC_FP_192);
              m_keyPair.genKeyPair();
              apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;
            }
-           catch (CryptoException e) {
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-           }
+           catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+           catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
          }
-         else offset++;
+         else { offset++; }
        }
 /**/
 
@@ -1365,13 +1533,29 @@ public class AlgTest extends javacard.framework.Applet
          apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0x13;
 
          try {offset++;m_object = KeyAgreement.getInstance(ALG_EC_SVDP_DH, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;  }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
          try {offset++;m_object = KeyAgreement.getInstance(ALG_EC_SVDP_DHC, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;}
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+         // JC3.0.1
+         try {offset++;m_object = KeyAgreement.getInstance(ALG_EC_SVDP_DH_KDF, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+         try {offset++;m_object = KeyAgreement.getInstance(ALG_EC_SVDP_DH_PLAIN, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+         try {offset++;m_object = KeyAgreement.getInstance(ALG_EC_SVDP_DHC_KDF, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+         try {offset++;m_object = KeyAgreement.getInstance(ALG_EC_SVDP_DHC_PLAIN, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
        }
 
        //       Class javacard.security.Checksum
@@ -1379,13 +1563,12 @@ public class AlgTest extends javacard.framework.Applet
          offset++;
          apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0x17;
          try {offset++;m_object = Checksum.getInstance(ALG_ISO3309_CRC16, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+         
          try {offset++;m_object = Checksum.getInstance(ALG_ISO3309_CRC32, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = 1;}
-         catch (CryptoException e) {
-           apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;
-         }
+         catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2; }
+         catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
        }
 /**/
        // ENDING 0xFF
@@ -1405,7 +1588,7 @@ public class AlgTest extends javacard.framework.Applet
        if (apdubuf[ISO7816.OFFSET_P1] == 0x00) {
            if (m_ramArray == null) {
              while (true) {
-               if (toAllocateRAM < 20) break;
+               if (toAllocateRAM < 20) { break; }
                try {
                  m_ramArray = JCSystem.makeTransientByteArray(toAllocateRAM, JCSystem.CLEAR_ON_DESELECT);
                  // ALLOCATION WAS SUCESSFULL
@@ -1431,16 +1614,16 @@ public class AlgTest extends javacard.framework.Applet
          short     toAllocateEEPROM = (short) 15000;    // at maximum 15KB allocated into single array 
          if (m_eepromArray1 == null) {
            while (true) {
-             if (toAllocateEEPROM < 100) break; // We will stop when less then 100 remain to be allocated
+             if (toAllocateEEPROM < 100) { break; } // We will stop when less then 100 remain to be allocated
              try {
-               if (m_eepromArray1 == null) m_eepromArray1 = new byte[toAllocateEEPROM];
-               if (m_eepromArray2 == null) m_eepromArray2 = new byte[toAllocateEEPROM];
-               if (m_eepromArray3 == null) m_eepromArray3 = new byte[toAllocateEEPROM];
-               if (m_eepromArray4 == null) m_eepromArray4 = new byte[toAllocateEEPROM];
-               if (m_eepromArray5 == null) m_eepromArray5 = new byte[toAllocateEEPROM];
-               if (m_eepromArray6 == null) m_eepromArray6 = new byte[toAllocateEEPROM];
-               if (m_eepromArray7 == null) m_eepromArray7 = new byte[toAllocateEEPROM];
-               if (m_eepromArray8 == null) m_eepromArray8 = new byte[toAllocateEEPROM];
+               if (m_eepromArray1 == null) { m_eepromArray1 = new byte[toAllocateEEPROM]; }
+               if (m_eepromArray2 == null) { m_eepromArray2 = new byte[toAllocateEEPROM]; }
+               if (m_eepromArray3 == null) { m_eepromArray3 = new byte[toAllocateEEPROM]; }
+               if (m_eepromArray4 == null) { m_eepromArray4 = new byte[toAllocateEEPROM]; }
+               if (m_eepromArray5 == null) { m_eepromArray5 = new byte[toAllocateEEPROM]; }
+               if (m_eepromArray6 == null) { m_eepromArray6 = new byte[toAllocateEEPROM]; }
+               if (m_eepromArray7 == null) { m_eepromArray7 = new byte[toAllocateEEPROM]; }
+               if (m_eepromArray8 == null) { m_eepromArray8 = new byte[toAllocateEEPROM]; }
                // ALLOCATION OF ALL ARRAYS WAS SUCESSFULL
 
                break;
@@ -1455,29 +1638,29 @@ public class AlgTest extends javacard.framework.Applet
            // ARRAY(s) ALREADY ALLOCATED, JUST RETURN THEIR COMBINED LENGTH
          }
 
-         if (m_eepromArray1 != null) Util.setShort(apdubuf, offset, (short) m_eepromArray1.length);
-         else Util.setShort(apdubuf, offset, (short) 0);
+         if (m_eepromArray1 != null) { Util.setShort(apdubuf, offset, (short) m_eepromArray1.length); }
+         else { Util.setShort(apdubuf, offset, (short) 0); }
+         offset = (short)(offset + 2); 
+         if (m_eepromArray2 != null) { Util.setShort(apdubuf, offset, (short) m_eepromArray2.length); }
+         else { Util.setShort(apdubuf, offset, (short) 0); }
          offset = (short)(offset + 2);
-         if (m_eepromArray2 != null) Util.setShort(apdubuf, offset, (short) m_eepromArray2.length);
-         else Util.setShort(apdubuf, offset, (short) 0);
+         if (m_eepromArray3 != null) { Util.setShort(apdubuf, offset, (short) m_eepromArray3.length); }
+         else { Util.setShort(apdubuf, offset, (short) 0); }
          offset = (short)(offset + 2);
-         if (m_eepromArray3 != null) Util.setShort(apdubuf, offset, (short) m_eepromArray3.length);
-         else Util.setShort(apdubuf, offset, (short) 0);
+         if (m_eepromArray4 != null) { Util.setShort(apdubuf, offset, (short) m_eepromArray4.length); }
+         else { Util.setShort(apdubuf, offset, (short) 0); }
          offset = (short)(offset + 2);
-         if (m_eepromArray4 != null) Util.setShort(apdubuf, offset, (short) m_eepromArray4.length);
-         else Util.setShort(apdubuf, offset, (short) 0);
+         if (m_eepromArray5 != null) { Util.setShort(apdubuf, offset, (short) m_eepromArray5.length); }
+         else { Util.setShort(apdubuf, offset, (short) 0); }
          offset = (short)(offset + 2);
-         if (m_eepromArray5 != null) Util.setShort(apdubuf, offset, (short) m_eepromArray5.length);
-         else Util.setShort(apdubuf, offset, (short) 0);
+         if (m_eepromArray6 != null) { Util.setShort(apdubuf, offset, (short) m_eepromArray6.length); }
+         else { Util.setShort(apdubuf, offset, (short) 0); }
          offset = (short)(offset + 2);
-         if (m_eepromArray6 != null) Util.setShort(apdubuf, offset, (short) m_eepromArray6.length);
-         else Util.setShort(apdubuf, offset, (short) 0);
+         if (m_eepromArray7 != null) { Util.setShort(apdubuf, offset, (short) m_eepromArray7.length); }
+         else { Util.setShort(apdubuf, offset, (short) 0); }
          offset = (short)(offset + 2);
-         if (m_eepromArray7 != null) Util.setShort(apdubuf, offset, (short) m_eepromArray7.length);
-         else Util.setShort(apdubuf, offset, (short) 0);
-         offset = (short)(offset + 2);
-         if (m_eepromArray8 != null) Util.setShort(apdubuf, offset, (short) m_eepromArray8.length);
-         else Util.setShort(apdubuf, offset, (short) 0);
+         if (m_eepromArray8 != null) { Util.setShort(apdubuf, offset, (short) m_eepromArray8.length); }
+         else { Util.setShort(apdubuf, offset, (short) 0); }
          offset = (short)(offset + 2);
 /**/
        }
@@ -1489,21 +1672,20 @@ public class AlgTest extends javacard.framework.Applet
     * between different situation when random exponent cannot be set.
     * E.g. Some cards allow to set random exponent, but throw Exception when public key
     * is used for encryption (rsa_PublicKey.setExponent). Other cards fail directly
-    * during exponent setting (rsa_PublicKey.setExponent). One card (PalmeraV5) sucesfully
+    * during exponent setting (rsa_PublicKey.setExponent). One card (PalmeraV5) successfully
     * passed all steps, but didn't returned encrypted data (resp. length of returned
     * data was 0 and status 90 00)
     */
    void TestRSAExponentSet(APDU apdu) {
        byte[]    apdubuf = apdu.getBuffer();
        short     dataLen = apdu.setIncomingAndReceive();
-       short     offset = (short) 0;
 
        switch (apdubuf[ISO7816.OFFSET_P1]) {
          case 1: {
            // Allocate objects if not allocated yet
-           if (rsa_PublicKey == null) rsa_PublicKey = (RSAPublicKey) KeyBuilder.buildKey(KeyBuilder.TYPE_RSA_PUBLIC,KeyBuilder.LENGTH_RSA_1024,false);
-           if (m_random == null) m_random = RandomData.getInstance(ALG_SECURE_RANDOM);
-           if (m_encryptCipherRSA == null) m_encryptCipherRSA = Cipher.getInstance(ALG_RSA_NOPAD, false);
+           if (rsa_PublicKey == null) { rsa_PublicKey = (RSAPublicKey) KeyBuilder.buildKey(KeyBuilder.TYPE_RSA_PUBLIC,KeyBuilder.LENGTH_RSA_1024,false); }
+           if (m_random == null) { m_random = RandomData.getInstance(ALG_SECURE_RANDOM); } 
+           if (m_encryptCipherRSA == null) { m_encryptCipherRSA = Cipher.getInstance(ALG_RSA_NOPAD, false); }
            break;
          }
          case 2: {
@@ -1530,7 +1712,7 @@ public class AlgTest extends javacard.framework.Applet
          }
          case 5: {
            // Try to encrypt block of data
-           offset = m_encryptCipherRSA.doFinal(apdubuf, (byte) 0, MODULUS_LENGTH, apdubuf, (byte) 0);
+           short offset = m_encryptCipherRSA.doFinal(apdubuf, (byte) 0, MODULUS_LENGTH, apdubuf, (byte) 0);
            apdu.setOutgoingAndSend((byte) 0, offset);
            break;
          }

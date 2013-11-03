@@ -97,8 +97,26 @@ public class CardMngr {
     public static final byte ALG_HMAC_RIPEMD160                  = 29;
     public static final byte ALG_RSA_SHA_ISO9796_MR              = 30;
     public static final byte ALG_RSA_RIPEMD160_ISO9796_MR        = 31;
-    public static final byte ALG_SEED_MAC_NOPAD                  = 32;
-
+    public static final byte ALG_KOREAN_SEED_MAC_NOPAD = 32;
+    // JC3.0.1
+    public static final byte ALG_ECDSA_SHA_256 = 33;  
+    public static final byte ALG_ECDSA_SHA_384 = 34;  
+    public static final byte ALG_AES_MAC_192_NOPAD = 35;  
+    public static final byte ALG_AES_MAC_256_NOPAD = 36;  
+    public static final byte ALG_ECDSA_SHA_224 = 37;  
+    public static final byte ALG_ECDSA_SHA_512 = 38;  
+    public static final byte ALG_RSA_SHA_224_PKCS1 = 39;  
+    public static final byte ALG_RSA_SHA_256_PKCS1 = 40;  
+    public static final byte ALG_RSA_SHA_384_PKCS1 = 41;  
+    public static final byte ALG_RSA_SHA_512_PKCS1 = 42;  
+    public static final byte ALG_RSA_SHA_224_PKCS1_PSS = 43;  
+    public static final byte ALG_RSA_SHA_256_PKCS1_PSS = 44;  
+    public static final byte ALG_RSA_SHA_384_PKCS1_PSS = 45;  
+    public static final byte ALG_RSA_SHA_512_PKCS1_PSS = 46;  
+    // JC3.0.4
+    public static final byte ALG_DES_MAC4_ISO9797_1_M1_ALG3 = 47;   
+    public static final byte ALG_DES_MAC8_ISO9797_1_M1_ALG3 = 48;
+    
     public static final String SIGNATURE_STR[] = {"javacard.crypto.Signature", "ALG_DES_MAC4_NOPAD", "ALG_DES_MAC8_NOPAD", 
         "ALG_DES_MAC4_ISO9797_M1", "ALG_DES_MAC8_ISO9797_M1", "ALG_DES_MAC4_ISO9797_M2", "ALG_DES_MAC8_ISO9797_M2", 
         "ALG_DES_MAC4_PKCS5", "ALG_DES_MAC8_PKCS5", "ALG_RSA_SHA_ISO9796", "ALG_RSA_SHA_PKCS1", "ALG_RSA_MD5_PKCS1", 
@@ -106,7 +124,11 @@ public class CardMngr {
         "ALG_RSA_MD5_RFC2409", "ALG_ECDSA_SHA", "ALG_AES_MAC_128_NOPAD", "ALG_DES_MAC4_ISO9797_1_M2_ALG3", 
         "ALG_DES_MAC8_ISO9797_1_M2_ALG3", "ALG_RSA_SHA_PKCS1_PSS", "ALG_RSA_MD5_PKCS1_PSS", "ALG_RSA_RIPEMD160_PKCS1_PSS", 
         "ALG_HMAC_SHA1", "ALG_HMAC_SHA_256", "ALG_HMAC_SHA_384", "ALG_HMAC_SHA_512", "ALG_HMAC_MD5", "ALG_HMAC_RIPEMD160", 
-        "ALG_RSA_SHA_ISO9796_MR", "ALG_RSA_RIPEMD160_ISO9796_MR", "ALG_SEED_MAC_NOPAD"
+        "ALG_RSA_SHA_ISO9796_MR", "ALG_RSA_RIPEMD160_ISO9796_MR", "ALG_SEED_MAC_NOPAD", "ALG_ECDSA_SHA_256", 
+        "ALG_ECDSA_SHA_384", "ALG_AES_MAC_192_NOPAD", "ALG_AES_MAC_256_NOPAD", "ALG_ECDSA_SHA_224", "ALG_ECDSA_SHA_512", 
+        "ALG_RSA_SHA_224_PKCS1", "ALG_RSA_SHA_256_PKCS1", "ALG_RSA_SHA_384_PKCS1", "ALG_RSA_SHA_512_PKCS1", 
+        "ALG_RSA_SHA_224_PKCS1_PSS", "ALG_RSA_SHA_256_PKCS1_PSS", "ALG_RSA_SHA_384_PKCS1_PSS", "ALG_RSA_SHA_512_PKCS1_PSS",
+        "ALG_DES_MAC4_ISO9797_1_M1_ALG3", "ALG_DES_MAC8_ISO9797_1_M1_ALG3"
     };
 
       //
@@ -130,11 +152,24 @@ public class CardMngr {
       // JC2.2.2
     public static final byte ALG_KOREAN_SEED_ECB_NOPAD             = 16;
     public static final byte ALG_KOREAN_SEED_CBC_NOPAD             = 17;
+    // JC3.0.1
+    public static final byte ALG_AES_BLOCK_192_CBC_NOPAD = 18;  
+    public static final byte ALG_AES_BLOCK_192_ECB_NOPAD = 19;  
+    public static final byte ALG_AES_BLOCK_256_CBC_NOPAD = 20;  
+    public static final byte ALG_AES_BLOCK_256_ECB_NOPAD = 21;  
+    public static final byte ALG_AES_CBC_ISO9797_M1 = 22;  
+    public static final byte ALG_AES_CBC_ISO9797_M2 = 23;  
+    public static final byte ALG_AES_CBC_PKCS5 = 24;  
+    public static final byte ALG_AES_ECB_ISO9797_M1 = 25;  
+    public static final byte ALG_AES_ECB_ISO9797_M2 = 26;  
+    public static final byte ALG_AES_ECB_PKCS5 = 27;      
 
     public static final String CIPHER_STR[] = {"javacardx.crypto.Cipher", "ALG_DES_CBC_NOPAD", "ALG_DES_CBC_ISO9797_M1", "ALG_DES_CBC_ISO9797_M2", "ALG_DES_CBC_PKCS5", 
         "ALG_DES_ECB_NOPAD", "ALG_DES_ECB_ISO9797_M1", "ALG_DES_ECB_ISO9797_M2", "ALG_DES_ECB_PKCS5",
         "ALG_RSA_ISO14888", "ALG_RSA_PKCS1", "ALG_RSA_ISO9796", "ALG_RSA_NOPAD", "ALG_AES_BLOCK_128_CBC_NOPAD", 
-        "ALG_AES_BLOCK_128_ECB_NOPAD", "ALG_RSA_PKCS1_OAEP", "ALG_KOREAN_SEED_ECB_NOPAD", "ALG_KOREAN_SEED_CBC_NOPAD"
+        "ALG_AES_BLOCK_128_ECB_NOPAD", "ALG_RSA_PKCS1_OAEP", "ALG_KOREAN_SEED_ECB_NOPAD", "ALG_KOREAN_SEED_CBC_NOPAD",
+        "ALG_AES_BLOCK_192_CBC_NOPAD", "ALG_AES_BLOCK_192_ECB_NOPAD", "ALG_AES_BLOCK_256_CBC_NOPAD", "ALG_AES_BLOCK_256_ECB_NOPAD", 
+        "ALG_AES_CBC_ISO9797_M1", "ALG_AES_CBC_ISO9797_M2", "ALG_AES_CBC_PKCS5", "ALG_AES_ECB_ISO9797_M1", "ALG_AES_ECB_ISO9797_M2", "ALG_AES_ECB_PKCS5"         
     }; 
 
       //
@@ -142,8 +177,15 @@ public class CardMngr {
       //
     public static final byte ALG_EC_SVDP_DH                        = 1;
     public static final byte ALG_EC_SVDP_DHC                       = 2;
-    ;
-    public static final String KEYAGREEMENT_STR[] = {"javacard.security.KeyAgreement", "ALG_EC_SVDP_DH", "ALG_EC_SVDP_DHC"}; 
+    // JC3.0.1
+    public static final byte ALG_EC_SVDP_DH_KDF                    = 1;  
+    public static final byte ALG_EC_SVDP_DH_PLAIN                  = 3;     
+    public static final byte ALG_EC_SVDP_DHC_KDF                   = 2;  
+    public static final byte ALG_EC_SVDP_DHC_PLAIN                 = 4;  
+    
+    public static final String KEYAGREEMENT_STR[] = {"javacard.security.KeyAgreement", "ALG_EC_SVDP_DH", "ALG_EC_SVDP_DHC",
+        "ALG_EC_SVDP_DH_KDF", "ALG_EC_SVDP_DH_PLAIN", "ALG_EC_SVDP_DHC_KDF", "ALG_EC_SVDP_DHC_PLAIN"
+    }; 
 
       //
       //Class javacard.security.KeyBuilder
@@ -267,9 +309,11 @@ public class CardMngr {
     public static final byte ALG_SHA_256                   = 4;
     public static final byte ALG_SHA_384                   = 5;
     public static final byte ALG_SHA_512                   = 6;
-
+    // JC3.0.1
+    public static final byte ALG_SHA_224 = 7;
+    
     public static final String MESSAGEDIGEST_STR[] = {"javacard.security.MessageDigest", "ALG_SHA", "ALG_MD5", "ALG_RIPEMD160", 
-        "ALG_SHA_256", "ALG_SHA_384", "ALG_SHA_512"
+        "ALG_SHA_256", "ALG_SHA_384", "ALG_SHA_512", "ALG_SHA_224"
     }; 
 
 
