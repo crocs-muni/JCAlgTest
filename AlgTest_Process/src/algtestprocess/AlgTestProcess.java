@@ -233,7 +233,7 @@ public class AlgTestProcess {
         // Oberthur Cosmo Dual 72K
         CardProfiles.generateScript(capFileName + "jc2.1.2.cap", packageAID, appletAID, "Oberthur_Cosmo_Dual_72K", "mode_211", "a000000003000000", "-keyind 0 -keyver 0 -mac_key 404142434445464748494a4b4c4d4e4f -enc_key 404142434445464748494a4b4c4d4e4f");
         // TODO: Oberthur Cosmo V7
-        // NOTE: neither authentication, nor upload works
+        // NOTE: neither authentication, nor upload work
         //CardProfiles.generateScript(capFileName + "jc2.2.2.cap", packageAID, appletAID, "Oberthur_Cosmo_V7", "mode_211", "A0000001510000", "-keyind 0 -keyver 0 -mac_key 404142434445464748494a4b4c4d4e4f -enc_key 404142434445464748494a4b4c4d4e4f");
 
         // Infineon JTOP V2 16K

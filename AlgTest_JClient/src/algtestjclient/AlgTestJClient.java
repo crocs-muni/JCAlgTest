@@ -43,6 +43,11 @@ public class AlgTestJClient {
     static CardMngr cardManager = new CardMngr();
     
     /**
+     * Version 1.2 (3.11.2013)
+     * + All relevant constants from JC2.2.2, JC3.0.1 & JC3.0.4 added
+     */
+    public final static String ALGTEST_JCLIENT_VERSION_1_2 = "1.2";
+    /**
      * Version 1.1 (28.6.2013)
      * + information about version added
      * + link to project added into resulting file 
@@ -57,7 +62,7 @@ public class AlgTestJClient {
     /**
      * Current version
      */
-    public final static String ALGTEST_JCLIENT_VERSION = ALGTEST_JCLIENT_VERSION_1_1;
+    public final static String ALGTEST_JCLIENT_VERSION = ALGTEST_JCLIENT_VERSION_1_2;
     
     public final static int STAT_OK = 0;    
         /**
@@ -99,6 +104,10 @@ public class AlgTestJClient {
                 System.out.println(message);
                 file.write(message.getBytes());                
                 
+                message += "Tested by; insert your name please.;\r\n";
+                System.out.println(message);
+                file.write(message.getBytes());                
+
                 message = "Execution date/time; ";
                 DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
                 Date date = new Date();
