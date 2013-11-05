@@ -41,10 +41,13 @@ import javax.smartcardio.*;
  */
 public class CardMngr {
 
-    public static final int MAX_SUPP_ALG          = 240;    
-    public static final byte SUPP_ALG_UNTOUCHED    = 5;
+    public static final int MAX_SUPP_ALG            = 240;    
+    public static final byte SUPP_ALG_UNTOUCHED     = (byte) 0xf0;
+    public final static byte SUPP_ALG_SUPPORTED     = (byte) 0x00;
     public static final short SUPP_ALG_SEPARATOR    = 0xff;
+    public final static byte EXCEPTION_CODE_OFFSET  = (byte) 0;
 
+    
     public static final byte ALGTEST_AID_LEN       = 9;
 
     public static final byte CLASS_CIPHER          = 0x11;
@@ -305,7 +308,7 @@ public class CardMngr {
         "ALG_EC_F2M LENGTH_EC_F2M_113", "ALG_EC_F2M LENGTH_EC_F2M_131", "ALG_EC_F2M LENGTH_EC_F2M_163", "ALG_EC_F2M LENGTH_EC_F2M_193"
     };
     public static final String KEYPAIR_EC_FP_STR[] = {"javacard.security.KeyPair ALG_EC_FP on-card generation", 
-        "ALG_EC_FP LENGTH_EC_FP_112", "ALG_EC_FP LENGTH_EC_FP_128", "ALG_EC_FP LENGTH_EC_FP_160", "ALG_EC_FP LENGTH_EC_FP_192"
+        "ALG_EC_FP LENGTH_EC_FP_112", "ALG_EC_FP LENGTH_EC_FP_128", "ALG_EC_FP LENGTH_EC_FP_160", "ALG_EC_FP LENGTH_EC_FP_192", "ALG_EC_FP LENGTH_EC_FP_224", "ALG_EC_FP LENGTH_EC_FP_256", "ALG_EC_FP LENGTH_EC_FP_384", "ALG_EC_FP LENGTH_EC_FP_521"
     };
 
     public static final byte CLASS_KEYPAIR_RSA_P2          = 11;
@@ -360,8 +363,12 @@ public class CardMngr {
         KEYPAIR_EC_FP_STR, KEYAGREEMENT_STR, CHECKSUM_STR, RAWRSA_1024_STR
     };
     
-    
-    
+    public static final short 	ILLEGAL_USE         = 5;
+    public static final short 	ILLEGAL_VALUE       = 1;
+    public static final short 	INVALID_INIT        = 4;
+    public static final short 	NO_SUCH_ALGORITHM   = 3;
+    public static final short 	UNINITIALIZED_KEY   = 2; 
+   
     CardTerminal m_terminal = null;
     CardChannel m_channel = null;
     Card m_card = null;
@@ -656,21 +663,34 @@ public class CardMngr {
                         if ((temp[i] != SUPP_ALG_UNTOUCHED) && ((short) (temp[i]&0xff) != SUPP_ALG_SEPARATOR)) {
                             suppAlg[i] = temp[i];    
 
+                           
                             // ALG NAME
                             String algState = "";
                             switch (suppAlg[i]) {
-                                case 0: {
-                                    algState += algNames[i]; algState += ";"; algState += "no;"; algState += "\r\n";
-                                    break;
-                                }
-                                case 1: {
+                                case SUPP_ALG_SUPPORTED: { // SUPPORTED
                                     algState += algNames[i]; algState += ";"; algState += "yes;"; algState += elTimeStr; algState += "\r\n";
                                     break;
                                 }
-                                case 2: {
-                                    algState += algNames[i]; algState += ";"; algState += "error;"; algState += "\r\n";
+                                case EXCEPTION_CODE_OFFSET + NO_SUCH_ALGORITHM: {
+                                    algState += algNames[i]; algState += ";"; algState += "no;"; algState += "\r\n";
                                     break;
                                 }
+                                case EXCEPTION_CODE_OFFSET + ILLEGAL_USE: {
+                                    algState += algNames[i]; algState += ";"; algState += "error(ILLEGAL_USE);"; algState += "\r\n";
+                                    break;
+                                }
+                                case EXCEPTION_CODE_OFFSET + ILLEGAL_VALUE: {
+                                    algState += algNames[i]; algState += ";"; algState += "error(ILLEGAL_VALUE);"; algState += "\r\n";
+                                    break;
+                                }
+                                case EXCEPTION_CODE_OFFSET + INVALID_INIT: {
+                                    algState += algNames[i]; algState += ";"; algState += "error(INVALID_INIT);"; algState += "\r\n";
+                                    break;
+                                }
+                                case EXCEPTION_CODE_OFFSET + UNINITIALIZED_KEY: {
+                                    algState += algNames[i]; algState += ";"; algState += "error(UNINITIALIZED_KEY);"; algState += "\r\n";
+                                    break;
+                                }    
                                 case 0x6f: {
                                     algState += algNames[i]; algState += ";"; algState += "maybe;"; algState += "\r\n";
                                     break;
