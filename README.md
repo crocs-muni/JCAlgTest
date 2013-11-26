@@ -3,6 +3,16 @@ AlgTest
 
 Automated testing tool for algorithms supported by particular smart card with JavaCard platform. 
 
+*Contribution with results for YOUR card is wanted! (and highly appreciated :))*
+
+1. Upload proper cap (based on supported JavaCard version) file to your smart card. Upload can be done via GPShell – scripts for selected cards are available. If unsure about supported version, try to upload one with the highest version (AlgTest_v1.2_jc2.2.2.cap) and if upload fail, use lower version).
+
+2. Run Java application AlgTestJClient. Choose the target reader for card with uploaded AlgTest applet and let it run. CSV file with values separated by the semicolon is created (AlgTest_ATR.csv).
+
+3. Please consider to send me (petr@svenda.com) your results in case your card is not yet in the database at http://www.fi.muni.cz/~xsvenda/jcsupport.html
+
+
+
 Results for (at least) following smartcards are currently in database (http://www.fi.muni.cz/~xsvenda/jcsupport.html):
 
 - Axalto Cyberflex32 , ATR=3B 75 94 00 00 62 02 02 02 01
@@ -25,7 +35,7 @@ Results for (at least) following smartcards are currently in database (http://ww
 -	Oberthur CosmoDual72K , ATR=3B 7B 18 00 00 00 31 C0 64 77 E3 03 00 82 90 00
 -	Yubikey Neo , ATR=3b fa 13 00 00 81 31 fe 15 59 75 62 69 6b 65 79 4e 45 4f a6
 
-Usage:
+MOre detailed Usage:
 
 1. Download prepared version (AlgTest_JavaCard/AlgTest_***.cap) or compile your own modification of AlgTest applet. In case of use of provided *.cap file, use version that is supported by your card or simply start with version converted with highest version of converter (e.g., AlgTest_v1.1_jc2.2.2.cap) and then use lower version if card refuses to accept this file.    
 2. If you are unable to upload the package to card or install it, then see Caveats, use lower version of converter, comment out unsupported classes or compile your own limited version of AlgTest applet.
