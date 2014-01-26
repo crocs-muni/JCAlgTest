@@ -99,13 +99,19 @@ public class AlgTestProcess {
                 cardIdentification = cardIdentification.replace("3b", ", ATR=3b");
                 cardList += "<b>c" + i + "</b>	" + cardIdentification + "<br>\r\n";
             }
-            cardList += "\r\n\r\n\r\n"; 
+            cardList += "<br>\r\n"; 
             
             file.write(header.getBytes());
             file.write(cardList.getBytes());
-            file.flush();          
+            file.flush();        
             
-            String note = "Note: If character '-' or '?' is present, particular feature was not yet tested (but usually means unsupported) and will be added in future. Error means that tested card gives permanent error other then CryptoException.NO_SUCH_ALGORITHM when called.\r\n\r\n";
+            String note = "Note: Some cards in the table come without full identification and ATR (\'undisclosed\') as submitters prefered not to disclose it at the momment. I'm publishing it anyway as the information that some card supporting particular algorithm exists is still interesting. Full identification might be added in future.<br><br>\r\n\r\n"; 
+            file.write(note.getBytes());
+            
+            note = "Note: If you have card of unknown type, try to obtain ATR and take a look at smartcard list available here: <a href=\"http://smartcard-atr.appspot.com/\"> http://smartcard-atr.appspot.com/</a><br><br>\r\n\r\n"; 
+            file.write(note.getBytes());
+
+            note = "Note: If character '-' or '?' is present, particular feature was not yet tested. This usually means that feature is unsupported as typical situation is the addition of new constants introduced by the newer version of JavaCard standard. Error means that tested card gives permanent error other then CryptoException.NO_SUCH_ALGORITHM when called.<br><br>\r\n\r\n";
             file.write(note.getBytes());
             
             String table = "<table width=\"730\" border=\"0\" cellspacing=\"2\" cellpadding=\"4\">\r\n";
@@ -137,20 +143,32 @@ public class AlgTestProcess {
     static void formatTableAlgorithm_HTML(String[] classInfo, HashMap[] filesSupport, FileOutputStream file) throws IOException {
         // class (e.g., javacardx.crypto.Cipher)
         String algorithm = "<tr style='height:12.75pt'>\r\n" + "<td class='dark'>" + classInfo[0] + "</td>\r\n";
+        algorithm += "  <td class='dark_index'>Introduced in JavaCard specification version</td>\r\n"; 
         for (int i = 0; i < filesSupport.length; i++) { algorithm += "  <td class='dark_index'>c" + i + "</td>\r\n"; }
         algorithm += "</tr>\r\n";
         // support for particular algorithm from given class
         for (int i = 1; i < classInfo.length; i++) {
             if (!classInfo[i].startsWith("###")) { // ignore special informative types
+                
+                // Parse algorithm name and version of JC which introduced it
+                //algParts[0] == algorithm name
+                //algParts[1] == introducing version
+                String[] algParts = classInfo[i].split("#");
+                String algorithmName = algParts[0];
+                String algorithmVersion = (algParts.length > 1) ? algParts[1] : "";
+                
                 algorithm += "<tr style='height:12.75pt'>\r\n";
-                algorithm += "  <td class='light'>" + classInfo[i] + "</td>\r\n";
-
+                // Add algorithm name
+                algorithm += "  <td class='light'>" + algorithmName + "</td>\r\n";
+                // Add version of JavaCard standard that introduced given algorithm
+                algorithm += "  <td class='light_error'>" + algorithmVersion + "</td>\r\n";
+                
                 // Process all files
                 for (int fileIndex = 0; fileIndex < filesSupport.length; fileIndex++) { 
                     algorithm += "  ";
                     HashMap fileSuppMap = filesSupport[fileIndex];
-                    if (fileSuppMap.containsKey(classInfo[i])) {
-                        String secondToken = (String) fileSuppMap.get(classInfo[i]);
+                    if (fileSuppMap.containsKey(algorithmName)) {
+                        String secondToken = (String) fileSuppMap.get(algorithmName);
                         switch (secondToken) {
                             case "no": algorithm += "<td class='light_no'>no</td>\r\n"; break;
                             case "yes": algorithm += "<td class='light_yes'>yes</td>\r\n"; break;

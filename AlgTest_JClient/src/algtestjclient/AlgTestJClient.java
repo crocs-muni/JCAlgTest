@@ -149,82 +149,77 @@ public class AlgTestJClient {
                 int	answ = bForceAllTests;
                 if (bForceAllTests == 0) {
                     System.out.println("\n\n#########################");
-                    System.out.println("\n\nQ: Do you like to test supported algorithms?");
+                    System.out.println("\n\nQ: Do you like to test all supported algorithms or be asked for every class?");
                     System.out.println("Type 1 for yes, 0 for no: ");	
                     answ = Integer.decode(br.readLine());                
                 }
-                if (answ == 1) {
+                // Class javacardx.crypto.Cipher
+                value.setLength(0);
+                if (cardManager.GetSupportedAndParse(CardMngr.CLASS_CIPHER, CardMngr.CIPHER_STR, value, file, (byte) 0, answ) == STAT_OK) {}
+                else { String errorMessage = "\nERROR: javacardx.crypto.Cipher fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
+                file.flush();
 
-                        System.out.println("#########################");
+                // Class javacard.security.Signature
+                value.setLength(0);
+                if (cardManager.GetSupportedAndParse(CardMngr.CLASS_SIGNATURE, CardMngr.SIGNATURE_STR, value, file, (byte) 0, answ) == STAT_OK) {}
+                else { String errorMessage = "\nERROR: javacard.security.Signature fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
+                file.flush();
 
-                        // Class javacardx.crypto.Cipher
-                        value.setLength(0);
-                        if (cardManager.GetSupportedAndParse(CardMngr.CLASS_CIPHER, CardMngr.CIPHER_STR, value, file, (byte) 0) == STAT_OK) {}
-                        else { String errorMessage = "\nERROR: javacardx.crypto.Cipher fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
-                        file.flush();
+                // Class javacard.security.MessageDigest
+                value.setLength(0);
+                if (cardManager.GetSupportedAndParse(CardMngr.CLASS_MESSAGEDIGEST, CardMngr.MESSAGEDIGEST_STR, value, file, (byte) 0, answ) == STAT_OK) {}
+                else { String errorMessage = "\nERROR: javacard.security.MessageDigest fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
+                file.flush();
 
-                        // Class javacard.security.Signature
-                        value.setLength(0);
-                        if (cardManager.GetSupportedAndParse(CardMngr.CLASS_SIGNATURE, CardMngr.SIGNATURE_STR, value, file, (byte) 0) == STAT_OK) {}
-                        else { String errorMessage = "\nERROR: javacard.security.Signature fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
-                        file.flush();
+                // Class javacard.security.RandomData
+                value.setLength(0);
+                if (cardManager.GetSupportedAndParse(CardMngr.CLASS_RANDOMDATA, CardMngr.RANDOMDATA_STR, value, file, (byte) 0, answ) == STAT_OK) {}
+                else { String errorMessage = "\nERROR: javacard.security.RandomData fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
+                file.flush();
 
-                        // Class javacard.security.MessageDigest
-                        value.setLength(0);
-                        if (cardManager.GetSupportedAndParse(CardMngr.CLASS_MESSAGEDIGEST, CardMngr.MESSAGEDIGEST_STR, value, file, (byte) 0) == STAT_OK) {}
-                        else { String errorMessage = "\nERROR: javacard.security.MessageDigest fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
-                        file.flush();
+                // Class javacard.security.KeyBuilder
+                value.setLength(0);
+                if (cardManager.GetSupportedAndParse(CardMngr.CLASS_KEYBUILDER, CardMngr.KEYBUILDER_STR, value, file, (byte) 0, answ) == STAT_OK) {}
+                else { String errorMessage = "\nERROR: javacard.security.KeyBuilder fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
+                file.flush();
 
-                        // Class javacard.security.RandomData
-                        value.setLength(0);
-                        if (cardManager.GetSupportedAndParse(CardMngr.CLASS_RANDOMDATA, CardMngr.RANDOMDATA_STR, value, file, (byte) 0) == STAT_OK) {}
-                        else { String errorMessage = "\nERROR: javacard.security.RandomData fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
-                        file.flush();
+                // Class javacard.security.KeyPair RSA
+                value.setLength(0);
+                if (cardManager.GetSupportedAndParse(CardMngr.CLASS_KEYPAIR_RSA, CardMngr.KEYPAIR_RSA_STR, value, file, CardMngr.CLASS_KEYPAIR_RSA_P2, answ) == STAT_OK) {}
+                else { String errorMessage = "\nERROR: javacard.security.KeyPair RSA fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
+                file.flush();
+                // Class javacard.security.KeyPair RSA_CRT
+                value.setLength(0);
+                if (cardManager.GetSupportedAndParse(CardMngr.CLASS_KEYPAIR_RSA_CRT, CardMngr.KEYPAIR_RSACRT_STR, value, file, CardMngr.CLASS_KEYPAIR_RSACRT_P2, answ) == STAT_OK) {}
+                else { String errorMessage = "\nERROR: javacard.security.KeyPair RSA_CRT fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
+                file.flush();
+                // Class javacard.security.KeyPair DSA
+                value.setLength(0);
+                if (cardManager.GetSupportedAndParse(CardMngr.CLASS_KEYPAIR_DSA, CardMngr.KEYPAIR_DSA_STR, value, file, CardMngr.CLASS_KEYPAIR_DSA_P2, answ) == STAT_OK) {}
+                else { String errorMessage = "\nERROR: javacard.security.KeyPair DSA fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
+                file.flush();
+                // Class javacard.security.KeyPair EC_F2M
+                value.setLength(0);
+                if (cardManager.GetSupportedAndParse(CardMngr.CLASS_KEYPAIR_EC_F2M, CardMngr.KEYPAIR_EC_F2M_STR, value, file,  CardMngr.CLASS_KEYPAIR_EC_F2M_P2, answ) == STAT_OK) {}
+                else { String errorMessage = "\nERROR: javacard.security.KeyPair EC_F2M fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
+                file.flush();
+                // Class javacard.security.KeyPair EC_FP
+                value.setLength(0);
+                if (cardManager.GetSupportedAndParse(CardMngr.CLASS_KEYPAIR_EC_FP, CardMngr.KEYPAIR_EC_FP_STR, value, file, CardMngr.CLASS_KEYPAIR_EC_FP_P2, answ) == STAT_OK) {}
+                else { String errorMessage = "\nERROR: javacard.security.KeyPair EC_FP fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
+                file.flush();
 
-                        // Class javacard.security.KeyBuilder
-                        value.setLength(0);
-                        if (cardManager.GetSupportedAndParse(CardMngr.CLASS_KEYBUILDER, CardMngr.KEYBUILDER_STR, value, file, (byte) 0) == STAT_OK) {}
-                        else { String errorMessage = "\nERROR: javacard.security.KeyBuilder fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
-                        file.flush();
+                // Class javacard.security.KeyAgreement
+                value.setLength(0);
+                if (cardManager.GetSupportedAndParse(CardMngr.CLASS_KEYAGREEMENT, CardMngr.KEYAGREEMENT_STR, value, file, (byte) 0, answ) == STAT_OK) {}
+                else { String errorMessage = "\nERROR: javacard.security.KeyAgreement fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
+                file.flush();
 
-                        // Class javacard.security.KeyPair RSA
-                        value.setLength(0);
-                        if (cardManager.GetSupportedAndParse(CardMngr.CLASS_KEYPAIR_RSA, CardMngr.KEYPAIR_RSA_STR, value, file, CardMngr.CLASS_KEYPAIR_RSA_P2) == STAT_OK) {}
-                        else { String errorMessage = "\nERROR: javacard.security.KeyPair RSA fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
-                        file.flush();
-                        // Class javacard.security.KeyPair RSA_CRT
-                        value.setLength(0);
-                        if (cardManager.GetSupportedAndParse(CardMngr.CLASS_KEYPAIR_RSA_CRT, CardMngr.KEYPAIR_RSACRT_STR, value, file, CardMngr.CLASS_KEYPAIR_RSACRT_P2) == STAT_OK) {}
-                        else { String errorMessage = "\nERROR: javacard.security.KeyPair RSA_CRT fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
-                        file.flush();
-                        // Class javacard.security.KeyPair DSA
-                        value.setLength(0);
-                        if (cardManager.GetSupportedAndParse(CardMngr.CLASS_KEYPAIR_DSA, CardMngr.KEYPAIR_DSA_STR, value, file, CardMngr.CLASS_KEYPAIR_DSA_P2) == STAT_OK) {}
-                        else { String errorMessage = "\nERROR: javacard.security.KeyPair DSA fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
-                        file.flush();
-                        // Class javacard.security.KeyPair EC_F2M
-                        value.setLength(0);
-                        if (cardManager.GetSupportedAndParse(CardMngr.CLASS_KEYPAIR_EC_F2M, CardMngr.KEYPAIR_EC_F2M_STR, value, file,  CardMngr.CLASS_KEYPAIR_EC_F2M_P2) == STAT_OK) {}
-                        else { String errorMessage = "\nERROR: javacard.security.KeyPair EC_F2M fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
-                        file.flush();
-                        // Class javacard.security.KeyPair EC_FP
-                        value.setLength(0);
-                        if (cardManager.GetSupportedAndParse(CardMngr.CLASS_KEYPAIR_EC_FP, CardMngr.KEYPAIR_EC_FP_STR, value, file, CardMngr.CLASS_KEYPAIR_EC_FP_P2) == STAT_OK) {}
-                        else { String errorMessage = "\nERROR: javacard.security.KeyPair EC_FP fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
-                        file.flush();
-
-                        // Class javacard.security.KeyAgreement
-                        value.setLength(0);
-                        if (cardManager.GetSupportedAndParse(CardMngr.CLASS_KEYAGREEMENT, CardMngr.KEYAGREEMENT_STR, value, file, (byte) 0) == STAT_OK) {}
-                        else { String errorMessage = "\nERROR: javacard.security.KeyAgreement fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
-                        file.flush();
-
-                        // Class javacard.security.Checksum
-                        value.setLength(0);
-                        if (cardManager.GetSupportedAndParse(CardMngr.CLASS_CHECKSUM, CardMngr.CHECKSUM_STR, value, file, (byte) 0) == STAT_OK) {}
-                        else { String errorMessage = "\nERROR: javacard.security.Checksum fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
-                        file.flush();
-                }
+                // Class javacard.security.Checksum
+                value.setLength(0);
+                if (cardManager.GetSupportedAndParse(CardMngr.CLASS_CHECKSUM, CardMngr.CHECKSUM_STR, value, file, (byte) 0, answ) == STAT_OK) {}
+                else { String errorMessage = "\nERROR: javacard.security.Checksum fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
+                file.flush();
 
                 if (bForceAllTests == 0) {                
                     System.out.println("\n\n#########################");
@@ -236,7 +231,7 @@ public class AlgTestJClient {
                     // Variable public exponent
                     value.setLength(0);
                     if (cardManager.TestVariableRSAPublicExponentSupport(value, file, (byte) 0) == STAT_OK) {}
-                    else { System.out.println("\nERROR: Test variable public exponnet support fail\n"); }
+                    else { System.out.println("\nERROR: Test variable public exponent support fail\n"); }
                     file.flush();
                 }
 

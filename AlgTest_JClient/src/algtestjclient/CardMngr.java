@@ -30,7 +30,9 @@
 /**/
 package algtestjclient;
 
+import java.io.BufferedReader;
 import java.io.FileOutputStream;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 import javax.smartcardio.*;
@@ -120,18 +122,22 @@ public class CardMngr {
     public static final byte ALG_DES_MAC4_ISO9797_1_M1_ALG3 = 47;   
     public static final byte ALG_DES_MAC8_ISO9797_1_M1_ALG3 = 48;
     
-    public static final String SIGNATURE_STR[] = {"javacard.crypto.Signature", "ALG_DES_MAC4_NOPAD", "ALG_DES_MAC8_NOPAD", 
-        "ALG_DES_MAC4_ISO9797_M1", "ALG_DES_MAC8_ISO9797_M1", "ALG_DES_MAC4_ISO9797_M2", "ALG_DES_MAC8_ISO9797_M2", 
-        "ALG_DES_MAC4_PKCS5", "ALG_DES_MAC8_PKCS5", "ALG_RSA_SHA_ISO9796", "ALG_RSA_SHA_PKCS1", "ALG_RSA_MD5_PKCS1", 
-        "ALG_RSA_RIPEMD160_ISO9796", "ALG_RSA_RIPEMD160_PKCS1", "ALG_DSA_SHA", "ALG_RSA_SHA_RFC2409", 
-        "ALG_RSA_MD5_RFC2409", "ALG_ECDSA_SHA", "ALG_AES_MAC_128_NOPAD", "ALG_DES_MAC4_ISO9797_1_M2_ALG3", 
-        "ALG_DES_MAC8_ISO9797_1_M2_ALG3", "ALG_RSA_SHA_PKCS1_PSS", "ALG_RSA_MD5_PKCS1_PSS", "ALG_RSA_RIPEMD160_PKCS1_PSS", 
-        "ALG_HMAC_SHA1", "ALG_HMAC_SHA_256", "ALG_HMAC_SHA_384", "ALG_HMAC_SHA_512", "ALG_HMAC_MD5", "ALG_HMAC_RIPEMD160", 
-        "ALG_RSA_SHA_ISO9796_MR", "ALG_RSA_RIPEMD160_ISO9796_MR", "ALG_SEED_MAC_NOPAD", "ALG_ECDSA_SHA_256", 
-        "ALG_ECDSA_SHA_384", "ALG_AES_MAC_192_NOPAD", "ALG_AES_MAC_256_NOPAD", "ALG_ECDSA_SHA_224", "ALG_ECDSA_SHA_512", 
-        "ALG_RSA_SHA_224_PKCS1", "ALG_RSA_SHA_256_PKCS1", "ALG_RSA_SHA_384_PKCS1", "ALG_RSA_SHA_512_PKCS1", 
-        "ALG_RSA_SHA_224_PKCS1_PSS", "ALG_RSA_SHA_256_PKCS1_PSS", "ALG_RSA_SHA_384_PKCS1_PSS", "ALG_RSA_SHA_512_PKCS1_PSS",
-        "ALG_DES_MAC4_ISO9797_1_M1_ALG3", "ALG_DES_MAC8_ISO9797_1_M1_ALG3"
+    public static final String SIGNATURE_STR[] = {"javacard.crypto.Signature", 
+        "ALG_DES_MAC4_NOPAD#<=2.1", "ALG_DES_MAC8_NOPAD#<=2.1", 
+        "ALG_DES_MAC4_ISO9797_M1#<=2.1", "ALG_DES_MAC8_ISO9797_M1#<=2.1", "ALG_DES_MAC4_ISO9797_M2#<=2.1", "ALG_DES_MAC8_ISO9797_M2#<=2.1", 
+        "ALG_DES_MAC4_PKCS5#<=2.1", "ALG_DES_MAC8_PKCS5#<=2.1", "ALG_RSA_SHA_ISO9796#<=2.1", "ALG_RSA_SHA_PKCS1#<=2.1", "ALG_RSA_MD5_PKCS1#<=2.1", 
+        "ALG_RSA_RIPEMD160_ISO9796#<=2.1", "ALG_RSA_RIPEMD160_PKCS1#<=2.1", "ALG_DSA_SHA#<=2.1", "ALG_RSA_SHA_RFC2409#<=2.1", 
+        "ALG_RSA_MD5_RFC2409#<=2.1", "ALG_ECDSA_SHA#2.2.0", "ALG_AES_MAC_128_NOPAD#2.2.0", "ALG_DES_MAC4_ISO9797_1_M2_ALG3#2.2.0", 
+        "ALG_DES_MAC8_ISO9797_1_M2_ALG3#2.2.0", "ALG_RSA_SHA_PKCS1_PSS#2.2.0", "ALG_RSA_MD5_PKCS1_PSS#2.2.0", "ALG_RSA_RIPEMD160_PKCS1_PSS#2.2.0", 
+        // 2.2.2
+        "ALG_HMAC_SHA1#2.2.2", "ALG_HMAC_SHA_256#2.2.2", "ALG_HMAC_SHA_384#2.2.2", "ALG_HMAC_SHA_512#2.2.2", "ALG_HMAC_MD5#2.2.2", "ALG_HMAC_RIPEMD160#2.2.2", 
+        "ALG_RSA_SHA_ISO9796_MR#2.2.2", "ALG_RSA_RIPEMD160_ISO9796_MR#2.2.2", "ALG_SEED_MAC_NOPAD#2.2.2", 
+        //3.0.1
+        "ALG_ECDSA_SHA_256#3.0.1", "ALG_ECDSA_SHA_384#3.0.1", "ALG_AES_MAC_192_NOPAD#3.0.1", "ALG_AES_MAC_256_NOPAD#3.0.1", "ALG_ECDSA_SHA_224#3.0.1", "ALG_ECDSA_SHA_512#3.0.1", 
+        "ALG_RSA_SHA_224_PKCS1#3.0.1", "ALG_RSA_SHA_256_PKCS1#3.0.1", "ALG_RSA_SHA_384_PKCS1#3.0.1", "ALG_RSA_SHA_512_PKCS1#3.0.1", 
+        "ALG_RSA_SHA_224_PKCS1_PSS#3.0.1", "ALG_RSA_SHA_256_PKCS1_PSS#3.0.1", "ALG_RSA_SHA_384_PKCS1_PSS#3.0.1", "ALG_RSA_SHA_512_PKCS1_PSS#3.0.1",
+        //3.0.4
+        "ALG_DES_MAC4_ISO9797_1_M1_ALG3#3.0.4", "ALG_DES_MAC8_ISO9797_1_M1_ALG3#3.0.4"
     };
 
       //
@@ -167,12 +173,19 @@ public class CardMngr {
     public static final byte ALG_AES_ECB_ISO9797_M2 = 26;  
     public static final byte ALG_AES_ECB_PKCS5 = 27;      
 
-    public static final String CIPHER_STR[] = {"javacardx.crypto.Cipher", "ALG_DES_CBC_NOPAD", "ALG_DES_CBC_ISO9797_M1", "ALG_DES_CBC_ISO9797_M2", "ALG_DES_CBC_PKCS5", 
-        "ALG_DES_ECB_NOPAD", "ALG_DES_ECB_ISO9797_M1", "ALG_DES_ECB_ISO9797_M2", "ALG_DES_ECB_PKCS5",
-        "ALG_RSA_ISO14888", "ALG_RSA_PKCS1", "ALG_RSA_ISO9796", "ALG_RSA_NOPAD", "ALG_AES_BLOCK_128_CBC_NOPAD", 
-        "ALG_AES_BLOCK_128_ECB_NOPAD", "ALG_RSA_PKCS1_OAEP", "ALG_KOREAN_SEED_ECB_NOPAD", "ALG_KOREAN_SEED_CBC_NOPAD",
-        "ALG_AES_BLOCK_192_CBC_NOPAD", "ALG_AES_BLOCK_192_ECB_NOPAD", "ALG_AES_BLOCK_256_CBC_NOPAD", "ALG_AES_BLOCK_256_ECB_NOPAD", 
-        "ALG_AES_CBC_ISO9797_M1", "ALG_AES_CBC_ISO9797_M2", "ALG_AES_CBC_PKCS5", "ALG_AES_ECB_ISO9797_M1", "ALG_AES_ECB_ISO9797_M2", "ALG_AES_ECB_PKCS5"         
+    public static final String CIPHER_STR[] = {"javacardx.crypto.Cipher", 
+        "ALG_DES_CBC_NOPAD#<=2.1", "ALG_DES_CBC_ISO9797_M1#<=2.1", "ALG_DES_CBC_ISO9797_M2#<=2.1", "ALG_DES_CBC_PKCS5#<=2.1", 
+        "ALG_DES_ECB_NOPAD#<=2.1", "ALG_DES_ECB_ISO9797_M1#<=2.1", "ALG_DES_ECB_ISO9797_M2#<=2.1", "ALG_DES_ECB_PKCS5#<=2.1",
+        "ALG_RSA_ISO14888#<=2.1", "ALG_RSA_PKCS1#<=2.1", "ALG_RSA_ISO9796#<=2.1", 
+        //2.1.1
+        "ALG_RSA_NOPAD#2.1.1", 
+        //2.2.0
+        "ALG_AES_BLOCK_128_CBC_NOPAD#2.2.0", "ALG_AES_BLOCK_128_ECB_NOPAD#2.2.0", "ALG_RSA_PKCS1_OAEP#2.2.0", 
+        //2.2.2
+        "ALG_KOREAN_SEED_ECB_NOPAD#2.2.2", "ALG_KOREAN_SEED_CBC_NOPAD#2.2.2",
+        //3.0.1
+        "ALG_AES_BLOCK_192_CBC_NOPAD#3.0.1", "ALG_AES_BLOCK_192_ECB_NOPAD#3.0.1", "ALG_AES_BLOCK_256_CBC_NOPAD#3.0.1", "ALG_AES_BLOCK_256_ECB_NOPAD#3.0.1", 
+        "ALG_AES_CBC_ISO9797_M1#3.0.1", "ALG_AES_CBC_ISO9797_M2#3.0.1", "ALG_AES_CBC_PKCS5#3.0.1", "ALG_AES_ECB_ISO9797_M1#3.0.1", "ALG_AES_ECB_ISO9797_M2#3.0.1", "ALG_AES_ECB_PKCS5#3.0.1"         
     }; 
 
       //
@@ -186,10 +199,12 @@ public class CardMngr {
     public static final byte ALG_EC_SVDP_DHC_KDF                   = 2;  
     public static final byte ALG_EC_SVDP_DHC_PLAIN                 = 4;  
     
-    public static final String KEYAGREEMENT_STR[] = {"javacard.security.KeyAgreement", "ALG_EC_SVDP_DH", "ALG_EC_SVDP_DHC",
-        "ALG_EC_SVDP_DH_KDF", "ALG_EC_SVDP_DH_PLAIN", "ALG_EC_SVDP_DHC_KDF", "ALG_EC_SVDP_DHC_PLAIN"
+    public static final String KEYAGREEMENT_STR[] = {"javacard.security.KeyAgreement", 
+        //2.2.1
+        "ALG_EC_SVDP_DH#2.2.1", "ALG_EC_SVDP_DHC#2.2.1",
+        //3.0.1
+        "ALG_EC_SVDP_DH_KDF#3.0.1", "ALG_EC_SVDP_DH_PLAIN#3.0.1", "ALG_EC_SVDP_DHC_KDF#3.0.1", "ALG_EC_SVDP_DHC_PLAIN#3.0.1"
     }; 
-
       //
       //Class javacard.security.KeyBuilder
       //
@@ -267,24 +282,25 @@ public class CardMngr {
     private final int LENGTH_HMAC_SHA_512_BLOCK_64  = 128;
     
     public static final String KEYBUILDER_STR[] = {"javacard.security.KeyBuilder", 
-        "###DES_KEY###", "TYPE_DES_TRANSIENT_RESET", "TYPE_DES_TRANSIENT_DESELECT", "TYPE_DES LENGTH_DES", "TYPE_DES LENGTH_DES3_2KEY", "TYPE_DES LENGTH_DES3_3KEY",
-        "###AES_KEY###", "TYPE_AES_TRANSIENT_RESET", "TYPE_AES_TRANSIENT_DESELECT", "TYPE_AES LENGTH_AES_128", "TYPE_AES LENGTH_AES_192", "TYPE_AES LENGTH_AES_256",
-        "###RSA_PUBLIC_KEY###", "TYPE_RSA_PUBLIC LENGTH_RSA_512", "TYPE_RSA_PUBLIC LENGTH_RSA_736", "TYPE_RSA_PUBLIC LENGTH_RSA_768", "TYPE_RSA_PUBLIC LENGTH_RSA_896",
-            "TYPE_RSA_PUBLIC LENGTH_RSA_1024", "TYPE_RSA_PUBLIC LENGTH_RSA_1280", "TYPE_RSA_PUBLIC LENGTH_RSA_1536", "TYPE_RSA_PUBLIC LENGTH_RSA_1984", "TYPE_RSA_PUBLIC LENGTH_RSA_2048", "TYPE_RSA_PUBLIC LENGTH_RSA_3072", "TYPE_RSA_PUBLIC LENGTH_RSA_4096",
-        "###RSA_PRIVATE_KEY###", "TYPE_RSA_PRIVATE LENGTH_RSA_512", "TYPE_RSA_PRIVATE LENGTH_RSA_736", "TYPE_RSA_PRIVATE LENGTH_RSA_768", "TYPE_RSA_PRIVATE LENGTH_RSA_896",
-            "TYPE_RSA_PRIVATE LENGTH_RSA_1024", "TYPE_RSA_PRIVATE LENGTH_RSA_1280", "TYPE_RSA_PRIVATE LENGTH_RSA_1536", "TYPE_RSA_PRIVATE LENGTH_RSA_1984", "TYPE_RSA_PRIVATE LENGTH_RSA_2048", "TYPE_RSA_PRIVATE LENGTH_RSA_3072", "TYPE_RSA_PRIVATE LENGTH_RSA_4096", "TYPE_RSA_PRIVATE_TRANSIENT_RESET", "TYPE_RSA_PRIVATE_TRANSIENT_DESELECT",
-        "###RSA_CRT_PRIVATE_KEY###", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_512", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_736", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_768", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_896",
-            "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1024", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1280", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1536", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1984", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_2048", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_3072", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_4096", "TYPE_RSA_CRT_PRIVATE_TRANSIENT_RESET", "TYPE_RSA_CRT_PRIVATE_TRANSIENT_DESELECT",
-        "###DSA_PRIVATE_KEY###", "TYPE_DSA_PRIVATE LENGTH_DSA_512", "TYPE_DSA_PRIVATE LENGTH_DSA_768", "TYPE_DSA_PRIVATE LENGTH_DSA_1024", "TYPE_DSA_PRIVATE_TRANSIENT_RESET", "TYPE_DSA_PRIVATE_TRANSIENT_DESELECT", 
-        "###DSA_PUBLIC_KEY###", "TYPE_DSA_PUBLIC LENGTH_DSA_512", "TYPE_DSA_PUBLIC LENGTH_DSA_768", "TYPE_DSA_PUBLIC LENGTH_DSA_1024", 
-        "###EC_F2M_PRIVATE_KEY###", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_113", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_131", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_163", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_193", "TYPE_EC_F2M_PRIVATE_TRANSIENT_RESET", "TYPE_EC_F2M_PRIVATE_TRANSIENT_DESELECT",
-        "###EC_FP_PRIVATE_KEY###", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_112", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_128", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_160", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_192", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_224", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_256", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_384", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_521", "TYPE_EC_FP_PRIVATE_TRANSIENT_RESET", "TYPE_EC_FP_PRIVATE_TRANSIENT_DESELECT",
-        "###KOREAN_SEED_KEY###", "TYPE_KOREAN_SEED_TRANSIENT_RESET", "TYPE_KOREAN_SEED_TRANSIENT_DESELECT", "TYPE_KOREAN_SEED LENGTH_KOREAN_SEED_128", 
-        "###HMAC_KEY###", "TYPE_HMAC_TRANSIENT_RESET", "TYPE_HMAC_TRANSIENT_DESELECT", "TYPE_HMAC LENGTH_HMAC_SHA_1_BLOCK_64", "TYPE_HMAC LENGTH_HMAC_SHA_256_BLOCK_64", "TYPE_HMAC LENGTH_HMAC_SHA_384_BLOCK_64", "TYPE_HMAC LENGTH_HMAC_SHA_512_BLOCK_64",
+        "###DES_KEY###", "TYPE_DES_TRANSIENT_RESET#<=2.1", "TYPE_DES_TRANSIENT_DESELECT#<=2.1", "TYPE_DES LENGTH_DES#<=2.1", "TYPE_DES LENGTH_DES3_2KEY#<=2.1", "TYPE_DES LENGTH_DES3_3KEY#<=2.1",
+        //2.2.0
+        "###AES_KEY###", "TYPE_AES_TRANSIENT_RESET#2.2.0", "TYPE_AES_TRANSIENT_DESELECT#2.2.0", "TYPE_AES LENGTH_AES_128#2.2.0", "TYPE_AES LENGTH_AES_192#2.2.0", "TYPE_AES LENGTH_AES_256#2.2.0",
+        "###RSA_PUBLIC_KEY###", "TYPE_RSA_PUBLIC LENGTH_RSA_512#<=2.1", "TYPE_RSA_PUBLIC LENGTH_RSA_736#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_768#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_896#2.2.0",
+            "TYPE_RSA_PUBLIC LENGTH_RSA_1024#<=2.1", "TYPE_RSA_PUBLIC LENGTH_RSA_1280#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_1536#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_1984#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_2048#<=2.1", "TYPE_RSA_PUBLIC LENGTH_RSA_3072#never??", "TYPE_RSA_PUBLIC LENGTH_RSA_4096#3.0.1",
+        "###RSA_PRIVATE_KEY###", "TYPE_RSA_PRIVATE LENGTH_RSA_512#<=2.1", "TYPE_RSA_PRIVATE LENGTH_RSA_736#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_768#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_896#2.2.0",
+            "TYPE_RSA_PRIVATE LENGTH_RSA_1024#<=2.1", "TYPE_RSA_PRIVATE LENGTH_RSA_1280#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_1536#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_1984#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_2048#<=2.1", "TYPE_RSA_PRIVATE LENGTH_RSA_3072#never??", "TYPE_RSA_PRIVATE LENGTH_RSA_4096#3.0.1",
+        "###RSA_CRT_PRIVATE_KEY###", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_512#<=2.1", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_736#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_768#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_896#2.2.0",
+            "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1024#<=2.1", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1280#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1536#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1984#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_2048#<=2.1", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_3072#never??", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_4096#3.0.1",
+        "###DSA_PRIVATE_KEY###", "TYPE_DSA_PRIVATE LENGTH_DSA_512#<=2.1", "TYPE_DSA_PRIVATE LENGTH_DSA_768#<=2.1", "TYPE_DSA_PRIVATE LENGTH_DSA_1024#<=2.1", "TYPE_DSA_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_DSA_PRIVATE_TRANSIENT_DESELECT#3.0.1", 
+        "###DSA_PUBLIC_KEY###", "TYPE_DSA_PUBLIC LENGTH_DSA_512#<=2.1", "TYPE_DSA_PUBLIC LENGTH_DSA_768#<=2.1", "TYPE_DSA_PUBLIC LENGTH_DSA_1024#<=2.1", 
+        "###EC_F2M_PRIVATE_KEY###", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_113#2.2.0", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_131#2.2.0", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_163#2.2.0", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_193#2.2.0", "TYPE_EC_F2M_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_EC_F2M_PRIVATE_TRANSIENT_DESELECT#3.0.1",
+        "###EC_FP_PRIVATE_KEY###", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_112#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_128#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_160#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_192#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_224#3.0.1", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_256#3.0.1", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_384#3.0.1", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_521#3.0.4", "TYPE_EC_FP_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_EC_FP_PRIVATE_TRANSIENT_DESELECT#3.0.1",
+        "###KOREAN_SEED_KEY###", "TYPE_KOREAN_SEED_TRANSIENT_RESET#2.2.2", "TYPE_KOREAN_SEED_TRANSIENT_DESELECT#2.2.2", "TYPE_KOREAN_SEED LENGTH_KOREAN_SEED_128#2.2.2", 
+        "###HMAC_KEY###", "TYPE_HMAC_TRANSIENT_RESET#2.2.2", "TYPE_HMAC_TRANSIENT_DESELECT#2.2.2", "TYPE_HMAC LENGTH_HMAC_SHA_1_BLOCK_64#2.2.2", "TYPE_HMAC LENGTH_HMAC_SHA_256_BLOCK_64#2.2.2", "TYPE_HMAC LENGTH_HMAC_SHA_384_BLOCK_64#2.2.2", "TYPE_HMAC LENGTH_HMAC_SHA_512_BLOCK_64#2.2.2",
     }; 
       //
       //Class javacard.security.KeyPair
-      //
+      //introduced in 2.1.1
     public static final byte ALG_RSA                       = 1;
     public static final byte ALG_RSA_CRT                   = 2;
     public static final byte ALG_DSA                       = 3;
@@ -292,23 +308,27 @@ public class CardMngr {
     public static final byte ALG_EC_FP                     = 5;
 
     public static final String KEYPAIR_RSA_STR[] = {"javacard.security.KeyPair ALG_RSA on-card generation", 
-        "ALG_RSA LENGTH_RSA_512", "ALG_RSA LENGTH_RSA_736", "ALG_RSA LENGTH_RSA_768", "ALG_RSA LENGTH_RSA_896",
-        "ALG_RSA LENGTH_RSA_1024", "ALG_RSA LENGTH_RSA_1280", "ALG_RSA LENGTH_RSA_1536", "ALG_RSA LENGTH_RSA_1984", "ALG_RSA LENGTH_RSA_2048", "ALG_RSA LENGTH_RSA_3072", "ALG_RSA LENGTH_RSA_4096"
+        "ALG_RSA LENGTH_RSA_512#2.1.1", "ALG_RSA LENGTH_RSA_736#2.2.0", "ALG_RSA LENGTH_RSA_768#2.1.1", "ALG_RSA LENGTH_RSA_896#2.2.0",
+        "ALG_RSA LENGTH_RSA_1024#2.1.1", "ALG_RSA LENGTH_RSA_1280#2.2.0", "ALG_RSA LENGTH_RSA_1536#2.2.0", "ALG_RSA LENGTH_RSA_1984#2.2.0", "ALG_RSA LENGTH_RSA_2048#2.1.1", 
+        "ALG_RSA LENGTH_RSA_3072#never??", "ALG_RSA LENGTH_RSA_4096#3.0.1"
         };
 
     public static final String KEYPAIR_RSACRT_STR[] = {"javacard.security.KeyPair ALG_RSA_CRT on-card generation", 
-        "ALG_RSA_CRT LENGTH_RSA_512", "ALG_RSA_CRT LENGTH_RSA_736", "ALG_RSA_CRT LENGTH_RSA_768", "ALG_RSA_CRT LENGTH_RSA_896",
-        "ALG_RSA_CRT LENGTH_RSA_1024", "ALG_RSA_CRT LENGTH_RSA_1280", "ALG_RSA_CRT LENGTH_RSA_1536", "ALG_RSA_CRT LENGTH_RSA_1984", "ALG_RSA_CRT LENGTH_RSA_2048", 
-        "ALG_RSA_CRT LENGTH_RSA_3072", "ALG_RSA_CRT LENGTH_RSA_4096"
-    };    
+        "ALG_RSA_CRT LENGTH_RSA_512#2.1.1", "ALG_RSA_CRT LENGTH_RSA_736#2.2.0", "ALG_RSA_CRT LENGTH_RSA_768#2.1.1", "ALG_RSA_CRT LENGTH_RSA_896#2.2.0",
+        "ALG_RSA_CRT LENGTH_RSA_1024#2.1.1", "ALG_RSA_CRT LENGTH_RSA_1280#2.2.0", "ALG_RSA_CRT LENGTH_RSA_1536#2.2.0", "ALG_RSA_CRT LENGTH_RSA_1984#2.2.0", "ALG_RSA_CRT LENGTH_RSA_2048#2.1.1", 
+        "ALG_RSA_CRT LENGTH_RSA_3072#never??", "ALG_RSA_CRT LENGTH_RSA_4096#3.0.1"
+        };    
+  
     public static final String KEYPAIR_DSA_STR[] = {"javacard.security.KeyPair ALG_DSA on-card generation", 
-        "ALG_DSA LENGTH_DSA_512", "ALG_DSA LENGTH_DSA_768", "ALG_DSA LENGTH_DSA_1024"
+        "ALG_DSA LENGTH_DSA_512#2.1.1", "ALG_DSA LENGTH_DSA_768#2.1.1", "ALG_DSA LENGTH_DSA_1024#2.1.1"
     };
+  
     public static final String KEYPAIR_EC_F2M_STR[] = {"javacard.security.KeyPair ALG_EC_F2M on-card generation", 
-        "ALG_EC_F2M LENGTH_EC_F2M_113", "ALG_EC_F2M LENGTH_EC_F2M_131", "ALG_EC_F2M LENGTH_EC_F2M_163", "ALG_EC_F2M LENGTH_EC_F2M_193"
+        "ALG_EC_F2M LENGTH_EC_F2M_113#2.2.1", "ALG_EC_F2M LENGTH_EC_F2M_131#2.2.1", "ALG_EC_F2M LENGTH_EC_F2M_163#2.2.1", "ALG_EC_F2M LENGTH_EC_F2M_193#2.2.1"
     };
+ 
     public static final String KEYPAIR_EC_FP_STR[] = {"javacard.security.KeyPair ALG_EC_FP on-card generation", 
-        "ALG_EC_FP LENGTH_EC_FP_112", "ALG_EC_FP LENGTH_EC_FP_128", "ALG_EC_FP LENGTH_EC_FP_160", "ALG_EC_FP LENGTH_EC_FP_192", "ALG_EC_FP LENGTH_EC_FP_224", "ALG_EC_FP LENGTH_EC_FP_256", "ALG_EC_FP LENGTH_EC_FP_384", "ALG_EC_FP LENGTH_EC_FP_521"
+        "ALG_EC_FP LENGTH_EC_FP_112#2.2.1", "ALG_EC_FP LENGTH_EC_FP_128#2.2.1", "ALG_EC_FP LENGTH_EC_FP_160#2.2.1", "ALG_EC_FP LENGTH_EC_FP_192#2.2.1", "ALG_EC_FP LENGTH_EC_FP_224#3.0.1", "ALG_EC_FP LENGTH_EC_FP_256#3.0.1", "ALG_EC_FP LENGTH_EC_FP_384#3.0.1", "ALG_EC_FP LENGTH_EC_FP_521#3.0.4"
     };
 
     public static final byte CLASS_KEYPAIR_RSA_P2          = 11;
@@ -329,8 +349,12 @@ public class CardMngr {
     // JC3.0.1
     public static final byte ALG_SHA_224 = 7;
     
-    public static final String MESSAGEDIGEST_STR[] = {"javacard.security.MessageDigest", "ALG_SHA", "ALG_MD5", "ALG_RIPEMD160", 
-        "ALG_SHA_256", "ALG_SHA_384", "ALG_SHA_512", "ALG_SHA_224"
+    public static final String MESSAGEDIGEST_STR[] = {"javacard.security.MessageDigest", 
+        "ALG_SHA#<=2.1", "ALG_MD5#<=2.1", "ALG_RIPEMD160#<=2.1", 
+        //2.2.2
+        "ALG_SHA_256#2.2.2", "ALG_SHA_384#2.2.2", "ALG_SHA_512#2.2.2", 
+        //3.0.1
+        "ALG_SHA_224#3.0.1"
     }; 
 
 
@@ -338,22 +362,23 @@ public class CardMngr {
     public static final byte ALG_PSEUDO_RANDOM             = 1;
     public static final byte ALG_SECURE_RANDOM             = 2;
 
-    public static final String RANDOMDATA_STR[] = {"javacard.security.RandomData", "ALG_PSEUDO_RANDOM", "ALG_SECURE_RANDOM"}; 
+    public static final String RANDOMDATA_STR[] = {"javacard.security.RandomData", 
+        "ALG_PSEUDO_RANDOM#<=2.1", "ALG_SECURE_RANDOM#<=2.1"}; 
 
       // Class javacard.security.Checksum
     public static final byte ALG_ISO3309_CRC16             = 1;
     public static final byte ALG_ISO3309_CRC32             = 2;
 
-    public static final String CHECKSUM_STR[] = {"javacard.security.Checksum", "ALG_ISO3309_CRC16", "ALG_ISO3309_CRC32"}; 
+    public static final String CHECKSUM_STR[] = {"javacard.security.Checksum", "ALG_ISO3309_CRC16#2.2.1", "ALG_ISO3309_CRC32#2.2.1"}; 
     
-    public static final String JCSYSTEM_STR[] = {"javacard.framework.JCSystem", "JCSystem.getVersion()[Major.Minor]", 
-        "JCSystem.isObjectDeletionSupported", "JCSystem.MEMORY_TYPE_PERSISTENT", "JCSystem.MEMORY_TYPE_TRANSIENT_RESET", 
-        "JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT"}; 
+    public static final String JCSYSTEM_STR[] = {"javacard.framework.JCSystem", "JCSystem.getVersion()[Major.Minor]#<=2.1", 
+        "JCSystem.isObjectDeletionSupported#2.2.0", "JCSystem.MEMORY_TYPE_PERSISTENT#2.2.1", "JCSystem.MEMORY_TYPE_TRANSIENT_RESET#2.2.1", 
+        "JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT#2.2.1"}; 
 
     public static final String RAWRSA_1024_STR[] = {"Variable RSA 1024 - support for variable public exponent. If supported, user-defined fast modular exponentiation can be executed on the smart card via cryptographic coprocessor. This is very specific feature and you will probably not need it", 
         "Allocate RSA 1024 objects", "Set random modulus", "Set random public exponent", "Initialize cipher with public key with random exponent", "Use random public exponent"}; 
 
-    public static final String EXTENDEDAPDU_STR[] = {"javacardx.apdu.ExtendedLength", "Extended APDU"}; 
+    public static final String EXTENDEDAPDU_STR[] = {"javacardx.apdu.ExtendedLength", "Extended APDU#2.2.2"}; 
 
     public static final String BASIC_INFO[] = {"Basic info", "JavaCard support version"}; 
    
@@ -362,6 +387,7 @@ public class CardMngr {
         KEYPAIR_RSA_STR, KEYPAIR_RSACRT_STR, KEYPAIR_DSA_STR, KEYPAIR_EC_F2M_STR, 
         KEYPAIR_EC_FP_STR, KEYAGREEMENT_STR, CHECKSUM_STR, RAWRSA_1024_STR
     };
+
     
     public static final short 	ILLEGAL_USE         = 5;
     public static final short 	ILLEGAL_VALUE       = 1;
@@ -607,113 +633,135 @@ public class CardMngr {
 	return status;
     }
 
-    public int GetSupportedAndParse(byte algClass, String algNames[], StringBuilder pValue, FileOutputStream pFile, byte algPartP2) throws Exception {
+    public int GetSupportedAndParse(byte algClass, String algNames[], StringBuilder pValue, FileOutputStream pFile, byte algPartP2, int bForceTest) throws Exception {
         int         status = STAT_OK;
         byte        suppAlg[] = new byte[MAX_SUPP_ALG];
         long       elapsedCard;
         boolean     bNamePrinted = false;
+        int         runTest = 1;
 
-        // CLEAR ARRAY FOR SUPPORTED ALGORITHMS
-        Arrays.fill(suppAlg, SUPP_ALG_UNTOUCHED);
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        
+        if (bForceTest == 1) {
+            runTest = 1;
+        }
+        else {
+            System.out.println("\n\nQ: Do you like to test supported algorithms from class " + algClass + "?");
+            System.out.println("Type 1 for yes, 0 for no: ");	
+            runTest = Integer.decode(br.readLine());                
+        }
+        
+        if (runTest == 1) {
+            // CLEAR ARRAY FOR SUPPORTED ALGORITHMS
+            Arrays.fill(suppAlg, SUPP_ALG_UNTOUCHED);
 
-        // PREPARE SEPARATE APDU FOR EVERY SIGNALIZED P2 VALUE
-        // IF P2 == 0 THEN ALL ALGORITHMS WITHIN GIVEN algClass WILL BE CHECK In SINGLE APDU
-        // OTHERWISE, MULTIPLE APDU WILL BE ISSUED
-        byte p2Start = (algPartP2 == 0) ? (byte) 0 : (byte) 1; 
-        for (byte p2 = p2Start; p2 <= algPartP2; p2++) {
+            // PREPARE SEPARATE APDU FOR EVERY SIGNALIZED P2 VALUE
+            // IF P2 == 0 THEN ALL ALGORITHMS WITHIN GIVEN algClass WILL BE CHECK In SINGLE APDU
+            // OTHERWISE, MULTIPLE APDU WILL BE ISSUED
+            byte p2Start = (algPartP2 == 0) ? (byte) 0 : (byte) 1; 
+            for (byte p2 = p2Start; p2 <= algPartP2; p2++) {
 
-            elapsedCard = -System.currentTimeMillis();
-            
-            byte apdu[] = new byte[HEADER_LENGTH];
-            apdu[OFFSET_CLA] = (byte) 0xB0;
-            apdu[OFFSET_INS] = (byte) 0x70;
-            apdu[OFFSET_P1] = algClass;
-            apdu[OFFSET_P2] = p2;
-            apdu[OFFSET_LC] = 0x00;
+                elapsedCard = -System.currentTimeMillis();
 
-            ResponseAPDU resp = sendAPDU(apdu);
-            if (resp.getSW() != 0x9000) {
-                System.out.println("Fail to obtain response for GetSupportedAndParse");
-            } else {
-                // SAVE TIME OF CARD RESPONSE
-                elapsedCard += System.currentTimeMillis();
+                byte apdu[] = new byte[HEADER_LENGTH];
+                apdu[OFFSET_CLA] = (byte) 0xB0;
+                apdu[OFFSET_INS] = (byte) 0x70;
+                apdu[OFFSET_P1] = algClass;
+                apdu[OFFSET_P2] = p2;
+                apdu[OFFSET_LC] = 0x00;
 
-                String elTimeStr = "";
-                // OUTPUT REQUIRED TIME WHEN PARTITIONED CHECk WAS PERFORMED (NOTMULTIPLE ALGORITHMS IN SINGLE RUN)
-                if (algPartP2 > 0) { elTimeStr = String.format("%1f", (double) elapsedCard / (float) CLOCKS_PER_SEC);} 
+                ResponseAPDU resp = sendAPDU(apdu);
+                if (resp.getSW() != 0x9000) {
+                    String message = "Fail to obtain response for GetSupportedAndParse";
+                    System.out.println(message);
+                    pFile.write(message.getBytes());
+                } else {
+                    // SAVE TIME OF CARD RESPONSE
+                    elapsedCard += System.currentTimeMillis();
 
-                // OK, STORE RESPONSE TO suppAlg ARRAY
-                byte temp[] = resp.getData();
-                
-                if (temp[0] == algClass) {
+                    String elTimeStr = "";
+                    // OUTPUT REQUIRED TIME WHEN PARTITIONED CHECk WAS PERFORMED (NOTMULTIPLE ALGORITHMS IN SINGLE RUN)
+                    if (algPartP2 > 0) { elTimeStr = String.format("%1f", (double) elapsedCard / (float) CLOCKS_PER_SEC);} 
 
-                    // PRINT algClass NAME ONLY ONES
-                    if (!bNamePrinted) {
-                        String message = "";
-                        message += "\r\n"; message += algNames[0]; message += ";\r\n";
-                        System.out.println(message);
-                        pFile.write(message.getBytes());
-                        pValue.append(message);
+                    // OK, STORE RESPONSE TO suppAlg ARRAY
+                    byte temp[] = resp.getData();
 
-                        bNamePrinted = true;
-                    }
+                    if (temp[0] == algClass) {
 
-                    for (int i = 1; i < temp.length; i++) {
-                        // ONLY FILLED RESPONSES ARE STORED
-                        if ((temp[i] != SUPP_ALG_UNTOUCHED) && ((short) (temp[i]&0xff) != SUPP_ALG_SEPARATOR)) {
-                            suppAlg[i] = temp[i];    
+                        // PRINT algClass NAME ONLY ONES
+                        if (!bNamePrinted) {
+                            String message = "";
+                            message += "\r\n"; message += algNames[0]; message += ";\r\n";
+                            System.out.println(message);
+                            pFile.write(message.getBytes());
+                            pValue.append(message);
 
-                           
-                            // ALG NAME
-                            String algState = "";
-                            switch (suppAlg[i]) {
-                                case SUPP_ALG_SUPPORTED: { // SUPPORTED
-                                    algState += algNames[i]; algState += ";"; algState += "yes;"; algState += elTimeStr; algState += "\r\n";
-                                    break;
+                            bNamePrinted = true;
+                        }
+
+                        for (int i = 1; i < temp.length; i++) {
+                            // ONLY FILLED RESPONSES ARE STORED
+                            if ((temp[i] != SUPP_ALG_UNTOUCHED) && ((short) (temp[i]&0xff) != SUPP_ALG_SEPARATOR)) {
+                                suppAlg[i] = temp[i];    
+
+
+                                // ALG NAME
+                                String algState = "";
+                                switch (suppAlg[i]) {
+                                    case SUPP_ALG_SUPPORTED: { // SUPPORTED
+                                        algState += algNames[i]; algState += ";"; algState += "yes;"; algState += elTimeStr; algState += "\r\n";
+                                        break;
+                                    }
+                                    case EXCEPTION_CODE_OFFSET + NO_SUCH_ALGORITHM: {
+                                        algState += algNames[i]; algState += ";"; algState += "no;"; algState += "\r\n";
+                                        break;
+                                    }
+                                    case EXCEPTION_CODE_OFFSET + ILLEGAL_USE: {
+                                        algState += algNames[i]; algState += ";"; algState += "error(ILLEGAL_USE);"; algState += "\r\n";
+                                        break;
+                                    }
+                                    case EXCEPTION_CODE_OFFSET + ILLEGAL_VALUE: {
+                                        algState += algNames[i]; algState += ";"; algState += "error(ILLEGAL_VALUE);"; algState += "\r\n";
+                                        break;
+                                    }
+                                    case EXCEPTION_CODE_OFFSET + INVALID_INIT: {
+                                        algState += algNames[i]; algState += ";"; algState += "error(INVALID_INIT);"; algState += "\r\n";
+                                        break;
+                                    }
+                                    case EXCEPTION_CODE_OFFSET + UNINITIALIZED_KEY: {
+                                        algState += algNames[i]; algState += ";"; algState += "error(UNINITIALIZED_KEY);"; algState += "\r\n";
+                                        break;
+                                    }    
+                                    case 0x6f: {
+                                        algState += algNames[i]; algState += ";"; algState += "maybe;"; algState += "\r\n";
+                                        break;
+                                    }
+                                    default: {
+                                        // OTHER VALUE, IGNORE 
+                                        System.out.println("Unknown value detected in AlgTest applet (0x" + Integer.toHexString(suppAlg[i] & 0xff) + "). Possibly, old version of AlTestJClient is used (try update)");
+                                        break;
+                                    }
                                 }
-                                case EXCEPTION_CODE_OFFSET + NO_SUCH_ALGORITHM: {
-                                    algState += algNames[i]; algState += ";"; algState += "no;"; algState += "\r\n";
-                                    break;
-                                }
-                                case EXCEPTION_CODE_OFFSET + ILLEGAL_USE: {
-                                    algState += algNames[i]; algState += ";"; algState += "error(ILLEGAL_USE);"; algState += "\r\n";
-                                    break;
-                                }
-                                case EXCEPTION_CODE_OFFSET + ILLEGAL_VALUE: {
-                                    algState += algNames[i]; algState += ";"; algState += "error(ILLEGAL_VALUE);"; algState += "\r\n";
-                                    break;
-                                }
-                                case EXCEPTION_CODE_OFFSET + INVALID_INIT: {
-                                    algState += algNames[i]; algState += ";"; algState += "error(INVALID_INIT);"; algState += "\r\n";
-                                    break;
-                                }
-                                case EXCEPTION_CODE_OFFSET + UNINITIALIZED_KEY: {
-                                    algState += algNames[i]; algState += ";"; algState += "error(UNINITIALIZED_KEY);"; algState += "\r\n";
-                                    break;
-                                }    
-                                case 0x6f: {
-                                    algState += algNames[i]; algState += ";"; algState += "maybe;"; algState += "\r\n";
-                                    break;
-                                }
-                                default: {
-                                    // OTHER VALUE, IGNORE 
-                                    System.out.println("Unknown value detected in AlgTest applet (0x" + Integer.toHexString(suppAlg[i] & 0xff) + "). Possibly, old version of AlTestJClient is used (try update)");
-                                    break;
-                                }
-                            }
 
-                            if (algState.equals("")) {
-                            }
-                            else {
-                                System.out.println(algState);
-                                pFile.write(algState.getBytes());
-                                pValue.append(algState);
+                                if (algState.equals("")) {
+                                }
+                                else {
+                                    System.out.println(algState);
+                                    pFile.write(algState.getBytes());
+                                    pValue.append(algState);
+                                }
                             }
                         }
                     }
+                    else { status = STAT_DATA_CORRUPTED; }
                 }
-                else { status = STAT_DATA_CORRUPTED; }
             }
+        }
+        else {
+            //
+            String message = "Testing of algorithm class '" + algClass + "' skipped by user";
+            System.out.println(message);
+            pFile.write(message.getBytes());
         }
 
         return status;
