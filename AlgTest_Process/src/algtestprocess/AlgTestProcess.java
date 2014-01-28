@@ -111,7 +111,7 @@ public class AlgTestProcess {
             note = "Note: If you have card of unknown type, try to obtain ATR and take a look at smartcard list available here: <a href=\"http://smartcard-atr.appspot.com/\"> http://smartcard-atr.appspot.com/</a><br><br>\r\n\r\n"; 
             file.write(note.getBytes());
 
-            note = "Note: If character '-' or '?' is present, particular feature was not yet tested. This usually means that feature is unsupported as typical situation is the addition of new constants introduced by the newer version of JavaCard standard. Error means that tested card gives permanent error other then CryptoException.NO_SUCH_ALGORITHM when called.<br><br>\r\n\r\n";
+            note = "Note: If character '-' or '?' is present, particular feature was not tested. Usually, this is equal to not supported algorithm. Typical example is the addition of new constants introduced by the newer version of JavaCard standard, which are not supported by cards tested before apperance of of new version of specification. Error means that tested card gives permanent error other then CryptoException.NO_SUCH_ALGORITHM when called.<br><br>\r\n\r\n";
             file.write(note.getBytes());
             
             String table = "<table width=\"730\" border=\"0\" cellspacing=\"2\" cellpadding=\"4\">\r\n";
@@ -143,7 +143,7 @@ public class AlgTestProcess {
     static void formatTableAlgorithm_HTML(String[] classInfo, HashMap[] filesSupport, FileOutputStream file) throws IOException {
         // class (e.g., javacardx.crypto.Cipher)
         String algorithm = "<tr style='height:12.75pt'>\r\n" + "<td class='dark'>" + classInfo[0] + "</td>\r\n";
-        algorithm += "  <td class='dark_index'>Introduced in JavaCard specification version</td>\r\n"; 
+        algorithm += "  <td class='dark_index'>introduced in JavaCard version</td>\r\n"; 
         for (int i = 0; i < filesSupport.length; i++) { algorithm += "  <td class='dark_index'>c" + i + "</td>\r\n"; }
         algorithm += "</tr>\r\n";
         // support for particular algorithm from given class
@@ -156,6 +156,8 @@ public class AlgTestProcess {
                 String[] algParts = classInfo[i].split("#");
                 String algorithmName = algParts[0];
                 String algorithmVersion = (algParts.length > 1) ? algParts[1] : "";
+                String includeInfo = (algParts.length > 2) ? algParts[2] : "1";
+                if (Integer.decode(includeInfo) == 0) continue;    // ignore types with ignore flag set (algorith#version#include 1/0) 
                 
                 algorithm += "<tr style='height:12.75pt'>\r\n";
                 // Add algorithm name
