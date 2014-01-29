@@ -148,16 +148,13 @@ public class AlgTestProcess {
         algorithm += "</tr>\r\n";
         // support for particular algorithm from given class
         for (int i = 1; i < classInfo.length; i++) {
-            if (!classInfo[i].startsWith("###")) { // ignore special informative types
+            if (!classInfo[i].startsWith("@@@")) { // ignore special informative types
                 
                 // Parse algorithm name and version of JC which introduced it
-                //algParts[0] == algorithm name
-                //algParts[1] == introducing version
-                String[] algParts = classInfo[i].split("#");
-                String algorithmName = algParts[0];
-                String algorithmVersion = (algParts.length > 1) ? algParts[1] : "";
-                String includeInfo = (algParts.length > 2) ? algParts[2] : "1";
-                if (Integer.decode(includeInfo) == 0) continue;    // ignore types with ignore flag set (algorith#version#include 1/0) 
+                CardMngr    cman = new CardMngr();
+                String algorithmName = cman.GetAlgorithmName(classInfo[i]);
+                String algorithmVersion = cman.GetAlgorithmIntroductionVersion(classInfo[i]);
+                if (!cman.ShouldBeIncludedInOutput(classInfo[i])) continue; // ignore types with ignore flag set (algorith#version#include 1/0) 
                 
                 algorithm += "<tr style='height:12.75pt'>\r\n";
                 // Add algorithm name
