@@ -7,12 +7,17 @@ Used reader; PC/SC terminal Gemplus USB SmartCard Reader 0
 Card ATR; 3b fa 18 00 00 81 31 fe 45 4a 33 41 30 38 31 56 32 34 31 89 
 Used protocol; T=1
 
+JavaCard support version;2.2.2;
 JCSystem.getVersion()[Major.Minor];2.2;
 JCSystem.isObjectDeletionSupported;yes;
 JCSystem.MEMORY_TYPE_PERSISTENT;>32767B;
 JCSystem.MEMORY_TYPE_TRANSIENT_RESET;3477B;
 JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT;3477B;
 
+
+
+javacardx.apdu.ExtendedLength; 
+Extended APDU;yes
 
 javacardx.crypto.Cipher;
 ALG_DES_CBC_NOPAD;yes;

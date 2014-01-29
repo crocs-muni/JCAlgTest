@@ -111,7 +111,7 @@ public class AlgTestProcess {
             note = "Note: If you have card of unknown type, try to obtain ATR and take a look at smartcard list available here: <a href=\"http://smartcard-atr.appspot.com/\"> http://smartcard-atr.appspot.com/</a><br><br>\r\n\r\n"; 
             file.write(note.getBytes());
 
-            note = "Note: If character '-' or '?' is present, particular feature was not tested. Usually, this is equal to not supported algorithm. Typical example is the addition of new constants introduced by the newer version of JavaCard standard, which are not supported by cards tested before apperance of of new version of specification. Error means that tested card gives permanent error other then CryptoException.NO_SUCH_ALGORITHM when called.<br><br>\r\n\r\n";
+            note = "Note: If character '-' or '?' is present, particular feature was not tested. Usually, this is equal to not supported algorithm. Typical example is the addition of new constants introduced by the newer version of JavaCard standard, which are not supported by cards tested before apperance of of new version of specification. The exceptions to this rule are classes that have to be tested manually (at the moment, following information: JavaCard support version, javacardx.apdu.ExtendedLength Extended APDU) where not tested doesn't automatically means not supported. Automated upload and testing of these features will solve this in feature. <br>\r\nError means that tested card gives permanent error other then CryptoException.NO_SUCH_ALGORITHM when called.<br><br>\r\n\r\n";
             file.write(note.getBytes());
             
             String table = "<table width=\"730\" border=\"0\" cellspacing=\"2\" cellpadding=\"4\">\r\n";
