@@ -4,6 +4,60 @@
 <link type="text/css" href="style.css" rel="stylesheet"><title>JavaCard support test</title></head>
 <body>
 
+<script>
+var preEl ;
+var orgBColor;
+var orgTColor;
+function HighLightTR(el, backColor,textColor){
+  if(typeof(preEl)!='undefined') {
+     preEl.bgColor=orgBColor;
+     try{ChangeTextColor(preEl,orgTColor);}catch(e){;}
+  }
+  orgBColor = el.bgColor;
+  orgTColor = el.style.color;
+  el.bgColor=backColor;
+
+  try{ChangeTextColor(el,textColor);}catch(e){;}
+  preEl = el;
+}
+
+
+function ChangeTextColor(a_obj,a_color){  ;
+   for (i=0;i<a_obj.cells.length;i++)
+    a_obj.cells(i).style.color=a_color;
+}
+</script>
+
+<table border=1 align=center>
+<caption>Statistics</caption>
+<th>Year</th>
+<th>Team</th>
+<tr onMouseOver="this.bgColor = '#C0C0C0'"
+    onMouseOut ="this.bgColor = '#FFFFFF'"
+    bgcolor="#FFFFFF">
+<td align=right>1930</td>
+<td align=right>Detroit</td>
+</tr>
+<tr onMouseOver="this.bgColor = '#C0C0C0'"
+    onMouseOut ="this.bgColor = '#FFFFFF'"
+    bgcolor="#FFFFFF">
+<td align=right>1933</td>
+<td align=right>Detroit</td>
+</tr>
+<tr onMouseOver="this.bgColor = '#C0C0C0'"
+    onMouseOut ="this.bgColor = '#FFFFFF'"
+    bgcolor="#FFFFFF">
+<td align=right>1934</td>
+<td align=right>Detroit</td>
+</tr>
+<tr onMouseOver="this.bgColor = '#C0C0C0'"
+    onMouseOut ="this.bgColor = '#FFFFFF'"
+    bgcolor="#FFFFFF">
+<td align=right>1935</td>
+<td align=right>Detroit</td>
+</tr>
+</table>
+
 <b>Tested cards abbreviations:</b><br>
 <b>c0</b>	Athena IDprotect , ATR=3B D5 18 FF 80 91 FE 1F C3 80 73 C8 21 13 08 (provided by Cosmo)<br>
 <b>c1</b>	Axalto Cyberflex32 , ATR=3B 75 94 00 00 62 02 02 02 01 (provided by PetrS)<br>
@@ -40,8 +94,11 @@ Note: If character '-' or '?' is present, particular feature was not tested. Usu
 Error means that tested card gives permanent error other then CryptoException.NO_SUCH_ALGORITHM when called.<br><br>
 
 <table width="730" border="0" cellspacing="2" cellpadding="4">
-<tr style='height:12.75pt'>
-<td class='dark'>Basic info</td>
+<tr onMouseOver="this.bgColor = '#C0C0C0'"
+    onMouseOut ="this.bgColor = '#FFFFFF'"
+    bgcolor="#FFFFFF"
+    style='height:12.75pt'">
+  <td class='dark'>Basic info</td>
   <td class='dark_index'>introduced in JavaCard version</td>
   <td class='dark_index'>c0</td>
   <td class='dark_index'>c1</td>
@@ -70,7 +127,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='dark_index'>c24</td>
   <td class='dark_index'>c25</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>JavaCard support version</td>
   <td class='light_error'></td>
   <td class='light_info'>2.2.2</td>
@@ -100,7 +157,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_error'>-</td>
   <td class='light_error'>-</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
 <td class='dark'>javacard.framework.JCSystem</td>
   <td class='dark_index'>introduced in JavaCard version</td>
   <td class='dark_index'>c0</td>
@@ -130,7 +187,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='dark_index'>c24</td>
   <td class='dark_index'>c25</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>JCSystem.getVersion()[Major.Minor]</td>
   <td class='light_error'><=2.1</td>
   <td class='light_info'>2.2</td>
@@ -160,7 +217,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_info'>2.2</td>
   <td class='light_info'>3.0</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>JCSystem.isObjectDeletionSupported</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -190,7 +247,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>JCSystem.MEMORY_TYPE_PERSISTENT</td>
   <td class='light_error'>2.2.1</td>
   <td class='light_info'>>32767B</td>
@@ -220,7 +277,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_info'>>32767B</td>
   <td class='light_info'>>32767B</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>JCSystem.MEMORY_TYPE_TRANSIENT_RESET</td>
   <td class='light_error'>2.2.1</td>
   <td class='light_info'>4878B</td>
@@ -250,7 +307,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_info'>1724B</td>
   <td class='light_info'>2915B</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT</td>
   <td class='light_error'>2.2.1</td>
   <td class='light_info'>4878B</td>
@@ -280,7 +337,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_info'>1724B</td>
   <td class='light_info'>2915B</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
 <td class='dark'>javacardx.apdu.ExtendedLength</td>
   <td class='dark_index'>introduced in JavaCard version</td>
   <td class='dark_index'>c0</td>
@@ -310,7 +367,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='dark_index'>c24</td>
   <td class='dark_index'>c25</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>Extended APDU</td>
   <td class='light_error'>2.2.2</td>
   <td class='light_error'>-</td>
@@ -340,7 +397,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_error'>-</td>
   <td class='light_error'>-</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
 <td class='dark'>javacardx.crypto.Cipher</td>
   <td class='dark_index'>introduced in JavaCard version</td>
   <td class='dark_index'>c0</td>
@@ -370,7 +427,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='dark_index'>c24</td>
   <td class='dark_index'>c25</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_DES_CBC_NOPAD</td>
   <td class='light_error'><=2.1</td>
   <td class='light_yes'>yes</td>
@@ -400,7 +457,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_DES_CBC_ISO9797_M1</td>
   <td class='light_error'><=2.1</td>
   <td class='light_yes'>yes</td>
@@ -430,7 +487,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_DES_CBC_ISO9797_M2</td>
   <td class='light_error'><=2.1</td>
   <td class='light_yes'>yes</td>
@@ -460,7 +517,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_DES_CBC_PKCS5</td>
   <td class='light_error'><=2.1</td>
   <td class='light_no'>no</td>
@@ -490,7 +547,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_DES_ECB_NOPAD</td>
   <td class='light_error'><=2.1</td>
   <td class='light_yes'>yes</td>
@@ -520,7 +577,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_DES_ECB_ISO9797_M1</td>
   <td class='light_error'><=2.1</td>
   <td class='light_yes'>yes</td>
@@ -550,7 +607,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_DES_ECB_ISO9797_M2</td>
   <td class='light_error'><=2.1</td>
   <td class='light_yes'>yes</td>
@@ -580,7 +637,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_DES_ECB_PKCS5</td>
   <td class='light_error'><=2.1</td>
   <td class='light_no'>no</td>
@@ -610,7 +667,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA_ISO14888</td>
   <td class='light_error'><=2.1</td>
   <td class='light_no'>no</td>
@@ -640,7 +697,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA_PKCS1</td>
   <td class='light_error'><=2.1</td>
   <td class='light_yes'>yes</td>
@@ -670,7 +727,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA_ISO9796</td>
   <td class='light_error'><=2.1</td>
   <td class='light_no'>no</td>
@@ -700,7 +757,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA_NOPAD</td>
   <td class='light_error'>2.1.1</td>
   <td class='light_yes'>yes</td>
@@ -730,7 +787,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_AES_BLOCK_128_CBC_NOPAD</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -760,7 +817,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_AES_BLOCK_128_ECB_NOPAD</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -790,7 +847,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA_PKCS1_OAEP</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_no'>no</td>
@@ -820,7 +877,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_KOREAN_SEED_ECB_NOPAD</td>
   <td class='light_error'>2.2.2</td>
   <td class='light_yes'>yes</td>
@@ -850,7 +907,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_KOREAN_SEED_CBC_NOPAD</td>
   <td class='light_error'>2.2.2</td>
   <td class='light_yes'>yes</td>
@@ -880,7 +937,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_AES_BLOCK_192_CBC_NOPAD</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -910,7 +967,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_AES_BLOCK_192_ECB_NOPAD</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -940,7 +997,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_AES_BLOCK_256_CBC_NOPAD</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -970,7 +1027,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_AES_BLOCK_256_ECB_NOPAD</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -1000,7 +1057,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_AES_CBC_ISO9797_M1</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -1030,7 +1087,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_AES_CBC_ISO9797_M2</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -1060,7 +1117,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_AES_CBC_PKCS5</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -1090,7 +1147,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_AES_ECB_ISO9797_M1</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -1120,7 +1177,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_AES_ECB_ISO9797_M2</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -1150,7 +1207,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_AES_ECB_PKCS5</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -1180,7 +1237,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
 <td class='dark'>javacard.crypto.Signature</td>
   <td class='dark_index'>introduced in JavaCard version</td>
   <td class='dark_index'>c0</td>
@@ -1210,7 +1267,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='dark_index'>c24</td>
   <td class='dark_index'>c25</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_DES_MAC4_NOPAD</td>
   <td class='light_error'><=2.1</td>
   <td class='light_no'>no</td>
@@ -1240,7 +1297,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_DES_MAC8_NOPAD</td>
   <td class='light_error'><=2.1</td>
   <td class='light_yes'>yes</td>
@@ -1270,7 +1327,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_DES_MAC4_ISO9797_M1</td>
   <td class='light_error'><=2.1</td>
   <td class='light_no'>no</td>
@@ -1300,7 +1357,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_DES_MAC8_ISO9797_M1</td>
   <td class='light_error'><=2.1</td>
   <td class='light_yes'>yes</td>
@@ -1330,7 +1387,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_DES_MAC4_ISO9797_M2</td>
   <td class='light_error'><=2.1</td>
   <td class='light_no'>no</td>
@@ -1360,7 +1417,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_DES_MAC8_ISO9797_M2</td>
   <td class='light_error'><=2.1</td>
   <td class='light_yes'>yes</td>
@@ -1390,7 +1447,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_DES_MAC4_PKCS5</td>
   <td class='light_error'><=2.1</td>
   <td class='light_no'>no</td>
@@ -1420,7 +1477,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_DES_MAC8_PKCS5</td>
   <td class='light_error'><=2.1</td>
   <td class='light_no'>no</td>
@@ -1450,7 +1507,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA_SHA_ISO9796</td>
   <td class='light_error'><=2.1</td>
   <td class='light_yes'>yes</td>
@@ -1480,7 +1537,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA_SHA_PKCS1</td>
   <td class='light_error'><=2.1</td>
   <td class='light_yes'>yes</td>
@@ -1510,7 +1567,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA_MD5_PKCS1</td>
   <td class='light_error'><=2.1</td>
   <td class='light_no'>no</td>
@@ -1540,7 +1597,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA_RIPEMD160_ISO9796</td>
   <td class='light_error'><=2.1</td>
   <td class='light_no'>no</td>
@@ -1570,7 +1627,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA_RIPEMD160_PKCS1</td>
   <td class='light_error'><=2.1</td>
   <td class='light_no'>no</td>
@@ -1600,7 +1657,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_DSA_SHA</td>
   <td class='light_error'><=2.1</td>
   <td class='light_no'>no</td>
@@ -1630,7 +1687,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA_SHA_RFC2409</td>
   <td class='light_error'><=2.1</td>
   <td class='light_no'>no</td>
@@ -1660,7 +1717,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA_MD5_RFC2409</td>
   <td class='light_error'><=2.1</td>
   <td class='light_no'>no</td>
@@ -1690,7 +1747,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_ECDSA_SHA</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_no'>no</td>
@@ -1720,7 +1777,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_AES_MAC_128_NOPAD</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -1750,7 +1807,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_DES_MAC4_ISO9797_1_M2_ALG3</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_no'>no</td>
@@ -1780,7 +1837,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_DES_MAC8_ISO9797_1_M2_ALG3</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_no'>no</td>
@@ -1810,7 +1867,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA_SHA_PKCS1_PSS</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_no'>no</td>
@@ -1840,7 +1897,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA_MD5_PKCS1_PSS</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_no'>no</td>
@@ -1870,7 +1927,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA_RIPEMD160_PKCS1_PSS</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_no'>no</td>
@@ -1900,7 +1957,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_HMAC_SHA1</td>
   <td class='light_error'>2.2.2</td>
   <td class='light_no'>no</td>
@@ -1930,7 +1987,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_HMAC_SHA_256</td>
   <td class='light_error'>2.2.2</td>
   <td class='light_no'>no</td>
@@ -1960,7 +2017,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_HMAC_SHA_384</td>
   <td class='light_error'>2.2.2</td>
   <td class='light_no'>no</td>
@@ -1990,7 +2047,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_HMAC_SHA_512</td>
   <td class='light_error'>2.2.2</td>
   <td class='light_no'>no</td>
@@ -2020,7 +2077,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_HMAC_MD5</td>
   <td class='light_error'>2.2.2</td>
   <td class='light_no'>no</td>
@@ -2050,7 +2107,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_HMAC_RIPEMD160</td>
   <td class='light_error'>2.2.2</td>
   <td class='light_no'>no</td>
@@ -2080,7 +2137,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA_SHA_ISO9796_MR</td>
   <td class='light_error'>2.2.2</td>
   <td class='light_no'>no</td>
@@ -2110,7 +2167,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA_RIPEMD160_ISO9796_MR</td>
   <td class='light_error'>2.2.2</td>
   <td class='light_no'>no</td>
@@ -2140,7 +2197,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_SEED_MAC_NOPAD</td>
   <td class='light_error'>2.2.2</td>
   <td class='light_yes'>yes</td>
@@ -2170,7 +2227,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_ECDSA_SHA_256</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -2200,7 +2257,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_ECDSA_SHA_384</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -2230,7 +2287,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_AES_MAC_192_NOPAD</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -2260,7 +2317,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_AES_MAC_256_NOPAD</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -2290,7 +2347,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_ECDSA_SHA_224</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -2320,7 +2377,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_ECDSA_SHA_512</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -2350,7 +2407,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA_SHA_224_PKCS1</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -2380,7 +2437,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA_SHA_256_PKCS1</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -2410,7 +2467,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA_SHA_384_PKCS1</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -2440,7 +2497,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA_SHA_512_PKCS1</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -2470,7 +2527,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA_SHA_224_PKCS1_PSS</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -2500,7 +2557,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA_SHA_256_PKCS1_PSS</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -2530,7 +2587,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA_SHA_384_PKCS1_PSS</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -2560,7 +2617,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA_SHA_512_PKCS1_PSS</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -2590,7 +2647,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_DES_MAC4_ISO9797_1_M1_ALG3</td>
   <td class='light_error'>3.0.4</td>
   <td class='light_no'>no</td>
@@ -2620,7 +2677,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_DES_MAC8_ISO9797_1_M1_ALG3</td>
   <td class='light_error'>3.0.4</td>
   <td class='light_no'>no</td>
@@ -2650,7 +2707,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
 <td class='dark'>javacard.security.MessageDigest</td>
   <td class='dark_index'>introduced in JavaCard version</td>
   <td class='dark_index'>c0</td>
@@ -2680,7 +2737,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='dark_index'>c24</td>
   <td class='dark_index'>c25</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_SHA</td>
   <td class='light_error'><=2.1</td>
   <td class='light_yes'>yes</td>
@@ -2710,7 +2767,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_MD5</td>
   <td class='light_error'><=2.1</td>
   <td class='light_no'>no</td>
@@ -2740,7 +2797,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RIPEMD160</td>
   <td class='light_error'><=2.1</td>
   <td class='light_no'>no</td>
@@ -2770,7 +2827,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_SHA_256</td>
   <td class='light_error'>2.2.2</td>
   <td class='light_yes'>yes</td>
@@ -2800,7 +2857,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_SHA_384</td>
   <td class='light_error'>2.2.2</td>
   <td class='light_no'>no</td>
@@ -2830,7 +2887,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_SHA_512</td>
   <td class='light_error'>2.2.2</td>
   <td class='light_no'>no</td>
@@ -2860,7 +2917,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_SHA_224</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -2890,7 +2947,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
 <td class='dark'>javacard.security.RandomData</td>
   <td class='dark_index'>introduced in JavaCard version</td>
   <td class='dark_index'>c0</td>
@@ -2920,7 +2977,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='dark_index'>c24</td>
   <td class='dark_index'>c25</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_PSEUDO_RANDOM</td>
   <td class='light_error'><=2.1</td>
   <td class='light_yes'>yes</td>
@@ -2950,7 +3007,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_SECURE_RANDOM</td>
   <td class='light_error'><=2.1</td>
   <td class='light_yes'>yes</td>
@@ -2980,7 +3037,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
 <td class='dark'>javacard.security.KeyBuilder</td>
   <td class='dark_index'>introduced in JavaCard version</td>
   <td class='dark_index'>c0</td>
@@ -3010,7 +3067,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='dark_index'>c24</td>
   <td class='dark_index'>c25</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_DES_TRANSIENT_RESET</td>
   <td class='light_error'><=2.1</td>
   <td class='light_yes'>yes</td>
@@ -3040,7 +3097,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_DES_TRANSIENT_DESELECT</td>
   <td class='light_error'><=2.1</td>
   <td class='light_yes'>yes</td>
@@ -3070,7 +3127,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_DES LENGTH_DES</td>
   <td class='light_error'><=2.1</td>
   <td class='light_yes'>yes</td>
@@ -3100,7 +3157,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_DES LENGTH_DES3_2KEY</td>
   <td class='light_error'><=2.1</td>
   <td class='light_yes'>yes</td>
@@ -3130,7 +3187,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_DES LENGTH_DES3_3KEY</td>
   <td class='light_error'><=2.1</td>
   <td class='light_yes'>yes</td>
@@ -3160,7 +3217,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_AES_TRANSIENT_RESET</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -3190,7 +3247,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_AES_TRANSIENT_DESELECT</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -3220,7 +3277,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_AES LENGTH_AES_128</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -3250,7 +3307,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_AES LENGTH_AES_192</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -3280,7 +3337,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_AES LENGTH_AES_256</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -3310,7 +3367,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_RSA_PUBLIC LENGTH_RSA_512</td>
   <td class='light_error'><=2.1</td>
   <td class='light_yes'>yes</td>
@@ -3340,7 +3397,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_RSA_PUBLIC LENGTH_RSA_736</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -3370,7 +3427,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_RSA_PUBLIC LENGTH_RSA_768</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -3400,7 +3457,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_RSA_PUBLIC LENGTH_RSA_896</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -3430,7 +3487,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_RSA_PUBLIC LENGTH_RSA_1024</td>
   <td class='light_error'><=2.1</td>
   <td class='light_yes'>yes</td>
@@ -3460,7 +3517,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_RSA_PUBLIC LENGTH_RSA_1280</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -3490,7 +3547,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_RSA_PUBLIC LENGTH_RSA_1536</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -3520,7 +3577,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_RSA_PUBLIC LENGTH_RSA_1984</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -3550,7 +3607,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_RSA_PUBLIC LENGTH_RSA_2048</td>
   <td class='light_error'><=2.1</td>
   <td class='light_yes'>yes</td>
@@ -3580,7 +3637,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_RSA_PUBLIC LENGTH_RSA_4096</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -3610,7 +3667,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_RSA_PRIVATE LENGTH_RSA_512</td>
   <td class='light_error'><=2.1</td>
   <td class='light_yes'>yes</td>
@@ -3640,7 +3697,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_RSA_PRIVATE LENGTH_RSA_736</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -3670,7 +3727,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_RSA_PRIVATE LENGTH_RSA_768</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -3700,7 +3757,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_RSA_PRIVATE LENGTH_RSA_896</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -3730,7 +3787,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_RSA_PRIVATE LENGTH_RSA_1024</td>
   <td class='light_error'><=2.1</td>
   <td class='light_yes'>yes</td>
@@ -3760,7 +3817,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_RSA_PRIVATE LENGTH_RSA_1280</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -3790,7 +3847,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_RSA_PRIVATE LENGTH_RSA_1536</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -3820,7 +3877,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_RSA_PRIVATE LENGTH_RSA_1984</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -3850,7 +3907,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_RSA_PRIVATE LENGTH_RSA_2048</td>
   <td class='light_error'><=2.1</td>
   <td class='light_yes'>yes</td>
@@ -3880,7 +3937,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_RSA_PRIVATE LENGTH_RSA_4096</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -3910,7 +3967,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_RSA_PRIVATE_TRANSIENT_RESET</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -3940,7 +3997,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_RSA_PRIVATE_TRANSIENT_DESELECT</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -3970,7 +4027,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_RSA_CRT_PRIVATE LENGTH_RSA_512</td>
   <td class='light_error'><=2.1</td>
   <td class='light_yes'>yes</td>
@@ -4000,7 +4057,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_RSA_CRT_PRIVATE LENGTH_RSA_736</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -4030,7 +4087,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_RSA_CRT_PRIVATE LENGTH_RSA_768</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -4060,7 +4117,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_RSA_CRT_PRIVATE LENGTH_RSA_896</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -4090,7 +4147,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1024</td>
   <td class='light_error'><=2.1</td>
   <td class='light_yes'>yes</td>
@@ -4120,7 +4177,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1280</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -4150,7 +4207,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1536</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -4180,7 +4237,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1984</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -4210,7 +4267,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_RSA_CRT_PRIVATE LENGTH_RSA_2048</td>
   <td class='light_error'><=2.1</td>
   <td class='light_yes'>yes</td>
@@ -4240,7 +4297,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_RSA_CRT_PRIVATE LENGTH_RSA_4096</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -4270,7 +4327,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_RSA_CRT_PRIVATE_TRANSIENT_RESET</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -4300,7 +4357,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_RSA_CRT_PRIVATE_TRANSIENT_DESELECT</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -4330,7 +4387,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_DSA_PRIVATE LENGTH_DSA_512</td>
   <td class='light_error'><=2.1</td>
   <td class='light_no'>no</td>
@@ -4360,7 +4417,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_DSA_PRIVATE LENGTH_DSA_768</td>
   <td class='light_error'><=2.1</td>
   <td class='light_no'>no</td>
@@ -4390,7 +4447,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_DSA_PRIVATE LENGTH_DSA_1024</td>
   <td class='light_error'><=2.1</td>
   <td class='light_no'>no</td>
@@ -4420,7 +4477,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_DSA_PRIVATE_TRANSIENT_RESET</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -4450,7 +4507,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_DSA_PRIVATE_TRANSIENT_DESELECT</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -4480,7 +4537,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_DSA_PUBLIC LENGTH_DSA_512</td>
   <td class='light_error'><=2.1</td>
   <td class='light_no'>no</td>
@@ -4510,7 +4567,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_DSA_PUBLIC LENGTH_DSA_768</td>
   <td class='light_error'><=2.1</td>
   <td class='light_no'>no</td>
@@ -4540,7 +4597,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_DSA_PUBLIC LENGTH_DSA_1024</td>
   <td class='light_error'><=2.1</td>
   <td class='light_no'>no</td>
@@ -4570,7 +4627,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_113</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_no'>no</td>
@@ -4600,7 +4657,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_131</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_no'>no</td>
@@ -4630,7 +4687,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_163</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_no'>no</td>
@@ -4660,7 +4717,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_193</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_no'>no</td>
@@ -4690,7 +4747,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_EC_F2M_PRIVATE_TRANSIENT_RESET</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -4720,7 +4777,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_EC_F2M_PRIVATE_TRANSIENT_DESELECT</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -4750,7 +4807,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_EC_FP_PRIVATE LENGTH_EC_FP_112</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_no'>no</td>
@@ -4780,7 +4837,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_EC_FP_PRIVATE LENGTH_EC_FP_128</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_no'>no</td>
@@ -4810,7 +4867,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_EC_FP_PRIVATE LENGTH_EC_FP_160</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_no'>no</td>
@@ -4840,7 +4897,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_EC_FP_PRIVATE LENGTH_EC_FP_192</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_no'>no</td>
@@ -4870,7 +4927,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_EC_FP_PRIVATE LENGTH_EC_FP_224</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -4900,7 +4957,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_EC_FP_PRIVATE LENGTH_EC_FP_256</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -4930,7 +4987,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_EC_FP_PRIVATE LENGTH_EC_FP_384</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -4960,7 +5017,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_EC_FP_PRIVATE LENGTH_EC_FP_521</td>
   <td class='light_error'>3.0.4</td>
   <td class='light_no'>no</td>
@@ -4990,7 +5047,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_EC_FP_PRIVATE_TRANSIENT_RESET</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -5020,7 +5077,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_EC_FP_PRIVATE_TRANSIENT_DESELECT</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -5050,7 +5107,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_KOREAN_SEED_TRANSIENT_RESET</td>
   <td class='light_error'>2.2.2</td>
   <td class='light_yes'>yes</td>
@@ -5080,7 +5137,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_KOREAN_SEED_TRANSIENT_DESELECT</td>
   <td class='light_error'>2.2.2</td>
   <td class='light_yes'>yes</td>
@@ -5110,7 +5167,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_KOREAN_SEED LENGTH_KOREAN_SEED_128</td>
   <td class='light_error'>2.2.2</td>
   <td class='light_yes'>yes</td>
@@ -5140,7 +5197,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_HMAC_TRANSIENT_RESET</td>
   <td class='light_error'>2.2.2</td>
   <td class='light_no'>no</td>
@@ -5170,7 +5227,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_HMAC_TRANSIENT_DESELECT</td>
   <td class='light_error'>2.2.2</td>
   <td class='light_no'>no</td>
@@ -5200,7 +5257,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_HMAC LENGTH_HMAC_SHA_1_BLOCK_64</td>
   <td class='light_error'>2.2.2</td>
   <td class='light_no'>no</td>
@@ -5230,7 +5287,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_HMAC LENGTH_HMAC_SHA_256_BLOCK_64</td>
   <td class='light_error'>2.2.2</td>
   <td class='light_no'>no</td>
@@ -5260,7 +5317,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_HMAC LENGTH_HMAC_SHA_384_BLOCK_64</td>
   <td class='light_error'>2.2.2</td>
   <td class='light_no'>no</td>
@@ -5290,7 +5347,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>TYPE_HMAC LENGTH_HMAC_SHA_512_BLOCK_64</td>
   <td class='light_error'>2.2.2</td>
   <td class='light_no'>no</td>
@@ -5320,7 +5377,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
 <td class='dark'>javacard.security.KeyPair ALG_RSA on-card generation</td>
   <td class='dark_index'>introduced in JavaCard version</td>
   <td class='dark_index'>c0</td>
@@ -5350,7 +5407,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='dark_index'>c24</td>
   <td class='dark_index'>c25</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA LENGTH_RSA_512</td>
   <td class='light_error'>2.1.1</td>
   <td class='light_yes'>yes</td>
@@ -5380,7 +5437,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA LENGTH_RSA_736</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -5410,7 +5467,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA LENGTH_RSA_768</td>
   <td class='light_error'>2.1.1</td>
   <td class='light_yes'>yes</td>
@@ -5440,7 +5497,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA LENGTH_RSA_896</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -5470,7 +5527,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA LENGTH_RSA_1024</td>
   <td class='light_error'>2.1.1</td>
   <td class='light_yes'>yes</td>
@@ -5500,7 +5557,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA LENGTH_RSA_1280</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -5530,7 +5587,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA LENGTH_RSA_1536</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -5560,7 +5617,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA LENGTH_RSA_1984</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -5590,7 +5647,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA LENGTH_RSA_2048</td>
   <td class='light_error'>2.1.1</td>
   <td class='light_yes'>yes</td>
@@ -5620,7 +5677,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA LENGTH_RSA_4096</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -5650,7 +5707,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
 <td class='dark'>javacard.security.KeyPair ALG_RSA_CRT on-card generation</td>
   <td class='dark_index'>introduced in JavaCard version</td>
   <td class='dark_index'>c0</td>
@@ -5680,7 +5737,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='dark_index'>c24</td>
   <td class='dark_index'>c25</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA_CRT LENGTH_RSA_512</td>
   <td class='light_error'>2.1.1</td>
   <td class='light_yes'>yes</td>
@@ -5710,7 +5767,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA_CRT LENGTH_RSA_736</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -5740,7 +5797,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA_CRT LENGTH_RSA_768</td>
   <td class='light_error'>2.1.1</td>
   <td class='light_yes'>yes</td>
@@ -5770,7 +5827,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA_CRT LENGTH_RSA_896</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -5800,7 +5857,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA_CRT LENGTH_RSA_1024</td>
   <td class='light_error'>2.1.1</td>
   <td class='light_yes'>yes</td>
@@ -5830,7 +5887,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA_CRT LENGTH_RSA_1280</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -5860,7 +5917,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA_CRT LENGTH_RSA_1536</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -5890,7 +5947,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA_CRT LENGTH_RSA_1984</td>
   <td class='light_error'>2.2.0</td>
   <td class='light_yes'>yes</td>
@@ -5920,7 +5977,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA_CRT LENGTH_RSA_2048</td>
   <td class='light_error'>2.1.1</td>
   <td class='light_yes'>yes</td>
@@ -5950,7 +6007,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_RSA_CRT LENGTH_RSA_4096</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -5980,7 +6037,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
 <td class='dark'>javacard.security.KeyPair ALG_DSA on-card generation</td>
   <td class='dark_index'>introduced in JavaCard version</td>
   <td class='dark_index'>c0</td>
@@ -6010,7 +6067,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='dark_index'>c24</td>
   <td class='dark_index'>c25</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_DSA LENGTH_DSA_512</td>
   <td class='light_error'>2.1.1</td>
   <td class='light_no'>no</td>
@@ -6040,7 +6097,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_DSA LENGTH_DSA_768</td>
   <td class='light_error'>2.1.1</td>
   <td class='light_no'>no</td>
@@ -6070,7 +6127,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_DSA LENGTH_DSA_1024</td>
   <td class='light_error'>2.1.1</td>
   <td class='light_no'>no</td>
@@ -6100,7 +6157,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
 <td class='dark'>javacard.security.KeyPair ALG_EC_F2M on-card generation</td>
   <td class='dark_index'>introduced in JavaCard version</td>
   <td class='dark_index'>c0</td>
@@ -6130,7 +6187,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='dark_index'>c24</td>
   <td class='dark_index'>c25</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_EC_F2M LENGTH_EC_F2M_113</td>
   <td class='light_error'>2.2.1</td>
   <td class='light_no'>no</td>
@@ -6160,7 +6217,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_EC_F2M LENGTH_EC_F2M_131</td>
   <td class='light_error'>2.2.1</td>
   <td class='light_no'>no</td>
@@ -6190,7 +6247,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_EC_F2M LENGTH_EC_F2M_163</td>
   <td class='light_error'>2.2.1</td>
   <td class='light_no'>no</td>
@@ -6220,7 +6277,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_EC_F2M LENGTH_EC_F2M_193</td>
   <td class='light_error'>2.2.1</td>
   <td class='light_no'>no</td>
@@ -6250,7 +6307,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
 <td class='dark'>javacard.security.KeyPair ALG_EC_FP on-card generation</td>
   <td class='dark_index'>introduced in JavaCard version</td>
   <td class='dark_index'>c0</td>
@@ -6280,7 +6337,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='dark_index'>c24</td>
   <td class='dark_index'>c25</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_EC_FP LENGTH_EC_FP_112</td>
   <td class='light_error'>2.2.1</td>
   <td class='light_no'>no</td>
@@ -6310,7 +6367,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_EC_FP LENGTH_EC_FP_128</td>
   <td class='light_error'>2.2.1</td>
   <td class='light_no'>no</td>
@@ -6340,7 +6397,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_EC_FP LENGTH_EC_FP_160</td>
   <td class='light_error'>2.2.1</td>
   <td class='light_no'>no</td>
@@ -6370,7 +6427,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_EC_FP LENGTH_EC_FP_192</td>
   <td class='light_error'>2.2.1</td>
   <td class='light_no'>no</td>
@@ -6400,7 +6457,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_EC_FP LENGTH_EC_FP_224</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -6430,7 +6487,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_error'>-</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_EC_FP LENGTH_EC_FP_256</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -6460,7 +6517,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_error'>-</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_EC_FP LENGTH_EC_FP_384</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -6490,7 +6547,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_error'>-</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_EC_FP LENGTH_EC_FP_521</td>
   <td class='light_error'>3.0.4</td>
   <td class='light_no'>no</td>
@@ -6520,7 +6577,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_error'>-</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
 <td class='dark'>javacard.security.KeyAgreement</td>
   <td class='dark_index'>introduced in JavaCard version</td>
   <td class='dark_index'>c0</td>
@@ -6550,7 +6607,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='dark_index'>c24</td>
   <td class='dark_index'>c25</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_EC_SVDP_DH</td>
   <td class='light_error'>2.2.1</td>
   <td class='light_yes'>yes</td>
@@ -6580,7 +6637,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_EC_SVDP_DHC</td>
   <td class='light_error'>2.2.1</td>
   <td class='light_no'>no</td>
@@ -6610,7 +6667,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_EC_SVDP_DH_KDF</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -6640,7 +6697,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_EC_SVDP_DH_PLAIN</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -6670,7 +6727,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_EC_SVDP_DHC_KDF</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -6700,7 +6757,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_EC_SVDP_DHC_PLAIN</td>
   <td class='light_error'>3.0.1</td>
   <td class='light_no'>no</td>
@@ -6730,7 +6787,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
 <td class='dark'>javacard.security.Checksum</td>
   <td class='dark_index'>introduced in JavaCard version</td>
   <td class='dark_index'>c0</td>
@@ -6760,7 +6817,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='dark_index'>c24</td>
   <td class='dark_index'>c25</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_ISO3309_CRC16</td>
   <td class='light_error'>2.2.1</td>
   <td class='light_no'>no</td>
@@ -6790,7 +6847,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>ALG_ISO3309_CRC32</td>
   <td class='light_error'>2.2.1</td>
   <td class='light_no'>no</td>
@@ -6820,7 +6877,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_no'>no</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
 <td class='dark'>Variable RSA 1024 - support for variable public exponent. If supported, user-defined fast modular exponentiation can be executed on the smart card via cryptographic coprocessor. This is very specific feature and you will probably not need it</td>
   <td class='dark_index'>introduced in JavaCard version</td>
   <td class='dark_index'>c0</td>
@@ -6850,7 +6907,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='dark_index'>c24</td>
   <td class='dark_index'>c25</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>Allocate RSA 1024 objects</td>
   <td class='light_error'></td>
   <td class='light_yes'>yes</td>
@@ -6880,7 +6937,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_yes'>yes</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>Set random modulus</td>
   <td class='light_error'></td>
   <td class='light_yes'>yes</td>
@@ -6910,7 +6967,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>Set random public exponent</td>
   <td class='light_error'></td>
   <td class='light_yes'>yes</td>
@@ -6940,7 +6997,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>Initialize cipher with public key with random exponent</td>
   <td class='light_error'></td>
   <td class='light_yes'>yes</td>
@@ -6970,7 +7027,7 @@ Error means that tested card gives permanent error other then CryptoException.NO
   <td class='light_no'>no</td>
   <td class='light_yes'>yes</td>
 </tr>
-<tr style='height:12.75pt'>
+<tr  style='height:12.75pt'>
   <td class='light'>Use random public exponent</td>
   <td class='light_error'></td>
   <td class='light_yes'>yes</td>

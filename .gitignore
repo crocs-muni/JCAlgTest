@@ -4,4 +4,6 @@
 /AlgTest_JavaCard/build/
 /AlgTest_JClient/build/
 /AlgTest_Process/build/
+/AlgTest_JClient/dist/README.TXT
+/AlgTest_Process/dist/README.TXT
 *.class

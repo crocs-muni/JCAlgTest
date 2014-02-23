@@ -27,6 +27,8 @@ th.pgpdark {
   font-weight: bold;
 }
 
+td.hover { background-color: #eee; }
+
 td.light {
 	color: black;
 	background: #E0E0E0 none;
@@ -87,6 +89,7 @@ td.dark_index {
 	font-weight: bold;
 	text-align: center;
 }
+
 
 td.pgplight {
 	color: black;

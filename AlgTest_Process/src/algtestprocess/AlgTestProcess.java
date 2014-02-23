@@ -69,16 +69,15 @@ public class AlgTestProcess {
     private static void generateHTMLTable(String basePath) throws IOException {
         String filesPath = basePath + "results\\";
         File dir = new File(filesPath);
-        String[] array = dir.list();
-
+        String[] filesArray = dir.list(); 
         
-        if ((array != null) && (dir.isDirectory() == true)) {    
+        if ((filesArray != null) && (dir.isDirectory() == true)) {    
             
-            HashMap filesSupport[] = new HashMap[array.length]; 
+            HashMap filesSupport[] = new HashMap[filesArray.length]; 
             
-            for (int i = 0; i < array.length; i++) {
+            for (int i = 0; i < filesArray.length; i++) {
                 filesSupport[i] = new HashMap();
-                parseSupportFile(filesPath + array[i], filesSupport[i]);
+                parseSupportFile(filesPath + filesArray[i], filesSupport[i]);
             }            
         
             //
@@ -88,11 +87,18 @@ public class AlgTestProcess {
             FileOutputStream file = new FileOutputStream(fileName);                   
             String header = "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\r\n<html>\r\n<head>"
                     + "<meta content=\"text/html; charset=utf-8\" http-equiv=\"Content-Type\">\r\n"
-                    + "<link type=\"text/css\" href=\"style.css\" rel=\"stylesheet\"><title>JavaCard support test</title></head>\r\n<body>\r\n\r\n"; 
+                    + "<link type=\"text/css\" href=\"style.css\" rel=\"stylesheet\">\r\n"
+                    + "<script class=\"jsbin\" src=\"http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js\"></script>\r\n"
+
+                    + "<title>JavaCard support test</title>\r\n"
+                    + "<script>$(function(){ $(\"td\").hover(function(){$(\"#tab col\").eq($(this).index()).css({\"border\":\" 3px solid red\"});$(this).closest(\"tr\").css({\"border\":\" 3px solid red\"});}\r\n"
+                    + ",function(){$(\"#tab col\").eq($(this).index()).css({\"border\":\" 0px\"}); $(this).closest(\"tr\").css({\"border\":\" 0px\"});});});</script>\r\n"
+                    + "</head>\r\n"
+                    + "<body>\r\n\r\n"; 
 
             String cardList = "<b>Tested cards abbreviations:</b><br>\r\n";
-            for (int i = 0; i < array.length; i++) {
-                String cardIdentification = array[i];
+            for (int i = 0; i < filesArray.length; i++) {
+                String cardIdentification = filesArray[i];
                 cardIdentification = cardIdentification.replace('_', ' ');
                 cardIdentification = cardIdentification.replace(".csv", "");
                 cardIdentification = cardIdentification.replace("3B", ", ATR=3B");
@@ -114,14 +120,14 @@ public class AlgTestProcess {
             note = "Note: If character '-' or '?' is present, particular feature was not tested. Usually, this is equal to not supported algorithm. Typical example is the addition of new constants introduced by the newer version of JavaCard standard, which are not supported by cards tested before apperance of of new version of specification. The exceptions to this rule are classes that have to be tested manually (at the moment, following information: JavaCard support version, javacardx.apdu.ExtendedLength Extended APDU) where not tested doesn't automatically means not supported. Automated upload and testing of these features will solve this in feature. <br>\r\nError means that tested card gives permanent error other then CryptoException.NO_SUCH_ALGORITHM when called.<br><br>\r\n\r\n";
             file.write(note.getBytes());
             
-            String table = "<table width=\"730\" border=\"0\" cellspacing=\"2\" cellpadding=\"4\">\r\n";
+            String table = "<table id=\"tab\" width=\"730\" border=\"0\" cellspacing=\"2\" cellpadding=\"4\">\r\n";
             file.write(table.getBytes()); file.flush();                  
 
             //
             // HTML TABLE BODY
             //
             for (String[] classStr : CardMngr.ALL_CLASSES_STR) {
-                formatTableAlgorithm_HTML(classStr, filesSupport, file);
+                formatTableAlgorithm_HTML(filesArray, classStr, filesSupport, file);
             }
             
             //
@@ -140,11 +146,42 @@ public class AlgTestProcess {
 
     }
     
-    static void formatTableAlgorithm_HTML(String[] classInfo, HashMap[] filesSupport, FileOutputStream file) throws IOException {
+    static String[] parseCardName(String fileName) {
+        String[] names = new String[2];
+        
+        String shortCardName = "";
+        String cardName = fileName;
+        if (cardName.indexOf("_3B ") != -1) shortCardName = cardName.substring(0, cardName.indexOf("_3B "));
+        if (cardName.indexOf("_3b ") != -1) shortCardName = cardName.substring(0, cardName.indexOf("_3b "));
+        shortCardName = shortCardName.replace('_', ' ');
+        cardName = cardName.replace('_', ' ');   
+        if (cardName.indexOf("(provided") != -1) cardName = cardName.substring(0, cardName.indexOf("(provided"));
+        
+        names[0] = cardName;
+        names[1] = shortCardName;
+        return names;
+    }
+    
+    static String getShortCardName(String fileName) {
+        String[] names = parseCardName(fileName);
+        return names[1];
+    }
+    static String getLongCardName(String fileName) {
+        String[] names = parseCardName(fileName);
+        return names[0];
+    }    
+    static void formatTableAlgorithm_HTML(String[] filesArray, String[] classInfo, HashMap[] filesSupport, FileOutputStream file) throws IOException {
+        // Insert helper column identification for mouseover row & column jquery highlight
+        String algorithm = "<colgroup>";        
+        for (int i = 0; i < filesSupport.length + 2; i++) { algorithm += "<col />"; }
+        algorithm += "</colgroup>\r\n";   
+
         // class (e.g., javacardx.crypto.Cipher)
-        String algorithm = "<tr style='height:12.75pt'>\r\n" + "<td class='dark'>" + classInfo[0] + "</td>\r\n";
+        algorithm += "<tr style='height:12.75pt'>\r\n" + "<td class='dark'>" + classInfo[0] + "</td>\r\n";
         algorithm += "  <td class='dark_index'>introduced in JavaCard version</td>\r\n"; 
-        for (int i = 0; i < filesSupport.length; i++) { algorithm += "  <td class='dark_index'>c" + i + "</td>\r\n"; }
+        for (int i = 0; i < filesSupport.length; i++) { algorithm += "  <td class='dark_index' title = '" + getLongCardName(filesArray[i]) + "'>c" + i + "</td>\r\n"; }
+        
+
         algorithm += "</tr>\r\n";
         // support for particular algorithm from given class
         for (int i = 1; i < classInfo.length; i++) {
@@ -168,13 +205,14 @@ public class AlgTestProcess {
                     HashMap fileSuppMap = filesSupport[fileIndex];
                     if (fileSuppMap.containsKey(algorithmName)) {
                         String secondToken = (String) fileSuppMap.get(algorithmName);
+                        String title = getShortCardName(filesArray[fileIndex]) + " : " + algorithmName + " : " + secondToken;
                         switch (secondToken) {
-                            case "no": algorithm += "<td class='light_no'>no</td>\r\n"; break;
-                            case "yes": algorithm += "<td class='light_yes'>yes</td>\r\n"; break;
-                            case "error": algorithm += "<td class='light_error'>error</td>\r\n"; break;
-                            case "maybe": algorithm += "<td class='light_error'>maybe</td>\r\n"; break;
+                            case "no": algorithm += "<td class='light_no' title='" + title + "'>no</td>\r\n"; break;
+                            case "yes": algorithm += "<td class='light_yes' title='" + title + "'>yes</td>\r\n"; break;
+                            case "error": algorithm += "<td class='light_error' title='" + title + "'>error</td>\r\n"; break;
+                            case "maybe": algorithm += "<td class='light_error' title='" + title + "'>maybe</td>\r\n"; break;
                             default: {
-                                algorithm += "<td class='light_info'>" + secondToken + "</td>\r\n";
+                                algorithm += "<td class='light_info' title='" + title + "'>" + secondToken + "</td>\r\n";
                             }
                         }
                     }
