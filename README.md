@@ -5,7 +5,7 @@ Automated testing tool for algorithms supported by particular smart card with Ja
 
 *Contribution with results for YOUR card is wanted! (and highly appreciated :))*
 
-1. Upload proper cap (based on supported JavaCard version) file to your smart card. Upload can be done via GPShell scripts for selected cards are available. If unsure about supported version, try to upload one with the highest version (AlgTest_v1.2_jc2.2.2.cap) and if upload fail, use lower version).
+1. Upload proper cap file (based on supported JavaCard version) file to your smart card. For uploading, you may use GPShell (http://sourceforge.net/projects/globalplatform/) or GlobalPlatform (https://github.com/martinpaljak/GlobalPlatform) tools. Upload can be done via GPShell scripts that are available for selected cards in AlgTest_JavaCard/!card_uploaders. If unsure about supported version for your card, try to upload one with the highest version (AlgTest_v1.2_jc2.2.2.cap) and if upload fail, use lower version).
 
 2. Run Java application AlgTestJClient. Choose the target reader for card with uploaded AlgTest applet and let it run. CSV file with values separated by the semicolon is created (AlgTest_ATR.csv).
 
