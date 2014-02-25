@@ -202,8 +202,8 @@ public class AlgTestProcess {
                     HashMap fileSuppMap = filesSupport[fileIndex];
                     if (fileSuppMap.containsKey(algorithmName)) {
                         String secondToken = (String) fileSuppMap.get(algorithmName);
-                        //String title = "title='" + getShortCardName(filesArray[fileIndex]) + " : " + algorithmName + " : " + secondToken + "'";
-                        String title="";
+                        String title = "title='" + getShortCardName(filesArray[fileIndex]) + " : " + algorithmName + " : " + secondToken + "'";
+                        //String title="";
                         switch (secondToken) {
                             case "no": algorithm += "<td class='light_no' " + title + "'>no</td>\r\n"; break;
                             case "yes": algorithm += "<td class='light_yes' " + title + "'>yes</td>\r\n"; break;

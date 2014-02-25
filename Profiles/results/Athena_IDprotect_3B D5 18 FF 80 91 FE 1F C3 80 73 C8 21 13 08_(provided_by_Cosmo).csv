@@ -3,7 +3,7 @@ Tested and provided by; insert your name please.;
 Execution date/time; 2014/01/21 12:58:58
 AlgTestJClient version; 1.2
 AlgTest applet version; 1.2
-Used reader; JnaCardTerminal{scardHandle=SCardContext{103110e}, name=OMNIKEY CardMan 1021 00 00}
+Used reader; 
 Card ATR; 3B D5 18 FF 80 91 FE 1F C3 80 73 C8 21 13 08 
 Used protocol; T=1
 
