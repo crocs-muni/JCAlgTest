@@ -1,5 +1,5 @@
 /*  
-    Copyright (c) 2008-2013 Petr Svenda <petr@svenda.com>
+    Copyright (c) 2008-2014 Petr Svenda <petr@svenda.com>
 
      LICENSE TERMS
 
@@ -85,14 +85,12 @@ public class AlgTestProcess {
             //
             String fileName = basePath + "AlgTest_html_table.html";
             FileOutputStream file = new FileOutputStream(fileName);                   
-            String header = "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\r\n<html>\r\n<head>"
+            String header = "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\r\n<html>\r\n<head>"
                     + "<meta content=\"text/html; charset=utf-8\" http-equiv=\"Content-Type\">\r\n"
                     + "<link type=\"text/css\" href=\"style.css\" rel=\"stylesheet\">\r\n"
                     + "<script class=\"jsbin\" src=\"http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js\"></script>\r\n"
-
                     + "<title>JavaCard support test</title>\r\n"
-                    + "<script>$(function(){ $(\"td\").hover(function(){$(\"#tab col\").eq($(this).index()).css({\"border\":\" 3px solid red\"});$(this).closest(\"tr\").css({\"border\":\" 3px solid red\"});}\r\n"
-                    + ",function(){$(\"#tab col\").eq($(this).index()).css({\"border\":\" 0px\"}); $(this).closest(\"tr\").css({\"border\":\" 0px\"});});});</script>\r\n"
+                    + "<script>$(function(){ $(\"#tab td\").hover(function(){$(\"#tab col\").eq($(this).index()).css({\"border\":\" 3px solid red\"});$(this).closest(\"tr\").css({\"border\":\" 3px solid red\"});},function(){$(\"#tab col\").eq($(this).index()).css({\"border\":\" 0px\"}); $(this).closest(\"tr\").css({\"border\":\" 0px\"});});});</script>\r\n"
                     + "</head>\r\n"
                     + "<body>\r\n\r\n"; 
 
@@ -121,6 +119,10 @@ public class AlgTestProcess {
             file.write(note.getBytes());
             
             String table = "<table id=\"tab\" width=\"730\" border=\"0\" cellspacing=\"2\" cellpadding=\"4\">\r\n";
+            // Insert helper column identification for mouseover row & column jquery highlight
+            table += "<colgroup>";        
+            for (int i = 0; i < filesArray.length + 2; i++) { table += "<col />"; } // + 2 because of column with algorithm name and introducing version
+            table += "</colgroup>\r\n";               
             file.write(table.getBytes()); file.flush();                  
 
             //
@@ -171,13 +173,8 @@ public class AlgTestProcess {
         return names[0];
     }    
     static void formatTableAlgorithm_HTML(String[] filesArray, String[] classInfo, HashMap[] filesSupport, FileOutputStream file) throws IOException {
-        // Insert helper column identification for mouseover row & column jquery highlight
-        String algorithm = "<colgroup>";        
-        for (int i = 0; i < filesSupport.length + 2; i++) { algorithm += "<col />"; }
-        algorithm += "</colgroup>\r\n";   
-
         // class (e.g., javacardx.crypto.Cipher)
-        algorithm += "<tr style='height:12.75pt'>\r\n" + "<td class='dark'>" + classInfo[0] + "</td>\r\n";
+        String algorithm = "<tr style='height:12.75pt'>\r\n" + "<td class='dark'>" + classInfo[0] + "</td>\r\n";
         algorithm += "  <td class='dark_index'>introduced in JavaCard version</td>\r\n"; 
         for (int i = 0; i < filesSupport.length; i++) { algorithm += "  <td class='dark_index' title = '" + getLongCardName(filesArray[i]) + "'>c" + i + "</td>\r\n"; }
         
@@ -205,14 +202,15 @@ public class AlgTestProcess {
                     HashMap fileSuppMap = filesSupport[fileIndex];
                     if (fileSuppMap.containsKey(algorithmName)) {
                         String secondToken = (String) fileSuppMap.get(algorithmName);
-                        String title = getShortCardName(filesArray[fileIndex]) + " : " + algorithmName + " : " + secondToken;
+                        //String title = "title='" + getShortCardName(filesArray[fileIndex]) + " : " + algorithmName + " : " + secondToken + "'";
+                        String title="";
                         switch (secondToken) {
-                            case "no": algorithm += "<td class='light_no' title='" + title + "'>no</td>\r\n"; break;
-                            case "yes": algorithm += "<td class='light_yes' title='" + title + "'>yes</td>\r\n"; break;
-                            case "error": algorithm += "<td class='light_error' title='" + title + "'>error</td>\r\n"; break;
-                            case "maybe": algorithm += "<td class='light_error' title='" + title + "'>maybe</td>\r\n"; break;
+                            case "no": algorithm += "<td class='light_no' " + title + "'>no</td>\r\n"; break;
+                            case "yes": algorithm += "<td class='light_yes' " + title + "'>yes</td>\r\n"; break;
+                            case "error": algorithm += "<td class='light_error' " + title + "'>error</td>\r\n"; break;
+                            case "maybe": algorithm += "<td class='light_error' " + title + "'>maybe</td>\r\n"; break;
                             default: {
-                                algorithm += "<td class='light_info' title='" + title + "'>" + secondToken + "</td>\r\n";
+                                algorithm += "<td class='light_info' " + title + "'>" + secondToken + "</td>\r\n";
                             }
                         }
                     }
