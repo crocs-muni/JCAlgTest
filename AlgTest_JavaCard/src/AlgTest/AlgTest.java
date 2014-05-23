@@ -88,6 +88,7 @@ public class AlgTest extends javacard.framework.Applet
     final static byte INS_CARD_JCSYSTEM_INFO         = (byte) 0x73;
     final static byte INS_CARD_TESTEXTAPDU           = (byte) 0x74;
     final static byte INS_CARD_TESTSUPPORTEDMODES_SINGLE    = (byte) 0x75;
+    final static byte INS_CARD_TESTIOSPEED          = (byte) 0x76;
 
 
     //
@@ -436,6 +437,7 @@ public class AlgTest extends javacard.framework.Applet
                 case INS_CARD_JCSYSTEM_INFO: JCSystemInfo(apdu); break;
                 case INS_CARD_TESTEXTAPDU: TestExtendedAPDUSupport(apdu); break;
                 case INS_CARD_TESTSUPPORTEDMODES_SINGLE: TestSupportedModeSingle(apdu); break;
+                case INS_CARD_TESTIOSPEED: TestIOSpeed(apdu); break;
 
                 default : {
                     // The INS code is not supported by the dispatcher
@@ -1958,6 +1960,14 @@ void JCSystemInfo(APDU apdu) {
          }
        }
    }
+   
+   void TestIOSpeed(APDU apdu) {
+      byte[]    apdubuf = apdu.getBuffer();
+      short     dataLen = apdu.setIncomingAndReceive();
+
+      // RETURN INPU DATA UNCHANGED
+      apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, dataLen);
+    }
 
 }
 
