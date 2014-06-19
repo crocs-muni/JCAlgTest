@@ -41,6 +41,7 @@ import java.text.SimpleDateFormat;
  */
 public class AlgTestJClient {
     static CardMngr cardManager = new CardMngr();
+    static SingleModeTest singleTest = new SingleModeTest();
     
     /**
      * Version 1.2.1 (29.1.2014)
@@ -75,8 +76,8 @@ public class AlgTestJClient {
         /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
-
+    public static void main(String[] args) throws IOException, Exception {
+        singleTest.TestSingleAlg();
         int bForceAllTests = 0; // If 0, questions to test parts will be displayed, otherwise, all tests will be performed
 
         try {

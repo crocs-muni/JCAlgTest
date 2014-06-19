@@ -88,7 +88,6 @@ public class AlgTest extends javacard.framework.Applet
     final static byte INS_CARD_JCSYSTEM_INFO         = (byte) 0x73;
     final static byte INS_CARD_TESTEXTAPDU           = (byte) 0x74;
     final static byte INS_CARD_TESTSUPPORTEDMODES_SINGLE    = (byte) 0x75;
-    final static byte INS_CARD_TESTIOSPEED          = (byte) 0x76;
 
 
     //
@@ -437,11 +436,10 @@ public class AlgTest extends javacard.framework.Applet
                 case INS_CARD_JCSYSTEM_INFO: JCSystemInfo(apdu); break;
                 case INS_CARD_TESTEXTAPDU: TestExtendedAPDUSupport(apdu); break;
                 case INS_CARD_TESTSUPPORTEDMODES_SINGLE: TestSupportedModeSingle(apdu); break;
-                case INS_CARD_TESTIOSPEED: TestIOSpeed(apdu); break;
 
                 default : {
                     // The INS code is not supported by the dispatcher
-                    ISOException.throwIt( ISO7816.SW_INS_NOT_SUPPORTED ) ;
+                    ISOException.throwIt( ISO7816.SW_INCORRECT_P1P2  ) ;
                     break;
                 }
             }
@@ -464,14 +462,18 @@ public class AlgTest extends javacard.framework.Applet
        
        byte      algorithmClass = apdubuf[ISO7816.OFFSET_CDATA];
        short     algorithmParam1 = Util.makeShort(apdubuf[(short) (ISO7816.OFFSET_CDATA + 1)], apdubuf[(short) (ISO7816.OFFSET_CDATA + 2)]);
-
+       //byte ahoj = MessageDigest.ALG_SHA_256;
+       
        Util.arrayFillNonAtomic(apdubuf, ISO7816.OFFSET_CDATA, (short) 240, (byte) SUPP_ALG_UNTOUCHED);
        offset++;
        apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = apdubuf[ISO7816.OFFSET_P1];
 
        switch (apdubuf[ISO7816.OFFSET_P1]) {
            case (byte) 0x11: {
-             try {offset++;m_encryptCipher = Cipher.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+             try {
+                 offset++;
+                 m_encryptCipher = Cipher.getInstance(algorithmClass, false);
+                 apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
              catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
              // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
              break;
@@ -530,6 +532,11 @@ public class AlgTest extends javacard.framework.Applet
        apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xFF;
 
        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (short) 240);
+       /**
+        * Sends back APDU of length 'offset'
+        * APDU of length 240 is too long for no reason
+        */
+       //apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (short) offset);
     }
 
    void TestSupportedModes(APDU apdu) {
@@ -1960,14 +1967,6 @@ void JCSystemInfo(APDU apdu) {
          }
        }
    }
-   
-   void TestIOSpeed(APDU apdu) {
-      byte[]    apdubuf = apdu.getBuffer();
-      short     dataLen = apdu.setIncomingAndReceive();
-
-      // RETURN INPU DATA UNCHANGED
-      apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, dataLen);
-    }
 
 }
 

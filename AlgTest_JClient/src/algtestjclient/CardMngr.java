@@ -437,7 +437,8 @@ public class CardMngr {
                 m_card = m_terminal.connect("*");
                 System.out.println("card: " + m_card);
                 m_channel = m_card.getBasicChannel();
-
+                    System.out.println("Card Channel: " + m_channel.getChannelNumber());
+                        
                 //reset the card
                 ATR atr = m_card.getATR();
                 System.out.println(bytesToHex(atr.getBytes()));
@@ -480,7 +481,7 @@ public class CardMngr {
         }
     }
 
-    private ResponseAPDU sendAPDU(byte apdu[]) throws Exception {
+    public ResponseAPDU sendAPDU(byte apdu[]) throws Exception {
         CommandAPDU commandAPDU = new CommandAPDU(apdu);
 
         System.out.println(">>>>");
@@ -1002,5 +1003,7 @@ public class CardMngr {
 
         return status;
     }
+    
+    
     
 }
