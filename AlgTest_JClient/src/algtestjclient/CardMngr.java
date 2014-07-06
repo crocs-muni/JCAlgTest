@@ -209,21 +209,21 @@ public class CardMngr {
       //
       //Class javacard.security.KeyBuilder
       //
-    public static final byte TYPE_DES_TRANSIENT_RESET              = 2;
-    public static final byte TYPE_DES_TRANSIENT_DESELECT           = 3;
-    public static final byte TYPE_DES                              = 4;
-    public static final byte TYPE_RSA_PUBLIC                       = 4;
-    public static final byte TYPE_RSA_PRIVATE                      = 5;
-    public static final byte TYPE_RSA_CRT_PRIVATE                  = 6;
-    public static final byte TYPE_DSA_PUBLIC                       = 7;
-    public static final byte TYPE_DSA_PRIVATE                      = 8; 
-    public static final byte TYPE_EC_F2M_PUBLIC                    = 9;
-    public static final byte TYPE_EC_F2M_PRIVATE                   = 10;
-    public static final byte TYPE_EC_FP_PUBLIC                     = 11;
-    public static final byte TYPE_EC_FP_PRIVATE                    = 12;
-    public static final byte TYPE_AES_TRANSIENT_RESET              = 13;
-    public static final byte TYPE_AES_TRANSIENT_DESELECT           = 14;
-    public static final byte TYPE_AES                              = 15;
+    public static final byte TYPE_DES_TRANSIENT_RESET = 1;
+    public static final byte TYPE_DES_TRANSIENT_DESELECT = 2;
+    public static final byte TYPE_DES = 3;
+    public static final byte TYPE_RSA_PUBLIC = 4;
+    public static final byte TYPE_RSA_PRIVATE = 5;
+    public static final byte TYPE_RSA_CRT_PRIVATE = 6;
+    public static final byte TYPE_DSA_PUBLIC = 7;
+    public static final byte TYPE_DSA_PRIVATE = 8;
+    public static final byte TYPE_EC_F2M_PUBLIC = 9;
+    public static final byte TYPE_EC_F2M_PRIVATE = 10;
+    public static final byte TYPE_EC_FP_PUBLIC = 11;
+    public static final byte TYPE_EC_FP_PRIVATE = 12;
+    public static final byte TYPE_AES_TRANSIENT_RESET = 13;
+    public static final byte TYPE_AES_TRANSIENT_DESELECT = 14;
+    public static final byte TYPE_AES = 15;
       // JC2.2.2
     public static final byte TYPE_KOREAN_SEED_TRANSIENT_RESET      = 16;
     public static final byte TYPE_KOREAN_SEED_TRANSIENT_DESELECT   = 17;
