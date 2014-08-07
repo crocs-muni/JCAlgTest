@@ -1,5 +1,25 @@
  /*
- * When finished, remove name 'AlgTestII_' and set it back to 'AlgTest_' !!!
+ * When finished, remove name 'AlgTestII_' and set it back to 'AlgTest_' !!! (in output file)
+ *******************************************************************************
+ * TODO:
+ * Versioning in relation to tested algorithms (note 1)
+ * KeyPair on-card generation not implemented on card
+ * Check the troubles with calling KeyPair testing (int to byte, off-card and on-card)
+ *******************************************************************************
+ * TESTED CLASSES:
+ * Checksum             Working (error in on-card app - fixed)
+ * Cipher               Working
+ * KeyAgreement         Working ? (extra yes for algorithms not tested in JCSupport)
+ * KeyBuilder           Not working (all 'no') - problem with sending params (integer to byte) ?
+ * MessageDigest        Working
+ * RandomData           Working
+ * Signature            Working
+ * KeyPair_ALG_DSA      Not implemented on-card
+ * KeyPair_ALG_EC_F2M   Not implemented on-card
+ * // Troubles with following methods are probably caused by incorrect shifting from Integer to byte and/or sending to on-card app
+ * KeyPair_ALG_EC_FP    Implemented on-card, not sure if correctly, not working (integer to byte problem)
+ * KeyPair_ALG_RSA      Implemented on-card, not sure if correctly, not working (integer to byte problem)
+ * KeyPair_ALG_RSA_CRT  Implemented on-card, not sure if correctly, not working (integer to byte problem)
  */
 
 package algtestjclient;
@@ -34,21 +54,21 @@ public class SingleModeTest {
     public static final byte OFFSET_DATA = 0x05;
     public static final byte HEADER_LENGTH = 0x05;
     
-    /* Auxiliary variables to choose class */
+    /* Auxiliary variables to choose class - used in APDU as P1 byte */
     public static final byte CLASS_CIPHER          = 0x11;
     public static final byte CLASS_SIGNATURE       = 0x12;
     public static final byte CLASS_KEYAGREEMENT    = 0x13;
     public static final byte CLASS_MESSAGEDIGEST   = 0x15;
     public static final byte CLASS_RANDOMDATA      = 0x16;
     public static final byte CLASS_CHECKSUM        = 0x17;
-    //public static final byte CLASS_KEYPAIR_RSA     = 0x18;
-    //public static final byte CLASS_KEYPAIR_RSA_CRT = 0x19;
-    //public static final byte CLASS_KEYPAIR_DSA     = 0x1A;
-    //public static final byte CLASS_KEYPAIR_EC_F2M  = 0x1B;
+    public static final byte CLASS_KEYPAIR_RSA     = 0x18;      // object containing RSA key pair
+    public static final byte CLASS_KEYPAIR_RSA_CRT = 0x19;      // object contatinng RSA key pair in its Chinese Remainder Theorem form
+    public static final byte CLASS_KEYPAIR_DSA     = 0x1A;
+    public static final byte CLASS_KEYPAIR_EC_F2M  = 0x1B;
     public static final byte CLASS_KEYPAIR_EC_FP   = 0x1C;
     public static final byte CLASS_KEYBUILDER      = 0x20;
     
-    /* Response values */
+    /* Response values - send back by on card application as response to command APDU */
     public static final short   SUPP_ALG_SUPPORTED  = 0;
     public static final short 	ILLEGAL_USE         = 5;
     public static final short 	ILLEGAL_VALUE       = 1;
@@ -56,44 +76,12 @@ public class SingleModeTest {
     public static final short 	NO_SUCH_ALGORITHM   = 3;
     public static final short 	UNINITIALIZED_KEY   = 2; 
     
-    /* Class 'javacardx.crypto.Cipher' */
-    /* REMOVE THIS IF FOUND UNNECESSARY */
-    public static final byte ALG_DES_CBC_NOPAD                     = 1;
-    public static final byte ALG_DES_CBC_ISO9797_M1                = 2;
-    public static final byte ALG_DES_CBC_ISO9797_M2                = 3;
-    public static final byte ALG_DES_CBC_PKCS5                     = 4;
-    public static final byte ALG_DES_ECB_NOPAD                     = 5;
-    public static final byte ALG_DES_ECB_ISO9797_M1                = 6;
-    public static final byte ALG_DES_ECB_ISO9797_M2                = 7;
-    public static final byte ALG_DES_ECB_PKCS5                     = 8;
-    public static final byte ALG_RSA_ISO14888                      = 9;
-    public static final byte ALG_RSA_PKCS1                         = 10;
-    public static final byte ALG_RSA_ISO9796                       = 11;
-    public static final byte ALG_RSA_NOPAD                         = 12;
-    public static final byte ALG_AES_BLOCK_128_CBC_NOPAD           = 13;
-    public static final byte ALG_AES_BLOCK_128_ECB_NOPAD           = 14;
-    public static final byte ALG_RSA_PKCS1_OAEP                    = 15;
-    // JC2.2.2
-    public static final byte ALG_KOREAN_SEED_ECB_NOPAD             = 16;
-    public static final byte ALG_KOREAN_SEED_CBC_NOPAD             = 17;
-    // JC3.0.1
-    public static final byte ALG_AES_BLOCK_192_CBC_NOPAD = 18;  
-    public static final byte ALG_AES_BLOCK_192_ECB_NOPAD = 19;  
-    public static final byte ALG_AES_BLOCK_256_CBC_NOPAD = 20;  
-    public static final byte ALG_AES_BLOCK_256_ECB_NOPAD = 21;  
-    public static final byte ALG_AES_CBC_ISO9797_M1 = 22;  
-    public static final byte ALG_AES_CBC_ISO9797_M2 = 23;  
-    public static final byte ALG_AES_CBC_PKCS5 = 24;  
-    public static final byte ALG_AES_ECB_ISO9797_M1 = 25;  
-    public static final byte ALG_AES_ECB_ISO9797_M2 = 26;  
-    public static final byte ALG_AES_ECB_PKCS5 = 27;
-    
     /**
      * String array containing class 'javacardx.crypto.Cipher'
      * AlgTest on the card will be called using 'i' from cycle FOR and to the output file will be written the corresponding string from this array
      */
     public static final String[] Cipher = {
-        "javacardx.crypto.Cipher",          // [00]
+        "javacardx.crypto.Cipher",          // [00]     // Class name
         "ALG_DES_CBC_NOPAD",                // [01]
         "ALG_DES_CBC_ISO9797_M1",           // [02]
         "ALG_DES_CBC_ISO9797_M2",           // [03]
@@ -130,7 +118,7 @@ public class SingleModeTest {
      * AlgTest on the card will be called using 'i' from cycle FOR and to the output file will be written the corresponding string from this array
      */
     public static final String[] Signature = {
-        "javacard.crypto.Signature",        // [00]
+        "javacard.crypto.Signature",        // [00]     // Class name
         "ALG_DES_MAC4_NOPAD",               // [01]
         "ALG_DES_MAC8_NOPAD",               // [02]
         "ALG_DES_MAC4_ISO9797_M1",          // [03]
@@ -189,7 +177,7 @@ public class SingleModeTest {
      * AlgTest on the card will be called using 'i' from cycle FOR and to the output file will be written the corresponding string from this array
      */
     public static final String[] MessageDigest= {
-        "javacard.security.MessageDigest",  // [00]
+        "javacard.security.MessageDigest",  // [00]     // Class name
         "ALG_SHA",                          // [01]
         "ALG_MD5",                          // [02]
         "ALG_RIPEMD160",                    // [03]
@@ -207,7 +195,7 @@ public class SingleModeTest {
      * Last 4 algorithms might need to be renumbered from 1
      */
     public static final String[] KeyAgreement = {
-        "javacard.security.KeyAgreement",   // [00]
+        "javacard.security.KeyAgreement",   // [00]     // Class name
         // JC 2.2.1
         "ALG_EC_SVDP_DH",             // [01]
         "ALG_EC_SVDP_DHC",            // [02]
@@ -223,7 +211,7 @@ public class SingleModeTest {
      * AlgTest on the card will be called using 'i' from cycle FOR and to the output file will be written the corresponding string from this array
      */
     public static final String[] RandomData = {
-        "javacard.security.RandomData",     // [00]
+        "javacard.security.RandomData",     // [00]     // Class name
         "ALG_PSEUDO_RANDOM#<=2.1",          // [01]
         "ALG_SECURE_RANDOM#<=2.1"};         // [02]
         
@@ -232,7 +220,7 @@ public class SingleModeTest {
      * AlgTest on the card will be called using 'i' from cycle FOR and to the output file will be written the corresponding string from this array
      */
     public static final String[] KeyBuilder = {
-        "javacard.security.KeyBuilder",             // [00]
+        "javacard.security.KeyBuilder",             // [00]     // Class name
         "TYPE_DES_TRANSIENT_RESET",                 // [01]
         "TYPE_DES_TRANSIENT_DESELECT",              // [02]
         "TYPE_DES",                                 // [03]
@@ -273,13 +261,87 @@ public class SingleModeTest {
      * AlgTest on the card will be called using 'i' from cycle FOR and to the output file will be written the corresponding string from this array
      */
     public static final String[] Checksum = {
-        "javacard.security.Checksum",               // [00]
+        "javacard.security.Checksum",               // [00]     // Class name
         "ALG_ISO3309_CRC16",                        // [01]
         "ALG_ISO3309_CRC32"                         // [02]
     };
-    public static final byte ALG_ISO3309_CRC16             = 1;
-    public static final byte ALG_ISO3309_CRC32             = 2;
     
+    /**
+     * String array containing class 'javacard.security.KeyPair' object RSA
+     * AlgTest on the card will be called using 'i' from cycle FOR and to the output file will be written the corresponding string from this array
+     */
+    public static final String KEYPAIR_RSA_STR[] = {
+        "javacard.security.KeyPair ALG_RSA on-card generation",         // [00]     // Class name
+        "ALG_RSA LENGTH_RSA_512#2.1.1",                                 // [01]
+        "ALG_RSA LENGTH_RSA_736#2.2.0",                                 // [02]
+        "ALG_RSA LENGTH_RSA_768#2.1.1",                                 // [03]
+        "ALG_RSA LENGTH_RSA_896#2.2.0",                                 // [04]
+        "ALG_RSA LENGTH_RSA_1024#2.1.1",                                // [05]
+        "ALG_RSA LENGTH_RSA_1280#2.2.0",                                // [06]
+        "ALG_RSA LENGTH_RSA_1536#2.2.0",                                // [07]
+        "ALG_RSA LENGTH_RSA_1984#2.2.0",                                // [08]
+        "ALG_RSA LENGTH_RSA_2048#2.1.1",                                // [09]
+        "ALG_RSA LENGTH_RSA_3072#never#0",                              // [10]
+        "ALG_RSA LENGTH_RSA_4096#3.0.1"                                 // [11]
+        };
+    
+    /**
+     * String array containing class 'javacard.security.KeyPair' object RSA_CRT (Chinese Remainder Theorem)
+     * AlgTest on the card will be called using 'i' from cycle FOR and to the output file will be written the corresponding string from this array
+     */
+    public static final String KEYPAIR_RSACRT_STR[] = {
+        "javacard.security.KeyPair ALG_RSA_CRT on-card generation",         // [00]     // Class name
+        "ALG_RSA_CRT LENGTH_RSA_512#2.1.1",                                 // [01]
+        "ALG_RSA_CRT LENGTH_RSA_736#2.2.0",                                 // [02]
+        "ALG_RSA_CRT LENGTH_RSA_768#2.1.1",                                 // [03]
+        "ALG_RSA_CRT LENGTH_RSA_896#2.2.0",                                 // [04]
+        "ALG_RSA_CRT LENGTH_RSA_1024#2.1.1",                                // [05]
+        "ALG_RSA_CRT LENGTH_RSA_1280#2.2.0",                                // [06]
+        "ALG_RSA_CRT LENGTH_RSA_1536#2.2.0",                                // [07]
+        "ALG_RSA_CRT LENGTH_RSA_1984#2.2.0",                                // [08]
+        "ALG_RSA_CRT LENGTH_RSA_2048#2.1.1",                                // [09]
+        "ALG_RSA_CRT LENGTH_RSA_3072#never#0",                              // [10]
+        "ALG_RSA_CRT LENGTH_RSA_4096#3.0.1"                                 // [11]
+        };    
+  
+    /**
+     * String array containing class 'javacard.security.KeyPair' object DSA
+     * AlgTest on the card will be called using 'i' from cycle FOR and to the output file will be written the corresponding string from this array
+     */
+    public static final String KEYPAIR_DSA_STR[] = {
+        "javacard.security.KeyPair ALG_DSA on-card generation",     // [00]     // Class name
+        "ALG_DSA LENGTH_DSA_512#2.1.1",                             // [01]
+        "ALG_DSA LENGTH_DSA_768#2.1.1",                             // [02]
+        "ALG_DSA LENGTH_DSA_1024#2.1.1"                             // [03]
+    };
+  
+    /**
+     * String array containing class 'javacard.security.KeyPair' object EC_F2M
+     * AlgTest on the card will be called using 'i' from cycle FOR and to the output file will be written the corresponding string from this array
+     */
+    public static final String KEYPAIR_EC_F2M_STR[] = {
+        "javacard.security.KeyPair ALG_EC_F2M on-card generation",      // [00]     // Class name
+        "ALG_EC_F2M LENGTH_EC_F2M_113#2.2.1",                           // [01]
+        "ALG_EC_F2M LENGTH_EC_F2M_131#2.2.1",                           // [02]
+        "ALG_EC_F2M LENGTH_EC_F2M_163#2.2.1",                           // [03]
+        "ALG_EC_F2M LENGTH_EC_F2M_193#2.2.1"                            // [04]
+    };
+ 
+    /**
+     * String array containing class 'javacard.security.KeyPair' object EC_FP
+     * AlgTest on the card will be called using 'i' from cycle FOR and to the output file will be written the corresponding string from this array
+     */
+    public static final String KEYPAIR_EC_FP_STR[] = {
+        "javacard.security.KeyPair ALG_EC_FP on-card generation",       // [00]     // Class name
+        "ALG_EC_FP LENGTH_EC_FP_112#2.2.1",                             // [01]
+        "ALG_EC_FP LENGTH_EC_FP_128#2.2.1",                             // [02]
+        "ALG_EC_FP LENGTH_EC_FP_160#2.2.1",                             // [03]
+        "ALG_EC_FP LENGTH_EC_FP_192#2.2.1",                             // [04]
+        "ALG_EC_FP LENGTH_EC_FP_224#3.0.1",                             // [05]
+        "ALG_EC_FP LENGTH_EC_FP_256#3.0.1",                             // [06]
+        "ALG_EC_FP LENGTH_EC_FP_384#3.0.1",                             // [07]
+        "ALG_EC_FP LENGTH_EC_FP_521#3.0.4"                              // [08]
+    };
        
     public void TestSingleAlg () throws IOException, Exception{
         /* Reads text from a character-input stream, buffering characters so as to provide
@@ -335,12 +397,6 @@ public class SingleModeTest {
                     if (answ == 1){TestClassKeyBuilder(file);}
                     else{ClassSkipped(file, "javacard.security.KeyBuilder");}
                     
-                /* Class 'javacard.security.KePair' */    // TODO
-                System.out.println("Do you want to test algorithms from class 'KeyPair'?\n1 = YES, 0 = NO");
-                    answ = Integer.decode(br.readLine());
-                    if (answ == 1){}
-                    else{ClassSkipped(file, "javacard.security.KeyPair");}
-                    
                 /* Class 'javacard.security.KeyAgreement' */
                 System.out.println("Do you want to test algorithms from class 'KeyAgreement'?\n1 = YES, 0 = NO");
                     answ = Integer.decode(br.readLine());
@@ -352,6 +408,39 @@ public class SingleModeTest {
                     answ = Integer.decode(br.readLine());
                     if (answ == 1){TestClassChecksum(file);}
                     else{ClassSkipped(file, "javacard.security.Checksum");}
+                
+                    
+                // following methods not implemented on card
+                    
+                /* Class 'javacard.security.KeyPair_RSA' */
+                System.out.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_RSA on-card generation'?\n1 = YES, 0 = NO");
+                    answ = Integer.decode(br.readLine());
+                    if (answ == 1){TestClassKeyPair_ALG_RSA(file);}
+                    else{ClassSkipped(file, "javacard.security.KeyPair ALG_RSA on-card generation");}
+                    
+                /* Class 'javacard.security.KeyPair_RSA_CRT' */
+                System.out.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_RSA_CRT on-card generation'?\n1 = YES, 0 = NO");
+                    answ = Integer.decode(br.readLine());
+                    if (answ == 1){TestClassKeyPair_ALG_RSA_CRT(file);}
+                    else{ClassSkipped(file, "javacard.security.KeyPair ALG_RSA_CRT on-card generation");}   
+                    
+                /* Class 'javacard.security.KeyPair_DSA' */
+                System.out.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_DSA on-card generation'?\n1 = YES, 0 = NO");
+                    answ = Integer.decode(br.readLine());
+                    if (answ == 1){TestClassKeyPair_ALG_DSA(file);}
+                    else{ClassSkipped(file, "javacard.security.KeyPair ALG_DSA on-card generation");} 
+                
+                /* Class 'javacard.security.KeyPair_DSA' */
+                System.out.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_EC_F2M on-card generation'?\n1 = YES, 0 = NO");
+                    answ = Integer.decode(br.readLine());
+                    if (answ == 1){TestClassKeyPair_ALG_EC_F2M(file);}
+                    else{ClassSkipped(file, "javacard.security.KeyPair ALG_EC_F2M on-card generation");}
+                    
+                /* Class 'javacard.security.KeyPair_DSA' */
+                System.out.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_EC_FP on-card generation'?\n1 = YES, 0 = NO");
+                    answ = Integer.decode(br.readLine());
+                    if (answ == 1){TestClassKeyPair_ALG_EC_FP(file);}
+                    else{ClassSkipped(file, "javacard.security.KeyPair ALG_EC_FP on-card generation");} 
                 
                 /* Closing file */
                 CloseFile(file);
@@ -367,6 +456,13 @@ public class SingleModeTest {
                 
                 TestClassKeyAgreement(file);
                 TestClassChecksum(file);
+                
+                // following methods not implemented on card
+                TestClassKeyPair_ALG_RSA(file);
+                TestClassKeyPair_ALG_RSA_CRT(file);
+                TestClassKeyPair_ALG_DSA(file);
+                TestClassKeyPair_ALG_EC_F2M(file);
+                TestClassKeyPair_ALG_EC_FP(file);
                 
                 CloseFile(file);
             break;
@@ -425,8 +521,7 @@ public class SingleModeTest {
         System.out.println(message); file.write(message.getBytes());
         message = "Used protocol; " + protocol + "\r\n";
         System.out.println(message); file.write(message.getBytes());
-        
-        
+                
         //file.close();    
     }
     
@@ -505,18 +600,48 @@ public class SingleModeTest {
             case 0x6f:
                 message = name + ";" + "maybe;" + "\r\n";
                 System.out.println(message);
-                file.write(message.getBytes());
-                
+                file.write(message.getBytes());                
             break;
                 
             default:
                 // OTHER VALUE, IGNORE 
                 //System.out.println("Unknown value detected in AlgTest applet (0x" + Integer.toHexString(response[i] & 0xff) + "). Possibly, old version of AlTestJClient is used (try update)");
-            break;
-                
-            
-        
+            break;        
         }
+    }
+    
+    /**
+     * Returning Integer from string
+     * Takes the number from string before '#' character. All characters after '#' are discarded.
+     * Example: from string 'abcd123#456' will be extracted number '123' and returned as int
+     * @param str String containing number in form described above
+     * @return Integer number extracted from string
+     */
+    public int StringToInt (String str){
+        /* Spliting string using '#' char */
+        String output = str.substring(0, str.indexOf('#'));
+        /* Test output */
+        //System.out.println("Output string to '#' char is: " + output);
+        /* Deleting all non-number chars from string so it can be parsed */
+        String numberOnly= output.replaceAll("[^0-9]", "");
+        
+        /* Parsing string which now only contains number chars */
+        return Integer.parseInt(numberOnly);
+    }
+    
+    /**
+     * Takes Integer number and chops it into two bytes that can be send to smart card
+     * @param b1 The most significant byte
+     * @param b2 The least significant byte
+     * @param num Integer number to be divided into two bytes
+     */
+    public void IntTo2Bytes(byte b1, byte b2, int num){
+        /* Bitwise shifting procces */
+        b2 = (byte)(num & 0xFF);
+        num = (num >>> 8);
+        b1 = (byte)(num & 0xFF);
+        /* Test output */
+        //System.out.println("b1 = " + b1 + " b2 = " + b2);
     }
     
     /**
@@ -526,14 +651,14 @@ public class SingleModeTest {
      */
     public void TestClassCipher(FileOutputStream file) throws Exception{
         byte[] apdu = new byte[6];
-        apdu[OFFSET_CLA] = (byte)0xB0;  // for ALgTest applet
+        apdu[OFFSET_CLA] = (byte)0xB0;  // for AlgTest applet
         apdu[OFFSET_INS] = (byte)0x75;  // for AlgTest applet switch to 'TestSupportedModeSingle'
-        apdu[OFFSET_P1] = (byte)0x11;   // to test class Cipher
+        apdu[OFFSET_P1] = CLASS_CIPHER;   // 0x11
         apdu[OFFSET_P2] = (byte)0x00;
         apdu[OFFSET_LC] = (byte)0x01;
         
         /* Creates message with class name and writes it in the output file and on the screen */
-        String message = Cipher[0] + "\r\n";
+        String message = "\n" + Cipher[0] + "\r\n";
         System.out.println(message);
         file.write(message.getBytes());
         
@@ -541,12 +666,12 @@ public class SingleModeTest {
             // TODO: implement IF statement to decide if test JC2.2.2 and JC3.0.1??
             apdu[OFFSET_DATA] = (byte)i;
             ResponseAPDU response = cardManager.sendAPDU(apdu);
-            byte[] resp = response.getBytes();
             
+            byte[] resp = response.getBytes();
+            System.out.println("RESPONSE: " + resp[0]);
             /* Calls method CheckResult - should add to output error messages */
-            CheckResult(file, Cipher[0], resp[1]);
-        }
-        
+            CheckResult(file, Cipher[i], resp[1]);
+        }        
     }
     
     /**
@@ -557,14 +682,14 @@ public class SingleModeTest {
      */
     public void TestClassSignature (FileOutputStream file) throws IOException, Exception{
         byte[] apdu = new byte[6];
-        apdu[OFFSET_CLA] = (byte)0xB0;  // for ALgTest applet
+        apdu[OFFSET_CLA] = (byte)0xB0;  // for AlgTest applet
         apdu[OFFSET_INS] = (byte)0x75;  // for AlgTest applet switch to 'TestSupportedModeSingle'
-        apdu[OFFSET_P1] = (byte)0x12;   // to test class Signature
+        apdu[OFFSET_P1] = CLASS_SIGNATURE;   // 0x12
         apdu[OFFSET_P2] = (byte)0x00;
         apdu[OFFSET_LC] = (byte)0x01;
         
         /* Creates message with class name and writes it in the output file and on the screen */
-        String message = Signature[0] + "\r\n";
+        String message = "\n" + Signature[0] + "\r\n";
         System.out.println(message);
         file.write(message.getBytes());
         
@@ -575,9 +700,8 @@ public class SingleModeTest {
             byte[] resp = response.getBytes();
             
             /* Calls method CheckResult - should add to output error messages */
-            CheckResult(file, Signature[0], resp[1]);
-        }
-        
+            CheckResult(file, Signature[i], resp[1]);
+        }        
     }
     
     /**
@@ -588,14 +712,14 @@ public class SingleModeTest {
      */
     public void TestClassMessageDigest (FileOutputStream file) throws IOException, Exception{
         byte[] apdu = new byte[6];
-        apdu[OFFSET_CLA] = (byte)0xB0;  // for ALgTest applet
+        apdu[OFFSET_CLA] = (byte)0xB0;  // for AlgTest applet
         apdu[OFFSET_INS] = (byte)0x75;  // for AlgTest applet switch to 'TestSupportedModeSingle'
-        apdu[OFFSET_P1] = (byte)0x15;   // to test class MessageDigest
+        apdu[OFFSET_P1] = CLASS_MESSAGEDIGEST;   // 0x15
         apdu[OFFSET_P2] = (byte)0x00;
         apdu[OFFSET_LC] = (byte)0x01;
         
         /* Creates message with class name and writes it in the output file and on the screen */
-        String message = MessageDigest[0] + "\r\n";
+        String message = "\n" + MessageDigest[0] + "\r\n";
         System.out.println(message);
         file.write(message.getBytes());
         
@@ -606,7 +730,7 @@ public class SingleModeTest {
             byte[] resp = response.getBytes();
             
             /* Calls method CheckResult - should add to output error messages */
-            CheckResult(file, MessageDigest[0], resp[1]);
+            CheckResult(file, MessageDigest[i], resp[1]);
         }
     }
     
@@ -618,14 +742,14 @@ public class SingleModeTest {
      */
     public void TestClassRandomData (FileOutputStream file) throws IOException, Exception{
         byte[] apdu = new byte[6];
-        apdu[OFFSET_CLA] = (byte)0xB0;  // for ALgTest applet
+        apdu[OFFSET_CLA] = (byte)0xB0;  // for AlgTest applet
         apdu[OFFSET_INS] = (byte)0x75;  // for AlgTest applet switch to 'TestSupportedModeSingle'
-        apdu[OFFSET_P1] = (byte)0x16;   // to test class RandomData
+        apdu[OFFSET_P1] = CLASS_RANDOMDATA;   // 0x16
         apdu[OFFSET_P2] = (byte)0x00;
         apdu[OFFSET_LC] = (byte)0x01;
         
         /* Creates message with class name and writes it in the output file and on the screen */
-        String message = RandomData[0] + "\r\n";
+        String message = "\n" + RandomData[0] + "\r\n";
         System.out.println(message);
         file.write(message.getBytes());
         
@@ -636,7 +760,7 @@ public class SingleModeTest {
             byte[] resp = response.getBytes();
             
             /* Calls method CheckResult - should add to output error messages */
-            CheckResult(file, RandomData[0], resp[1]);
+            CheckResult(file, RandomData[i], resp[1]);
         }
     }
     
@@ -648,14 +772,14 @@ public class SingleModeTest {
      */
     public void TestClassKeyBuilder (FileOutputStream file) throws IOException, Exception{
         byte[] apdu = new byte[6];
-        apdu[OFFSET_CLA] = (byte)0xB0;  // for ALgTest applet
+        apdu[OFFSET_CLA] = (byte)0xB0;  // for AlgTest applet
         apdu[OFFSET_INS] = (byte)0x75;  // for AlgTest applet switch to 'TestSupportedModeSingle'
-        apdu[OFFSET_P1] = (byte)0x20;   // to test class KeyBuilder
+        apdu[OFFSET_P1] = CLASS_KEYBUILDER;   // 0x20
         apdu[OFFSET_P2] = (byte)0x00;
         apdu[OFFSET_LC] = (byte)0x01;
         
         /* Creates message with class name and writes it in the output file and on the screen */
-        String message = KeyBuilder[0] + "\r\n";
+        String message = "\n" + KeyBuilder[0] + "\r\n";
         System.out.println(message);
         file.write(message.getBytes());
         
@@ -666,7 +790,7 @@ public class SingleModeTest {
             byte[] resp = response.getBytes();
             
             /* Calls method CheckResult - should add to output error messages */
-            CheckResult(file, KeyBuilder[0], resp[1]);
+            CheckResult(file, KeyBuilder[i], resp[1]);
         }
     }
     
@@ -678,14 +802,14 @@ public class SingleModeTest {
      */
     public void TestClassKeyAgreement (FileOutputStream file) throws IOException, Exception{
         byte[] apdu = new byte[6];
-        apdu[OFFSET_CLA] = (byte)0xB0;  // for ALgTest applet
+        apdu[OFFSET_CLA] = (byte)0xB0;  // for AlgTest applet
         apdu[OFFSET_INS] = (byte)0x75;  // for AlgTest applet switch to 'TestSupportedModeSingle'
-        apdu[OFFSET_P1] = (byte)0x13;   // to test class KeyAgreement
+        apdu[OFFSET_P1] = CLASS_KEYAGREEMENT;   // 0x13
         apdu[OFFSET_P2] = (byte)0x00;
         apdu[OFFSET_LC] = (byte)0x01;
     
         /* Creates message with class name and writes it in the output file and on the screen */
-        String message = KeyAgreement[0] + "\r\n";
+        String message = "\n" + KeyAgreement[0] + "\r\n";
         System.out.println(message);
         file.write(message.getBytes());
         
@@ -696,7 +820,7 @@ public class SingleModeTest {
             byte[] resp = response.getBytes();
             
             /* Calls method CheckResult - should add to output error messages */
-            CheckResult(file, KeyAgreement[0], resp[1]);
+            CheckResult(file, KeyAgreement[i], resp[1]);
         }
     }
     
@@ -708,25 +832,199 @@ public class SingleModeTest {
      */
     public void TestClassChecksum (FileOutputStream file) throws IOException, Exception{
         byte[] apdu = new byte[6];
-        apdu[OFFSET_CLA] = (byte)0xB0;  // for ALgTest applet
+        apdu[OFFSET_CLA] = (byte)0xB0;  // for AlgTest applet
         apdu[OFFSET_INS] = (byte)0x75;  // for AlgTest applet switch to 'TestSupportedModeSingle'
-        apdu[OFFSET_P1] = (byte)0x17;   // to test class KeyAgreement
+        apdu[OFFSET_P1] = CLASS_CHECKSUM;   // 0x17
         apdu[OFFSET_P2] = (byte)0x00;
         apdu[OFFSET_LC] = (byte)0x01;
     
         /* Creates message with class name and writes it in the output file and on the screen */
-        String message = Checksum[0] + "\r\n";
+        String message = "\n" + Checksum[0] + "\r\n";
         System.out.println(message);
         file.write(message.getBytes());
         
         for (int i=1; i<Checksum.length; i++){    // i = 1 because Checksum[0] is class name
-            // TODO: implement IF statement to decide if test JC2.2.2 and JC3.0.1??
             apdu[OFFSET_DATA] = (byte)i;
             ResponseAPDU response = cardManager.sendAPDU(apdu);
             byte[] resp = response.getBytes();
             
             /* Calls method CheckResult - should add to output error messages */
-            CheckResult(file, Checksum[0], resp[1]);
+            CheckResult(file, Checksum[i], resp[1]);
+        }
+    }
+    
+    /**
+     * Tests all algorithms in class 'javacard.security.KeyPair_RSA' and results writes into the output file
+     * @param file FileOutputStream object containing output file
+     * @throws IOException
+     * @throws Exception
+     */
+    public void TestClassKeyPair_ALG_RSA (FileOutputStream file) throws IOException, Exception{
+        byte[] apdu = new byte[8];
+        apdu[OFFSET_CLA] = (byte)0xB0;  // for AlgTest applet
+        apdu[OFFSET_INS] = (byte)0x75;  // for AlgTest applet switch to 'TestSupportedModeSingle'
+        apdu[OFFSET_P1] = CLASS_KEYPAIR_RSA;    // 0x18
+        apdu[OFFSET_P2] = (byte)0x00;
+        apdu[OFFSET_LC] = (byte)0x03;
+        
+        /* Creates message with class name and writes it in the output file and on the screen */
+        String message = "\n" + KEYPAIR_RSA_STR[0] + "\r\n";
+        System.out.println(message);
+        file.write(message.getBytes());
+        
+        for (int i=1; i<KEYPAIR_RSA_STR.length; i++){    // i = 1 because KeyPair_RSA_STR[0] is class name
+            byte b1 = 0x00;
+            byte b2 = 0x00;
+            int num = StringToInt(KEYPAIR_RSA_STR[i]);
+            /* Bitwise shifting procces */
+            b2 = (byte)(num & 0xFF);        // The least significant byte
+            num = (num >>> 8);
+            b1 = (byte)(num & 0xFF);        // The most significant byte
+            System.out.println(b1 + " " + b2);
+            apdu[OFFSET_DATA] = (byte)i;
+            apdu[OFFSET_DATA + 1] = b1;
+            apdu[OFFSET_DATA + 2] = b2;
+            ResponseAPDU response = cardManager.sendAPDU(apdu);
+            byte[] resp = response.getBytes();
+            
+            /* Calls method CheckResult - should add to output error messages */
+            CheckResult(file, KEYPAIR_RSA_STR[i], resp[1]);
+        }
+    }
+    
+    /**
+     * Tests all algorithms in class 'javacard.security.KeyPair_RSA_CRT' and results writes into the output file
+     * @param file FileOutputStream object containing output file
+     * @throws IOException
+     * @throws Exception
+     */
+    public void TestClassKeyPair_ALG_RSA_CRT (FileOutputStream file) throws IOException, Exception{
+        byte[] apdu = new byte[8];
+        apdu[OFFSET_CLA] = (byte)0xB0;  // for AlgTest applet
+        apdu[OFFSET_INS] = (byte)0x75;  // for AlgTest applet switch to 'TestSupportedModeSingle'
+        apdu[OFFSET_P1] = CLASS_KEYPAIR_RSA_CRT;    // 0x19
+        apdu[OFFSET_P2] = (byte)0x00;
+        apdu[OFFSET_LC] = (byte)0x03;
+        
+        /* Creates message with class name and writes it in the output file and on the screen */
+        String message = "\n" + KEYPAIR_RSACRT_STR[0] + "\r\n";
+        System.out.println(message);
+        file.write(message.getBytes());
+        
+        for (int i=1; i<KEYPAIR_RSACRT_STR.length; i++){    // i = 1 because KeyPair_RSACRT_STR[0] is class name
+            byte b1 = 0x00;
+            byte b2 = 0x00;
+            int num = StringToInt(KEYPAIR_RSACRT_STR[i]);
+            /* Bitwise shifting procces */
+            b2 = (byte)(num & 0xFF);        // The least significant byte
+            num = (num >>> 8);
+            b1 = (byte)(num & 0xFF);        // The most significant byte
+            System.out.println(b1 + " " + b2);
+            apdu[OFFSET_DATA] = (byte)i;
+            apdu[OFFSET_DATA + 1] = b1;
+            apdu[OFFSET_DATA + 2] = b2;
+            ResponseAPDU response = cardManager.sendAPDU(apdu);
+            byte[] resp = response.getBytes();
+            
+            /* Calls method CheckResult - should add to output error messages */
+            CheckResult(file, KEYPAIR_RSACRT_STR[i], resp[1]);
+        }
+    }
+    
+    /**
+     * Tests all algorithms in class 'javacard.security.KeyPair_DSA' and results writes into the output file
+     * @param file FileOutputStream object containing output file
+     * @throws IOException
+     * @throws Exception
+     */
+    public void TestClassKeyPair_ALG_DSA (FileOutputStream file) throws IOException, Exception{
+        byte[] apdu = new byte[6];
+        apdu[OFFSET_CLA] = (byte)0xB0;  // for AlgTest applet
+        apdu[OFFSET_INS] = (byte)0x75;  // for AlgTest applet switch to 'TestSupportedModeSingle'
+        apdu[OFFSET_P1] = CLASS_KEYPAIR_DSA;    // 0x1A
+        apdu[OFFSET_P2] = (byte)0x00;
+        apdu[OFFSET_LC] = (byte)0x01;
+        
+        /* Creates message with class name and writes it in the output file and on the screen */
+        String message = "\n" + KEYPAIR_DSA_STR[0] + "\r\n";
+        System.out.println(message);
+        file.write(message.getBytes());
+        
+        for (int i=1; i<KEYPAIR_DSA_STR.length; i++){    // i = 1 because KeyPair_DSA_STR[0] is class name
+            apdu[OFFSET_DATA] = (byte)i;
+            ResponseAPDU response = cardManager.sendAPDU(apdu);
+            byte[] resp = response.getBytes();
+            
+            /* Calls method CheckResult - should add to output error messages */
+            CheckResult(file, KEYPAIR_DSA_STR[i], resp[1]);
+        }
+    }
+    
+    /**
+     * Tests all algorithms in class 'javacard.security.KeyPair_EC_F2M' and results writes into the output file
+     * @param file FileOutputStream object containing output file
+     * @throws IOException
+     * @throws Exception
+     */
+    public void TestClassKeyPair_ALG_EC_F2M (FileOutputStream file) throws IOException, Exception{
+        byte[] apdu = new byte[6];
+        apdu[OFFSET_CLA] = (byte)0xB0;  // for AlgTest applet
+        apdu[OFFSET_INS] = (byte)0x75;  // for AlgTest applet switch to 'TestSupportedModeSingle'
+        apdu[OFFSET_P1] = CLASS_KEYPAIR_EC_F2M;    // 0x1B
+        apdu[OFFSET_P2] = (byte)0x00;
+        apdu[OFFSET_LC] = (byte)0x01;
+        
+        /* Creates message with class name and writes it in the output file and on the screen */
+        String message = "\n" + KEYPAIR_EC_F2M_STR[0] + "\r\n";
+        System.out.println(message);
+        file.write(message.getBytes());
+        
+        for (int i=1; i<KEYPAIR_EC_F2M_STR.length; i++){    // i = 1 because KeyPair_EC_F2M_STR[0] is class name
+            apdu[OFFSET_DATA] = (byte)i;
+            ResponseAPDU response = cardManager.sendAPDU(apdu);
+            byte[] resp = response.getBytes();
+            
+            /* Calls method CheckResult - should add to output error messages */
+            CheckResult(file, KEYPAIR_EC_F2M_STR[i], resp[1]);
+        }
+    }
+    
+    /**
+     * Tests all algorithms in class 'javacard.security.KeyPair_EC_FP' and results writes into the output file
+     * @param file FileOutputStream object containing output file
+     * @throws IOException
+     * @throws Exception
+     */
+    public void TestClassKeyPair_ALG_EC_FP (FileOutputStream file) throws IOException, Exception{
+        byte[] apdu = new byte[8];
+        apdu[OFFSET_CLA] = (byte)0xB0;  // for AlgTest applet
+        apdu[OFFSET_INS] = (byte)0x75;  // for AlgTest applet switch to 'TestSupportedModeSingle'
+        apdu[OFFSET_P1] = CLASS_KEYPAIR_EC_FP;    // 0x1C
+        apdu[OFFSET_P2] = (byte)0x00;
+        apdu[OFFSET_LC] = (byte)0x03;
+        
+        /* Creates message with class name and writes it in the output file and on the screen */
+        String message = "\n" + KEYPAIR_EC_FP_STR[0] + "\r\n";
+        System.out.println(message);
+        file.write(message.getBytes());
+        
+        for (int i=1; i<KEYPAIR_EC_FP_STR.length; i++){    // i = 1 because KeyPair_EC_FP_STR[0] is class name
+            byte b1 = 0x00;
+            byte b2 = 0x00;
+            int num = StringToInt(KEYPAIR_EC_FP_STR[i]);
+            /* Bitwise shifting procces */
+            b2 = (byte)(num & 0xFF);        // The least significant byte
+            num = (num >>> 8);
+            b1 = (byte)(num & 0xFF);        // The most significant byte
+            System.out.println(b1 + " " + b2);
+            apdu[OFFSET_DATA] = (byte)i;
+            apdu[OFFSET_DATA + 1] = b1;
+            apdu[OFFSET_DATA + 2] = b2;
+            ResponseAPDU response = cardManager.sendAPDU(apdu);
+            byte[] resp = response.getBytes();
+            
+            /* Calls method CheckResult - should add to output error messages */
+            CheckResult(file, KEYPAIR_EC_FP_STR[i], resp[1]);
         }
     }
 }   // END OF CLASS 'SINGLEMODETEST'

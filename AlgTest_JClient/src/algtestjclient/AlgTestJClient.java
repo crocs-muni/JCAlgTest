@@ -294,7 +294,7 @@ public class AlgTestJClient {
                     file.flush();
                 }                
                 
-*/ 
+*/
                 file.close();
 
                 cardManager.DisconnectFromCard();
