@@ -1,12 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="JCAlgTest" default="default" basedir=".">
-<target name="all" depends="AlgTest_JClient, AlgTest_Process" />
-
-<target name="AlgTest_JClient">
-    <ant antfile="AlgTest_JClient/build.xml" target="compile" />        
-</target>
-
-<target name="AlgTest_Process">
-    <ant antfile="AlgTest_Process/build.xml" target="compile" />        
-</target>
+<project name="AlgTestJClient" default="default" basedir="AlgTest_JClient/">
+    <description>Builds, tests, and runs the project AlgTestJClient.</description>
+    <import file="AlgTest_JClient/nbproject/build-impl.xml"/>
 </project>
