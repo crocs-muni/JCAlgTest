@@ -3,10 +3,10 @@
 <target name="all" depends="AlgTest_JClient, AlgTest_Process" />
 
 <target name="AlgTest_JClient">
-    <ant antfile=AlgTest_JClient/build.xml target="compile" />        
+    <ant antfile="AlgTest_JClient/build.xml" target="compile" />        
 </target>
 
 <target name="AlgTest_Process">
-    <ant antfile=AlgTest_Process/build.xml target="compile" />        
+    <ant antfile="AlgTest_Process/build.xml" target="compile" />        
 </target>
 </project>
