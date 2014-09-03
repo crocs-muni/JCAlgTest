@@ -62,6 +62,9 @@
                 <exportfiles file="${build.classes.dir}/${jc.package.path}/javacard/${jc.package.shortName}.exp" />
                 <classpath refid="jc-classpath"/>
             </verifycap>
+
+             <copy file="${basedir}/build/classes/AlgTest/javacard/AlgTest.cap" tofile="${basedir}/!card_uploaders/AlgTest.cap"/>
+
         </target>
      
         <!-- Overriding target, which runs conversion and verification instead of creating JAR file -->
@@ -84,8 +87,6 @@
         <!-- Overriding target, which runs script during testing -->
         <target name="test" depends="jar,run-script">
         </target>
-
-
 
 <!--
         <target name="-post-jar">

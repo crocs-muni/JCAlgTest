@@ -89,6 +89,7 @@ public class AlgTest extends javacard.framework.Applet
     final static byte INS_CARD_TESTEXTAPDU           = (byte) 0x74;
     final static byte INS_CARD_TESTSUPPORTEDMODES_SINGLE    = (byte) 0x75;
     final static byte INS_CARD_TESTIOSPEED          = (byte) 0x76;
+    final static byte INS_CARD_GETRSAKEY            = (byte) 0x77;
 
 
     //
@@ -333,6 +334,7 @@ public class AlgTest extends javacard.framework.Applet
     private   byte[]           m_eepromArray7 = null;
     private   byte[]           m_eepromArray8 = null;
     private   RSAPublicKey     rsa_PublicKey = null;
+    private   RSAPrivateCrtKey rsa_PrivateKey = null;
 
     final static short EXPONENT_LENGTH = (short) 128;
     final static short MODULUS_LENGTH = (short) 128;
@@ -438,6 +440,7 @@ public class AlgTest extends javacard.framework.Applet
                 case INS_CARD_TESTEXTAPDU: TestExtendedAPDUSupport(apdu); break;
                 case INS_CARD_TESTSUPPORTEDMODES_SINGLE: TestSupportedModeSingle(apdu); break;
                 case INS_CARD_TESTIOSPEED: TestIOSpeed(apdu); break;
+                case INS_CARD_GETRSAKEY: GetRSAKey(apdu); break;
 
                 default : {
                     // The INS code is not supported by the dispatcher
@@ -1968,6 +1971,57 @@ void JCSystemInfo(APDU apdu) {
       // RETURN INPU DATA UNCHANGED
       apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, dataLen);
     }
+   
+   void GetRSAKey(APDU apdu) {
+      byte[]    apdubuf = apdu.getBuffer();
+      //apdu.setIncomingAndReceive();
 
+      switch (apdubuf[ISO7816.OFFSET_P1]) {
+        case 0: {
+            m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_1024);
+            m_keyPair.genKeyPair();           
+            rsa_PublicKey = (RSAPublicKey) m_keyPair.getPublic();
+
+            /*            
+            short offset = rsa_PublicKey.getExponent(apdubuf, (short) 0);
+            offset += rsa_PublicKey.getModulus(apdubuf, offset);
+            */
+            
+            short offset = 0;
+            apdubuf[offset] = (byte)0x82; offset++;
+            short len = rsa_PublicKey.getExponent(apdubuf, (short)(offset + 2));
+            Util.setShort(apdubuf, offset, len); 
+            offset += 2;    // length
+            offset += len;  // value
+            
+            apdubuf[offset] = (byte)0x82; offset++;
+            len = rsa_PublicKey.getModulus(apdubuf, (short) (offset + 2));
+            Util.setShort(apdubuf, offset, len); 
+            offset += 2;    // length
+            offset += len;  // value
+
+            apdu.setOutgoingAndSend((short) 0, offset);
+        
+            break;
+        }
+        case 1: {
+            rsa_PrivateKey = (RSAPrivateCrtKey) m_keyPair.getPrivate();
+            
+            short offset = 0;
+            short len = rsa_PrivateKey.getP(apdubuf, (short)(offset + 3));
+            apdubuf[offset] = (byte)0x82; offset++;
+            Util.setShort(apdubuf, offset, len); offset += 2;
+            offset += len;
+            
+            len = rsa_PrivateKey.getQ(apdubuf, (short)(offset + 3));
+            apdubuf[offset] = (byte)0x82; offset++;
+            Util.setShort(apdubuf, offset, len); offset += 2;
+            offset += len;
+                    
+            apdu.setOutgoingAndSend((short) 0, offset);
+            break;
+         }
+      }
+    }   
 }
 
