@@ -1,0 +1,3 @@
+For installing AlgTest applet you want rename current project file to: "project".
+Only properties file with this name will run.
+Also modify script file name in AlgTest_JavaCard/scripts.

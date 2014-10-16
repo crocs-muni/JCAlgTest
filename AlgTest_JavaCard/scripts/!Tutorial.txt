@@ -1,0 +1,3 @@
+For installing AlgTest applet you want rename current script to: "AlgTest_NXP_JCOP_CJ2A081"
+Only script with this name will run.
+Also modify properties file name in AlgTest_JavaCard/nbproject.

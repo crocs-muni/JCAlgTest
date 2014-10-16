@@ -32,7 +32,7 @@ is divided into following sections:
                 ======================
                 INITIALIZATION SECTION 
                 ======================
-            -->
+            -->          
     <target name="-pre-init">
         <!-- Empty placeholder for easier customization. -->
         <!-- You can override this target in the ../build.xml file. -->
@@ -881,6 +881,10 @@ is divided into following sections:
                 COMPILATION SECTION
                 ===================
             -->
+            <!-- Copy newly build jar into test directory for simulator of smart cards-->
+          <target name="-post-jar">
+             <copy file="D:\\School\\MUNI\\LabAK\\JCAlgTest_master\\AlgTest_JavaCard\\build\\classes\AlgTest.class" tofile="D:\\School\\MUNI\\LabAK\\JCAlgTest_master\AlgTest_JClient\\build\\classes\\algtestjclient\\AlgTest.class"/>
+          </target>
     <target name="-deps-jar-init" unless="built-jar.properties">
         <property location="${build.dir}/built-jar.properties" name="built-jar.properties"/>
         <delete file="${built-jar.properties}" quiet="true"/>

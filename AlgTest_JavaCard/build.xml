@@ -8,10 +8,13 @@
 <!-- You can turn off the Compile on Save (or Deploy on Save) setting -->
 <!-- in the project's Project Properties dialog box.-->
     <project name="AlgTest" default="default" basedir="." xmlns:j2seproject3="http://www.netbeans.org/ns/j2se-project/3">
+    
+          
         <description>Builds, tests, and runs the project SmartHelloWorld.</description>
           <import file="nbproject/build-impl.xml"/>
           <target name="-post-init">
     	    <!-- Java Card Ant Tasks definition -->
+          
             <path id="jc-tasks" >
                 <pathelement path="${jctasks.path}"/>
             </path>    
@@ -63,7 +66,7 @@
                 <classpath refid="jc-classpath"/>
             </verifycap>
         </target>
-     
+         
         <!-- Overriding target, which runs conversion and verification instead of creating JAR file -->
         <target name="jar" depends="init,compile,convert">
         </target>
@@ -79,12 +82,18 @@
             <exec executable="${gpshell.cmd}">
                 <arg value="build//scripts//${gpshell.script}"/>
             </exec>
+            <!-- Copy class files from package AlgTest_JavaCard to AlgTestJClient for jCardSim-->
+            <copy file="D:\\School\\MUNI\\LabAK\\JCAlgTest_master\\AlgTest_JavaCard\\build\\classes\\AlgTest\\AlgTest.class" tofile="D:\\School\\MUNI\\LabAK\\JCAlgTest_master\AlgTest_JClient\\build\\classes\\algtestjclient\\AlgTest.class" overwrite="true"/>
+            <copy file="D:\\School\\MUNI\\LabAK\\JCAlgTest_master\\AlgTest_JavaCard\\build\\classes\\AlgTestPerformance\\AlgTestPerformance.class" tofile="D:\\School\\MUNI\\LabAK\\JCAlgTest_master\AlgTest_JClient\\build\\classes\\algtestjclient\\AlgTestPerformance.class" overwrite="true"/>
+            <copy file="D:\\School\\MUNI\\LabAK\\JCAlgTest_master\\AlgTest_JavaCard\\build\\classes\\AlgTestSinglePerApdu\\AlgTestSinglePerApdu.class" tofile="D:\\School\\MUNI\\LabAK\\JCAlgTest_master\AlgTest_JClient\\build\\classes\\algtestjclient\\AlgTestSinglePerApdu.class" overwrite="true"/>
         </target>
      
         <!-- Overriding target, which runs script during testing -->
         <target name="test" depends="jar,run-script">
         </target>
-
+        
+        <target name="-post-jar">	       
+        </target>
 
 
 <!--

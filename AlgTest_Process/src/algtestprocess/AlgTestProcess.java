@@ -31,10 +31,11 @@
 
 package algtestprocess;
 
-import java.io.*;
 import algtestjclient.CardMngr;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.Scanner;
 import java.util.StringTokenizer;
 
 /**
@@ -42,14 +43,52 @@ import java.util.StringTokenizer;
  * @author petr
  */
 public class AlgTestProcess {
+    /* Arguments for AlgTestProcess. */
+    public static final String GENERATE_HTML = "HTML";
+    public static final String COMPARE_CARDS = "COMPARE";
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         try {
-            if (args.length == 0) {PrintHelp();}
-            else { generateHTMLTable(args[0]);}
+            if (args.length == 0) { // in case there are no arguments present
+                PrintHelp();
+            }
+            else {
+                /* To be able to run the program even with incomplete parameter (missing '\'). */
+                String arg = new String();
+                if(args[0].length() != 0){ // testing if there is any argument present
+                    int pathLength = args[0].length();
+                    char lastChar = args[0].charAt(pathLength - 1);    // last character in string
+                    if (lastChar != '\\'){
+                    args[0] = args[0] + "\\";     // adding '\' if not present
+                    }
+                }
+                
+                if(args.length > 1){
+                    if (args[1].equals(GENERATE_HTML)){
+                        System.out.println("Generating HTML table.");
+                        generateHTMLTable(args[0]);}
+                    else if (args[1].equals(COMPARE_CARDS)){
+                        System.out.println("Comparing cards.");
+                        compareSupportedAlgs(args[0]);}
+                    else {System.err.println("Incorrect arguments!");}  //TODO: add printing help (supported arguments?)
+                }
+                else{                
+                    System.out.println("Do you want to generate HTML table or compare supported algs in existing table?");
+                    System.out.println("1 = Generate new HTML; 0 = Compare algs in existing HTML");
+                    Scanner sc = new Scanner(System.in);
+                    int answ = sc.nextInt();
+                    if(answ == 1){generateHTMLTable(args[0]);}
+                    else if (answ == 0) {
+                        compareSupportedAlgs(args[0]);
+                    }
+                    else {
+                        System.err.println("Incorrect parameter!");
+                    }
+                }
+            }
             
             generateGPShellScripts();
         } 
@@ -61,15 +100,71 @@ public class AlgTestProcess {
         }
     }
     
+    /**
+     * Method takes HTML file with two smart card algorithm support results and marks differences between them.
+     * @param basePath Path to folder with HTML file which must be named 'AlgTest_html_table.html'.
+     * @throws FileNotFoundException
+     * @throws IOException 
+     */
+    private static void compareSupportedAlgs (String basePath) throws FileNotFoundException, IOException{
+        /* String containing input file path. */
+        String inputFileName = basePath + "AlgTest_html_table.html";
+        /* String containing output file path. */
+        String outputFileName = basePath + "AlgTest_html_table_comparison.html";
+        /* String containing line to search for in HTML file. */
+        String lineToSearch = "<tr style='height:12.75pt'>";
+        /* String containing style information for not matching algorithms in HTML file. */
+        String styleInfo = "<tr style='height:12.75pt;outline: solid'>";
+        
+        /* String array for loaded file. */
+        ArrayList<String> loadedFile = new ArrayList<>();
+        
+        /* Creating object of FileReader. */
+        FileReader inputFile = new FileReader(inputFileName);
+        BufferedReader reader = new BufferedReader(inputFile);
+        
+        String line = null;     // buffer for input file
+        /* Loading file to ArrayList object. */
+        while ((line = reader.readLine()) != null) {    // read if there is another line to read
+            loadedFile.add(line);
+        }
+        /* Searching for algs in loaded file. */
+        for (int i = 0; i < loadedFile.size(); i++){
+            if (loadedFile.get(i).contains(lineToSearch)){  // checking if line[i] is HTML row definition
+                if(!loadedFile.get(i + 3).contains(">c")){  // so the program doesn't check algorithm's class names
+                    String aux = loadedFile.get(i+3).substring(loadedFile.get(i+3).indexOf(">") + 1);   // getting first occurence of '>' char and rest of the string behinf him
+                    if (!loadedFile.get(i + 4).contains(aux)){  // checking if next algorithm support is the same
+                        loadedFile.set(i, styleInfo);           // setting new string to ArrayList (with border)
+                    }
+                }
+            }
+        }
+        
+        FileOutputStream output = new FileOutputStream(outputFileName);
+        /* Writing to output file. */
+        for (int i = 0; i< loadedFile.size(); i++){
+            String aux = loadedFile.get(i);
+            aux = aux + "\r\n";     // adding end of line to every line written to HTML file
+            output.write(aux.getBytes());
+            output.flush();
+        }
+            output.close();
+    }
+    
     private static void PrintHelp() {
         System.out.println("Usage: java AlgTestProcess.jar base_path\n" 
                 + "  base_path\\results\\directory should contain *.csv files with results \n"
                 + "  html table will be generated into base_path\\AlgTest_html_table.html \n");
     }
+    
     private static void generateHTMLTable(String basePath) throws IOException {
         String filesPath = basePath + "results\\";
         File dir = new File(filesPath);
-        String[] filesArray = dir.list(); 
+        String[] filesArray = dir.list();
+        
+        if(filesArray.length == 2){     // to compare two files, there needs to be two files in directory
+            
+        }
         
         if ((filesArray != null) && (dir.isDirectory() == true)) {    
             
@@ -115,7 +210,7 @@ public class AlgTestProcess {
             note = "Note: If you have card of unknown type, try to obtain ATR and take a look at smartcard list available here: <a href=\"http://smartcard-atr.appspot.com/\"> http://smartcard-atr.appspot.com/</a><br><br>\r\n\r\n"; 
             file.write(note.getBytes());
 
-            note = "Note: If character '-' or '?' is present, particular feature was not tested. Usually, this is equal to not supported algorithm. Typical example is the addition of new constants introduced by the newer version of JavaCard standard, which are not supported by cards tested before apperance of of new version of specification. The exceptions to this rule are classes that have to be tested manually (at the moment, following information: JavaCard support version, javacardx.apdu.ExtendedLength Extended APDU) where not tested doesn't automatically means not supported. Automated upload and testing of these features will solve this in feature. <br>\r\nError means that tested card gives permanent error other then CryptoException.NO_SUCH_ALGORITHM when called.<br><br>\r\n\r\n";
+            note = "Note: If character '-' or '?' is present, particular feature was not tested. Usually, this is equal to not supported algorithm. Typical example is the addition of new constants introduced by the newer version of JavaCard standard, which are not supported by cards tested before apperance of of new version of specification. The exceptions to this rule are classes that have to be tested manually (at the moment, following information: JavaCard support version, javacardx.apdu.ExtendedLength Extended APDU) where not tested doesn't automatically means not supported. Automated upload and testing of these features will solve this in future. <br>\r\nError means that tested card gives permanent error other then CryptoException.NO_SUCH_ALGORITHM when called.<br><br>\r\n\r\n";
             file.write(note.getBytes());
             
             String table = "<table id=\"tab\" width=\"730\" border=\"0\" cellspacing=\"2\" cellpadding=\"4\">\r\n";
