@@ -83,6 +83,7 @@ public class AlgTest extends javacard.framework.Applet
     final static byte CLA_CARD_ALGTEST               = (byte) 0xB0;
     final static byte INS_CARD_GETVERSION            = (byte) 0x60;
     final static byte INS_CARD_TESTSUPPORTEDMODES    = (byte) 0x70;
+    final static byte INS_CARD_TESTSUPPORTEDMODES_SINGLE    = (byte) 0x75;
     final static byte INS_CARD_TESTAVAILABLE_MEMORY  = (byte) 0x71;
     final static byte INS_CARD_TESTRSAEXPONENTSET    = (byte) 0x72;
     final static byte INS_CARD_JCSYSTEM_INFO         = (byte) 0x73;
@@ -431,6 +432,7 @@ public class AlgTest extends javacard.framework.Applet
             switch ( apduBuffer[ISO7816.OFFSET_INS]) {
                 case INS_CARD_GETVERSION: GetVersion(apdu); break;
                 case INS_CARD_TESTSUPPORTEDMODES: TestSupportedModes(apdu); break;
+                case INS_CARD_TESTSUPPORTEDMODES_SINGLE: TestSupportedModeSingle(apdu); break;
                 case INS_CARD_TESTAVAILABLE_MEMORY: TestAvailableMemory(apdu); break;
                 case INS_CARD_TESTRSAEXPONENTSET: TestRSAExponentSet(apdu); break;
                 case INS_CARD_JCSYSTEM_INFO: JCSystemInfo(apdu); break;
@@ -444,6 +446,96 @@ public class AlgTest extends javacard.framework.Applet
                 }
             }
         }
+    }
+    
+    void TestSupportedModeSingle(APDU apdu) {
+       byte[]    apdubuf = apdu.getBuffer();
+
+       short     dataLen = apdu.setIncomingAndReceive();
+       short     offset = -1;
+       
+       byte      algorithmClass = apdubuf[ISO7816.OFFSET_CDATA];
+       short     algorithmParam1 = Util.makeShort(apdubuf[(short) (ISO7816.OFFSET_CDATA + 1)], apdubuf[(short) (ISO7816.OFFSET_CDATA + 2)]);
+       //byte ahoj = MessageDigest.ALG_SHA_256;
+       
+       Util.arrayFillNonAtomic(apdubuf, ISO7816.OFFSET_CDATA, (short) 240, (byte) SUPP_ALG_UNTOUCHED);
+       offset++;
+       apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = apdubuf[ISO7816.OFFSET_P1];
+
+       switch (apdubuf[ISO7816.OFFSET_P1]) {
+           case (byte) 0x11: {
+             try {
+                 offset++;
+                 m_encryptCipher = Cipher.getInstance(algorithmClass, false);
+                 apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+             catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+             // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+             break;
+           }
+           case (byte) 0x12: {
+             try {offset++;m_sign = Signature.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+             catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+             // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+             break;
+           }
+           case (byte) 0x15: {
+             try {offset++;m_digest = MessageDigest.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+             catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+             // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+             break;
+           }
+           case (byte) 0x16: {
+             try {offset++;m_random = RandomData.getInstance(algorithmClass); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+             catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+             // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+             break;
+           }
+           case (byte) 0x20: {
+             try {offset++;m_key = KeyBuilder.buildKey(algorithmClass, algorithmParam1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+             catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+             // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+             break;
+           }
+           case (byte) 0x19: {
+             try {offset++;m_keyPair = new KeyPair(algorithmClass, algorithmParam1); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+             catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+             // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+             break;
+           }
+           
+             /*try {
+               offset++;m_keyPair = new KeyPair(algorithmClass, algorithmParam1);
+               m_keyPair.genKeyPair();
+               apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
+             }
+             catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+             // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+             break;*/
+           
+           case (byte) 0x13: {
+             try {offset++;m_object = KeyAgreement.getInstance(ALG_EC_SVDP_DH, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+             catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;  }
+             // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+             break;
+           }
+           case (byte) 0x17: {
+               // error was in Checksum.getInstance(ALG_ISO3309_CRC16, false); - fixed
+             try {offset++;m_object = Checksum.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+             catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+             // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+             break;
+           }
+        }
+       // ENDING 0xFF
+       offset++;
+       apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xFF;
+
+       apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (short) 240);
+       /**
+        * Sends back APDU of length 'offset'
+        * APDU of length 240 is too long for no reason
+        */
+       //apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (short) offset);
     }
     
     void TestSupportedModes(APDU apdu) {

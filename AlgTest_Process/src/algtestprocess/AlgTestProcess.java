@@ -311,7 +311,7 @@ public class AlgTestProcess {
                     }
                     else {
                         // algorithm not found in support list
-                        algorithm += "<td class='light_error'>-</td>\r\n";
+                        algorithm += "<td class='light_maybe'>-</td>\r\n";
                         //algorithm += "<td >&nbsp;</td>\r\n";
                     } 
                 }

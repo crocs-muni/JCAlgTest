@@ -66,6 +66,13 @@ td.light_error {
 	font-size: smaller;
 	text-align: center;
 }
+td.light_maybe {
+	color: black;
+	background: #FDE1E1 none;
+	font-family: sans-serif;
+	font-size: smaller;
+	text-align: center;
+}
 
 td.lightbolt {
 	color: black;

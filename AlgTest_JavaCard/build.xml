@@ -83,9 +83,9 @@
                 <arg value="build//scripts//${gpshell.script}"/>
             </exec>
             <!-- Copy class files from package AlgTest_JavaCard to AlgTestJClient for jCardSim-->
-            <copy file="D:\\School\\MUNI\\LabAK\\JCAlgTest_master\\AlgTest_JavaCard\\build\\classes\\AlgTest\\AlgTest.class" tofile="D:\\School\\MUNI\\LabAK\\JCAlgTest_master\AlgTest_JClient\\build\\classes\\algtestjclient\\AlgTest.class" overwrite="true"/>
-            <copy file="D:\\School\\MUNI\\LabAK\\JCAlgTest_master\\AlgTest_JavaCard\\build\\classes\\AlgTestPerformance\\AlgTestPerformance.class" tofile="D:\\School\\MUNI\\LabAK\\JCAlgTest_master\AlgTest_JClient\\build\\classes\\algtestjclient\\AlgTestPerformance.class" overwrite="true"/>
-            <copy file="D:\\School\\MUNI\\LabAK\\JCAlgTest_master\\AlgTest_JavaCard\\build\\classes\\AlgTestSinglePerApdu\\AlgTestSinglePerApdu.class" tofile="D:\\School\\MUNI\\LabAK\\JCAlgTest_master\AlgTest_JClient\\build\\classes\\algtestjclient\\AlgTestSinglePerApdu.class" overwrite="true"/>
+            <copy file="D:\\School\\MUNI\\LabAK\\JCAlgTest_master\\AlgTest_JavaCard\\build\\classes\\AlgTest\\AlgTest.class" tofile="D:\\School\\MUNI\\LabAK\\JCAlgTest_master\AlgTest_JClient\\build\\classes\\algtestjclient\\AlgTest.class"/>
+            <copy file="D:\\School\\MUNI\\LabAK\\JCAlgTest_master\\AlgTest_JavaCard\\build\\classes\\AlgTestPerformance\\AlgTestPerformance.class" tofile="D:\\School\\MUNI\\LabAK\\JCAlgTest_master\AlgTest_JClient\\build\\classes\\algtestjclient\\AlgTestPerformance.class"/>
+            <copy file="D:\\School\\MUNI\\LabAK\\JCAlgTest_master\\AlgTest_JavaCard\\build\\classes\\AlgTestSinglePerApdu\\AlgTestSinglePerApdu.class" tofile="D:\\School\\MUNI\\LabAK\\JCAlgTest_master\AlgTest_JClient\\build\\classes\\algtestjclient\\AlgTestSinglePerApdu.class"/>
         </target>
      
         <!-- Overriding target, which runs script during testing -->
