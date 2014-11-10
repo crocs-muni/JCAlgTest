@@ -516,7 +516,7 @@ public class AlgTest extends javacard.framework.Applet
              try {offset++;m_object = KeyAgreement.getInstance(ALG_EC_SVDP_DH, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
              catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;  }
              // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-             break;
+               break;
            }
            case (byte) 0x17: {
                // error was in Checksum.getInstance(ALG_ISO3309_CRC16, false); - fixed
@@ -1779,7 +1779,6 @@ void JCSystemInfo(APDU apdu) {
 
     Util.setShort(apdubuf, offset, JCSystem.getVersion());
     offset = (short)(offset + 2);
-
     apdubuf[offset] = (JCSystem.isObjectDeletionSupported() ? (byte) 1: (byte) 0);
     offset++;
 

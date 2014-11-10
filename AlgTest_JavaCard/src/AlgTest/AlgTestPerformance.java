@@ -378,7 +378,6 @@ void JCSystemInfo(APDU apdu) {
 
     Util.setShort(apdubuf, offset, JCSystem.getVersion());
     offset = (short)(offset + 2);
-
     apdubuf[offset] = (JCSystem.isObjectDeletionSupported() ? (byte) 1: (byte) 0);
     offset++;
 
