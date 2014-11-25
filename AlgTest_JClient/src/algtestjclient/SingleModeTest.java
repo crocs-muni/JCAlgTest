@@ -70,6 +70,7 @@ public class SingleModeTest {
     public static final String TEST_CLASS_KEYPAIR_ALG_DSA = "CLASS_KEYPAIR_ALG_DSA";
     public static final String TEST_CLASS_KEYPAIR_ALG_EC_F2M = "CLASS_KEYPAIR_ALG_EC_F2M";
     public static final String TEST_CLASS_KEYPAIR_ALG_EC_FP = "CLASS_KEYPAIR_ALG_EC_FP";
+    public static final String TEST_RSA_PUBLIC_EXPONENT_SUPPORT = "RSA_PUBLIC_EXP";
     
     /* APDU auxiliary variables. */
     public static final byte OFFSET_CLA = 0x00;
@@ -304,6 +305,10 @@ public class SingleModeTest {
             else if (Arrays.asList(args).contains(TEST_CLASS_KEYPAIR_ALG_DSA)){TestClassKeyPair_ALG_DSA(file);}
             else if (Arrays.asList(args).contains(TEST_CLASS_KEYPAIR_ALG_EC_F2M)){TestClassKeyPair_ALG_EC_F2M(file);}
             else if (Arrays.asList(args).contains(TEST_CLASS_KEYPAIR_ALG_EC_FP)){TestClassKeyPair_ALG_EC_FP(file);}
+            else if (Arrays.asList(args).contains(TEST_RSA_PUBLIC_EXPONENT_SUPPORT)){
+                StringBuilder value = new StringBuilder();
+                value.setLength(0);
+                cardManager.TestVariableRSAPublicExponentSupport(value, file, OFFSET_P2);}
             else{
                 System.err.println("Incorect parameter!");
                 cardManager.PrintHelp();
@@ -388,13 +393,25 @@ public class SingleModeTest {
                         answ = Integer.decode(br.readLine());
                         if (answ == 1){TestClassKeyPair_ALG_EC_FP(file);}
                         else{ClassSkipped(file, "javacard.security.KeyPair ALG_EC_FP on-card generation");}
-
+                    /* RSA exponent */
+                    System.out.println("\n\nQ: Do you like to test support for variable RSA public exponent?\n1 = YES, 0 = NO");
+                        answ = Integer.decode(br.readLine());
+                        if (answ == 1) {
+                        // Variable public exponent
+                        StringBuilder value = new StringBuilder();
+                        value.setLength(0);
+                        cardManager.TestVariableRSAPublicExponentSupport(value, file, (byte) 0);}
+                        else{
+                            String message = "\nERROR: Test variable public exponent support fail\n"; 
+                            System.out.println(message); file.write(message.getBytes());
+                        }
                     /* Closing file. */
                     CloseFile(file);
                 break;
 
                 /* Program will test all algorithms at once. */
                 case 1:
+                    /*
                     TestClassCipher(file);
                     TestClassSignature(file);
                     TestClassMessageDigest(file);
@@ -407,7 +424,8 @@ public class SingleModeTest {
                     TestClassKeyPair_ALG_DSA(file);
                     TestClassKeyPair_ALG_EC_F2M(file);
                     TestClassKeyPair_ALG_EC_FP(file);
-
+                    */
+                    testAllAtOnce(file);
                     CloseFile(file);
                 break;
 
@@ -989,6 +1007,10 @@ public class SingleModeTest {
                 TestClassKeyPair_ALG_DSA(file);
                 TestClassKeyPair_ALG_EC_F2M(file);
                 TestClassKeyPair_ALG_EC_FP(file);
+                // test RSA exponent
+                StringBuilder value = new StringBuilder();
+                value.setLength(0);
+                cardManager.TestVariableRSAPublicExponentSupport(value, file, OFFSET_P2);
                 
                 CloseFile(file);
     }

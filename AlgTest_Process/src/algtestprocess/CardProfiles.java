@@ -53,7 +53,7 @@ public class CardProfiles {
                 + modeHeader + "\r\n"
                 + "enable_trace\r\n"
                 + "establish_context\r\n"
-                + "card_connect -readerNumber 0\r\n";
+                + "card_connect -readerNumber 1\r\n";
         
         if (CardManager_AID.isEmpty()) { script += "# preselected CM"; }
         else {script += "select -AID " + CardManager_AID;}

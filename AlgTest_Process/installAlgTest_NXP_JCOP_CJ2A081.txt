@@ -2,7 +2,7 @@
 mode_211
 enable_trace
 establish_context
-card_connect -readerNumber 0
+card_connect -readerNumber 1
 select -AID a000000003000000
 open_sc -security 1 -keyind 0 -keyver 0 -mac_key 404142434445464748494a4b4c4d4e4f -enc_key 404142434445464748494a4b4c4d4e4f
 

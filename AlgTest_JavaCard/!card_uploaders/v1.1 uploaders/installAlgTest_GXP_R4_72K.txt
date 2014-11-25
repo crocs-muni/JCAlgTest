@@ -1,0 +1,30 @@
+# Usable for: GXP R4 72K
+# ATR: 3b 7d 94 00 00 80 31 80 65 b0 83 11 c0 a9 83 00 90 00
+# Java Card support version 2.2.1
+
+mode_201
+
+gemXpressoPro
+
+enable_trace
+
+establish_context
+
+card_connect -readerNumber 1
+select -AID A000000018434D00
+
+
+open_sc -security 1 -keyind 0 -keyver 0 -key 47454d5850524553534f53414d504c45
+
+
+
+delete -AID 6D7970616330303031
+
+delete -AID 6D797061636B616731
+
+
+install -file AlgTest_2_2_1.cap -nvDataLimit 2000 -instParam 00
+
+card_disconnect
+
+release_context

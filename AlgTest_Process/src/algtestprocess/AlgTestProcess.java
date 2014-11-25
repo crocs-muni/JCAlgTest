@@ -35,6 +35,7 @@ import algtestjclient.CardMngr;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
@@ -46,11 +47,23 @@ public class AlgTestProcess {
     /* Arguments for AlgTestProcess. */
     public static final String GENERATE_HTML = "HTML";
     public static final String COMPARE_CARDS = "COMPARE";
+    
+    // if one card results are generated
+    public static final String[] JAVA_CARD_VERSION = {"2.1.2", "2.2.1", "2.2.2"};
+    public static int jcv = -1;
+    
+    // if multiple card results are generated
+    private static List<String> java_card_version_array = new ArrayList<String>();
+    private static String appletVersion = "";
+    
+    private static final int JC_SUPPORT_OFFSET = 25;
+    private static final int AT_APPLET_OFFSET = 23;
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        System.out.println("Make sure to have JavaCard support version in your CSV file!");
         try {
             if (args.length == 0) { // in case there are no arguments present
                 PrintHelp();
@@ -65,22 +78,25 @@ public class AlgTestProcess {
                     args[0] = args[0] + "\\";     // adding '\' if not present
                     }
                 }
-                
+
                 if(args.length > 1){
                     if (args[1].equals(GENERATE_HTML)){
+                        // generating HTML
                         System.out.println("Generating HTML table.");
-                        generateHTMLTable(args[0]);}
+                        generateHTMLTable(args[0]);
+                    }
                     else if (args[1].equals(COMPARE_CARDS)){
                         System.out.println("Comparing cards.");
                         compareSupportedAlgs(args[0]);}
-                    else {System.err.println("Incorrect arguments!");}  //TODO: add printing help (supported arguments?)
+                    else {System.err.println("Incorrect arguments!");}
                 }
                 else{                
                     System.out.println("Do you want to generate HTML table or compare supported algs in existing table?");
                     System.out.println("1 = Generate new HTML; 0 = Compare algs in existing HTML");
                     Scanner sc = new Scanner(System.in);
                     int answ = sc.nextInt();
-                    if(answ == 1){generateHTMLTable(args[0]);}
+                    if(answ == 1){
+                        generateHTMLTable(args[0]);}
                     else if (answ == 0) {
                         compareSupportedAlgs(args[0]);
                     }
@@ -162,10 +178,6 @@ public class AlgTestProcess {
         File dir = new File(filesPath);
         String[] filesArray = dir.list();
         
-        if(filesArray.length == 2){     // to compare two files, there needs to be two files in directory
-            
-        }
-        
         if ((filesArray != null) && (dir.isDirectory() == true)) {    
             
             HashMap filesSupport[] = new HashMap[filesArray.length]; 
@@ -230,7 +242,9 @@ public class AlgTestProcess {
             //
             // FOOTER
             //
-            String footer = "</table>\r\n\r\n\r\n</body></html>";
+            String footer = "</table>\r\n\r\n";
+            footer += "* - Suspicious yes means that card claims to support algorithm released in higher version of Java Card than given cards supports.\r\nThese will be solved in future version of AlgTest.";
+            footer += "\r\n\r\n</body></html>";
             file.write(footer.getBytes());
 
             file.flush();
@@ -239,8 +253,6 @@ public class AlgTestProcess {
         else {
             System.out.println("directory is empty");
         }
-        
-
     }
     
     static String[] parseCardName(String fileName) {
@@ -273,35 +285,60 @@ public class AlgTestProcess {
         algorithm += "  <td class='dark_index'>introduced in JavaCard version</td>\r\n"; 
         for (int i = 0; i < filesSupport.length; i++) { algorithm += "  <td class='dark_index' title = '" + getLongCardName(filesArray[i]) + "'>c" + i + "</td>\r\n"; }
         
-
+        String[] jcvArray = java_card_version_array.toArray(new String[java_card_version_array.size()]);
         algorithm += "</tr>\r\n";
         // support for particular algorithm from given class
-        for (int i = 1; i < classInfo.length; i++) {
+        for (int i = 0; i < classInfo.length; i++) {
             if (!classInfo[i].startsWith("@@@")) { // ignore special informative types
+                String algorithmName = "";
+                String algorithmVersion = "";
                 
-                // Parse algorithm name and version of JC which introduced it
-                CardMngr    cman = new CardMngr();
-                String algorithmName = cman.GetAlgorithmName(classInfo[i]);
-                String algorithmVersion = cman.GetAlgorithmIntroductionVersion(classInfo[i]);
-                if (!cman.ShouldBeIncludedInOutput(classInfo[i])) continue; // ignore types with ignore flag set (algorith#version#include 1/0) 
+                if (appletVersion != ""){
+                    algorithmName = "AlgTest applet version";
+                    algorithmVersion = appletVersion;
+                }
+                else{
+                    // Parse algorithm name and version of JC which introduced it
+                    if (i == 0){continue;}
+                    CardMngr    cman = new CardMngr();
+                    algorithmName = cman.GetAlgorithmName(classInfo[i]);
+                    algorithmVersion = cman.GetAlgorithmIntroductionVersion(classInfo[i]);
+                    if (!cman.ShouldBeIncludedInOutput(classInfo[i])) continue; // ignore types with ignore flag set (algorith#version#include 1/0) 
+                }
                 
                 algorithm += "<tr style='height:12.75pt'>\r\n";
                 // Add algorithm name
                 algorithm += "  <td class='light'>" + algorithmName + "</td>\r\n";
                 // Add version of JavaCard standard that introduced given algorithm
-                algorithm += "  <td class='light_error'>" + algorithmVersion + "</td>\r\n";
+                if (algorithmVersion == appletVersion){
+                    algorithm += "  <td class='light_error'>" + "</td>\r\n";
+                    appletVersion ="";
+                }
+                else{
+                algorithm += "  <td class='light_error'>" + algorithmVersion + "</td>\r\n";}
                 
                 // Process all files
-                for (int fileIndex = 0; fileIndex < filesSupport.length; fileIndex++) { 
+                for (int fileIndex = 0; fileIndex < filesSupport.length; fileIndex++) {
                     algorithm += "  ";
                     HashMap fileSuppMap = filesSupport[fileIndex];
                     if (fileSuppMap.containsKey(algorithmName)) {
                         String secondToken = (String) fileSuppMap.get(algorithmName);
                         String title = "title='" + getShortCardName(filesArray[fileIndex]) + " : " + algorithmName + " : " + secondToken + "'";
-                        //String title="";
                         switch (secondToken) {
                             case "no": algorithm += "<td class='light_no' " + title + "'>no</td>\r\n"; break;
-                            case "yes": algorithm += "<td class='light_yes' " + title + "'>yes</td>\r\n"; break;
+                            case "yes":
+                                if (java_card_version_array.size() > 0){
+                                    if (algorithmVersion.compareTo(jcvArray[fileIndex]) == 1){
+                                        algorithm += "<td class='light_suspicious' " + title + "'>suspicious yes</td>\r\n";
+                                    }
+                                    else{
+                                        algorithm += "<td class='light_yes' " + title + "'>yes</td>\r\n";
+                                    }
+                                }
+                                else{
+                                    algorithm += "<td class='light_yes' " + title + "'>yes</td>\r\n";
+                                }
+                            break;
                             case "error": algorithm += "<td class='light_error' " + title + "'>error</td>\r\n"; break;
                             case "maybe": algorithm += "<td class='light_error' " + title + "'>maybe</td>\r\n"; break;
                             default: {
@@ -322,7 +359,6 @@ public class AlgTestProcess {
     }
     
     static void parseSupportFile(String filePath, HashMap suppMap) throws IOException {
-       
         try {
             //create BufferedReader to read csv file
             BufferedReader br = new BufferedReader( new FileReader(filePath));
@@ -332,6 +368,13 @@ public class AlgTestProcess {
 
             //read comma separated file line by line
             while ((strLine = br.readLine()) != null) {
+                // in case valid JavaCard support version is present
+                if (strLine.contains("JavaCard support version")){
+                    java_card_version_array.add((String)strLine.subSequence(JC_SUPPORT_OFFSET, strLine.length()-1));
+                }
+                if (strLine.contains("AlgTest applet version")){
+                    appletVersion = strLine.substring(AT_APPLET_OFFSET, strLine.length() - 1);                    
+                }
                 lineNumber++;
 
                 //break comma separated line using ";"
@@ -371,13 +414,18 @@ public class AlgTestProcess {
         CardProfiles.generateScript(capFileName + "jc2.2.2.cap", packageAID, appletAID, "NXP_JCOP_CJ2A081", "mode_211", "a000000003000000", "-keyind 0 -keyver 0 -mac_key 404142434445464748494a4b4c4d4e4f -enc_key 404142434445464748494a4b4c4d4e4f");
         // NXP JCOP 41 v2.2.1 72K
         CardProfiles.generateScript(capFileName + "jc2.2.1.cap", packageAID, appletAID, "NXP_JCOP_41_v221_72K", "mode_211", "a000000003000000", "-keyind 0 -keyver 0 -mac_key 404142434445464748494a4b4c4d4e4f -enc_key 404142434445464748494a4b4c4d4e4f");
-
+        // NXP JCOP CJ3A080
+        CardProfiles.generateScript(capFileName + "jc2.2.1.cap", packageAID, appletAID, "NXP_JCOP_CJ3A080", "mode_211", "a000000003000000", "-keyind 0 -keyver 0 -mac_key 404142434445464748494a4b4c4d4e4f -enc_key 404142434445464748494a4b4c4d4e4f");
+        
         // Gemalto_TOP_IM_GXP4
         CardProfiles.generateScript(capFileName + "jc2.2.1.cap", packageAID, appletAID, "Gemalto_TOP_IM_GXP4", "mode_201\r\ngemXpressoPro", "A000000018434D00", "-keyind 0 -keyver 0 -key 47454d5850524553534f53414d504c45");
         // Gemalto_GXP_E64_PK
         CardProfiles.generateScript(capFileName + "jc2.1.2.cap", packageAID, appletAID, "Gemalto_GXP_E64_PK", "mode_201", "A000000018434D00", "-keyind 0 -keyver 0 -mac_key 404142434445464748494a4b4c4d4e4f -enc_key 404142434445464748494a4b4c4d4e4f");
-        // TODO: Gemalto_GXP_R4_72K
-                
+        // Gemalto_GXP_R4_72K
+        CardProfiles.generateScript(capFileName + "jc2.2.1.cap", packageAID, appletAID, "Gemalto_GXP_R4_72K", "mode201\r\ngemXpressoPro\n", "A000000018434D00\n", "-keyind 0 -keyver 0 -key 47454d5850524553534f53414d504c45\n");
+        // Gemalto_GXP_E32_PK
+        CardProfiles.generateScript(capFileName+ "jc2.1.2.cap", packageAID, appletAID, "Gemalto_GXP_E32_PK", "mode_201\r\ngemXpressoPro", "A000000018434D00\n", "-keyind 0 -keyver 0 -key 47454d5850524553534f53414d504c45\n");
+        
         // Oberthur Cosmo Dual 72K
         CardProfiles.generateScript(capFileName + "jc2.1.2.cap", packageAID, appletAID, "Oberthur_Cosmo_Dual_72K", "mode_211", "a000000003000000", "-keyind 0 -keyver 0 -mac_key 404142434445464748494a4b4c4d4e4f -enc_key 404142434445464748494a4b4c4d4e4f");
         // TODO: Oberthur Cosmo V7
@@ -392,5 +440,8 @@ public class AlgTestProcess {
 
         // Cyberflex Palmera V5
         CardProfiles.generateScript(capFileName + "jc2.1.2.cap", packageAID, appletAID, "Cyberflex_Palmera_V5", "mode_201", "a000000003000000", "-keyind 0 -keyver 0 -mac_key 404142434445464748494a4b4c4d4e4f -enc_key 404142434445464748494a4b4c4d4e4f");
+        
+        // Twin_GCX4_72K_PK
+        CardProfiles.generateScript(capFileName + "jc2.2.1.cap", packageAID, appletAID, "Twin_GCX4_72K_PK", "mode_201\r\ngemXpressoPro", "-AID A000000018434D00", "-keyind 0 -keyver 0 -key 47454d5850524553534f53414d504c45");
     }
 }
