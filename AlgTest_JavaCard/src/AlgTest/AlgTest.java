@@ -381,6 +381,8 @@ public class AlgTest extends javacard.framework.Applet
 
         } else {
        }
+	   
+		m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_1024);	   
 
         if (isOP2) { register(buffer, (short)(offset + 1), (byte)buffer[offset]); }
         else { register(); }
@@ -1978,7 +1980,6 @@ void JCSystemInfo(APDU apdu) {
 
       switch (apdubuf[ISO7816.OFFSET_P1]) {
         case 0: {
-            m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_1024);
             m_keyPair.genKeyPair();           
             rsa_PublicKey = (RSAPublicKey) m_keyPair.getPublic();
 
