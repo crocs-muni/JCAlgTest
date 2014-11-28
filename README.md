@@ -1,6 +1,8 @@
 AlgTest
 =======
 
+[![Build status](https://travis-ci.org/petrs/JCAlgTest.svg?branch=master)](https://travis-ci.org/petrs/JCAlgTest)
+
 Automated testing tool for algorithms supported by particular smart card with JavaCard platform. 
 
 *Contribution with results for YOUR card is wanted! (and highly appreciated :))*
