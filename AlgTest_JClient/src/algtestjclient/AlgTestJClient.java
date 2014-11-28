@@ -101,7 +101,7 @@ public class AlgTestJClient {
                
                 String message = "";
                 String fileName = "AlgTest_" + atr + ".csv";
-                fileName = fileName.replace(":", "");
+                fileName = fileName.replace(":", "").replace(" ", "");
 
                 FileOutputStream file = new FileOutputStream(fileName);
                 
