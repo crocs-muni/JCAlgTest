@@ -1,7 +1,9 @@
 NXP JCOP31 V2.2 36K,,
 Card ATR: 3B:EB:00:00:81:31:20:45:4A:43:4F:50:33:31:33:36:47:44:54:78,,
+AlgTestJClient version; 1.2
+AlgTest applet version; 1.2
 
-JavaCard support version;2.1.2;
+JavaCard support version;2.2.1;
 javacardx.apdu.ExtendedLength; 
 Extended APDU;no
 

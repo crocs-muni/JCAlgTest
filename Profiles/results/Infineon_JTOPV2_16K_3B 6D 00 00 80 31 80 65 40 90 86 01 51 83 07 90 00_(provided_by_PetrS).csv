@@ -1,6 +1,7 @@
 Used reader;Gemplus GemPC Card Reader 0
 Card ATR;3B:6D:00:00:80:31:80:65:40:90:86:01:51:83:07:90:00
-
+AlgTestJClient version; 1.1
+AlgTest applet version; 1.1
 JavaCard support version;2.1.2;
 
 javacardx.apdu.ExtendedLength; 

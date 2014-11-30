@@ -1,6 +1,8 @@
 Axalto Cyberflex Palmera V5,,
 Card ATR: 3B:E6:00:00:81:21:45:32:4B:01:01:01:01:7A,,
 "Note: Card is probably without garbage collector - it is not possible to test all supported algorithms at once. When ceratin number of instances is allocated, further instances cannot be obtained, even when supported by card. Re-installation of whole applet is necessary. ",,
+AlgTestJClient version; 1.0
+AlgTest applet version; 0.1
 
 JavaCard support version;2.1.2;
 javacardx.apdu.ExtendedLength; 

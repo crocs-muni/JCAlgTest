@@ -252,4 +252,5 @@ Allocate RSA 1024 objects;yes;0.250000 sec;
 Set random modulus;no;
 Set random public exponent;no;
 Initialize cipher with public key with random exponent;no;
+JavaCard support version;???
 Use random public exponent;no;

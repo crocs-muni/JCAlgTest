@@ -1,7 +1,8 @@
 Gemplus GXP Pro-R3.2 (TOP IS GX3 );;
 Card ATR: 3B:7D:94:00:00:80:31:80:65:B0:83:01:02:90:83:00:90:00;;
 
-
+AlgTestJClient version; 1.1
+AlgTest applet version; 1.1
 JavaCard support version;2.1.2;
 javacardx.apdu.ExtendedLength; 
 Extended APDU;no

@@ -1,6 +1,9 @@
 Used reader;Gemplus USB Smart Card Reader 0;;;;
 Card ATR;3B 7A 94 00 00 80 65 A2 01 01 01 3D 72 D6 43;;;;
 
+AlgTestJClient version; 1.1
+AlgTest applet version; 1.1
+
 JavaCard support version;2.2.1;
 javacardx.apdu.ExtendedLength; 
 Extended APDU;no

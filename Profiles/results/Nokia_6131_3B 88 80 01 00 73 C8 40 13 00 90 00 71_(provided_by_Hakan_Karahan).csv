@@ -1,8 +1,10 @@
 nokia 6131 phone;;;,,
 Card ATR: 3B:88:80:01:00:73:C8:40:13:00:90:00:71;;;,,
 
+AlgTestJClient version; 1.0
+AlgTest applet version; 0.1
 
-JavaCard support version;2.1.2;
+JavaCard support version;2.2.0;
 javacardx.apdu.ExtendedLength; 
 Extended APDU;no
 
