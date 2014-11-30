@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="AlgTestJClient" default="default" basedir="AlgTest_JClient/">
+    <description>Builds, tests, and runs the project AlgTestJClient.</description>
+    <import file="AlgTest_JClient/nbproject/build-impl.xml"/>
+</project>
