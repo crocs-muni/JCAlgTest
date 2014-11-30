@@ -77,7 +77,7 @@ public class AlgTest extends javacard.framework.Applet
      */
     final static byte ALGTEST_JAVACARD_VERSION_1_0[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x30};
 
-    byte ALGTEST_JAVACARD_VERSION_CURRENT[] = ALGTEST_JAVACARD_VERSION_1_2;
+    byte ALGTEST_JAVACARD_VERSION_CURRENT[] = ALGTEST_JAVACARD_VERSION_1_3;
 
     
     final static byte CLA_CARD_ALGTEST               = (byte) 0xB0;
@@ -382,8 +382,6 @@ public class AlgTest extends javacard.framework.Applet
         } else {
        }
 	   
-		m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_1024);	   
-
         if (isOP2) { register(buffer, (short)(offset + 1), (byte)buffer[offset]); }
         else { register(); }
     }
@@ -521,10 +519,10 @@ public class AlgTest extends javacard.framework.Applet
              try {offset++;m_object = KeyAgreement.getInstance(ALG_EC_SVDP_DH, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
              catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;  }
              // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-             break;
+               break;
            }
            case (byte) 0x17: {
-             try {offset++;m_object = Checksum.getInstance(ALG_ISO3309_CRC16, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+             try {offset++;m_object = Checksum.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
              catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
              // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
              break;
@@ -535,9 +533,14 @@ public class AlgTest extends javacard.framework.Applet
        apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xFF;
 
        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (short) 240);
+       /**
+        * TODO: Sends back APDU of length 'offset'
+        * APDU of length 240 is too long for no reason
+        */
+       //apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (short) offset);
     }
-
-   void TestSupportedModes(APDU apdu) {
+    
+    void TestSupportedModes(APDU apdu) {
        byte[]    apdubuf = apdu.getBuffer();
 
        short     dataLen = apdu.setIncomingAndReceive();
@@ -1904,79 +1907,35 @@ public class AlgTest extends javacard.framework.Applet
        }
    }
 
-void JCSystemInfo(APDU apdu) {
-   byte[]    apdubuf = apdu.getBuffer();
-   short     dataLen = apdu.setIncomingAndReceive();
-   short     offset = (short) 0;
+   void JCSystemInfo(APDU apdu) {
+	   byte[]    apdubuf = apdu.getBuffer();
+	   short     dataLen = apdu.setIncomingAndReceive();
+	   short     offset = (short) 0;
 
-    Util.setShort(apdubuf, offset, JCSystem.getVersion());
-    offset = (short)(offset + 2);
+	    Util.setShort(apdubuf, offset, JCSystem.getVersion());
+	    offset = (short)(offset + 2);
 
-    apdubuf[offset] = (JCSystem.isObjectDeletionSupported() ? (byte) 1: (byte) 0);
-    offset++;
+	    apdubuf[offset] = (JCSystem.isObjectDeletionSupported() ? (byte) 1: (byte) 0);
+	    offset++;
 
-    Util.setShort(apdubuf, offset, JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_PERSISTENT));
-    offset = (short)(offset + 2);
-    Util.setShort(apdubuf, offset, JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_RESET));
-    offset = (short)(offset + 2);
-    Util.setShort(apdubuf, offset, JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT));
-    offset = (short)(offset + 2);
-/**/    
-    apdu.setOutgoingAndSend((byte) 0, offset);
+	    Util.setShort(apdubuf, offset, JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_PERSISTENT));
+	    offset = (short)(offset + 2);
+	    Util.setShort(apdubuf, offset, JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_RESET));
+	    offset = (short)(offset + 2);
+	    Util.setShort(apdubuf, offset, JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT));
+	    offset = (short)(offset + 2);
+	/**/    
+	    apdu.setOutgoingAndSend((byte) 0, offset);
   }
-
-
-  void TestExtendedAPDUSupport(APDU apdu) {
-/* ONLY FOR JC2.2.2  
-    byte[]    apdubuf = apdu.getBuffer();
-    short     LC = apdu.getIncomingLength();
-    short     receivedDataTotal = 0;
-    short     dataLen = apdu.setIncomingAndReceive();
-    short     dataOffset = apdu.getOffsetCdata();
-    short     offset = (short) 0;
-
-    // Receive all chunks of data
-    while (dataLen > 0) {
-        receivedDataTotal += dataLen;
-        dataLen = apdu.receiveBytes(dataOffset);
-    }
-
-    // Write length indicated by apdu.getIncomingLength()
-    Util.setShort(apdubuf, offset, LC);
-    offset = (short)(offset + 2);
-    
-    // Write actual length received
-    Util.setShort(apdubuf, offset, receivedDataTotal);
-    offset = (short)(offset + 2);
-
-    apdu.setOutgoingAndSend((byte) 0, offset);
-*/   }
-
-   void PerformanceTests(APDU apdu) {
-       byte[]    apdubuf = apdu.getBuffer();
-       short     dataLen = apdu.setIncomingAndReceive();
-       short     offset = (short) 0;
-
-       // TODO:
-
-       switch (apdubuf[ISO7816.OFFSET_P1]) {
-         case 1: {
-           break;
-         }
-       }
-   }
    
-   void TestIOSpeed(APDU apdu) {
-      byte[]    apdubuf = apdu.getBuffer();
-      short     dataLen = apdu.setIncomingAndReceive();
-
-      // RETURN INPU DATA UNCHANGED
-      apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, dataLen);
-    }
-   
-   void GetRSAKey(APDU apdu) {
+    void GetRSAKey(APDU apdu) {
       byte[]    apdubuf = apdu.getBuffer();
       //apdu.setIncomingAndReceive();
+
+      // Generate new object if not before yet
+      if (m_keyPair == null) {
+          m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_1024);	  
+      }	        
 
       switch (apdubuf[ISO7816.OFFSET_P1]) {
         case 0: {
@@ -2023,6 +1982,54 @@ void JCSystemInfo(APDU apdu) {
             break;
          }
       }
-    }   
+    }
+
+  void TestExtendedAPDUSupport(APDU apdu) {
+/* ONLY FOR JC2.2.2  
+    byte[]    apdubuf = apdu.getBuffer();
+    short     LC = apdu.getIncomingLength();
+    short     receivedDataTotal = 0;
+    short     dataLen = apdu.setIncomingAndReceive();
+    short     dataOffset = apdu.getOffsetCdata();
+    short     offset = (short) 0;
+
+    // Receive all chunks of data
+    while (dataLen > 0) {
+        receivedDataTotal += dataLen;
+        dataLen = apdu.receiveBytes(dataOffset);
+    }
+
+    // Write length indicated by apdu.getIncomingLength()
+    Util.setShort(apdubuf, offset, LC);
+    offset = (short)(offset + 2);
+    
+    // Write actual length received
+    Util.setShort(apdubuf, offset, receivedDataTotal);
+    offset = (short)(offset + 2);
+
+    apdu.setOutgoingAndSend((byte) 0, offset);
+*/   }
+
+   void PerformanceTests(APDU apdu) {
+       byte[]    apdubuf = apdu.getBuffer();
+       short     dataLen = apdu.setIncomingAndReceive();
+       short     offset = (short) 0;
+
+       // TODO:
+
+       switch (apdubuf[ISO7816.OFFSET_P1]) {
+         case 1: {
+           break;
+         }
+       }
+   }
+
+   void TestIOSpeed(APDU apdu) {
+      byte[]    apdubuf = apdu.getBuffer();
+      short     dataLen = apdu.setIncomingAndReceive();
+
+      // RETURN INPU DATA UNCHANGED
+      apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, dataLen);
+    }
 }
 
