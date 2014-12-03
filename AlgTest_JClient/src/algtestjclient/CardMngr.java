@@ -525,7 +525,7 @@ public class CardMngr {
             System.out.println("ATR: " + atr);
             String fileName = "AlgTest_" + atr + ".csv";
             fileName = fileName.replace(":", "");
-            fileName = fileName.replace(" ", "_");
+            fileName = fileName.replace(" ", "");
             
             FileOutputStream file = new FileOutputStream(fileName);
             
