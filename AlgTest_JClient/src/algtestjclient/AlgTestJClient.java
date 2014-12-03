@@ -62,7 +62,7 @@ public class AlgTestJClient {
     public final static String ALGTEST_JCLIENT_VERSION_1_2_1 = "1.2.1";
     /**
      * Version 1.2 (3.11.2013)
-     * + All relevant constants from JC2.2.2, JC3.0.1 & JC3.0.4 added
+     * + All relevant constants from JC2.2.2, JC3.0.1 and JC3.0.4 added
      */
     public final static String ALGTEST_JCLIENT_VERSION_1_2 = "1.2";
     /**
