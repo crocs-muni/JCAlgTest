@@ -197,6 +197,8 @@ public class PerformanceTesting {
             System.out.println(message); file.write(message.getBytes());
         }
         file.flush();
+        
+        file.close();
     }
     
     public int TestAvailableRAMMemory(StringBuilder pValue, FileOutputStream pFile, byte algPartP2) throws Exception {

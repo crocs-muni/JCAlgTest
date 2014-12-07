@@ -438,6 +438,7 @@ public class SingleModeTest {
                 break;
             }
         }
+        CloseFile(file);
     }
     
     /**
