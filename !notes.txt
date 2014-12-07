@@ -1,0 +1,13 @@
+Cipher
+- try to create cipher
+- create key
+- set key value
+- set key to cipher
+- execute operation (encrypt, decrypt, sign, verify)
+- verify results
+- report results
+
+Problem:
+- how to setup key value (e.g., RSA, RSA_CRT...)
+- when on-card key generation is supported, then 
+- use static array with fixed values?

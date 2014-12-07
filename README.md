@@ -1,11 +1,13 @@
 AlgTest
 =======
 
+[![Build status](https://travis-ci.org/petrs/JCAlgTest.svg?branch=master)](https://travis-ci.org/petrs/JCAlgTest)
+
 Automated testing tool for algorithms supported by particular smart card with JavaCard platform. 
 
 *Contribution with results for YOUR card is wanted! (and highly appreciated :))*
 
-1. Upload proper cap (based on supported JavaCard version) file to your smart card. Upload can be done via GPShell – scripts for selected cards are available. If unsure about supported version, try to upload one with the highest version (AlgTest_v1.2_jc2.2.2.cap) and if upload fail, use lower version).
+1. Upload proper cap file (based on supported JavaCard version) file to your smart card. For uploading, you may use GPShell (http://sourceforge.net/projects/globalplatform/) or GlobalPlatform (https://github.com/martinpaljak/GlobalPlatform) tools. Upload can be done via GPShell scripts that are available for selected cards in AlgTest_JavaCard/!card_uploaders. If unsure about supported version for your card, try to upload one with the highest version (AlgTest_v1.2_jc2.2.2.cap) and if upload fail, use lower version).
 
 2. Run Java application AlgTestJClient. Choose the target reader for card with uploaded AlgTest applet and let it run. CSV file with values separated by the semicolon is created (AlgTest_ATR.csv).
 
@@ -15,6 +17,7 @@ Automated testing tool for algorithms supported by particular smart card with Ja
 
 Results for (at least) following smartcards are currently in database (http://www.fi.muni.cz/~xsvenda/jcsupport.html):
 
+- Athena IDprotect , ATR=3B D5 18 FF 80 91 FE 1F C3 80 73 C8 21 13 08
 - Axalto Cyberflex32 , ATR=3B 75 94 00 00 62 02 02 02 01
 - Axalto Cyberflex PalmeraV5 , ATR=3B E6 00 00 81 21 45 32 4B 01 01 01 01 7A
 - G+D SmartCafe Expert 144k Dual , ATR=3b fd 18 00 00 80 31 fe 45 73 66 74 65 20 63 64 31 34 34 2d 6e 66 d8
@@ -26,6 +29,7 @@ Results for (at least) following smartcards are currently in database (http://ww
 - Gemplus GXPR3 , ATR=3B 7B 94 00 00 80 65 B0 83 01 01 74 83 00 90 00
 - Infineon JTOPV2 16K , ATR=3B 6D 00 00 80 31 80 65 40 90 86 01 51 83 07 90 00
 - Nokia 6131 , ATR=3B 88 80 01 00 73 C8 40 13 00 90 00 71
+- NXP JCOP10 (DES only version) , ATR=3b e9 00 00 81 31 fe 45 4a 43 4f 50 31 30 56 32 32 a3
 - NXP JCOP31 , ATR=3B EB 00 00 81 31 20 45 4A 43 4F 50 33 31 33 36 47 44 54 78
 - NXP JCOP41 v221 , ATR=3b fa 18 00 00 81 31 fe 45 4a 43 4f 50 34 31 56 32 32 31 9d
 -	NXP JCOP CJ2A081 JC222 , ATR=3b f8 18 00 ff 81 31 fe 45 4a 43 4f 50 76 32 34 31 43
@@ -33,6 +37,7 @@ Results for (at least) following smartcards are currently in database (http://ww
 -	NXP JCOP CJ3A081 JC222 , ATR=3b fa 18 00 00 81 31 fe 45 4a 33 41 30 38 31 56 32 34 31 89
 -	NXP JCOP J2A080 , ATR=3b f6 18 00 ff 81 31 fe 45 4a 32 41 30 38 30 1b
 -	Oberthur CosmoDual72K , ATR=3B 7B 18 00 00 00 31 C0 64 77 E3 03 00 82 90 00
+-	Oberthur Cosmo V7 64K Dual 128K , ATR=3B DB 18 00 80 B1 FE 45 1F 83 00 31 C0 64 C7 FC 10 00 01 90 00 FA
 -	Yubikey Neo , ATR=3b fa 13 00 00 81 31 fe 15 59 75 62 69 6b 65 79 4e 45 4f a6
 
 MOre detailed Usage:

@@ -1,3 +1,6 @@
+table { border-collapse: collapse; border-spacing:0; }
+td { border: 1px solid #ccc; min-width: 4em; }
+
 a:link { text-decoration: none; }
 
 h2 { color: black; }
@@ -27,6 +30,8 @@ th.pgpdark {
   font-weight: bold;
 }
 
+td.hover { background-color: #eee; }
+
 td.light {
 	color: black;
 	background: #E0E0E0 none;
@@ -36,6 +41,13 @@ td.light {
 td.light_yes {
 	color: black;
 	background: #c0E0c0 none;
+	font-family: sans-serif;
+	font-size: smaller;
+	text-align: center;
+}
+td.light_suspicious {
+	color: black;
+	background: #c0D0c0 none;
 	font-family: sans-serif;
 	font-size: smaller;
 	text-align: center;
@@ -54,9 +66,23 @@ td.light_info {
 	font-size: smaller;
 	text-align: center;
 }
+td.light_info_left {
+	color: black;
+	background: #F0F0F0 none;
+	font-family: sans-serif;
+	font-size: smaller;
+	text-align: left;
+}
 td.light_error {
 	color: black;
 	background: #FAFAFA none;
+	font-family: sans-serif;
+	font-size: smaller;
+	text-align: center;
+}
+td.light_maybe {
+	color: black;
+	background: #FDE1E1 none;
 	font-family: sans-serif;
 	font-size: smaller;
 	text-align: center;
@@ -87,6 +113,7 @@ td.dark_index {
 	font-weight: bold;
 	text-align: center;
 }
+
 
 td.pgplight {
 	color: black;

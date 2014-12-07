@@ -8,10 +8,13 @@
 <!-- You can turn off the Compile on Save (or Deploy on Save) setting -->
 <!-- in the project's Project Properties dialog box.-->
     <project name="AlgTest" default="default" basedir="." xmlns:j2seproject3="http://www.netbeans.org/ns/j2se-project/3">
+    
+          
         <description>Builds, tests, and runs the project SmartHelloWorld.</description>
           <import file="nbproject/build-impl.xml"/>
           <target name="-post-init">
     	    <!-- Java Card Ant Tasks definition -->
+          
             <path id="jc-tasks" >
                 <pathelement path="${jctasks.path}"/>
             </path>    
@@ -62,8 +65,11 @@
                 <exportfiles file="${build.classes.dir}/${jc.package.path}/javacard/${jc.package.shortName}.exp" />
                 <classpath refid="jc-classpath"/>
             </verifycap>
+
+             <copy file="${basedir}/build/classes/AlgTest/javacard/AlgTest.cap" tofile="${basedir}/!card_uploaders/AlgTest.cap"/>
+
         </target>
-     
+         
         <!-- Overriding target, which runs conversion and verification instead of creating JAR file -->
         <target name="jar" depends="init,compile,convert">
         </target>
@@ -79,13 +85,15 @@
             <exec executable="${gpshell.cmd}">
                 <arg value="build//scripts//${gpshell.script}"/>
             </exec>
+            <!-- Copy class files from package AlgTest_JavaCard to AlgTestJClient for jCardSim-->
+            <copy file="${basedir}/build/classes/AlgTest/AlgTest.class" tofile="${basedir}/test/AlgTest.class"/>
+            <copy file="${basedir}/build/classes/AlgTest/AlgTestPerformance/AlgTestPerformance.class" tofile="${basedir}/test/AlgTestPerformance.class"/>
+            <copy file="${basedir}/build/classes/AlgTest/AlgTestSinglePerApdu/AlgTestSinglePerApdu.class" tofile="${basedir}/test/AlgTestSinglePerApdu.class"/>
         </target>
      
         <!-- Overriding target, which runs script during testing -->
         <target name="test" depends="jar,run-script">
         </target>
-
-
 
 <!--
         <target name="-post-jar">

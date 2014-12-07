@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2004-2013  Petr Svenda <petr@svenda.com>
+    Copyright (c) 2004-2014  Petr Svenda <petr@svenda.com>
 
      LICENSE TERMS
 
@@ -50,6 +50,12 @@ import javacardx.crypto.*;
 public class AlgTest extends javacard.framework.Applet 
 {
     // NOTE: when incrementing version, don't forget to update ALGTEST_JAVACARD_VERSION_CURRENT value
+
+    /**
+     * Version 1.3 (20.3.2014)
+     * + Possibility to test single algorithm at single apdu command (possibility for reset in between) via TestSupportedModeSingle()
+     */
+    final static byte ALGTEST_JAVACARD_VERSION_1_3[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x33};
     /**
      * Version 1.2 (3.11.2013)
      * + All relevant constants from JC2.2.2, JC3.0.1 & JC3.0.4 added
@@ -71,7 +77,7 @@ public class AlgTest extends javacard.framework.Applet
      */
     final static byte ALGTEST_JAVACARD_VERSION_1_0[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x30};
 
-    byte ALGTEST_JAVACARD_VERSION_CURRENT[] = ALGTEST_JAVACARD_VERSION_1_2;
+    byte ALGTEST_JAVACARD_VERSION_CURRENT[] = ALGTEST_JAVACARD_VERSION_1_3;
 
     
     final static byte CLA_CARD_ALGTEST               = (byte) 0xB0;
@@ -81,6 +87,9 @@ public class AlgTest extends javacard.framework.Applet
     final static byte INS_CARD_TESTRSAEXPONENTSET    = (byte) 0x72;
     final static byte INS_CARD_JCSYSTEM_INFO         = (byte) 0x73;
     final static byte INS_CARD_TESTEXTAPDU           = (byte) 0x74;
+    final static byte INS_CARD_TESTSUPPORTEDMODES_SINGLE    = (byte) 0x75;
+    final static byte INS_CARD_TESTIOSPEED          = (byte) 0x76;
+    final static byte INS_CARD_GETRSAKEY            = (byte) 0x77;
 
 
     //
@@ -325,9 +334,11 @@ public class AlgTest extends javacard.framework.Applet
     private   byte[]           m_eepromArray7 = null;
     private   byte[]           m_eepromArray8 = null;
     private   RSAPublicKey     rsa_PublicKey = null;
+    private   RSAPrivateCrtKey rsa_PrivateKey = null;
 
     final static short EXPONENT_LENGTH = (short) 128;
     final static short MODULUS_LENGTH = (short) 128;
+    final static short ADDITIONAL_ARGUMENTS_LENGTH = (short) (ISO7816.OFFSET_CDATA + 4); // two short arguments
     
     final static byte SUPP_ALG_UNTOUCHED = (byte) 0xf0;
     final static byte SUPP_ALG_SUPPORTED = (byte) 0x00;
@@ -370,7 +381,7 @@ public class AlgTest extends javacard.framework.Applet
 
         } else {
        }
-
+	   
         if (isOP2) { register(buffer, (short)(offset + 1), (byte)buffer[offset]); }
         else { register(); }
     }
@@ -393,9 +404,6 @@ public class AlgTest extends javacard.framework.Applet
      */
     public boolean select()
     {
-        // <PUT YOUR SELECTION ACTION HERE>
-
-        // return status of selection
         return true;
     }
 
@@ -430,6 +438,9 @@ public class AlgTest extends javacard.framework.Applet
                 case INS_CARD_TESTRSAEXPONENTSET: TestRSAExponentSet(apdu); break;
                 case INS_CARD_JCSYSTEM_INFO: JCSystemInfo(apdu); break;
                 case INS_CARD_TESTEXTAPDU: TestExtendedAPDUSupport(apdu); break;
+                case INS_CARD_TESTSUPPORTEDMODES_SINGLE: TestSupportedModeSingle(apdu); break;
+                case INS_CARD_TESTIOSPEED: TestIOSpeed(apdu); break;
+                case INS_CARD_GETRSAKEY: GetRSAKey(apdu); break;
 
                 default : {
                     // The INS code is not supported by the dispatcher
@@ -447,8 +458,89 @@ public class AlgTest extends javacard.framework.Applet
 
         apdu.setOutgoingAndSend((byte) 0, (short) ALGTEST_JAVACARD_VERSION_CURRENT.length);
     }    
+    
+    void TestSupportedModeSingle(APDU apdu) {
+       byte[]    apdubuf = apdu.getBuffer();
 
-   void TestSupportedModes(APDU apdu) {
+       short     dataLen = apdu.setIncomingAndReceive();
+       short     offset = -1;
+       
+       byte      algorithmClass = apdubuf[ISO7816.OFFSET_CDATA];
+       short     algorithmParam1 = Util.makeShort(apdubuf[(short) (ISO7816.OFFSET_CDATA + 1)], apdubuf[(short) (ISO7816.OFFSET_CDATA + 2)]);
+
+       Util.arrayFillNonAtomic(apdubuf, ISO7816.OFFSET_CDATA, (short) 240, (byte) SUPP_ALG_UNTOUCHED);
+       offset++;
+       apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = apdubuf[ISO7816.OFFSET_P1];
+
+       switch (apdubuf[ISO7816.OFFSET_P1]) {
+           case (byte) 0x11: {
+             try {offset++;m_encryptCipher = Cipher.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+             catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+             // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+             break;
+           }
+           case (byte) 0x12: {
+             try {offset++;m_sign = Signature.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+             catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+             // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+             break;
+           }
+           case (byte) 0x15: {
+             try {offset++;m_digest = MessageDigest.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+             catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+             // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+             break;
+           }
+           case (byte) 0x16: {
+             try {offset++;m_random = RandomData.getInstance(algorithmClass); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+             catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+             // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+             break;
+           }
+           case (byte) 0x20: {
+             try {offset++;m_key = KeyBuilder.buildKey(algorithmClass, algorithmParam1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+             catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+             // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+             break;
+           }
+           case (byte) 0x18: // no break
+           case (byte) 0x19: // no break
+           case (byte) 0x1C: { // no break
+             try {
+               offset++;m_keyPair = new KeyPair(algorithmClass, algorithmParam1);
+               m_keyPair.genKeyPair();
+               apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
+             }
+             catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+             // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+             break;
+           }
+           case (byte) 0x13: {
+             try {offset++;m_object = KeyAgreement.getInstance(ALG_EC_SVDP_DH, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+             catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;  }
+             // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+               break;
+           }
+           case (byte) 0x17: {
+             try {offset++;m_object = Checksum.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+             catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+             // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+             break;
+           }
+        }
+       // ENDING 0xFF
+       offset++;
+       apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xFF;
+
+       apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (short) 240);
+       /**
+        * TODO: Sends back APDU of length 'offset'
+        * APDU of length 240 is too long for no reason
+        */
+       //apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (short) offset);
+    }
+    
+    void TestSupportedModes(APDU apdu) {
        byte[]    apdubuf = apdu.getBuffer();
 
        short     dataLen = apdu.setIncomingAndReceive();
@@ -461,354 +553,349 @@ public class AlgTest extends javacard.framework.Applet
          offset++;
          apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0x11;
 
-         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_DES_CBC_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        try {offset++;m_encryptCipher = Cipher.getInstance(ALG_DES_CBC_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_DES_CBC_ISO9797_M1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        try {offset++;m_encryptCipher = Cipher.getInstance(ALG_DES_CBC_ISO9797_M1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_DES_CBC_ISO9797_M2, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        try {offset++;m_encryptCipher = Cipher.getInstance(ALG_DES_CBC_ISO9797_M2, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_DES_CBC_PKCS5, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        try {offset++;m_encryptCipher = Cipher.getInstance(ALG_DES_CBC_PKCS5, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_DES_ECB_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        try {offset++;m_encryptCipher = Cipher.getInstance(ALG_DES_ECB_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_DES_ECB_ISO9797_M1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        try {offset++;m_encryptCipher = Cipher.getInstance(ALG_DES_ECB_ISO9797_M1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_DES_ECB_ISO9797_M2, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        try {offset++;m_encryptCipher = Cipher.getInstance(ALG_DES_ECB_ISO9797_M2, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_DES_ECB_PKCS5, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        try {offset++;m_encryptCipher = Cipher.getInstance(ALG_DES_ECB_PKCS5, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_RSA_ISO14888, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        try {offset++;m_encryptCipher = Cipher.getInstance(ALG_RSA_ISO14888, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_RSA_PKCS1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        try {offset++;m_encryptCipher = Cipher.getInstance(ALG_RSA_PKCS1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_RSA_ISO9796, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        try {offset++;m_encryptCipher = Cipher.getInstance(ALG_RSA_ISO9796, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_RSA_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        try {offset++;m_encryptCipher = Cipher.getInstance(ALG_RSA_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_AES_BLOCK_128_CBC_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        try {offset++;m_encryptCipher = Cipher.getInstance(ALG_AES_BLOCK_128_CBC_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_AES_BLOCK_128_ECB_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        try {offset++;m_encryptCipher = Cipher.getInstance(ALG_AES_BLOCK_128_ECB_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_RSA_PKCS1_OAEP, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        try {offset++;m_encryptCipher = Cipher.getInstance(ALG_RSA_PKCS1_OAEP, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         // JC2.2.2
-         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_KOREAN_SEED_ECB_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        // JC2.2.2
+        try {offset++;m_encryptCipher = Cipher.getInstance(ALG_KOREAN_SEED_ECB_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_KOREAN_SEED_CBC_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         // JC3.0.1
-         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_AES_BLOCK_192_CBC_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        try {offset++;m_encryptCipher = Cipher.getInstance(ALG_KOREAN_SEED_CBC_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_AES_BLOCK_192_ECB_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        // JC3.0.1
+        try {offset++;m_encryptCipher = Cipher.getInstance(ALG_AES_BLOCK_192_CBC_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_AES_BLOCK_256_CBC_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        try {offset++;m_encryptCipher = Cipher.getInstance(ALG_AES_BLOCK_192_ECB_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_AES_BLOCK_256_ECB_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        try {offset++;m_encryptCipher = Cipher.getInstance(ALG_AES_BLOCK_256_CBC_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_AES_CBC_ISO9797_M1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        try {offset++;m_encryptCipher = Cipher.getInstance(ALG_AES_BLOCK_256_ECB_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_AES_CBC_ISO9797_M2, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        try {offset++;m_encryptCipher = Cipher.getInstance(ALG_AES_CBC_ISO9797_M1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_AES_CBC_PKCS5, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        try {offset++;m_encryptCipher = Cipher.getInstance(ALG_AES_CBC_ISO9797_M2, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_AES_ECB_ISO9797_M1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        try {offset++;m_encryptCipher = Cipher.getInstance(ALG_AES_CBC_PKCS5, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_AES_ECB_ISO9797_M2, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        try {offset++;m_encryptCipher = Cipher.getInstance(ALG_AES_ECB_ISO9797_M1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         try {offset++;m_encryptCipher = Cipher.getInstance(ALG_AES_ECB_PKCS5, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
+        try {offset++;m_encryptCipher = Cipher.getInstance(ALG_AES_ECB_ISO9797_M2, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_encryptCipher = Cipher.getInstance(ALG_AES_ECB_PKCS5, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
        }
 
        if (apdubuf[ISO7816.OFFSET_P1] == 0 || apdubuf[ISO7816.OFFSET_P1] == (byte) 0x12) {
          offset++;
          apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0x12;
+        //Class javacard.security.Signature
+        try {offset++;m_sign = Signature.getInstance(ALG_DES_MAC4_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         //Class javacard.security.Signature
-         try {offset++;m_sign = Signature.getInstance(ALG_DES_MAC4_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        try {offset++;m_sign = Signature.getInstance(ALG_DES_MAC8_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         try {offset++;m_sign = Signature.getInstance(ALG_DES_MAC8_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_DES_MAC4_ISO9797_M1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_DES_MAC8_ISO9797_M1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_DES_MAC4_ISO9797_M2, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_DES_MAC8_ISO9797_M2, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_DES_MAC4_PKCS5, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_DES_MAC8_PKCS5, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_ISO9796, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_PKCS1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_RSA_MD5_PKCS1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_RSA_RIPEMD160_ISO9796, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_RSA_RIPEMD160_PKCS1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_DSA_SHA, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_RFC2409, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_RSA_MD5_RFC2409, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_ECDSA_SHA, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_AES_MAC_128_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_DES_MAC4_ISO9797_1_M2_ALG3, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_DES_MAC8_ISO9797_1_M2_ALG3, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_PKCS1_PSS, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_RSA_MD5_PKCS1_PSS, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_RSA_RIPEMD160_PKCS1_PSS, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         // JC2.2.2
-         try {offset++;m_sign = Signature.getInstance(ALG_HMAC_SHA1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_HMAC_SHA_256, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_HMAC_SHA_384, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_HMAC_SHA_512, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_HMAC_MD5, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_HMAC_RIPEMD160, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_ISO9796_MR, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_RSA_RIPEMD160_ISO9796_MR, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_KOREAN_SEED_MAC_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         // JC3.0.1
-         try {offset++;m_sign = Signature.getInstance(ALG_ECDSA_SHA_256, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_ECDSA_SHA_384, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_AES_MAC_192_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_AES_MAC_256_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_ECDSA_SHA_224, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_ECDSA_SHA_512, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_224_PKCS1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_256_PKCS1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_384_PKCS1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_512_PKCS1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_224_PKCS1_PSS, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_256_PKCS1_PSS, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_384_PKCS1_PSS, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_512_PKCS1_PSS, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_sign = Signature.getInstance(ALG_DES_MAC4_ISO9797_1_M1_ALG3, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-                 
-         try {offset++;m_sign = Signature.getInstance(ALG_DES_MAC8_ISO9797_1_M1_ALG3, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-               
+        try {offset++;m_sign = Signature.getInstance(ALG_DES_MAC4_ISO9797_M1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_DES_MAC8_ISO9797_M1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_DES_MAC4_ISO9797_M2, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_DES_MAC8_ISO9797_M2, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_DES_MAC4_PKCS5, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_DES_MAC8_PKCS5, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_ISO9796, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_PKCS1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_RSA_MD5_PKCS1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_RSA_RIPEMD160_ISO9796, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_RSA_RIPEMD160_PKCS1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_DSA_SHA, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_RFC2409, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_RSA_MD5_RFC2409, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_ECDSA_SHA, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_AES_MAC_128_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_DES_MAC4_ISO9797_1_M2_ALG3, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_DES_MAC8_ISO9797_1_M2_ALG3, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_PKCS1_PSS, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_RSA_MD5_PKCS1_PSS, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_RSA_RIPEMD160_PKCS1_PSS, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        // JC2.2.2
+        try {offset++;m_sign = Signature.getInstance(ALG_HMAC_SHA1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_HMAC_SHA_256, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_HMAC_SHA_384, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_HMAC_SHA_512, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_HMAC_MD5, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_HMAC_RIPEMD160, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_ISO9796_MR, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_RSA_RIPEMD160_ISO9796_MR, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_KOREAN_SEED_MAC_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        // JC3.0.1
+        try {offset++;m_sign = Signature.getInstance(ALG_ECDSA_SHA_256, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_ECDSA_SHA_384, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_AES_MAC_192_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_AES_MAC_256_NOPAD, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_ECDSA_SHA_224, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_ECDSA_SHA_512, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_224_PKCS1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_256_PKCS1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_384_PKCS1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_512_PKCS1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_224_PKCS1_PSS, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_256_PKCS1_PSS, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_384_PKCS1_PSS, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_RSA_SHA_512_PKCS1_PSS, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_DES_MAC4_ISO9797_1_M1_ALG3, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_sign = Signature.getInstance(ALG_DES_MAC8_ISO9797_1_M1_ALG3, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
        }
 
        //       Class javacard.security.MessageDigest
        if (apdubuf[ISO7816.OFFSET_P1] == 0 || apdubuf[ISO7816.OFFSET_P1] == (byte) 0x15) {
          offset++;
          apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0x15;
+        try {offset++;m_digest = MessageDigest.getInstance(ALG_SHA, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         try {offset++;m_digest = MessageDigest.getInstance(ALG_SHA, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_digest = MessageDigest.getInstance(ALG_MD5, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_digest = MessageDigest.getInstance(ALG_RIPEMD160, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         //JC2.2.2
-         try {offset++;m_digest = MessageDigest.getInstance(ALG_SHA_256, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_digest = MessageDigest.getInstance(ALG_SHA_384, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_digest = MessageDigest.getInstance(ALG_SHA_512, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         //JC3.0.1
-         try {offset++;m_digest = MessageDigest.getInstance(ALG_SHA_224, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
+        try {offset++;m_digest = MessageDigest.getInstance(ALG_MD5, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_digest = MessageDigest.getInstance(ALG_RIPEMD160, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        //JC2.2.2
+        try {offset++;m_digest = MessageDigest.getInstance(ALG_SHA_256, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_digest = MessageDigest.getInstance(ALG_SHA_384, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_digest = MessageDigest.getInstance(ALG_SHA_512, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        //JC3.0.1
+        try {offset++;m_digest = MessageDigest.getInstance(ALG_SHA_224, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
        }
 
        //       Class javacard.security.RandomData
@@ -819,11 +906,10 @@ public class AlgTest extends javacard.framework.Applet
          try {offset++;m_random = RandomData.getInstance(ALG_PSEUDO_RANDOM); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
          catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
          // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
+
          try {offset++;m_random = RandomData.getInstance(ALG_SECURE_RANDOM); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
          catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
          // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
        }
 /**/
        //       Class javacard.security.KeyBuilder
@@ -832,380 +918,377 @@ public class AlgTest extends javacard.framework.Applet
          offset++;
          apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0x20;
 
-         offset++;
-         apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xB0;
+        offset++;
+        apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xB0;
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_DES_TRANSIENT_RESET, LENGTH_DES, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_DES_TRANSIENT_DESELECT, LENGTH_DES, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_DES, LENGTH_DES, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_DES, LENGTH_DES3_2KEY, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_DES, LENGTH_DES3_3KEY, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
 
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_DES_TRANSIENT_RESET, LENGTH_DES, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_DES_TRANSIENT_DESELECT, LENGTH_DES, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_DES, LENGTH_DES, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_DES, LENGTH_DES3_2KEY, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_DES, LENGTH_DES3_3KEY, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
+        offset++;
+        apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xB1;
 
-         offset++;
-         apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xB1;
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_AES_TRANSIENT_RESET, LENGTH_AES_128, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_AES_TRANSIENT_RESET, LENGTH_AES_128, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_AES_TRANSIENT_DESELECT, LENGTH_AES_128, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_AES, LENGTH_AES_128, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_AES, LENGTH_AES_192, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_AES, LENGTH_AES_256, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_AES_TRANSIENT_DESELECT, LENGTH_AES_128, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_AES, LENGTH_AES_128, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_AES, LENGTH_AES_192, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_AES, LENGTH_AES_256, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
 /**/
 
-         offset++;
-         apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xB2;
+        offset++;
+        apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xB2;
 
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PUBLIC, LENGTH_RSA_512, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PUBLIC, LENGTH_RSA_736, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PUBLIC, LENGTH_RSA_768, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PUBLIC, LENGTH_RSA_896, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PUBLIC, LENGTH_RSA_1024, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PUBLIC, LENGTH_RSA_1280, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PUBLIC, LENGTH_RSA_1536, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PUBLIC, LENGTH_RSA_1984, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PUBLIC, LENGTH_RSA_2048, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PUBLIC, LENGTH_RSA_3072, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PUBLIC, LENGTH_RSA_4096, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PUBLIC, LENGTH_RSA_512, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PUBLIC, LENGTH_RSA_736, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PUBLIC, LENGTH_RSA_768, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PUBLIC, LENGTH_RSA_896, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PUBLIC, LENGTH_RSA_1024, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PUBLIC, LENGTH_RSA_1280, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PUBLIC, LENGTH_RSA_1536, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PUBLIC, LENGTH_RSA_1984, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PUBLIC, LENGTH_RSA_2048, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PUBLIC, LENGTH_RSA_3072, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PUBLIC, LENGTH_RSA_4096, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
 /**/
 
-         offset++;
-         apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xB3;
+        offset++;
+        apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xB3;
 
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE, LENGTH_RSA_512, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE, LENGTH_RSA_736, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE, LENGTH_RSA_768, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE, LENGTH_RSA_896, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE, LENGTH_RSA_1024, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE, LENGTH_RSA_1280, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE, LENGTH_RSA_1536, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE, LENGTH_RSA_1984, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE, LENGTH_RSA_2048, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE, LENGTH_RSA_3072, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE, LENGTH_RSA_4096, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         // JC3.0.1         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE_TRANSIENT_RESET, LENGTH_RSA_1024, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE_TRANSIENT_DESELECT, LENGTH_RSA_1024, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-        
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE, LENGTH_RSA_512, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         offset++;
-         apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xB4;
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE, LENGTH_RSA_736, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE, LENGTH_RSA_512, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE, LENGTH_RSA_736, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE, LENGTH_RSA_768, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE, LENGTH_RSA_896, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE, LENGTH_RSA_1024, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE, LENGTH_RSA_1280, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE, LENGTH_RSA_1536, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE, LENGTH_RSA_1984, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE, LENGTH_RSA_2048, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE, LENGTH_RSA_3072, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE, LENGTH_RSA_4096, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         // JC3.0.1         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE_TRANSIENT_RESET, LENGTH_RSA_1024, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE_TRANSIENT_DESELECT, LENGTH_RSA_1024, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}         
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE, LENGTH_RSA_768, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE, LENGTH_RSA_896, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE, LENGTH_RSA_1024, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE, LENGTH_RSA_1280, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE, LENGTH_RSA_1536, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE, LENGTH_RSA_1984, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE, LENGTH_RSA_2048, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE, LENGTH_RSA_3072, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE, LENGTH_RSA_4096, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        // JC3.0.1         
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE_TRANSIENT_RESET, LENGTH_RSA_1024, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_PRIVATE_TRANSIENT_DESELECT, LENGTH_RSA_1024, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+
+        offset++;
+        apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xB4;
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE, LENGTH_RSA_512, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE, LENGTH_RSA_736, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE, LENGTH_RSA_768, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE, LENGTH_RSA_896, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE, LENGTH_RSA_1024, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE, LENGTH_RSA_1280, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE, LENGTH_RSA_1536, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE, LENGTH_RSA_1984, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE, LENGTH_RSA_2048, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE, LENGTH_RSA_3072, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE, LENGTH_RSA_4096, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        // JC3.0.1         
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE_TRANSIENT_RESET, LENGTH_RSA_1024, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_RSA_CRT_PRIVATE_TRANSIENT_DESELECT, LENGTH_RSA_1024, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}         
 /**/
 
-         offset++;
-         apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xB5;
+        offset++;
+        apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xB5;
 
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_DSA_PRIVATE, LENGTH_DSA_512, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_DSA_PRIVATE, LENGTH_DSA_768, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_DSA_PRIVATE, LENGTH_DSA_1024, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         // JC3.0.1
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_DSA_PRIVATE_TRANSIENT_RESET, LENGTH_DSA_1024, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_DSA_PRIVATE_TRANSIENT_DESELECT, LENGTH_DSA_1024, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         
-         offset++;
-         apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xB6;
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_DSA_PRIVATE, LENGTH_DSA_512, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_DSA_PUBLIC, LENGTH_DSA_512, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_DSA_PUBLIC, LENGTH_DSA_768, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_DSA_PUBLIC, LENGTH_DSA_1024, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         
-         offset++;
-         apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xB7;
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_DSA_PRIVATE, LENGTH_DSA_768, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_F2M_PRIVATE, LENGTH_EC_F2M_113, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_F2M_PRIVATE, LENGTH_EC_F2M_131, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_F2M_PRIVATE, LENGTH_EC_F2M_163, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_F2M_PRIVATE, LENGTH_EC_F2M_193, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-        
-         // JC3.0.1
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_F2M_PRIVATE_TRANSIENT_RESET, LENGTH_EC_F2M_193, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_F2M_PRIVATE_TRANSIENT_DESELECT, LENGTH_EC_F2M_193, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_DSA_PRIVATE, LENGTH_DSA_1024, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         offset++;
-         apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xB8;
+        // JC3.0.1
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_DSA_PRIVATE_TRANSIENT_RESET, LENGTH_DSA_1024, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_FP_PRIVATE, LENGTH_EC_FP_112, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_FP_PRIVATE, LENGTH_EC_FP_128, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_FP_PRIVATE, LENGTH_EC_FP_160, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_FP_PRIVATE, LENGTH_EC_FP_192, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         // JC3.0.1
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_FP_PRIVATE, LENGTH_EC_FP_224, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_FP_PRIVATE, LENGTH_EC_FP_256, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_FP_PRIVATE, LENGTH_EC_FP_384, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}         
-         
-         // JC3.0.4
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_FP_PRIVATE, LENGTH_EC_FP_521, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}              
-         
-         // JC3.0.1
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_FP_PRIVATE_TRANSIENT_RESET, LENGTH_EC_FP_128, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_FP_PRIVATE_TRANSIENT_DESELECT, LENGTH_EC_FP_128, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}         
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_DSA_PRIVATE_TRANSIENT_DESELECT, LENGTH_DSA_1024, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         //JC2.2.2
-         offset++;
-         apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xB9;
 
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_KOREAN_SEED_TRANSIENT_RESET, LENGTH_KOREAN_SEED_128, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_KOREAN_SEED_TRANSIENT_DESELECT, LENGTH_KOREAN_SEED_128, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_KOREAN_SEED, LENGTH_KOREAN_SEED_128, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
+        offset++;
+        apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xB6;
 
-         offset++;
-         apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xBA;
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_DSA_PUBLIC, LENGTH_DSA_512, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_HMAC_TRANSIENT_RESET, LENGTH_HMAC_SHA_1_BLOCK_64, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_HMAC_TRANSIENT_DESELECT, LENGTH_HMAC_SHA_1_BLOCK_64, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_HMAC, LENGTH_HMAC_SHA_1_BLOCK_64, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_HMAC, LENGTH_HMAC_SHA_256_BLOCK_64, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_HMAC, LENGTH_HMAC_SHA_384_BLOCK_64, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         try {offset++;m_key = KeyBuilder.buildKey(TYPE_HMAC, LENGTH_HMAC_SHA_512_BLOCK_64, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-         // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-/**/
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_DSA_PUBLIC, LENGTH_DSA_768, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_DSA_PUBLIC, LENGTH_DSA_1024, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+
+        offset++;
+        apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xB7;
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_F2M_PRIVATE, LENGTH_EC_F2M_113, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_F2M_PRIVATE, LENGTH_EC_F2M_131, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_F2M_PRIVATE, LENGTH_EC_F2M_163, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_F2M_PRIVATE, LENGTH_EC_F2M_193, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        // JC3.0.1
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_F2M_PRIVATE_TRANSIENT_RESET, LENGTH_EC_F2M_193, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_F2M_PRIVATE_TRANSIENT_DESELECT, LENGTH_EC_F2M_193, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+
+        offset++;
+        apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xB8;
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_FP_PRIVATE, LENGTH_EC_FP_112, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_FP_PRIVATE, LENGTH_EC_FP_128, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_FP_PRIVATE, LENGTH_EC_FP_160, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_FP_PRIVATE, LENGTH_EC_FP_192, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        // JC3.0.1
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_FP_PRIVATE, LENGTH_EC_FP_224, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_FP_PRIVATE, LENGTH_EC_FP_256, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_FP_PRIVATE, LENGTH_EC_FP_384, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}         
+
+        // JC3.0.4
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_FP_PRIVATE, LENGTH_EC_FP_521, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}              
+
+        // JC3.0.1
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_FP_PRIVATE_TRANSIENT_RESET, LENGTH_EC_FP_128, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_EC_FP_PRIVATE_TRANSIENT_DESELECT, LENGTH_EC_FP_128, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}         
+
+        //JC2.2.2
+        offset++;
+        apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xB9;
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_KOREAN_SEED_TRANSIENT_RESET, LENGTH_KOREAN_SEED_128, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_KOREAN_SEED_TRANSIENT_DESELECT, LENGTH_KOREAN_SEED_128, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_KOREAN_SEED, LENGTH_KOREAN_SEED_128, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+
+        offset++;
+        apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xBA;
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_HMAC_TRANSIENT_RESET, LENGTH_HMAC_SHA_1_BLOCK_64, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_HMAC_TRANSIENT_DESELECT, LENGTH_HMAC_SHA_1_BLOCK_64, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_HMAC, LENGTH_HMAC_SHA_1_BLOCK_64, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_HMAC, LENGTH_HMAC_SHA_256_BLOCK_64, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_HMAC, LENGTH_HMAC_SHA_384_BLOCK_64, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+
+        try {offset++;m_key = KeyBuilder.buildKey(TYPE_HMAC, LENGTH_HMAC_SHA_512_BLOCK_64, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+        catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+        // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
        }
 
 
@@ -1214,124 +1297,123 @@ public class AlgTest extends javacard.framework.Applet
          offset++;
          apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0x18;
 
-         // TEST ON-CARD KEY GENERATION
-         if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x01) {
-           try {
-             offset++;m_keyPair = new KeyPair(ALG_RSA, LENGTH_RSA_512);
-             m_keyPair.genKeyPair();
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
-           }
-           catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-           // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         
-         }
-         else { offset++; }
-         if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x02) {
-           try {
-             offset++;m_keyPair = new KeyPair(ALG_RSA, LENGTH_RSA_736);
-             m_keyPair.genKeyPair();
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
-           }
-           catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-           // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         }
-         else { offset++; }
+        // TEST ON-CARD KEY GENERATION
+        if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x01) {
+          try {
+            offset++;m_keyPair = new KeyPair(ALG_RSA, LENGTH_RSA_512);
+            m_keyPair.genKeyPair();
+            apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
+          }
+          catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+          // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
 
-         if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x03) {
-           try {
-             offset++;m_keyPair = new KeyPair(ALG_RSA, LENGTH_RSA_768);
-             m_keyPair.genKeyPair();
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
-           }
-           catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-           // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         }
-         else { offset++; }
+        }
+        else { offset++; }
+        if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x02) {
+          try {
+            offset++;m_keyPair = new KeyPair(ALG_RSA, LENGTH_RSA_736);
+            m_keyPair.genKeyPair();
+            apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
+          }
+          catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+          // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        }
+        else { offset++; }
 
-         if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x04) {
-           try {
-             offset++;m_keyPair = new KeyPair(ALG_RSA, LENGTH_RSA_896);
-             m_keyPair.genKeyPair();
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
-           }
-           catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-           // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         }
-         else { offset++; }
+        if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x03) {
+          try {
+            offset++;m_keyPair = new KeyPair(ALG_RSA, LENGTH_RSA_768);
+            m_keyPair.genKeyPair();
+            apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
+          }
+          catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+          // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        }
+        else { offset++; }
 
-         if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x05) {
-           try {
-             offset++;m_keyPair = new KeyPair(ALG_RSA, LENGTH_RSA_1024);
-             m_keyPair.genKeyPair();
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
-           }
-           catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-           // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         }
-         else { offset++; }
+        if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x04) {
+          try {
+            offset++;m_keyPair = new KeyPair(ALG_RSA, LENGTH_RSA_896);
+            m_keyPair.genKeyPair();
+            apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
+          }
+          catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+          // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        }
+        else { offset++; }
 
-         if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x06) {
-           try {
-             offset++;m_keyPair = new KeyPair(ALG_RSA, LENGTH_RSA_1280);
-             m_keyPair.genKeyPair();
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
-           }
-           catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-           // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         }
-         else { offset++; }
+        if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x05) {
+          try {
+            offset++;m_keyPair = new KeyPair(ALG_RSA, LENGTH_RSA_1024);
+            m_keyPair.genKeyPair();
+            apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
+          }
+          catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+          // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        }
+        else { offset++; }
 
-         if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x07) {
-           try {
-             offset++;m_keyPair = new KeyPair(ALG_RSA, LENGTH_RSA_1536);
-             m_keyPair.genKeyPair();
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
-           }
-           catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-           // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         }
-         else { offset++; }
-         if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x08) {
-           try {
-             offset++;m_keyPair = new KeyPair(ALG_RSA, LENGTH_RSA_1984);
-             m_keyPair.genKeyPair();
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
-           }
-           catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-           // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         }
-         else { offset++; }
-         if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x09) {
-           try {
-             offset++;m_keyPair = new KeyPair(ALG_RSA, LENGTH_RSA_2048);
-             m_keyPair.genKeyPair();
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
-           }
-           catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-           // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         }
-         else { offset++; }
-         if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x0A) {
-           try {
-             offset++;m_keyPair = new KeyPair(ALG_RSA, LENGTH_RSA_3072);
-             m_keyPair.genKeyPair();
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
-           }
-           catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-           // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         }
-         else { offset++; }
-         if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x0B) {
-           try {
-             offset++;m_keyPair = new KeyPair(ALG_RSA, LENGTH_RSA_4096);
-             m_keyPair.genKeyPair();
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
-           }
-           catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-           // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         }
-         else { offset++; }
+        if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x06) {
+          try {
+            offset++;m_keyPair = new KeyPair(ALG_RSA, LENGTH_RSA_1280);
+            m_keyPair.genKeyPair();
+            apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
+          }
+          catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+          // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        }
+        else { offset++; }
 
+        if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x07) {
+          try {
+            offset++;m_keyPair = new KeyPair(ALG_RSA, LENGTH_RSA_1536);
+            m_keyPair.genKeyPair();
+            apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
+          }
+          catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+          // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        }
+        else { offset++; }
+        if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x08) {
+          try {
+            offset++;m_keyPair = new KeyPair(ALG_RSA, LENGTH_RSA_1984);
+            m_keyPair.genKeyPair();
+            apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
+          }
+          catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+          // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        }
+        else { offset++; }
+        if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x09) {
+          try {
+            offset++;m_keyPair = new KeyPair(ALG_RSA, LENGTH_RSA_2048);
+            m_keyPair.genKeyPair();
+            apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
+          }
+          catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+          // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        }
+        else { offset++; }
+        if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x0A) {
+          try {
+            offset++;m_keyPair = new KeyPair(ALG_RSA, LENGTH_RSA_3072);
+            m_keyPair.genKeyPair();
+            apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
+          }
+          catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+          // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        }
+        else { offset++; }
+        if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x0B) {
+          try {
+            offset++;m_keyPair = new KeyPair(ALG_RSA, LENGTH_RSA_4096);
+            m_keyPair.genKeyPair();
+            apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
+          }
+          catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+          // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        }
+        else { offset++; }
        }
 
        //       Class javacard.security.KeyPair RSA_CRT
@@ -1340,123 +1422,123 @@ public class AlgTest extends javacard.framework.Applet
          apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0x19;
 
          // TEST ON-CARD KEY GENERATION
-         if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x01) {
-           try {
-             offset++;m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_512);
-             m_keyPair.genKeyPair();
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
-           }
-           catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-           // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         }
-         else { offset++; }
+        if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x01) {
+          try {
+            offset++;m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_512);
+            m_keyPair.genKeyPair();
+            apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
+          }
+          catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+          // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        }
+        else { offset++; }
 
-         if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x02) {
-           try {
-             offset++;m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_736);
-             m_keyPair.genKeyPair();
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
-           }
-           catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-           // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         }
-         else { offset++; }
+        if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x02) {
+          try {
+            offset++;m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_736);
+            m_keyPair.genKeyPair();
+            apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
+          }
+          catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+          // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        }
+        else { offset++; }
 
-         if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x03) {
-           try {
-             offset++;m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_768);
-             m_keyPair.genKeyPair();
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
-           }
-           catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-           // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         }
-         else { offset++; }
+        if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x03) {
+          try {
+            offset++;m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_768);
+            m_keyPair.genKeyPair();
+            apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
+          }
+          catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+          // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        }
+        else { offset++; }
 
-         if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x04) {
-           try {
-             offset++;m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_896);
-             m_keyPair.genKeyPair();
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
-           }
-           catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-           // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         }
-         else { offset++; }
+        if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x04) {
+          try {
+            offset++;m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_896);
+            m_keyPair.genKeyPair();
+            apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
+          }
+          catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+          // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        }
+        else { offset++; }
 
-         if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x05) {
-           try {
-             offset++;m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_1024);
-             m_keyPair.genKeyPair();
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
-           }
-           catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-           // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         }
-         else { offset++; }
-         if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x06) {
-           try {
-             offset++;m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_1280);
-             m_keyPair.genKeyPair();
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
-           }
-           catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-           // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         }
-         else { offset++; }
-         if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x07) {
-           try {
-             offset++;m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_1536);
-             m_keyPair.genKeyPair();
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
-           }
-           catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-           // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         }
-         else { offset++; }
-         if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x08) {
-           try {
-             offset++;m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_1984);
-             m_keyPair.genKeyPair();
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
-           }
-           catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-           // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         }
-         else { offset++; }
+        if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x05) {
+          try {
+            offset++;m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_1024);
+            m_keyPair.genKeyPair();
+            apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
+          }
+          catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+          // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        }
+        else { offset++; }
+        if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x06) {
+          try {
+            offset++;m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_1280);
+            m_keyPair.genKeyPair();
+            apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
+          }
+          catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+          // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        }
+        else { offset++; }
+        if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x07) {
+          try {
+            offset++;m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_1536);
+            m_keyPair.genKeyPair();
+            apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
+          }
+          catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+          // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        }
+        else { offset++; }
+        if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x08) {
+          try {
+            offset++;m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_1984);
+            m_keyPair.genKeyPair();
+            apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
+          }
+          catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+          // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        }
+        else { offset++; }
 
-         if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x09) {
-           try {
-             offset++;m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_2048);
-             m_keyPair.genKeyPair();
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
-           }
-           catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-           // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         }
-         else { offset++; }
+        if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x09) {
+          try {
+            offset++;m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_2048);
+            m_keyPair.genKeyPair();
+            apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
+          }
+          catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+          // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        }
+        else { offset++; }
 
-         if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x0A) {
-           try {
-             offset++;m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_3072);
-             m_keyPair.genKeyPair();
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
-           }
-           catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-           // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         }
-         else { offset++; }
+        if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x0A) {
+          try {
+            offset++;m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_3072);
+            m_keyPair.genKeyPair();
+            apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
+          }
+          catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+          // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        }
+        else { offset++; }
 
-         if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x0B) {
-           try {
-             offset++;m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_4096);
-             m_keyPair.genKeyPair();
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
-           }
-           catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-           // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         }
-         else { offset++; }
+        if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x0B) {
+          try {
+            offset++;m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_4096);
+            m_keyPair.genKeyPair();
+            apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
+          }
+          catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+          // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        }
+        else { offset++; }
        }
 
        //       Class javacard.security.KeyPair DSA
@@ -1465,36 +1547,36 @@ public class AlgTest extends javacard.framework.Applet
          apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0x1A;
 
          // TEST ON-CARD KEY GENERATION
-         if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x01) {
+        if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x01) {
+          try {
+            offset++;m_keyPair = new KeyPair(ALG_DSA, LENGTH_DSA_512);
+            m_keyPair.genKeyPair();
+            apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
+          }
+          catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+          // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        }
+        else { offset++; }
+        if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x02) {
            try {
-             offset++;m_keyPair = new KeyPair(ALG_DSA, LENGTH_DSA_512);
+             offset++;m_keyPair = new KeyPair(ALG_DSA, LENGTH_DSA_768);
              m_keyPair.genKeyPair();
              apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
-           }
-           catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-           // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         }
-         else { offset++; }
-         if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x02) {
-            try {
-              offset++;m_keyPair = new KeyPair(ALG_DSA, LENGTH_DSA_768);
-              m_keyPair.genKeyPair();
-              apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
-           }
-           catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-           // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         }
-         else { offset++; }
-         if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x03) {
-           try {
-             offset++;m_keyPair = new KeyPair(ALG_DSA, LENGTH_DSA_1024);
-             m_keyPair.genKeyPair();
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
-           }
-           catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-           // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
-         }
-         else { offset++; }
+          }
+          catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+          // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        }
+        else { offset++; }
+        if (apdubuf[ISO7816.OFFSET_P2] == 0 || apdubuf[ISO7816.OFFSET_P2] == (byte) 0x03) {
+          try {
+            offset++;m_keyPair = new KeyPair(ALG_DSA, LENGTH_DSA_1024);
+            m_keyPair.genKeyPair();
+            apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
+          }
+          catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+          // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
+        }
+        else { offset++; }
        }
        //       Class javacard.security.KeyPair EC_F2M
        if (apdubuf[ISO7816.OFFSET_P1] == 0 || apdubuf[ISO7816.OFFSET_P1] == (byte) 0x1B) {
@@ -1825,27 +1907,82 @@ public class AlgTest extends javacard.framework.Applet
        }
    }
 
-void JCSystemInfo(APDU apdu) {
-   byte[]    apdubuf = apdu.getBuffer();
-   short     dataLen = apdu.setIncomingAndReceive();
-   short     offset = (short) 0;
+   void JCSystemInfo(APDU apdu) {
+	   byte[]    apdubuf = apdu.getBuffer();
+	   short     dataLen = apdu.setIncomingAndReceive();
+	   short     offset = (short) 0;
 
-    Util.setShort(apdubuf, offset, JCSystem.getVersion());
-    offset = (short)(offset + 2);
+	    Util.setShort(apdubuf, offset, JCSystem.getVersion());
+	    offset = (short)(offset + 2);
 
-    apdubuf[offset] = (JCSystem.isObjectDeletionSupported() ? (byte) 1: (byte) 0);
-    offset++;
+	    apdubuf[offset] = (JCSystem.isObjectDeletionSupported() ? (byte) 1: (byte) 0);
+	    offset++;
 
-    Util.setShort(apdubuf, offset, JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_PERSISTENT));
-    offset = (short)(offset + 2);
-    Util.setShort(apdubuf, offset, JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_RESET));
-    offset = (short)(offset + 2);
-    Util.setShort(apdubuf, offset, JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT));
-    offset = (short)(offset + 2);
-/**/    
-    apdu.setOutgoingAndSend((byte) 0, offset);
+	    Util.setShort(apdubuf, offset, JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_PERSISTENT));
+	    offset = (short)(offset + 2);
+	    Util.setShort(apdubuf, offset, JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_RESET));
+	    offset = (short)(offset + 2);
+	    Util.setShort(apdubuf, offset, JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT));
+	    offset = (short)(offset + 2);
+	/**/    
+	    apdu.setOutgoingAndSend((byte) 0, offset);
   }
+   
+    void GetRSAKey(APDU apdu) {
+      byte[]    apdubuf = apdu.getBuffer();
+      //apdu.setIncomingAndReceive();
 
+      // Generate new object if not before yet
+      if (m_keyPair == null) {
+          m_keyPair = new KeyPair(ALG_RSA_CRT, LENGTH_RSA_1024);	  
+      }	        
+
+      switch (apdubuf[ISO7816.OFFSET_P1]) {
+        case 0: {
+            m_keyPair.genKeyPair();           
+            rsa_PublicKey = (RSAPublicKey) m_keyPair.getPublic();
+
+            /*            
+            short offset = rsa_PublicKey.getExponent(apdubuf, (short) 0);
+            offset += rsa_PublicKey.getModulus(apdubuf, offset);
+            */
+            
+            short offset = 0;
+            apdubuf[offset] = (byte)0x82; offset++;
+            short len = rsa_PublicKey.getExponent(apdubuf, (short)(offset + 2));
+            Util.setShort(apdubuf, offset, len); 
+            offset += 2;    // length
+            offset += len;  // value
+            
+            apdubuf[offset] = (byte)0x82; offset++;
+            len = rsa_PublicKey.getModulus(apdubuf, (short) (offset + 2));
+            Util.setShort(apdubuf, offset, len); 
+            offset += 2;    // length
+            offset += len;  // value
+
+            apdu.setOutgoingAndSend((short) 0, offset);
+        
+            break;
+        }
+        case 1: {
+            rsa_PrivateKey = (RSAPrivateCrtKey) m_keyPair.getPrivate();
+            
+            short offset = 0;
+            short len = rsa_PrivateKey.getP(apdubuf, (short)(offset + 3));
+            apdubuf[offset] = (byte)0x82; offset++;
+            Util.setShort(apdubuf, offset, len); offset += 2;
+            offset += len;
+            
+            len = rsa_PrivateKey.getQ(apdubuf, (short)(offset + 3));
+            apdubuf[offset] = (byte)0x82; offset++;
+            Util.setShort(apdubuf, offset, len); offset += 2;
+            offset += len;
+                    
+            apdu.setOutgoingAndSend((short) 0, offset);
+            break;
+         }
+      }
+    }
 
   void TestExtendedAPDUSupport(APDU apdu) {
 /* ONLY FOR JC2.2.2  
@@ -1887,5 +2024,12 @@ void JCSystemInfo(APDU apdu) {
        }
    }
 
+   void TestIOSpeed(APDU apdu) {
+      byte[]    apdubuf = apdu.getBuffer();
+      short     dataLen = apdu.setIncomingAndReceive();
+
+      // RETURN INPU DATA UNCHANGED
+      apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, dataLen);
+    }
 }
 
