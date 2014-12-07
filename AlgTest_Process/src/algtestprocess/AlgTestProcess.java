@@ -278,7 +278,7 @@ public class AlgTestProcess {
             file.write(footer.getBytes());
 
             file.flush();
-            file.close();            
+            if (file != null) file.close();            
         }
         else {
             System.out.println("directory is empty");

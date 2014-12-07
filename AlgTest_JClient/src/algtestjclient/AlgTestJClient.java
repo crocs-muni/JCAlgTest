@@ -123,7 +123,7 @@ public class AlgTestJClient {
                     answ = sc.nextInt();
                     cardManager.testClassic(args, answ);
                     
-                    file.close();
+                    if (file != null) file.close();
                 break;
                 /* In this case, SinglePerApdu version of AlgTest is used. */
                 case 2:
