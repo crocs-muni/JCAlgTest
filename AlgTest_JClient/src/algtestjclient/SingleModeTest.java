@@ -556,10 +556,9 @@ public class SingleModeTest {
             byte[] resp = response.getBytes();
             System.out.println("RESPONSE: " + resp[0]);
             
-            if(response.getSW() == 0x9000){
                 // save time of card response
                 elapsedCard += System.currentTimeMillis();
-            }
+                
             /* Calls method CheckResult - should add to output error messages. */
             CheckResult(file, cardManager.GetAlgorithmName(CardMngr.CIPHER_STR[i]), resp[1], elapsedCard);
         }        
@@ -592,10 +591,9 @@ public class SingleModeTest {
             ResponseAPDU response = cardManager.sendAPDU(apdu);
             byte[] resp = response.getBytes();
             
-            if(response.getSW() == 0x9000){
                 // save time of card response
                 elapsedCard += System.currentTimeMillis();
-            }
+                
             /* Calls method CheckResult - should add to output error messages. */
             CheckResult(file, cardManager.GetAlgorithmName(CardMngr.SIGNATURE_STR[i]), resp[1], elapsedCard);
         }        
@@ -628,10 +626,9 @@ public class SingleModeTest {
             ResponseAPDU response = cardManager.sendAPDU(apdu);
             byte[] resp = response.getBytes();
             
-            if(response.getSW() == 0x9000){
                 // save time of card response
                 elapsedCard += System.currentTimeMillis();
-            }
+                
             /* Calls method CheckResult - should add to output error messages. */
             CheckResult(file, cardManager.GetAlgorithmName(CardMngr.MESSAGEDIGEST_STR[i]), resp[1], elapsedCard);
         }
@@ -663,10 +660,10 @@ public class SingleModeTest {
             apdu[OFFSET_DATA] = (byte)i;
             ResponseAPDU response = cardManager.sendAPDU(apdu);
             byte[] resp = response.getBytes();
-            if(response.getSW() == 0x9000){
+            
                 // save time of card response
                 elapsedCard += System.currentTimeMillis();
-            }
+            
             /* Calls method CheckResult - should add to output error messages. */
             CheckResult(file, cardManager.GetAlgorithmName(CardMngr.RANDOMDATA_STR[i]), resp[1], elapsedCard);
         }
@@ -705,10 +702,10 @@ public class SingleModeTest {
                 ResponseAPDU response = cardManager.sendAPDU(apdu);
                 byte[] resp = response.getBytes();
             
-                if(response.getSW() == 0x9000){
+                
                     // save time of card response
                     elapsedCard += System.currentTimeMillis();
-                }
+                
                 /* Calls method CheckResult - should add to output error messages. */
                 CheckResult(file, cardManager.GetAlgorithmName(KEYBUILDER_STR[i]), resp[1], elapsedCard);
             
@@ -742,10 +739,9 @@ public class SingleModeTest {
             ResponseAPDU response = cardManager.sendAPDU(apdu);
             byte[] resp = response.getBytes();
             
-            if(response.getSW() == 0x9000){
                 // save time of card response
                 elapsedCard += System.currentTimeMillis();
-            }
+            
             /* Calls method CheckResult - should add to output error messages. */
             CheckResult(file, cardManager.GetAlgorithmName(CardMngr.KEYAGREEMENT_STR[i]), resp[1], elapsedCard);
         }
@@ -778,10 +774,9 @@ public class SingleModeTest {
             ResponseAPDU response = cardManager.sendAPDU(apdu);
             byte[] resp = response.getBytes();
             
-            if(response.getSW() == 0x9000){
                 // save time of card response
                 elapsedCard += System.currentTimeMillis();
-            }
+            
             /* Calls method CheckResult - should add to output error messages. */
             CheckResult(file, cardManager.GetAlgorithmName(CardMngr.CHECKSUM_STR[i]), resp[1], elapsedCard);
         }
@@ -819,10 +814,9 @@ public class SingleModeTest {
             ResponseAPDU response = cardManager.sendAPDU(apdu);
             byte[] resp = response.getBytes();
             
-            if(response.getSW() == 0x9000){
                 // save time of card response
                 elapsedCard += System.currentTimeMillis();
-            }
+            
             /* Calls method CheckResult - should add to output error messages. */
             CheckResult(file, cardManager.GetAlgorithmName(CardMngr.KEYPAIR_RSA_STR[i]), resp[1], elapsedCard);
         }
@@ -860,11 +854,10 @@ public class SingleModeTest {
             
             ResponseAPDU response = cardManager.sendAPDU(apdu);
             byte[] resp = response.getBytes();
-            
-            if(response.getSW() == 0x9000){
+          
                 // save time of card response
                 elapsedCard += System.currentTimeMillis();
-            }
+            
             /* Calls method CheckResult - should add to output error messages. */
             CheckResult(file, cardManager.GetAlgorithmName(CardMngr.KEYPAIR_RSACRT_STR[i]), resp[1], elapsedCard);
         }
@@ -902,10 +895,9 @@ public class SingleModeTest {
             ResponseAPDU response = cardManager.sendAPDU(apdu);
             byte[] resp = response.getBytes();
             
-            if(response.getSW() == 0x9000){
                 // save time of card response
                 elapsedCard += System.currentTimeMillis();
-            }
+            
             /* Calls method CheckResult - should add to output error messages. */
             CheckResult(file, cardManager.GetAlgorithmName(CardMngr.KEYPAIR_DSA_STR[i]), resp[1], elapsedCard);
         }
@@ -943,10 +935,9 @@ public class SingleModeTest {
             ResponseAPDU response = cardManager.sendAPDU(apdu);
             byte[] resp = response.getBytes();
             
-            if(response.getSW() == 0x9000){
                 // save time of card response
                 elapsedCard += System.currentTimeMillis();
-            }
+            
             /* Calls method CheckResult - should add to output error messages. */
             CheckResult(file, cardManager.GetAlgorithmName(CardMngr.KEYPAIR_EC_F2M_STR[i]), resp[1], elapsedCard);
         }
@@ -984,10 +975,9 @@ public class SingleModeTest {
             ResponseAPDU response = cardManager.sendAPDU(apdu);
             byte[] resp = response.getBytes();
             
-            if(response.getSW() == 0x9000){
                 // save time of card response
                 elapsedCard += System.currentTimeMillis();
-            }
+            
             /* Calls method CheckResult - should add to output error messages. */
             CheckResult(file, cardManager.GetAlgorithmName(CardMngr.KEYPAIR_EC_FP_STR[i]), resp[1], elapsedCard);
         }
