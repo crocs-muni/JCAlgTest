@@ -447,7 +447,7 @@ public class SingleModeTest {
      */
     public void CloseFile(FileOutputStream file){
         try {
-            file.close();
+            if (file != null) file.close();
         } catch (IOException ex) {
             Logger.getLogger(SingleModeTest.class.getName()).log(Level.SEVERE, null, ex);
         }

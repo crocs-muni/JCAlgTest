@@ -1098,7 +1098,7 @@ public class CardMngr {
             file.flush();
         }
         
-        file.close();
+        if (file != null) file.close();
     }
     
     public int TestVariableRSAPublicExponentSupport(StringBuilder pValue, FileOutputStream pFile, byte algPartP2) throws Exception {
@@ -1331,7 +1331,7 @@ public class CardMngr {
             file.write(paramList.getBytes());
             System.out.println("List of supported parameters for AlgTest created in project folder.");
             
-            file.close();
+            if (file != null) file.close();
         }
     }
 }
