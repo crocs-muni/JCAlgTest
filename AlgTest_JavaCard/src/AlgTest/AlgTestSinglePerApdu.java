@@ -90,35 +90,6 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
 
     byte ALGTEST_JAVACARD_VERSION_CURRENT[] = ALGTEST_JAVACARD_VERSION_1_3_1;
 
-    
-    final static byte CLA_CARD_ALGTEST               = (byte) 0xB0;
-    final static byte INS_CARD_GETVERSION            = (byte) 0x60;
-    final static byte INS_CARD_RESET                 = (byte) 0x69;
-    
-    final static byte INS_CARD_TESTSUPPORTEDMODES    = (byte) 0x70;
-    final static byte INS_CARD_TESTAVAILABLE_MEMORY  = (byte) 0x71;
-    final static byte INS_CARD_TESTRSAEXPONENTSET    = (byte) 0x72;
-    final static byte INS_CARD_JCSYSTEM_INFO         = (byte) 0x73;
-    final static byte INS_CARD_TESTEXTAPDU           = (byte) 0x74;
-    final static byte INS_CARD_TESTSUPPORTEDMODES_SINGLE    = (byte) 0x75;
-    
-/*    
-    final static byte INS_TEST_MESSAGE_DIGEST =   (byte) 0x70;
-    final static byte INS_TEST_RANDOM_DATA =      (byte) 0x71;
-    final static byte INS_TEST_CIPHER =           (byte) 0x72;
-    final static byte INS_TEST_KEY_BUILDER =      (byte) 0x73;
-    final static byte INS_TEST_KEY_PAIR =         (byte) 0x74;
-    final static byte INS_TEST_CHECKSUM =         (byte) 0x75;
-    final static byte INS_RESET =                 (byte) 0x69;
-    final static byte INS_PREPARE_KEY =           (byte) 0x40;
-    final static byte INS_PREPARE_SIGNATURE =     (byte) 0x42;
-    final static byte INS_PREPARE_KEY_PAIR =      (byte) 0x44;
-    final static byte INS_PREPARE_MESSAGE_DIGEST = (byte) 0x46;
-    final static byte INS_PREPARE_RANDOM_DATA =   (byte) 0x48;
-    final static byte INS_TEST_SIGNATURE =        (byte) 0x76;
-*/    
-    final static byte INS_CARD_PERF_TEST_CLASS_KEY      = (byte) 0x40;
-
     private   Cipher           m_encryptCipher = null;
     private   Cipher           m_encryptCipherRSA = null;
     private   Signature        m_sign = null;
@@ -340,16 +311,30 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         // ignore the applet select command dispached to the process
         if (selectingApplet()) { return; }
 
-        if (apduBuffer[ISO7816.OFFSET_CLA] == CLA_CARD_ALGTEST) {
+        if (apduBuffer[ISO7816.OFFSET_CLA] == Consts.CLA_CARD_ALGTEST) {
             switch ( apduBuffer[ISO7816.OFFSET_INS]) {
-                case INS_CARD_GETVERSION: GetVersion(apdu); break;
-                case INS_CARD_TESTAVAILABLE_MEMORY: TestAvailableMemory(apdu); break;
-                case INS_CARD_TESTRSAEXPONENTSET: TestRSAExponentSet(apdu); break;
-                case INS_CARD_JCSYSTEM_INFO: JCSystemInfo(apdu); break;
-                case INS_CARD_TESTSUPPORTEDMODES_SINGLE: TestSupportedModeSingle(apdu); break;
+                case Consts.INS_CARD_GETVERSION: GetVersion(apdu); break;
+                case Consts.INS_CARD_TESTAVAILABLE_MEMORY: TestAvailableMemory(apdu); break;
+                case Consts.INS_CARD_TESTRSAEXPONENTSET: TestRSAExponentSet(apdu); break;
+                case Consts.INS_CARD_JCSYSTEM_INFO: JCSystemInfo(apdu); break;
+                case Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE: TestSupportedModeSingle(apdu); break;
                 // case INS_CARD_TESTEXTAPDU: TestExtendedAPDUSupport(apdu); break; // this has to be tested by separate applet with ExtAPDU enabled - should succedd during upload and run
-                case INS_CARD_PERF_TEST_CLASS_KEY: class_Key_test(apdu); break;        
-                case INS_CARD_RESET: JCSystem.requestObjectDeletion(); break;
+                case Consts.INS_CARD_RESET: JCSystem.requestObjectDeletion(); break;
+
+                case Consts.INS_PERF_TEST_CLASS_KEY: class_Key_test(apdu); break;        
+                    
+                case Consts.INS_PERF_TEST_MESSAGE_DIGEST: messageDigestTest(apdu); break;
+                case Consts.INS_PERF_TEST_RANDOM_DATA: randomDataTest(apdu); break;
+                case Consts.INS_PERF_TEST_CIPHER: cipherTest(apdu);break;
+                case Consts.INS_PERF_TEST_KEY_PAIR: keyPairTest(apdu);break;
+                case Consts.INS_PERF_TEST_CHECKSUM: checksumTest(apdu);break;
+                case Consts.INS_PERF_PREPARE_MESSAGE_DIGEST: prepareMessageDigest(apdu);break;
+                case Consts.INS_PERF_PREPARE_KEY: prepareCipher(apdu);break;
+                case Consts.INS_PERF_PREPARE_SIGNATURE: prepareSignature(apdu);break;
+                case Consts.INS_PERF_PREPARE_KEY_PAIR: prepareKeyPair(apdu);break;
+                case Consts.INS_PERF_PREPARE_RANDOM_DATA: prepareRandomData(apdu);break;
+                case Consts.INS_PERF_TEST_SIGNATURE:signatureTest(apdu);break;
+                    
                 default : {
                     // The INS code is not supported by the dispatcher
                     ISOException.throwIt( ISO7816.SW_INCORRECT_P1P2  ) ;
@@ -714,4 +699,316 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
       // RETURN INPUT DATA UNCHANGED
       apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, dataLen);
     }
+   
+
+   //
+   // TODO: Original codes for performance - to be refactored
+   //
+
+    final static short PLTEXT_LENGTH                 = (short) 64; 
+    final static short CFTEXT_LENGTH                 = (short) 128;
+    final static short KEYTEXT_LENGTH                = (short) 1024; 
+
+    private   Cipher           m_cipher = null;
+    private   DESKey           des_key = null;
+    private   Checksum         m_check = null;
+    private   AESKey           aes_key = null;
+
+    private byte[] plText, cfText, initVector;
+    private byte count;
+    private byte alg;
+    private short keyLength;
+    private short dataLength;
+    private short seedLength;
+    private short randomLength;
+    private short cycles;
+    private short rest;   
+    void checksumTest(APDU apdu)
+    {
+        byte[] apdubuf = apdu.getBuffer();
+        alg = apdubuf[ISO7816.OFFSET_P1];
+        byte infoLength;
+        if (alg == Checksum.ALG_ISO3309_CRC16) infoLength = 2; else infoLength = 4;
+        count = apdubuf[ISO7816.OFFSET_P2];
+        apdu.setIncomingAndReceive();
+        dataLength = (short) ((apdubuf[ISO7816.OFFSET_CDATA] << 7) | apdubuf[ISO7816.OFFSET_CDATA +1]);
+        cycles = (short)(dataLength / PLTEXT_LENGTH);
+        rest = (short)(dataLength % PLTEXT_LENGTH);
+        try
+        {
+            m_check = Checksum.getInstance(alg, false);
+            m_check.init(plText, (byte)0, infoLength);
+            for(short i = 0;i<count;i++)
+            {
+                for(short j = 0;j<cycles;j++)
+                {
+                    m_check.update(plText, (short)0, PLTEXT_LENGTH);
+                }
+                m_check.doFinal(plText, (short)0, rest, cfText, (short) 0);              
+            }
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA,(byte)1); 
+        }
+        catch(CryptoException e)
+        {
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte)e.getReason();
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA,(byte)1);
+        }
+    }
+    void signatureTest(APDU apdu)
+    {
+        byte[] apdubuf = apdu.getBuffer();
+        count = apdubuf[ISO7816.OFFSET_P2]; 
+        apdu.setIncomingAndReceive();
+        dataLength = (short) ((apdubuf[ISO7816.OFFSET_CDATA] << 7) | apdubuf[ISO7816.OFFSET_CDATA +1]);
+        cycles = (short)(dataLength / (short)PLTEXT_LENGTH);
+        rest = (short)(dataLength % (short)PLTEXT_LENGTH);
+        try
+        {          
+            for(short i = 0;i<count;i++)
+            {
+                for(short j = 0;j<cycles;j++)
+                {
+                    m_sign.update(plText, (short)0, (short)PLTEXT_LENGTH);
+                }
+                m_sign.sign(plText, (short)0, rest, plText, (short) 0);              
+            }
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA,(byte)1); 
+        }
+        catch(CryptoException e)
+        {
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte)e.getReason();
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA,(byte)1);
+        }
+    }
+    void prepareSignature(APDU apdu)
+    {
+        Util.arrayFillNonAtomic(initVector, (short) 0, (short)KEYTEXT_LENGTH, (byte) 0x33);
+        byte[] apdubuf = apdu.getBuffer();
+        byte keyType = apdubuf[ISO7816.OFFSET_P1];
+        byte cipherType = apdubuf[ISO7816.OFFSET_P2];
+        apdu.setIncomingAndReceive();
+        keyLength = (short) ((apdubuf[ISO7816.OFFSET_CDATA] << 7) | apdubuf[ISO7816.OFFSET_CDATA +1]);
+        try
+        {
+            switch(keyType)
+            {
+                case KeyBuilder.TYPE_AES:
+                    aes_key = (AESKey)KeyBuilder.buildKey(keyType,keyLength,false);
+                    aes_key.setKey(initVector, (byte)0);
+                    m_key = aes_key;
+                    break;
+                case KeyBuilder.TYPE_DES:
+                    des_key = (DESKey)KeyBuilder.buildKey(keyType,keyLength,false);
+                    des_key.setKey(initVector, (byte)0);
+                    m_key = des_key;
+                    break;
+                case KeyPair.ALG_RSA:
+                    m_keyPair = new KeyPair(keyType, keyLength);
+                    m_keyPair.genKeyPair();
+                    m_key = m_keyPair.getPrivate();
+                    break;
+                case Consts.MY_DSA:
+                    m_keyPair = new KeyPair(KeyPair.ALG_DSA, keyLength);
+                    m_keyPair.genKeyPair();
+                    m_key = m_keyPair.getPrivate();              
+            }
+            m_sign = Signature.getInstance(cipherType, false);
+            m_sign.init(m_key, Signature.MODE_SIGN);
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA,(byte)1);
+        }
+        catch(CryptoException e)
+        {
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte)e.getReason();
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA,(byte)1);
+        }
+    }
+    void prepareCipher(APDU apdu)
+    {
+        Util.arrayFillNonAtomic(initVector, (short) 0, (short)KEYTEXT_LENGTH, (byte) 0x33);
+        byte[] apdubuf = apdu.getBuffer();
+        byte keyType = apdubuf[ISO7816.OFFSET_P1];
+        byte cipherType = apdubuf[ISO7816.OFFSET_P2];
+        apdu.setIncomingAndReceive();
+        keyLength = (short) ((apdubuf[ISO7816.OFFSET_CDATA] << 7) | apdubuf[ISO7816.OFFSET_CDATA +1]);
+        try
+        {
+            switch(keyType)
+            {
+                case KeyBuilder.TYPE_AES:
+                    aes_key = (AESKey)KeyBuilder.buildKey(keyType,keyLength,false);
+                    aes_key.setKey(initVector, (byte)0);
+                    m_key = aes_key;
+                    break;
+                case KeyBuilder.TYPE_DES:
+                    des_key = (DESKey)KeyBuilder.buildKey(keyType,keyLength,false);
+                    des_key.setKey(initVector, (byte)0);
+                    m_key = des_key;
+                    break;
+                case KeyPair.ALG_RSA:                  
+                    m_keyPair = new KeyPair(keyType, keyLength);
+                    m_keyPair.genKeyPair();
+                    m_key = m_keyPair.getPublic();                  
+                    break;
+            }
+            m_cipher = Cipher.getInstance(cipherType, false);
+            m_cipher.init(m_key, Cipher.MODE_ENCRYPT);
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA,(byte)1);
+        }
+        catch(CryptoException e)
+        {
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte)e.getReason();
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA,(byte)1);
+        }  
+    }
+
+    void cipherTest(APDU apdu)
+    {  
+        byte[] apdubuf = apdu.getBuffer();
+        count = apdubuf[ISO7816.OFFSET_P2]; 
+        apdu.setIncomingAndReceive();
+        dataLength = (short) ((apdubuf[ISO7816.OFFSET_CDATA] << 7) | apdubuf[ISO7816.OFFSET_CDATA +1]);
+        cycles = (short)(dataLength / (short)PLTEXT_LENGTH);
+        rest = (short)(dataLength % (short)PLTEXT_LENGTH);
+        try
+        {   
+            for(short i = 0;i<count;i++)
+            {
+                for(short j = 0;j<cycles;j++)
+                {
+                    m_cipher.update(plText, (short)0, (short)PLTEXT_LENGTH,plText,(short)0);
+                }
+                m_cipher.doFinal(plText, (short)0, rest, plText, (short) 1);              
+            }
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA,(byte)1);
+        }
+        catch(CryptoException e)
+        {
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte)(e.getReason());  
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA,(byte)1);
+        }
+
+    }
+    void prepareKeyPair(APDU apdu)
+    {
+        byte[] apdubuf = apdu.getBuffer();
+        alg = apdubuf[ISO7816.OFFSET_P1]; 
+        apdu.setIncomingAndReceive();
+        keyLength = (short) ((apdubuf[ISO7816.OFFSET_CDATA] << 7) | apdubuf[ISO7816.OFFSET_CDATA +1]);
+        try
+        {
+            m_keyPair = new KeyPair(alg, keyLength);
+        }
+        catch(CryptoException e)
+        {
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte)e.getReason();
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA,(byte)1);
+        }
+    }
+    void keyPairTest(APDU apdu)
+    {
+        byte[] apdubuf = apdu.getBuffer();
+        try
+        {
+            m_keyPair.genKeyPair();
+        }
+        catch(CryptoException e)
+        {
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte)e.getReason();
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA,(byte)1);
+        }
+    }  
+    void prepareRandomData(APDU apdu)
+    {
+        byte[] apdubuf = apdu.getBuffer();
+        alg = apdubuf[ISO7816.OFFSET_P1];
+        try
+        {
+            m_random = RandomData.getInstance(alg);
+        }
+        catch(CryptoException e)
+        {
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte)e.getReason();
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA,(byte)1);
+        }  
+    }
+    void randomDataTest(APDU apdu){
+        Util.arrayFillNonAtomic(cfText, (short) 0, (short) CFTEXT_LENGTH, (byte) 0x33);
+        byte[] apdubuf = apdu.getBuffer();
+        alg = apdubuf[ISO7816.OFFSET_P1];
+        count = apdubuf[ISO7816.OFFSET_P2];
+        apdu.setIncomingAndReceive();
+        seedLength = (short) ((apdubuf[ISO7816.OFFSET_CDATA] << 7) | apdubuf[ISO7816.OFFSET_CDATA +1]);
+        randomLength = (short) ((apdubuf[ISO7816.OFFSET_CDATA +2] << 7) | apdubuf[ISO7816.OFFSET_CDATA +3]);
+        cycles = (short)(randomLength / CFTEXT_LENGTH);
+        rest = (short)(randomLength % CFTEXT_LENGTH);
+        try
+        {
+            for(short i=0;i<count;i++)
+            {
+                if (seedLength != 0)
+                {
+                    m_random.setSeed(cfText,(short)0,seedLength);
+                }
+                for(short j = 0;j<cycles;j++)
+                {
+                    m_random.generateData(cfText,(short) 0,CFTEXT_LENGTH);
+                }
+                if (rest!=0) m_random.generateData(cfText,(short)0,rest);
+            }
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA,(byte)1);
+        }
+        catch(CryptoException e)
+        {
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte)e.getReason();
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA,(byte)1);
+        }            
+    }
+    void prepareMessageDigest(APDU apdu)
+    {
+        byte[] apdubuf = apdu.getBuffer();
+        alg = apdubuf[ISO7816.OFFSET_P1];
+        try
+        {
+            m_digest = MessageDigest.getInstance(alg, true);
+        }
+        catch(CryptoException e)
+        {
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte)e.getReason();
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA,(byte)1);
+        }
+    }
+    void messageDigestTest(APDU apdu) {
+        byte[] apdubuf = apdu.getBuffer();
+        alg = apdubuf[ISO7816.OFFSET_P1];
+        count = apdubuf[ISO7816.OFFSET_P2];
+        apdu.setIncomingAndReceive();
+        dataLength = (short) ((apdubuf[ISO7816.OFFSET_CDATA] << 7) | apdubuf[ISO7816.OFFSET_CDATA +1]);
+        cycles = (short)(dataLength / PLTEXT_LENGTH);
+        rest = (short)(dataLength % PLTEXT_LENGTH);
+        try
+        {
+            for(short i = 0;i<count;i++)
+            {
+                for(short j = 0;j<cycles;j++)
+                {
+                    m_digest.update(plText, (short)0, PLTEXT_LENGTH);
+                }
+                m_digest.doFinal(plText, (short)0, rest, cfText, (short) 0);
+            }
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA,(byte)1);
+        }
+        catch(CryptoException e)
+        {
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte)e.getReason();
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA,(byte)1);
+        }
+    }   
+   
 }
