@@ -55,6 +55,17 @@ import javax.smartcardio.*;
  * @author petrs
  */
 public class CardMngr {
+    
+    final static byte SUCCESS =                    (byte) 0xAA;
+    
+    // TODO: unification of errors
+    final static int CANT_BE_MEASURED              = 256;   
+    final static byte ILLEGAL_USE = (byte) 5;
+    final static byte ILLEGAL_VALUE = (byte) 1;
+    final static byte INVALID_INIT = (byte) 4;
+    final static byte NO_SUCH_ALGORITHM = (byte) 3;
+    final static byte UNINITIALIZED_KEY = (byte) 2;       
+
     /* Argument constants for choosing algorithm to test. */
     
     /* Arguments for choosing which AlgTest version to run. */
@@ -109,337 +120,8 @@ public class CardMngr {
     public static final byte CLASS_KEYPAIR_EC_F2M  = 0x1B;
     public static final byte CLASS_KEYPAIR_EC_FP   = 0x1C;
 
-      //  
-      //Class javacard.security.Signature
-      //
-    public static final byte ALG_DES_MAC4_NOPAD                  = 1;
-    public static final byte ALG_DES_MAC8_NOPAD                  = 2;
-    public static final byte ALG_DES_MAC4_ISO9797_M1             = 3;
-    public static final byte ALG_DES_MAC8_ISO9797_M1             = 4;
-    public static final byte ALG_DES_MAC4_ISO9797_M2             = 5;
-    public static final byte ALG_DES_MAC8_ISO9797_M2             = 6;
-    public static final byte ALG_DES_MAC4_PKCS5                  = 7;
-    public static final byte ALG_DES_MAC8_PKCS5                  = 8;
-    public static final byte ALG_RSA_SHA_ISO9796                 = 9;
-    public static final byte ALG_RSA_SHA_PKCS1                   = 10;
-    public static final byte ALG_RSA_MD5_PKCS1                   = 11;
-    public static final byte ALG_RSA_RIPEMD160_ISO9796           = 12;
-    public static final byte ALG_RSA_RIPEMD160_PKCS1             = 13;
-    public static final byte ALG_DSA_SHA                         = 14;
-    public static final byte ALG_RSA_SHA_RFC2409                 = 15;
-    public static final byte ALG_RSA_MD5_RFC2409                 = 16;
-    public static final byte ALG_ECDSA_SHA                       = 17;
-    public static final byte ALG_AES_MAC_128_NOPAD               = 18;
-    public static final byte ALG_DES_MAC4_ISO9797_1_M2_ALG3      = 19;
-    public static final byte ALG_DES_MAC8_ISO9797_1_M2_ALG3      = 20;
-    public static final byte ALG_RSA_SHA_PKCS1_PSS               = 21;
-    public static final byte ALG_RSA_MD5_PKCS1_PSS               = 22;
-    public static final byte ALG_RSA_RIPEMD160_PKCS1_PSS         = 23;
-      // JC2.2.2
-    public static final byte ALG_HMAC_SHA1                       = 24;
-    public static final byte ALG_HMAC_SHA_256                    = 25;
-    public static final byte ALG_HMAC_SHA_384                    = 26;
-    public static final byte ALG_HMAC_SHA_512                    = 27;
-    public static final byte ALG_HMAC_MD5                        = 28;
-    public static final byte ALG_HMAC_RIPEMD160                  = 29;
-    public static final byte ALG_RSA_SHA_ISO9796_MR              = 30;
-    public static final byte ALG_RSA_RIPEMD160_ISO9796_MR        = 31;
-    public static final byte ALG_KOREAN_SEED_MAC_NOPAD = 32;
-    // JC3.0.1
-    public static final byte ALG_ECDSA_SHA_256 = 33;  
-    public static final byte ALG_ECDSA_SHA_384 = 34;  
-    public static final byte ALG_AES_MAC_192_NOPAD = 35;  
-    public static final byte ALG_AES_MAC_256_NOPAD = 36;  
-    public static final byte ALG_ECDSA_SHA_224 = 37;  
-    public static final byte ALG_ECDSA_SHA_512 = 38;  
-    public static final byte ALG_RSA_SHA_224_PKCS1 = 39;  
-    public static final byte ALG_RSA_SHA_256_PKCS1 = 40;  
-    public static final byte ALG_RSA_SHA_384_PKCS1 = 41;  
-    public static final byte ALG_RSA_SHA_512_PKCS1 = 42;  
-    public static final byte ALG_RSA_SHA_224_PKCS1_PSS = 43;  
-    public static final byte ALG_RSA_SHA_256_PKCS1_PSS = 44;  
-    public static final byte ALG_RSA_SHA_384_PKCS1_PSS = 45;  
-    public static final byte ALG_RSA_SHA_512_PKCS1_PSS = 46;  
-    // JC3.0.4
-    public static final byte ALG_DES_MAC4_ISO9797_1_M1_ALG3 = 47;   
-    public static final byte ALG_DES_MAC8_ISO9797_1_M1_ALG3 = 48;
-    
-    public static final String SIGNATURE_STR[] = {"javacard.crypto.Signature", 
-        "ALG_DES_MAC4_NOPAD#<=2.1", "ALG_DES_MAC8_NOPAD#<=2.1", 
-        "ALG_DES_MAC4_ISO9797_M1#<=2.1", "ALG_DES_MAC8_ISO9797_M1#<=2.1", "ALG_DES_MAC4_ISO9797_M2#<=2.1", "ALG_DES_MAC8_ISO9797_M2#<=2.1", 
-        "ALG_DES_MAC4_PKCS5#<=2.1", "ALG_DES_MAC8_PKCS5#<=2.1", "ALG_RSA_SHA_ISO9796#<=2.1", "ALG_RSA_SHA_PKCS1#<=2.1", "ALG_RSA_MD5_PKCS1#<=2.1", 
-        "ALG_RSA_RIPEMD160_ISO9796#<=2.1", "ALG_RSA_RIPEMD160_PKCS1#<=2.1", "ALG_DSA_SHA#<=2.1", "ALG_RSA_SHA_RFC2409#<=2.1", 
-        "ALG_RSA_MD5_RFC2409#<=2.1", "ALG_ECDSA_SHA#2.2.0", "ALG_AES_MAC_128_NOPAD#2.2.0", "ALG_DES_MAC4_ISO9797_1_M2_ALG3#2.2.0", 
-        "ALG_DES_MAC8_ISO9797_1_M2_ALG3#2.2.0", "ALG_RSA_SHA_PKCS1_PSS#2.2.0", "ALG_RSA_MD5_PKCS1_PSS#2.2.0", "ALG_RSA_RIPEMD160_PKCS1_PSS#2.2.0", 
-        // 2.2.2
-        "ALG_HMAC_SHA1#2.2.2", "ALG_HMAC_SHA_256#2.2.2", "ALG_HMAC_SHA_384#2.2.2", "ALG_HMAC_SHA_512#2.2.2", "ALG_HMAC_MD5#2.2.2", "ALG_HMAC_RIPEMD160#2.2.2", 
-        "ALG_RSA_SHA_ISO9796_MR#2.2.2", "ALG_RSA_RIPEMD160_ISO9796_MR#2.2.2", "ALG_SEED_MAC_NOPAD#2.2.2", 
-        //3.0.1
-        "ALG_ECDSA_SHA_256#3.0.1", "ALG_ECDSA_SHA_384#3.0.1", "ALG_AES_MAC_192_NOPAD#3.0.1", "ALG_AES_MAC_256_NOPAD#3.0.1", "ALG_ECDSA_SHA_224#3.0.1", "ALG_ECDSA_SHA_512#3.0.1", 
-        "ALG_RSA_SHA_224_PKCS1#3.0.1", "ALG_RSA_SHA_256_PKCS1#3.0.1", "ALG_RSA_SHA_384_PKCS1#3.0.1", "ALG_RSA_SHA_512_PKCS1#3.0.1", 
-        "ALG_RSA_SHA_224_PKCS1_PSS#3.0.1", "ALG_RSA_SHA_256_PKCS1_PSS#3.0.1", "ALG_RSA_SHA_384_PKCS1_PSS#3.0.1", "ALG_RSA_SHA_512_PKCS1_PSS#3.0.1",
-        //3.0.4
-        "ALG_DES_MAC4_ISO9797_1_M1_ALG3#3.0.4", "ALG_DES_MAC8_ISO9797_1_M1_ALG3#3.0.4"
-    };
-
-      //
-      //Class javacardx.crypto.Cipher
-      //
-    public static final byte ALG_DES_CBC_NOPAD                     = 1;
-    public static final byte ALG_DES_CBC_ISO9797_M1                = 2;
-    public static final byte ALG_DES_CBC_ISO9797_M2                = 3;
-    public static final byte ALG_DES_CBC_PKCS5                     = 4;
-    public static final byte ALG_DES_ECB_NOPAD                     = 5;
-    public static final byte ALG_DES_ECB_ISO9797_M1                = 6;
-    public static final byte ALG_DES_ECB_ISO9797_M2                = 7;
-    public static final byte ALG_DES_ECB_PKCS5                     = 8;
-    public static final byte ALG_RSA_ISO14888                      = 9;
-    public static final byte ALG_RSA_PKCS1                         = 10;
-    public static final byte ALG_RSA_ISO9796                       = 11;
-    public static final byte ALG_RSA_NOPAD                         = 12;
-    public static final byte ALG_AES_BLOCK_128_CBC_NOPAD           = 13;
-    public static final byte ALG_AES_BLOCK_128_ECB_NOPAD           = 14;
-    public static final byte ALG_RSA_PKCS1_OAEP                    = 15;
-      // JC2.2.2
-    public static final byte ALG_KOREAN_SEED_ECB_NOPAD             = 16;
-    public static final byte ALG_KOREAN_SEED_CBC_NOPAD             = 17;
-    // JC3.0.1
-    public static final byte ALG_AES_BLOCK_192_CBC_NOPAD = 18;  
-    public static final byte ALG_AES_BLOCK_192_ECB_NOPAD = 19;  
-    public static final byte ALG_AES_BLOCK_256_CBC_NOPAD = 20;  
-    public static final byte ALG_AES_BLOCK_256_ECB_NOPAD = 21;  
-    public static final byte ALG_AES_CBC_ISO9797_M1 = 22;  
-    public static final byte ALG_AES_CBC_ISO9797_M2 = 23;  
-    public static final byte ALG_AES_CBC_PKCS5 = 24;  
-    public static final byte ALG_AES_ECB_ISO9797_M1 = 25;  
-    public static final byte ALG_AES_ECB_ISO9797_M2 = 26;  
-    public static final byte ALG_AES_ECB_PKCS5 = 27;      
-
-    public static final String CIPHER_STR[] = {"javacardx.crypto.Cipher", 
-        "ALG_DES_CBC_NOPAD#<=2.1", "ALG_DES_CBC_ISO9797_M1#<=2.1", "ALG_DES_CBC_ISO9797_M2#<=2.1", "ALG_DES_CBC_PKCS5#<=2.1", 
-        "ALG_DES_ECB_NOPAD#<=2.1", "ALG_DES_ECB_ISO9797_M1#<=2.1", "ALG_DES_ECB_ISO9797_M2#<=2.1", "ALG_DES_ECB_PKCS5#<=2.1",
-        "ALG_RSA_ISO14888#<=2.1", "ALG_RSA_PKCS1#<=2.1", "ALG_RSA_ISO9796#<=2.1", 
-        //2.1.1
-        "ALG_RSA_NOPAD#2.1.1", 
-        //2.2.0
-        "ALG_AES_BLOCK_128_CBC_NOPAD#2.2.0", "ALG_AES_BLOCK_128_ECB_NOPAD#2.2.0", "ALG_RSA_PKCS1_OAEP#2.2.0", 
-        //2.2.2
-        "ALG_KOREAN_SEED_ECB_NOPAD#2.2.2", "ALG_KOREAN_SEED_CBC_NOPAD#2.2.2",
-        //3.0.1
-        "ALG_AES_BLOCK_192_CBC_NOPAD#3.0.1", "ALG_AES_BLOCK_192_ECB_NOPAD#3.0.1", "ALG_AES_BLOCK_256_CBC_NOPAD#3.0.1", "ALG_AES_BLOCK_256_ECB_NOPAD#3.0.1", 
-        "ALG_AES_CBC_ISO9797_M1#3.0.1", "ALG_AES_CBC_ISO9797_M2#3.0.1", "ALG_AES_CBC_PKCS5#3.0.1", "ALG_AES_ECB_ISO9797_M1#3.0.1", "ALG_AES_ECB_ISO9797_M2#3.0.1", "ALG_AES_ECB_PKCS5#3.0.1"         
-    }; 
-
-      //
-      //Class javacard.security.KeyAgreement
-      //
-    public static final byte ALG_EC_SVDP_DH                        = 1;
-    public static final byte ALG_EC_SVDP_DHC                       = 2;
-    // JC3.0.1
-    public static final byte ALG_EC_SVDP_DH_KDF                    = 1;  
-    public static final byte ALG_EC_SVDP_DH_PLAIN                  = 3;     
-    public static final byte ALG_EC_SVDP_DHC_KDF                   = 2;  
-    public static final byte ALG_EC_SVDP_DHC_PLAIN                 = 4;  
-    
-    public static final String KEYAGREEMENT_STR[] = {"javacard.security.KeyAgreement", 
-        //2.2.1
-        "ALG_EC_SVDP_DH#2.2.1", "ALG_EC_SVDP_DHC#2.2.1",
-        //3.0.1
-        "ALG_EC_SVDP_DH_KDF#3.0.1", "ALG_EC_SVDP_DH_PLAIN#3.0.1", "ALG_EC_SVDP_DHC_KDF#3.0.1", "ALG_EC_SVDP_DHC_PLAIN#3.0.1"
-    };
-    
-      //
-      //Class javacard.security.KeyBuilder
-      //
-    public static final byte TYPE_DES_TRANSIENT_RESET              = 1;
-    public static final byte TYPE_DES_TRANSIENT_DESELECT           = 2;
-    public static final byte TYPE_DES                              = 3;
-    public static final byte TYPE_RSA_PUBLIC                       = 4;
-    public static final byte TYPE_RSA_PRIVATE                      = 5;
-    public static final byte TYPE_RSA_CRT_PRIVATE                  = 6;
-    public static final byte TYPE_DSA_PUBLIC                       = 7;
-    public static final byte TYPE_DSA_PRIVATE                      = 8; 
-    public static final byte TYPE_EC_F2M_PUBLIC                    = 9;
-    public static final byte TYPE_EC_F2M_PRIVATE                   = 10;
-    public static final byte TYPE_EC_FP_PUBLIC                     = 11;
-    public static final byte TYPE_EC_FP_PRIVATE                    = 12;
-    public static final byte TYPE_AES_TRANSIENT_RESET              = 13;
-    public static final byte TYPE_AES_TRANSIENT_DESELECT           = 14;
-    public static final byte TYPE_AES                              = 15;
-      // JC2.2.2
-    public static final byte TYPE_KOREAN_SEED_TRANSIENT_RESET      = 16;
-    public static final byte TYPE_KOREAN_SEED_TRANSIENT_DESELECT   = 17;
-    public static final byte TYPE_KOREAN_SEED                      = 18;
-    public static final byte TYPE_HMAC_TRANSIENT_RESET             = 19;
-    public static final byte TYPE_HMAC_TRANSIENT_DESELECT          = 20;
-    public static final byte TYPE_HMAC                             = 21;
-    // JC3.0.1
-    public static final byte TYPE_RSA_PRIVATE_TRANSIENT_RESET       = 22;  
-    public static final byte TYPE_RSA_PRIVATE_TRANSIENT_DESELECT    = 23;  
-    public static final byte TYPE_RSA_CRT_PRIVATE_TRANSIENT_RESET   = 24;  
-    public static final byte TYPE_RSA_CRT_PRIVATE_TRANSIENT_DESELECT= 25;  
-    public static final byte TYPE_DSA_PRIVATE_TRANSIENT_RESET       = 26;
-    public static final byte TYPE_DSA_PRIVATE_TRANSIENT_DESELECT    = 27;  
-    public static final byte TYPE_EC_F2M_PRIVATE_TRANSIENT_RESET    = 28;  
-    public static final byte TYPE_EC_F2M_PRIVATE_TRANSIENT_DESELECT = 29;  
-    public static final byte TYPE_EC_FP_PRIVATE_TRANSIENT_RESET     = 30;  
-    public static final byte TYPE_EC_FP_PRIVATE_TRANSIENT_DESELECT  = 31;  
-    
-    private final int LENGTH_DES            = 64;
-    private final int LENGTH_DES3_2KEY      = 128;
-    private final int LENGTH_DES3_3KEY      = 192;
-    private final int LENGTH_RSA_512        = 512;
-    private final int LENGTH_RSA_736        = 736;
-    private final int LENGTH_RSA_768        = 768;
-    private final int LENGTH_RSA_896        = 896;
-    private final int LENGTH_RSA_1024       = 1024;
-    private final int LENGTH_RSA_1280       = 1280;
-    private final int LENGTH_RSA_1536       = 1536;
-    private final int LENGTH_RSA_1984       = 1984;
-    private final int LENGTH_RSA_2048       = 2048;
-    private final int LENGTH_RSA_3072       = 3072;
-    private final int LENGTH_RSA_4096       = 4096;
-    private final int LENGTH_DSA_512        = 512;
-    private final int LENGTH_DSA_768        = 768;
-    private final int LENGTH_DSA_1024       = 1024;
-    private final int LENGTH_EC_FP_112      = 112;
-    private final int LENGTH_EC_F2M_113     = 113;
-    private final int LENGTH_EC_FP_128      = 128;
-    private final int LENGTH_EC_F2M_131     = 131;
-    private final int LENGTH_EC_FP_160      = 160;
-    private final int LENGTH_EC_F2M_163     = 163;
-    private final int LENGTH_EC_FP_192      = 192;
-    private final int LENGTH_EC_F2M_193     = 193;
-    private final int LENGTH_EC_FP_224      = 224;  
-    private final int LENGTH_EC_FP_256      = 256;  
-    private final int LENGTH_EC_FP_384      = 384;  
-    private final int LENGTH_EC_FP_521      = 521;    
-    private final int LENGTH_AES_128        = 128;
-    private final int LENGTH_AES_192        = 192;
-    private final int LENGTH_AES_256        = 256;
-      // JC2.2.2
-    private final int LENGTH_KOREAN_SEED_128        = 128;
-    private final int LENGTH_HMAC_SHA_1_BLOCK_64    = 64;
-    private final int LENGTH_HMAC_SHA_256_BLOCK_64  = 64;
-    private final int LENGTH_HMAC_SHA_384_BLOCK_64  = 128;
-    private final int LENGTH_HMAC_SHA_512_BLOCK_64  = 128;
-    
-    public static final String KEYBUILDER_STR[] = {
-        "javacard.security.KeyBuilder", 
-        "@@@DES_KEY@@@", "TYPE_DES_TRANSIENT_RESET#<=2.1", "TYPE_DES_TRANSIENT_DESELECT#<=2.1", "TYPE_DES LENGTH_DES#<=2.1", "TYPE_DES LENGTH_DES3_2KEY#<=2.1", "TYPE_DES LENGTH_DES3_3KEY#<=2.1",
-        //2.2.0
-        "@@@AES_KEY@@@", "TYPE_AES_TRANSIENT_RESET#2.2.0", "TYPE_AES_TRANSIENT_DESELECT#2.2.0", "TYPE_AES LENGTH_AES_128#2.2.0", "TYPE_AES LENGTH_AES_192#2.2.0", "TYPE_AES LENGTH_AES_256#2.2.0",
-        "@@@RSA_PUBLIC_KEY@@@", "TYPE_RSA_PUBLIC LENGTH_RSA_512#<=2.1", "TYPE_RSA_PUBLIC LENGTH_RSA_736#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_768#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_896#2.2.0",
-            "TYPE_RSA_PUBLIC LENGTH_RSA_1024#<=2.1", "TYPE_RSA_PUBLIC LENGTH_RSA_1280#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_1536#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_1984#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_2048#<=2.1", "TYPE_RSA_PUBLIC LENGTH_RSA_3072#never#0", "TYPE_RSA_PUBLIC LENGTH_RSA_4096#3.0.1",
-        "@@@RSA_PRIVATE_KEY@@@", "TYPE_RSA_PRIVATE LENGTH_RSA_512#<=2.1", "TYPE_RSA_PRIVATE LENGTH_RSA_736#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_768#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_896#2.2.0",
-            "TYPE_RSA_PRIVATE LENGTH_RSA_1024#<=2.1", "TYPE_RSA_PRIVATE LENGTH_RSA_1280#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_1536#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_1984#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_2048#<=2.1", "TYPE_RSA_PRIVATE LENGTH_RSA_3072#never#0", "TYPE_RSA_PRIVATE LENGTH_RSA_4096#3.0.1", 
-            "TYPE_RSA_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_RSA_PRIVATE_TRANSIENT_DESELECT#3.0.1",
-        "@@@RSA_CRT_PRIVATE_KEY@@@", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_512#<=2.1", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_736#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_768#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_896#2.2.0",
-            "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1024#<=2.1", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1280#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1536#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1984#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_2048#<=2.1", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_3072#never#0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_4096#3.0.1",
-            "TYPE_RSA_CRT_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_RSA_CRT_PRIVATE_TRANSIENT_DESELECT#3.0.1",
-        "@@@DSA_PRIVATE_KEY@@@", "TYPE_DSA_PRIVATE LENGTH_DSA_512#<=2.1", "TYPE_DSA_PRIVATE LENGTH_DSA_768#<=2.1", "TYPE_DSA_PRIVATE LENGTH_DSA_1024#<=2.1", "TYPE_DSA_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_DSA_PRIVATE_TRANSIENT_DESELECT#3.0.1", 
-        "@@@DSA_PUBLIC_KEY@@@", "TYPE_DSA_PUBLIC LENGTH_DSA_512#<=2.1", "TYPE_DSA_PUBLIC LENGTH_DSA_768#<=2.1", "TYPE_DSA_PUBLIC LENGTH_DSA_1024#<=2.1", 
-        "@@@EC_F2M_PRIVATE_KEY@@@", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_113#2.2.0", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_131#2.2.0", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_163#2.2.0", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_193#2.2.0", "TYPE_EC_F2M_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_EC_F2M_PRIVATE_TRANSIENT_DESELECT#3.0.1",
-        "@@@EC_FP_PRIVATE_KEY@@@", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_112#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_128#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_160#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_192#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_224#3.0.1", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_256#3.0.1", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_384#3.0.1", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_521#3.0.4", "TYPE_EC_FP_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_EC_FP_PRIVATE_TRANSIENT_DESELECT#3.0.1",
-        "@@@KOREAN_SEED_KEY@@@", "TYPE_KOREAN_SEED_TRANSIENT_RESET#2.2.2", "TYPE_KOREAN_SEED_TRANSIENT_DESELECT#2.2.2", "TYPE_KOREAN_SEED LENGTH_KOREAN_SEED_128#2.2.2", 
-        "@@@HMAC_KEY@@@", "TYPE_HMAC_TRANSIENT_RESET#2.2.2", "TYPE_HMAC_TRANSIENT_DESELECT#2.2.2", "TYPE_HMAC LENGTH_HMAC_SHA_1_BLOCK_64#2.2.2", "TYPE_HMAC LENGTH_HMAC_SHA_256_BLOCK_64#2.2.2", "TYPE_HMAC LENGTH_HMAC_SHA_384_BLOCK_64#2.2.2", "TYPE_HMAC LENGTH_HMAC_SHA_512_BLOCK_64#2.2.2",
-    }; 
-      //
-      //Class javacard.security.KeyPair
-      //introduced in 2.1.1
-    public static final byte ALG_RSA                       = 1;
-    public static final byte ALG_RSA_CRT                   = 2;
-    public static final byte ALG_DSA                       = 3;
-    public static final byte ALG_EC_F2M                    = 4;
-    public static final byte ALG_EC_FP                     = 5;
-
-    public static final String KEYPAIR_RSA_STR[] = {"javacard.security.KeyPair ALG_RSA on-card generation", 
-        "ALG_RSA LENGTH_RSA_512#2.1.1", "ALG_RSA LENGTH_RSA_736#2.2.0", "ALG_RSA LENGTH_RSA_768#2.1.1", "ALG_RSA LENGTH_RSA_896#2.2.0",
-        "ALG_RSA LENGTH_RSA_1024#2.1.1", "ALG_RSA LENGTH_RSA_1280#2.2.0", "ALG_RSA LENGTH_RSA_1536#2.2.0", "ALG_RSA LENGTH_RSA_1984#2.2.0", "ALG_RSA LENGTH_RSA_2048#2.1.1", 
-        "ALG_RSA LENGTH_RSA_3072#never#0", "ALG_RSA LENGTH_RSA_4096#3.0.1"
-        };
-
-    public static final String KEYPAIR_RSACRT_STR[] = {"javacard.security.KeyPair ALG_RSA_CRT on-card generation", 
-        "ALG_RSA_CRT LENGTH_RSA_512#2.1.1", "ALG_RSA_CRT LENGTH_RSA_736#2.2.0", "ALG_RSA_CRT LENGTH_RSA_768#2.1.1", "ALG_RSA_CRT LENGTH_RSA_896#2.2.0",
-        "ALG_RSA_CRT LENGTH_RSA_1024#2.1.1", "ALG_RSA_CRT LENGTH_RSA_1280#2.2.0", "ALG_RSA_CRT LENGTH_RSA_1536#2.2.0", "ALG_RSA_CRT LENGTH_RSA_1984#2.2.0", "ALG_RSA_CRT LENGTH_RSA_2048#2.1.1", 
-        "ALG_RSA_CRT LENGTH_RSA_3072#never#0", "ALG_RSA_CRT LENGTH_RSA_4096#3.0.1"
-        };    
-  
-    public static final String KEYPAIR_DSA_STR[] = {"javacard.security.KeyPair ALG_DSA on-card generation", 
-        "ALG_DSA LENGTH_DSA_512#2.1.1", "ALG_DSA LENGTH_DSA_768#2.1.1", "ALG_DSA LENGTH_DSA_1024#2.1.1"
-    };
-  
-    public static final String KEYPAIR_EC_F2M_STR[] = {"javacard.security.KeyPair ALG_EC_F2M on-card generation", 
-        "ALG_EC_F2M LENGTH_EC_F2M_113#2.2.1", "ALG_EC_F2M LENGTH_EC_F2M_131#2.2.1", "ALG_EC_F2M LENGTH_EC_F2M_163#2.2.1", "ALG_EC_F2M LENGTH_EC_F2M_193#2.2.1"
-    };
- 
-    public static final String KEYPAIR_EC_FP_STR[] = {"javacard.security.KeyPair ALG_EC_FP on-card generation", 
-        "ALG_EC_FP LENGTH_EC_FP_112#2.2.1", "ALG_EC_FP LENGTH_EC_FP_128#2.2.1", "ALG_EC_FP LENGTH_EC_FP_160#2.2.1", "ALG_EC_FP LENGTH_EC_FP_192#2.2.1", "ALG_EC_FP LENGTH_EC_FP_224#3.0.1", "ALG_EC_FP LENGTH_EC_FP_256#3.0.1", "ALG_EC_FP LENGTH_EC_FP_384#3.0.1", "ALG_EC_FP LENGTH_EC_FP_521#3.0.4"
-    };
-
-    public static final byte CLASS_KEYPAIR_RSA_P2          = 11;
-    public static final byte CLASS_KEYPAIR_RSACRT_P2       = 11;
-    public static final byte CLASS_KEYPAIR_DSA_P2          = 3;
-    public static final byte CLASS_KEYPAIR_EC_F2M_P2       = 4;
-    public static final byte CLASS_KEYPAIR_EC_FP_P2        = 4;
-
-      //Class javacard.security.MessageDigest
-    public static final byte ALG_SHA                       = 1;
-    public static final byte ALG_MD5                       = 2;
-    public static final byte ALG_RIPEMD160                 = 3;
-      // JC2.2.2
-    public static final byte ALG_SHA_256                   = 4;
-    public static final byte ALG_SHA_384                   = 5;
-    public static final byte ALG_SHA_512                   = 6;
-    // JC3.0.1
-    public static final byte ALG_SHA_224 = 7;
-    
-    public static final String MESSAGEDIGEST_STR[] = {"javacard.security.MessageDigest", 
-        "ALG_SHA#<=2.1", "ALG_MD5#<=2.1", "ALG_RIPEMD160#<=2.1", 
-        //2.2.2
-        "ALG_SHA_256#2.2.2", "ALG_SHA_384#2.2.2", "ALG_SHA_512#2.2.2", 
-        //3.0.1
-        "ALG_SHA_224#3.0.1"
-    }; 
-
-
-      //Class javacard.security.RandomData
-    public static final byte ALG_PSEUDO_RANDOM             = 1;
-    public static final byte ALG_SECURE_RANDOM             = 2;
-
-    public static final String RANDOMDATA_STR[] = {"javacard.security.RandomData", 
-        "ALG_PSEUDO_RANDOM#<=2.1", "ALG_SECURE_RANDOM#<=2.1"}; 
-
-      // Class javacard.security.Checksum
-    public static final byte ALG_ISO3309_CRC16             = 1;
-    public static final byte ALG_ISO3309_CRC32             = 2;
-
-    public static final String CHECKSUM_STR[] = {"javacard.security.Checksum", "ALG_ISO3309_CRC16#2.2.1", "ALG_ISO3309_CRC32#2.2.1"}; 
-    
-    public static final String JCSYSTEM_STR[] = {"javacard.framework.JCSystem", "JCSystem.getVersion()[Major.Minor]#<=2.1", 
-        "JCSystem.isObjectDeletionSupported#2.2.0", "JCSystem.MEMORY_TYPE_PERSISTENT#2.2.1", "JCSystem.MEMORY_TYPE_TRANSIENT_RESET#2.2.1", 
-        "JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT#2.2.1"}; 
-
-    public static final String RAWRSA_1024_STR[] = {"Variable RSA 1024 - support for variable public exponent. If supported, user-defined fast modular exponentiation can be executed on the smart card via cryptographic coprocessor. This is very specific feature and you will probably not need it", 
-        "Allocate RSA 1024 objects", "Set random modulus", "Set random public exponent", "Initialize cipher with public key with random exponent", "Use random public exponent"}; 
-
-    public static final String EXTENDEDAPDU_STR[] = {"javacardx.apdu.ExtendedLength", "Extended APDU#2.2.2"}; 
-
-    public static final String BASIC_INFO[] = {"Basic info", "JavaCard support version"}; 
-   
-    public static final String[] ALL_CLASSES_STR[] = {
-        BASIC_INFO, JCSYSTEM_STR, EXTENDEDAPDU_STR, CIPHER_STR, SIGNATURE_STR, MESSAGEDIGEST_STR, RANDOMDATA_STR, KEYBUILDER_STR, 
-        KEYPAIR_RSA_STR, KEYPAIR_RSACRT_STR, KEYPAIR_DSA_STR, KEYPAIR_EC_F2M_STR, 
-        KEYPAIR_EC_FP_STR, KEYAGREEMENT_STR, CHECKSUM_STR, RAWRSA_1024_STR
-    };
 
     
-    public static final short 	ILLEGAL_USE         = 5;
-    public static final short 	ILLEGAL_VALUE       = 1;
-    public static final short 	INVALID_INIT        = 4;
-    public static final short 	NO_SUCH_ALGORITHM   = 3;
-    public static final short 	UNINITIALIZED_KEY   = 2; 
-   
     CardTerminal m_terminal = null;
     CardChannel m_channel = null;
     Card m_card = null;
@@ -733,7 +415,7 @@ public class CardMngr {
     
 	// Prepare test memory apdu
         byte apdu[] = new byte[HEADER_LENGTH + 1];
-        apdu[OFFSET_CLA] = (byte) 0xB0;
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
         apdu[OFFSET_INS] = (byte) 0x60;
         apdu[OFFSET_P1] = 0x00;
         apdu[OFFSET_P2] = 0x00;
@@ -766,7 +448,7 @@ public class CardMngr {
     
 	// Prepare test memory apdu
         byte apdu[] = new byte[HEADER_LENGTH+1];
-        apdu[OFFSET_CLA] = (byte) 0xB0;
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
         apdu[OFFSET_INS] = (byte) 0x73;
         apdu[OFFSET_P1] = 0x00;
         apdu[OFFSET_P2] = 0x00;
@@ -798,24 +480,24 @@ public class CardMngr {
 
 
                 String message;
-                message = String.format("\r\n%1s;%d.%d;", GetAlgorithmName(JCSYSTEM_STR[1]), versionMajor, versionMinor); 
+                message = String.format("\r\n%1s;%d.%d;", GetAlgorithmName(Consts.JCSYSTEM_STR[1]), versionMajor, versionMinor); 
                 System.out.println(message);
                 pFile.write(message.getBytes());
                 pValue.append(message);
-                message = String.format("\r\n%s;%s;", GetAlgorithmName(JCSYSTEM_STR[2]),(bDeletionSupported != 0) ? "yes" : "no"); 
+                message = String.format("\r\n%s;%s;", GetAlgorithmName(Consts.JCSYSTEM_STR[2]),(bDeletionSupported != 0) ? "yes" : "no"); 
 
                 System.out.println(message);
                 pFile.write(message.getBytes());
                 pValue.append(message);
-                message = String.format("\r\n%s;%s%dB;", GetAlgorithmName(JCSYSTEM_STR[3]),(eepromSize == 32767) ? ">" : "", eepromSize); 
+                message = String.format("\r\n%s;%s%dB;", GetAlgorithmName(Consts.JCSYSTEM_STR[3]),(eepromSize == 32767) ? ">" : "", eepromSize); 
                 System.out.println(message);
                 pFile.write(message.getBytes());
                 pValue.append(message);
-                message = String.format("\r\n%s;%s%dB;", GetAlgorithmName(JCSYSTEM_STR[4]),(ramResetSize == 32767) ? ">" : "", ramResetSize); 
+                message = String.format("\r\n%s;%s%dB;", GetAlgorithmName(Consts.JCSYSTEM_STR[4]),(ramResetSize == 32767) ? ">" : "", ramResetSize); 
                 System.out.println(message);
                 pFile.write(message.getBytes());
                 pValue.append(message);
-                message = String.format("\r\n%s;%s%dB;\n", GetAlgorithmName(JCSYSTEM_STR[5]),(ramDeselectSize == 32767) ? ">" : "", ramDeselectSize); 
+                message = String.format("\r\n%s;%s%dB;\n", GetAlgorithmName(Consts.JCSYSTEM_STR[5]),(ramDeselectSize == 32767) ? ">" : "", ramDeselectSize); 
                 System.out.println(message);
                 message += "\r\n";
 
@@ -843,69 +525,69 @@ public class CardMngr {
         
         // Class javacardx.crypto.Cipher
         value.setLength(0);
-        if (GetSupportedAndParse(CLASS_CIPHER, CIPHER_STR, value, file, (byte) 0, answ) == STAT_OK) {}
+        if (GetSupportedAndParse(CLASS_CIPHER, Consts.CIPHER_STR, value, file, (byte) 0, answ) == STAT_OK) {}
         else { String errorMessage = "\nERROR: javacardx.crypto.Cipher fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
         file.flush();
 
         // Class javacard.security.Signature
         value.setLength(0);
-        if (GetSupportedAndParse(CLASS_SIGNATURE, SIGNATURE_STR, value, file, (byte) 0, answ) == STAT_OK) {}
+        if (GetSupportedAndParse(CLASS_SIGNATURE, Consts.SIGNATURE_STR, value, file, (byte) 0, answ) == STAT_OK) {}
         else { String errorMessage = "\nERROR: javacard.security.Signature fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
         file.flush();
 
         // Class javacard.security.MessageDigest
         value.setLength(0);
-        if (GetSupportedAndParse(CLASS_MESSAGEDIGEST, MESSAGEDIGEST_STR, value, file, (byte) 0, answ) == STAT_OK) {}
+        if (GetSupportedAndParse(CLASS_MESSAGEDIGEST, Consts.MESSAGEDIGEST_STR, value, file, (byte) 0, answ) == STAT_OK) {}
         else { String errorMessage = "\nERROR: javacard.security.MessageDigest fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
         file.flush();
 
         // Class javacard.security.RandomData
         value.setLength(0);
-        if (GetSupportedAndParse(CLASS_RANDOMDATA, RANDOMDATA_STR, value, file, (byte) 0, answ) == STAT_OK) {}
+        if (GetSupportedAndParse(CLASS_RANDOMDATA, Consts.RANDOMDATA_STR, value, file, (byte) 0, answ) == STAT_OK) {}
         else { String errorMessage = "\nERROR: javacard.security.RandomData fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
         file.flush();
 
         // Class javacard.security.KeyBuilder
         value.setLength(0);
-        if (GetSupportedAndParse(CLASS_KEYBUILDER, KEYBUILDER_STR, value, file, (byte) 0, answ) == STAT_OK) {}
+        if (GetSupportedAndParse(CLASS_KEYBUILDER, Consts.KEYBUILDER_STR, value, file, (byte) 0, answ) == STAT_OK) {}
         else { String errorMessage = "\nERROR: javacard.security.KeyBuilder fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
         file.flush();
 
         // Class javacard.security.KeyPair RSA
         value.setLength(0);
-        if (GetSupportedAndParse(CLASS_KEYPAIR_RSA, KEYPAIR_RSA_STR, value, file, CLASS_KEYPAIR_RSA_P2, answ) == STAT_OK) {}
+        if (GetSupportedAndParse(CLASS_KEYPAIR_RSA, Consts.KEYPAIR_RSA_STR, value, file, Consts.CLASS_KEYPAIR_RSA_P2, answ) == STAT_OK) {}
         else { String errorMessage = "\nERROR: javacard.security.KeyPair RSA fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
         file.flush();
         // Class javacard.security.KeyPair RSA_CRT
         value.setLength(0);
-        if (GetSupportedAndParse(CLASS_KEYPAIR_RSA_CRT, KEYPAIR_RSACRT_STR, value, file, CLASS_KEYPAIR_RSACRT_P2, answ) == STAT_OK) {}
+        if (GetSupportedAndParse(CLASS_KEYPAIR_RSA_CRT, Consts.KEYPAIR_RSACRT_STR, value, file, Consts.CLASS_KEYPAIR_RSACRT_P2, answ) == STAT_OK) {}
         else { String errorMessage = "\nERROR: javacard.security.KeyPair RSA_CRT fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
         file.flush();
         // Class javacard.security.KeyPair DSA
         value.setLength(0);
-        if (GetSupportedAndParse(CLASS_KEYPAIR_DSA, KEYPAIR_DSA_STR, value, file, CLASS_KEYPAIR_DSA_P2, answ) == STAT_OK) {}
+        if (GetSupportedAndParse(CLASS_KEYPAIR_DSA, Consts.KEYPAIR_DSA_STR, value, file, Consts.CLASS_KEYPAIR_DSA_P2, answ) == STAT_OK) {}
         else { String errorMessage = "\nERROR: javacard.security.KeyPair DSA fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
         file.flush();
         // Class javacard.security.KeyPair EC_F2M
         value.setLength(0);
-        if (GetSupportedAndParse(CLASS_KEYPAIR_EC_F2M, KEYPAIR_EC_F2M_STR, value, file,  CLASS_KEYPAIR_EC_F2M_P2, answ) == STAT_OK) {}
+        if (GetSupportedAndParse(CLASS_KEYPAIR_EC_F2M, Consts.KEYPAIR_EC_F2M_STR, value, file,  Consts.CLASS_KEYPAIR_EC_F2M_P2, answ) == STAT_OK) {}
         else { String errorMessage = "\nERROR: javacard.security.KeyPair EC_F2M fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
         file.flush();
         // Class javacard.security.KeyPair EC_FP
         value.setLength(0);
-        if (GetSupportedAndParse(CLASS_KEYPAIR_EC_FP, KEYPAIR_EC_FP_STR, value, file, CLASS_KEYPAIR_EC_FP_P2, answ) == STAT_OK) {}
+        if (GetSupportedAndParse(CLASS_KEYPAIR_EC_FP, Consts.KEYPAIR_EC_FP_STR, value, file, Consts.CLASS_KEYPAIR_EC_FP_P2, answ) == STAT_OK) {}
         else { String errorMessage = "\nERROR: javacard.security.KeyPair EC_FP fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
         file.flush();
 
         // Class javacard.security.KeyAgreement
         value.setLength(0);
-        if (GetSupportedAndParse(CLASS_KEYAGREEMENT, KEYAGREEMENT_STR, value, file, (byte) 0, answ) == STAT_OK) {}
+        if (GetSupportedAndParse(CLASS_KEYAGREEMENT, Consts.KEYAGREEMENT_STR, value, file, (byte) 0, answ) == STAT_OK) {}
         else { String errorMessage = "\nERROR: javacard.security.KeyAgreement fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
         file.flush();
 
         // Class javacard.security.Checksum
         value.setLength(0);
-        if (GetSupportedAndParse(CLASS_CHECKSUM, CHECKSUM_STR, value, file, (byte) 0, answ) == STAT_OK) {}
+        if (GetSupportedAndParse(CLASS_CHECKSUM, Consts.CHECKSUM_STR, value, file, (byte) 0, answ) == STAT_OK) {}
         else { String errorMessage = "\nERROR: javacard.security.Checksum fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
         file.flush();
     }
@@ -922,70 +604,70 @@ public class CardMngr {
         /* Class 'javacardx.crypto.Cipher'. */
         else if (Arrays.asList(args).contains(TEST_CLASS_CIPHER)){
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_CIPHER, CIPHER_STR, value, file, (byte) 0, FORCE_TEST) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_CIPHER, Consts.CIPHER_STR, value, file, (byte) 0, FORCE_TEST) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacardx.crypto.Cipher fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
         }
         /* Class 'javacard.security.Signature'. */
         else if (Arrays.asList(args).contains(TEST_CLASS_SIGNATURE)){
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_SIGNATURE, SIGNATURE_STR, value, file, (byte) 0, FORCE_TEST) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_SIGNATURE, Consts.SIGNATURE_STR, value, file, (byte) 0, FORCE_TEST) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.Signature fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
         }
         /* Class 'javacard.security.MessageDigest'. */
         else if (Arrays.asList(args).contains(TEST_CLASS_MESSAGEDIGEST)){
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_MESSAGEDIGEST, MESSAGEDIGEST_STR, value, file, (byte) 0, FORCE_TEST) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_MESSAGEDIGEST, Consts.MESSAGEDIGEST_STR, value, file, (byte) 0, FORCE_TEST) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.MessageDigest fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
         }
         /* Class 'javacard.security.RandomData'. */
         else if (Arrays.asList(args).contains(TEST_CLASS_RANDOMDATA)){
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_RANDOMDATA, RANDOMDATA_STR, value, file, (byte) 0, FORCE_TEST) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_RANDOMDATA, Consts.RANDOMDATA_STR, value, file, (byte) 0, FORCE_TEST) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.RandomData fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
         }
         /* Class 'javacard.security.KeyBuilder'. */
         else if (Arrays.asList(args).contains(TEST_CLASS_KEYBUILDER)){
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_KEYBUILDER, KEYBUILDER_STR, value, file, (byte) 0, FORCE_TEST) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_KEYBUILDER, Consts.KEYBUILDER_STR, value, file, (byte) 0, FORCE_TEST) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.KeyBuilder fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
         }
         /* Class 'javacard.security.KeyPair' RSA. */
         else if (Arrays.asList(args).contains(TEST_CLASS_KEYPAIR_ALG_RSA)){
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_KEYPAIR_RSA, KEYPAIR_RSA_STR, value, file, CLASS_KEYPAIR_RSA_P2, FORCE_TEST) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_KEYPAIR_RSA, Consts.KEYPAIR_RSA_STR, value, file, Consts.CLASS_KEYPAIR_RSA_P2, FORCE_TEST) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.KeyPair RSA fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
         }
         /* Class 'javacard.security.KeyPair' RSA CRT. */
         else if (Arrays.asList(args).contains(TEST_CLASS_KEYPAIR_ALG_RSA_CRT)){
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_KEYPAIR_RSA_CRT, KEYPAIR_RSACRT_STR, value, file, CLASS_KEYPAIR_RSACRT_P2, FORCE_TEST) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_KEYPAIR_RSA_CRT, Consts.KEYPAIR_RSACRT_STR, value, file, Consts.CLASS_KEYPAIR_RSACRT_P2, FORCE_TEST) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.KeyPair RSA_CRT fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
         }
         /* Class 'javacard.security.KeyPair' DSA. */
         else if (Arrays.asList(args).contains(TEST_CLASS_KEYPAIR_ALG_DSA)){
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_KEYPAIR_DSA, KEYPAIR_DSA_STR, value, file, CLASS_KEYPAIR_DSA_P2, FORCE_TEST) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_KEYPAIR_DSA, Consts.KEYPAIR_DSA_STR, value, file, Consts.CLASS_KEYPAIR_DSA_P2, FORCE_TEST) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.KeyPair DSA fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
         }
         /* Class 'javacard.security.KeyPair' EC_F2M. */
         else if (Arrays.asList(args).contains(TEST_CLASS_KEYPAIR_ALG_EC_F2M)){
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_KEYPAIR_EC_F2M, KEYPAIR_EC_F2M_STR, value, file,  CLASS_KEYPAIR_EC_F2M_P2, FORCE_TEST) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_KEYPAIR_EC_F2M, Consts.KEYPAIR_EC_F2M_STR, value, file,  Consts.CLASS_KEYPAIR_EC_F2M_P2, FORCE_TEST) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.KeyPair EC_F2M fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
         }
         /* Class 'javacard.security.KeyPair' EC_FP. */
         else if (Arrays.asList(args).contains(TEST_CLASS_KEYPAIR_ALG_EC_FP)){
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_KEYPAIR_EC_FP, KEYPAIR_EC_FP_STR, value, file, CLASS_KEYPAIR_EC_FP_P2, FORCE_TEST) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_KEYPAIR_EC_FP, Consts.KEYPAIR_EC_FP_STR, value, file, Consts.CLASS_KEYPAIR_EC_FP_P2, FORCE_TEST) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.KeyPair EC_FP fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
         }
@@ -1019,73 +701,73 @@ public class CardMngr {
         else{
             // Class javacardx.crypto.Cipher
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_CIPHER, CIPHER_STR, value, file, (byte) 0, answ) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_CIPHER, Consts.CIPHER_STR, value, file, (byte) 0, answ) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacardx.crypto.Cipher fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
 
             // Class javacard.security.Signature
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_SIGNATURE, SIGNATURE_STR, value, file, (byte) 0, answ) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_SIGNATURE, Consts.SIGNATURE_STR, value, file, (byte) 0, answ) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.Signature fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
 
             // Class javacard.security.MessageDigest
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_MESSAGEDIGEST, MESSAGEDIGEST_STR, value, file, (byte) 0, answ) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_MESSAGEDIGEST, Consts.MESSAGEDIGEST_STR, value, file, (byte) 0, answ) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.MessageDigest fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
 
             // Class javacard.security.RandomData
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_RANDOMDATA, RANDOMDATA_STR, value, file, (byte) 0, answ) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_RANDOMDATA, Consts.RANDOMDATA_STR, value, file, (byte) 0, answ) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.RandomData fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
 
             // Class javacard.security.KeyBuilder
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_KEYBUILDER, KEYBUILDER_STR, value, file, (byte) 0, answ) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_KEYBUILDER, Consts.KEYBUILDER_STR, value, file, (byte) 0, answ) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.KeyBuilder fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
 
             // Class javacard.security.KeyPair RSA
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_KEYPAIR_RSA, KEYPAIR_RSA_STR, value, file, CLASS_KEYPAIR_RSA_P2, answ) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_KEYPAIR_RSA, Consts.KEYPAIR_RSA_STR, value, file, Consts.CLASS_KEYPAIR_RSA_P2, answ) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.KeyPair RSA fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
 
             // Class javacard.security.KeyPair RSA_CRT
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_KEYPAIR_RSA_CRT, KEYPAIR_RSACRT_STR, value, file, CLASS_KEYPAIR_RSACRT_P2, answ) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_KEYPAIR_RSA_CRT, Consts.KEYPAIR_RSACRT_STR, value, file, Consts.CLASS_KEYPAIR_RSACRT_P2, answ) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.KeyPair RSA_CRT fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
 
             // Class javacard.security.KeyPair DSA
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_KEYPAIR_DSA, KEYPAIR_DSA_STR, value, file, CLASS_KEYPAIR_DSA_P2, answ) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_KEYPAIR_DSA, Consts.KEYPAIR_DSA_STR, value, file, Consts.CLASS_KEYPAIR_DSA_P2, answ) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.KeyPair DSA fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
 
             // Class javacard.security.KeyPair EC_F2M
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_KEYPAIR_EC_F2M, KEYPAIR_EC_F2M_STR, value, file,  CLASS_KEYPAIR_EC_F2M_P2, answ) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_KEYPAIR_EC_F2M, Consts.KEYPAIR_EC_F2M_STR, value, file,  Consts.CLASS_KEYPAIR_EC_F2M_P2, answ) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.KeyPair EC_F2M fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
 
             // Class javacard.security.KeyPair EC_FP
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_KEYPAIR_EC_FP, KEYPAIR_EC_FP_STR, value, file, CLASS_KEYPAIR_EC_FP_P2, answ) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_KEYPAIR_EC_FP, Consts.KEYPAIR_EC_FP_STR, value, file, Consts.CLASS_KEYPAIR_EC_FP_P2, answ) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.KeyPair EC_FP fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
 
             // Class javacard.security.KeyAgreement
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_KEYAGREEMENT, KEYAGREEMENT_STR, value, file, (byte) 0, answ) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_KEYAGREEMENT, Consts.KEYAGREEMENT_STR, value, file, (byte) 0, answ) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.KeyAgreement fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
 
             // Class javacard.security.Checksum
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_CHECKSUM, CHECKSUM_STR, value, file, (byte) 0, answ) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_CHECKSUM, Consts.CHECKSUM_STR, value, file, (byte) 0, answ) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.Checksum fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
             
@@ -1103,7 +785,7 @@ public class CardMngr {
         int         status = STAT_OK;
         
         byte apdu[] = new byte[HEADER_LENGTH];
-        apdu[OFFSET_CLA] = (byte) 0xB0;
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
         apdu[OFFSET_INS] = (byte) 0x72;
         apdu[OFFSET_P1] = 0x00;
         apdu[OFFSET_P2] = 0x00;
@@ -1199,7 +881,7 @@ public class CardMngr {
                 elapsedCard = -System.currentTimeMillis();
 
                 byte apdu[] = new byte[HEADER_LENGTH];
-                apdu[OFFSET_CLA] = (byte) 0xB0;
+                apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
                 apdu[OFFSET_INS] = (byte) 0x70;
                 apdu[OFFSET_P1] = algClass;
                 apdu[OFFSET_P2] = p2;
@@ -1301,6 +983,72 @@ public class CardMngr {
 
         return status;
     }
+    
+    private boolean resetApplet(byte cla, byte ins) 
+    {
+        try
+        {
+            System.out.println("\nReseting card...");
+            byte apdu[] = {cla,ins,0,0};
+            ResponseAPDU resp = sendAPDU(apdu);
+            if (resp.getSW() != 0x9000)
+            {
+                return false;
+            }
+            return true;
+        }
+        catch(Exception e)
+        {
+            return false;
+        }
+        
+    }    
+    public double BasicTest(byte algClass, byte alg, byte p1, byte p2, byte[] cdata, byte dataLength, byte resetIns) throws Exception
+    {
+        long elapsedCard;
+        byte apdu[] = new byte[HEADER_LENGTH + dataLength];
+                apdu[OFFSET_CLA] = (byte) algClass;
+                apdu[OFFSET_INS] = (byte) alg;
+                apdu[OFFSET_P1] = p1;
+                apdu[OFFSET_P2] = p2;
+                apdu[OFFSET_LC] = dataLength;
+        System.arraycopy(cdata, 0, apdu, OFFSET_DATA, dataLength);
+        elapsedCard = -System.currentTimeMillis();
+        ResponseAPDU resp = sendAPDU(apdu);
+        if (resp.getSW() != 0x9000) 
+        {           
+            boolean succes = resetApplet(algClass, resetIns);
+            if (succes)
+            {
+                elapsedCard = -System.currentTimeMillis();
+                resp = sendAPDU(apdu);
+                elapsedCard += System.currentTimeMillis();
+                if (resp.getNr()!=0)
+                {
+                    byte data[];
+                    data = resp.getData();          
+                    if(data[0] != SUCCESS) throw new CardCommunicationException(data[0]);
+                }                
+            }
+            else
+            {
+                System.out.println("Reset applet didn't work, speed of algorithm couldn't be mesured");
+                throw new CardCommunicationException(CANT_BE_MEASURED);
+            }
+        }
+        else
+        {
+            elapsedCard += System.currentTimeMillis();
+            if (resp.getNr()!=0)
+            {
+                byte data[];
+                data = resp.getData();          
+                if(data[0] != SUCCESS) throw new CardCommunicationException(data[0]);
+            }            
+        }
+        return (double) elapsedCard ;
+    }       
+    
     
     /**
      * Sets up simulator using jCardSim API.

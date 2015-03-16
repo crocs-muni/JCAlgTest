@@ -43,7 +43,18 @@ import javax.smartcardio.ResponseAPDU;
  * @author lukas.srom
  */
 public class PerformanceTesting {
-    /* Argument constants for choosing algorithm to test. */
+/*
+    final static byte CLA_CARD_ALGTEST                  = CLA_CARD_ALGTEST;
+    
+    final static byte INS_CARD_GETVERSION               = (byte) 0x60;
+    final static byte Consts.INS_CARD_RESET                    = (byte) 0x69;
+    
+    final static byte INS_CARD_PERF_TEST_CLASS_KEY      = (byte) 0x40;
+*/    
+    
+    
+    
+    // Argument constants for choosing algorithm to test. 
     public static final String TEST_ALL_ALGORITHMS = "ALL_ALGS";
     
     public static final String TEST_EEPROM = "EEPROM";
@@ -55,6 +66,10 @@ public class PerformanceTesting {
     
     public StringBuilder value = new StringBuilder();
     public String message = "";
+    
+    public static final byte mask = 0b01111111;
+    static FileOutputStream file;
+    
     
     /**
      * Calls methods testing card performance.
@@ -205,7 +220,7 @@ public class PerformanceTesting {
 
         // Prepare test memory apdu
         byte apdu[] = new byte[cardManager.HEADER_LENGTH];
-        apdu[cardManager.OFFSET_CLA] = (byte) 0xB0;
+        apdu[cardManager.OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
         apdu[cardManager.OFFSET_INS] = (byte) 0x71;
         apdu[cardManager.OFFSET_P1] = 0x00;
         apdu[cardManager.OFFSET_P2] = 0x00;
@@ -250,7 +265,7 @@ public class PerformanceTesting {
 
         // Prepare test memory apdu
         byte apdu[] = new byte[cardManager.HEADER_LENGTH];
-        apdu[cardManager.OFFSET_CLA] = (byte) 0xB0;
+        apdu[cardManager.OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
         apdu[cardManager.OFFSET_INS] = (byte) 0x71;
         apdu[cardManager.OFFSET_P1] = 0x01;
         apdu[cardManager.OFFSET_P2] = 0x00;
@@ -336,7 +351,7 @@ public class PerformanceTesting {
         int         status = cardManager.STAT_OK;
         
         byte apdu[] = new byte[cardManager.HEADER_LENGTH];
-        apdu[cardManager.OFFSET_CLA] = (byte) 0xB0;
+        apdu[cardManager.OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
         apdu[cardManager.OFFSET_INS] = (byte) 0x72;
         apdu[cardManager.OFFSET_P1] = 0x00;
         apdu[cardManager.OFFSET_P2] = 0x00;
@@ -371,7 +386,7 @@ public class PerformanceTesting {
         int         status = cardManager.STAT_OK;
         
         byte apdu[] = new byte[cardManager.HEADER_LENGTH + 2 + cardManager.EXTENDED_APDU_TEST_LENGTH]; // + 2 is because of encoding of LC length into three bytes total
-        apdu[cardManager.OFFSET_CLA] = (byte) 0xB0;
+        apdu[cardManager.OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
         apdu[cardManager.OFFSET_INS] = (byte) 0x74;
         apdu[cardManager.OFFSET_P1] = 0x00;
         apdu[cardManager.OFFSET_P2] = 0x00;
@@ -409,4 +424,668 @@ public class PerformanceTesting {
 
         return status;
     }
+
+    
+        
+    
+    private static void testKeyPair(byte alg, int length, String info, int round, boolean fast) throws IOException
+    {
+        int max = 500;
+        if (fast) {max = 10; round = 0;}
+        double time;
+        String timeStr;
+        String message = info + " " + round + "\n"; System.out.println(info);
+        byte[] cdata = new byte[2];
+        cdata[1] = (byte) (length & mask);
+        int pom = length >> 7;
+        cdata[0] = (byte) (pom & mask);
+        try
+        {            
+            cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_KEY_PAIR,alg,(byte)0,cdata,(byte) 2, Consts.INS_CARD_RESET);
+            for(int i = 0;i<max;i++)
+            {
+                time = cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_TEST_KEY_PAIR,alg, (byte)0, cdata, (byte) 2, Consts.INS_CARD_RESET);
+                timeStr = String.format("%1f", time);
+                message +=  timeStr + " " ;
+                System.out.print(timeStr + " ");
+            }
+            System.out.println();      
+        }
+        catch (CardCommunicationException ex) 
+        {
+            message += ex.toString();
+            System.out.println(ex.toString()); 
+        }
+        catch (Exception ex) 
+        {
+            System.out.println("Exception: " + ex);
+        }
+        System.out.println(); message += "\n";
+        file.write(message.getBytes());
+    }
+    private static void testAllKeyPairs(boolean fast) throws IOException
+    {
+        String tableName = "KEY PAIR\n";
+        file.write(tableName.getBytes());
+        testKeyPair(Consts.ALG_RSA,Consts.LENGTH_RSA_512,"ALG_RSA LENGTH_RSA_512",50,fast);
+        testKeyPair(Consts.ALG_RSA,Consts.LENGTH_RSA_736,"ALG_RSA LENGTH_RSA_736",100,fast);
+        testKeyPair(Consts.ALG_RSA,Consts.LENGTH_RSA_768,"ALG_RSA LENGTH_RSA_768",100,fast);
+        testKeyPair(Consts.ALG_RSA,Consts.LENGTH_RSA_896,"ALG_RSA LENGTH_RSA_896",120,fast);
+        testKeyPair(Consts.ALG_RSA,Consts.LENGTH_RSA_1024,"ALG_RSA LENGTH_RSA_1024",150,fast);
+        testKeyPair(Consts.ALG_RSA,Consts.LENGTH_RSA_1280,"ALG_RSA LENGTH_RSA_1280",250,fast);
+        testKeyPair(Consts.ALG_RSA,Consts.LENGTH_RSA_1536,"ALG_RSA LENGTH_RSA_1536",300,fast);
+        testKeyPair(Consts.ALG_RSA,Consts.LENGTH_RSA_1984,"ALG_RSA LENGTH_RSA_1984",500,fast);
+        testKeyPair(Consts.ALG_RSA,Consts.LENGTH_RSA_2048,"ALG_RSA LENGTH_RSA_2048",500,fast);
+        testKeyPair(Consts.ALG_RSA,Consts.LENGTH_RSA_3072,"ALG_RSA LENGTH_RSA_3072",500,fast);        
+        testKeyPair(Consts.ALG_RSA,Consts.LENGTH_RSA_4096,"ALG_RSA LENGTH_RSA_4096",500,fast);        
+        testKeyPair(Consts.ALG_RSA_CRT,Consts.LENGTH_RSA_512,"ALG_RSA_CRT LENGTH_RSA_512",50,fast);
+        testKeyPair(Consts.ALG_RSA_CRT,Consts.LENGTH_RSA_736,"ALG_RSA_CRT LENGTH_RSA_736",100,fast);
+        testKeyPair(Consts.ALG_RSA_CRT,Consts.LENGTH_RSA_768,"ALG_RSA_CRT LENGTH_RSA_768",100,fast);
+        testKeyPair(Consts.ALG_RSA_CRT,Consts.LENGTH_RSA_896,"ALG_RSA_CRT LENGTH_RSA_896",120,fast);
+        testKeyPair(Consts.ALG_RSA_CRT,Consts.LENGTH_RSA_1024,"ALG_RSA_CRT LENGTH_RSA_1024",150,fast);
+        testKeyPair(Consts.ALG_RSA_CRT,Consts.LENGTH_RSA_1280,"ALG_RSA_CRT LENGTH_RSA_1280",250,fast);
+        testKeyPair(Consts.ALG_RSA_CRT,Consts.LENGTH_RSA_1536,"ALG_RSA_CRT LENGTH_RSA_1536",300,fast);
+        testKeyPair(Consts.ALG_RSA_CRT,Consts.LENGTH_RSA_1984,"ALG_RSA_CRT LENGTH_RSA_1984",500,fast);
+        testKeyPair(Consts.ALG_RSA_CRT,Consts.LENGTH_RSA_2048,"ALG_RSA_CRT LENGTH_RSA_2048",500,fast);
+        testKeyPair(Consts.ALG_RSA_CRT,Consts.LENGTH_RSA_3072,"ALG_RSA_CRT LENGTH_RSA_3072",500,fast);        
+        testKeyPair(Consts.ALG_RSA_CRT,Consts.LENGTH_RSA_4096,"ALG_RSA_CRT LENGTH_RSA_4096",500,fast);        
+        testKeyPair(Consts.ALG_DSA,Consts.LENGTH_DSA_512,"ALG_DSA LENGTH_DSA_512",100,fast);
+        testKeyPair(Consts.ALG_DSA,Consts.LENGTH_DSA_768,"ALG_DSA LENGTH_DSA_768",100,fast);
+        testKeyPair(Consts.ALG_DSA,Consts.LENGTH_DSA_1024,"ALG_DSA LENGTH_DSA_1024",100,fast);        
+        testKeyPair(Consts.ALG_EC_F2M,Consts.LENGTH_EC_F2M_113,"ALG_EC_F2M LENGTH_EC_F2M_113",20,fast);
+        testKeyPair(Consts.ALG_EC_F2M,Consts.LENGTH_EC_F2M_131,"ALG_EC_F2M LENGTH_EC_F2M_131",20,fast);    
+        testKeyPair(Consts.ALG_EC_F2M,Consts.LENGTH_EC_F2M_163,"ALG_EC_F2M LENGTH_EC_F2M_163",20,fast);    
+        testKeyPair(Consts.ALG_EC_F2M,Consts.LENGTH_EC_F2M_193,"ALG_EC_F2M LENGTH_EC_F2M_193",20,fast);    
+        testKeyPair(Consts.ALG_EC_FP,Consts.LENGTH_EC_FP_112,"ALG_EC_FP LENGTH_EC_FP_112",5,fast);
+        testKeyPair(Consts.ALG_EC_FP,Consts.LENGTH_EC_FP_128,"ALG_EC_FP LENGTH_EC_FP_128",5,fast);
+        testKeyPair(Consts.ALG_EC_FP,Consts.LENGTH_EC_FP_160,"ALG_EC_FP LENGTH_EC_FP_160",5,fast);
+        testKeyPair(Consts.ALG_EC_FP,Consts.LENGTH_EC_FP_192,"ALG_EC_FP LENGTH_EC_FP_192",5,fast);
+        testKeyPair(Consts.ALG_EC_FP,Consts.LENGTH_EC_FP_224,"ALG_EC_FP LENGTH_EC_FP_224",5,fast);
+        testKeyPair(Consts.ALG_EC_FP,Consts.LENGTH_EC_FP_256,"ALG_EC_FP LENGTH_EC_FP_256",5,fast);
+        testKeyPair(Consts.ALG_EC_FP,Consts.LENGTH_EC_FP_384,"ALG_EC_FP LENGTH_EC_FP_384",5,fast);
+        testKeyPair(Consts.ALG_EC_FP,Consts.LENGTH_EC_FP_521,"ALG_EC_FP LENGTH_EC_FP_521",5,fast); 
+        tableName = "KEY PAIR - END\n";
+        file.write(tableName.getBytes());
+    }
+    private static void testMessageDigest(byte alg, String info) throws IOException
+    {
+        String message = info; System.out.print(info);
+        byte count = 40; 
+        int cycle = 5;
+        double time1;
+        double time2;
+        double time;
+        String timeStr;
+        int maxLength = 150;
+        int step = 2;
+        message += " " + step + "\n"; System.out.println(" " + step);
+        byte[] cdata = new byte[2];
+        try
+        {
+            cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_MESSAGE_DIGEST,alg, (byte) 0, cdata, (byte) 0, Consts.INS_CARD_RESET); 
+            for (int i = step;i<maxLength;i+=step)
+            {            
+                cdata[1] = (byte) (i & mask);
+                int pom = i >> 7;
+                cdata[0] = (byte) (pom & mask);
+                double dia = 0;            
+                System.out.print("(");
+                for (int j = 0;j<cycle;j++)
+                {
+                    time1 = cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_TEST_MESSAGE_DIGEST,alg,(byte)(count * 2), cdata, (byte) 2, Consts.INS_CARD_RESET);
+                    time2 = cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_TEST_MESSAGE_DIGEST,alg, count, cdata, (byte) 2, Consts.INS_CARD_RESET);
+                    time = time1-time2;
+                    time = time/count;
+                    dia+= time;
+                    timeStr = String.format("%1f", time);
+                    System.out.print(timeStr + ",");
+                }
+                System.out.print(")");
+                dia = dia/cycle;
+                timeStr = String.format("%1f", dia);
+                message +=   timeStr + " "; System.out.print(" " + i + "B=" + timeStr);            
+            }
+        }
+        catch(CardCommunicationException ex)
+        {
+            message += ex.toString();
+            System.out.println(ex.toString()); 
+        }
+        catch(Exception ex)
+        {
+            System.out.println("Exception: " + ex);
+        }
+        System.out.println(); message += "\n";        
+        file.write(message.getBytes());        
+    }
+    private static void testAllMessageDigests()throws IOException
+    {
+        String tableName = "MESSAGE DIGEST\n";
+        file.write(tableName.getBytes());
+        testMessageDigest(Consts.ALG_SHA,"ALG_SHA");
+        testMessageDigest(Consts.ALG_MD5,"ALG_MD5");
+        testMessageDigest(Consts.ALG_RIPEMD160,"ALG_RIPEMD160");
+        testMessageDigest(Consts.ALG_SHA_256,"ALG_SHA_256");
+        testMessageDigest(Consts.ALG_SHA_384,"ALG_SHA_384");
+        testMessageDigest(Consts.ALG_SHA_512,"ALG_SHA_512");
+        testMessageDigest(Consts.ALG_SHA_224,"ALG_SHA_224");
+        tableName = "MESSAGE DIGEST - END\n";
+        file.write(tableName.getBytes());
+    }
+    private static void testRandomGenerator(byte alg, String info) throws IOException
+    {
+        byte count = 30;
+        double time;
+        double time1;
+        double time2;
+        String timeStr;
+        int seedCount = 3;
+        int seedStep = 30;
+        int step = 10;
+        int maxLength = 500;
+        int cycle = 5;
+        byte[] cdata = new byte[4];
+        String message = info + " " + step + " " + seedStep + " " + seedCount + "\n"; System.out.println(info);
+        try
+        {
+            cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_RANDOM_DATA,alg, (byte)0, cdata, (byte) 0, Consts.INS_CARD_RESET);
+            for(int seed = 0;seed<seedCount*seedStep+1;seed+=seedStep)
+            {            
+                if (seed == 0) System.out.print("NOSEED ");
+                else System.out.print("SEED=" + seed + " ");
+                for (int length = step;length<maxLength;length+=step)
+                {
+                    cdata[1] = (byte) (seed & mask);
+                    int pom = seed >> 7;
+                    cdata[0] = (byte) (pom & mask);
+                    cdata[3] = (byte) (length & mask);
+                    pom = length >> 7;
+                    cdata[2] = (byte) (pom & mask);
+                    double dia = 0;
+                    System.out.print("(");
+                    for (int j = 0;j<cycle;j++)
+                    {
+                        time1 = cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_TEST_RANDOM_DATA,alg, (byte)(count * 2), cdata, (byte) 4, Consts.INS_CARD_RESET);
+                        time2 = cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_TEST_RANDOM_DATA,alg, count, cdata, (byte) 4, Consts.INS_CARD_RESET);
+                        time = time1-time2;
+                        time = time/count;
+                        dia+= time;
+                        timeStr = String.format("%1f", time);
+                        System.out.print(timeStr + ",");
+                    }
+                    System.out.print(")");
+                    dia = dia/cycle;
+                    timeStr = String.format("%1f", dia);
+                    message += timeStr + " ";
+                    System.out.print(" " + length + "B=" + timeStr);
+                }                           
+            }
+        }
+        catch(CardCommunicationException ex)
+        {
+            message += ex.toString();
+            System.out.println(ex.toString());                 
+        }
+        catch(Exception ex)
+        {
+            System.out.println("Exception: " + ex);
+        }
+        System.out.println(); message += "\n"; 
+        file.write(message.getBytes());
+    }    
+    private static void testAllRandomGenerators() throws IOException
+    {
+        String tableName = "RANDOM GENERATOR\n";
+        file.write(tableName.getBytes());
+        testRandomGenerator(Consts.ALG_PSEUDO_RANDOM,"ALG_PSEUDO_RANDOM");
+        testRandomGenerator(Consts.ALG_SECURE_RANDOM,"ALG_SECURE_RANDOM");     
+        tableName = "RANDOM GENERATOR - END\n";
+        file.write(tableName.getBytes());
+    }    
+    private static void testCipher(byte key, int keyLength, byte alg, String info, int step, int max) throws IOException
+    {
+        byte count = 30;
+        int cycle = 5;
+        double time1;
+        double time2;
+        double time;
+        String timeStr;  
+        byte[] cdata = new byte[2];
+        String message = info + " " + step + "\n";System.out.println(info);
+        try
+        {
+            cdata[1] = (byte) (keyLength & mask);
+            int pom = keyLength >> 7;
+            cdata[0] = (byte) (pom & mask);
+            cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_KEY,key, alg, cdata, (byte) 2, Consts.INS_CARD_RESET);
+            for(int length = step;length<max;length+=step)
+            {                
+                double dia = 0;
+                cdata[1] = (byte) (length & mask);
+                pom = length >> 7;
+                cdata[0] = (byte) (pom & mask);
+                System.out.print("(");
+                for (int j = 0;j<cycle;j++)
+                {
+                    time1 = cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_TEST_CIPHER,(byte)alg, (byte)(count * 2), cdata, (byte) 2, Consts.INS_CARD_RESET);
+                    time2 = cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_TEST_CIPHER,(byte)alg, count, cdata, (byte) 2, Consts.INS_CARD_RESET);
+                    time = time1-time2;
+                    time = time/count;
+                    timeStr = String.format("%1f", time);
+                    System.out.print(timeStr + ",");
+                    dia+=time;
+                }
+                System.out.print(")");
+                dia = dia/cycle;
+                timeStr = String.format("%1f", dia);
+                message += timeStr +" "; System.out.print(length + "B=" + timeStr +" ");
+            }
+        }
+        catch(CardCommunicationException ex)
+        {
+            message += ex.toString();
+            System.out.println(ex.toString()); 
+        }
+        catch(Exception ex)
+        {
+            System.out.println("Exception: " + ex);
+        }
+        message += "\n"; System.out.println("\n");
+        file.write(message.getBytes());
+        
+    }
+    private static void testAllCiphers() throws IOException
+    {
+        String tableName = "CIPHER\n";
+        file.write(tableName.getBytes());
+        testCipher(Consts.TYPE_DES, Consts.LENGTH_DES,Consts.ALG_DES_CBC_NOPAD,"TYPE_DES LENGTH_DES ALG_DES_CBC_NOPAD",8,200);
+        testCipher(Consts.TYPE_DES, Consts.LENGTH_DES,Consts.ALG_DES_CBC_ISO9797_M1,"TYPE_DES LENGTH_DES ALG_DES_CBC_ISO9797_M1",2,100);
+        testCipher(Consts.TYPE_DES, Consts.LENGTH_DES,Consts.ALG_DES_CBC_ISO9797_M2,"TYPE_DES LENGTH_DES ALG_DES_CBC_ISO9797_M2",2,100);
+        testCipher(Consts.TYPE_DES, Consts.LENGTH_DES,Consts.ALG_DES_CBC_PKCS5,"TYPE_DES LENGTH_DES ALG_DES_CBC_PKCS5",2,100);
+        testCipher(Consts.TYPE_DES, Consts.LENGTH_DES,Consts.ALG_DES_ECB_NOPAD,"TYPE_DES LENGTH_DES ALG_DES_ECB_NOPAD",8,200);
+        testCipher(Consts.TYPE_DES, Consts.LENGTH_DES,Consts.ALG_DES_ECB_ISO9797_M1,"TYPE_DES LENGTH_DES ALG_DES_ECB_ISO9797_M1",2,100);
+        testCipher(Consts.TYPE_DES, Consts.LENGTH_DES,Consts.ALG_DES_ECB_ISO9797_M2,"TYPE_DES LENGTH_DES ALG_DES_ECB_ISO9797_M2",2,100);
+        testCipher(Consts.TYPE_DES, Consts.LENGTH_DES,Consts.ALG_DES_ECB_PKCS5,"TYPE_DES LENGTH_DES ALG_DES_ECB_PKCS5",2,100); 
+        testCipher(Consts.TYPE_DES, Consts.LENGTH_DES3_2KEY,Consts.ALG_DES_CBC_NOPAD,"TYPE_DES LENGTH_DES3_2KEY ALG_DES_CBC_NOPAD",8,200);
+        testCipher(Consts.TYPE_DES, Consts.LENGTH_DES3_2KEY,Consts.ALG_DES_CBC_ISO9797_M1,"TYPE_DES LENGTH_DES3_2KEY ALG_DES_CBC_ISO9797_M1",2,100);
+        testCipher(Consts.TYPE_DES, Consts.LENGTH_DES3_2KEY,Consts.ALG_DES_CBC_ISO9797_M2,"TYPE_DES LENGTH_DES3_2KEY ALG_DES_CBC_ISO9797_M2",2,100);
+        testCipher(Consts.TYPE_DES, Consts.LENGTH_DES3_2KEY,Consts.ALG_DES_CBC_PKCS5,"TYPE_DES LENGTH_DES3_2KEY ALG_DES_CBC_PKCS5",2,100);
+        testCipher(Consts.TYPE_DES, Consts.LENGTH_DES3_2KEY,Consts.ALG_DES_ECB_NOPAD,"TYPE_DES LENGTH_DES3_2KEY ALG_DES_ECB_NOPAD",8,200);
+        testCipher(Consts.TYPE_DES, Consts.LENGTH_DES3_2KEY,Consts.ALG_DES_ECB_ISO9797_M1,"TYPE_DES LENGTH_DES3_2KEY ALG_DES_ECB_ISO9797_M1",2,100);
+        testCipher(Consts.TYPE_DES, Consts.LENGTH_DES3_2KEY,Consts.ALG_DES_ECB_ISO9797_M2,"TYPE_DES LENGTH_DES3_2KEY ALG_DES_ECB_ISO9797_M2",2,100);
+        testCipher(Consts.TYPE_DES, Consts.LENGTH_DES3_2KEY,Consts.ALG_DES_ECB_PKCS5,"TYPE_DES LENGTH_DES3_2KEY ALG_DES_ECB_PKCS5",2,100);
+        testCipher(Consts.TYPE_DES, Consts.LENGTH_DES3_3KEY,Consts.ALG_DES_CBC_NOPAD,"TYPE_DES LENGTH_DES3_3KEY ALG_DES_CBC_NOPAD",8,200);
+        testCipher(Consts.TYPE_DES, Consts.LENGTH_DES3_3KEY,Consts.ALG_DES_CBC_ISO9797_M1,"TYPE_DES LENGTH_DES3_3KEY ALG_DES_CBC_ISO9797_M1",2,100);
+        testCipher(Consts.TYPE_DES, Consts.LENGTH_DES3_3KEY,Consts.ALG_DES_CBC_ISO9797_M2,"TYPE_DES LENGTH_DES3_3KEY ALG_DES_CBC_ISO9797_M2",2,100);
+        testCipher(Consts.TYPE_DES, Consts.LENGTH_DES3_3KEY,Consts.ALG_DES_CBC_PKCS5,"TYPE_DES LENGTH_DES3_3KEY ALG_DES_CBC_PKCS5",2,100);
+        testCipher(Consts.TYPE_DES, Consts.LENGTH_DES3_3KEY,Consts.ALG_DES_ECB_NOPAD,"TYPE_DES LENGTH_DES3_3KEY ALG_DES_ECB_NOPAD",8,200);
+        testCipher(Consts.TYPE_DES, Consts.LENGTH_DES3_3KEY,Consts.ALG_DES_ECB_ISO9797_M1,"TYPE_DES LENGTH_DES3_3KEY ALG_DES_ECB_ISO9797_M1",2,100);
+        testCipher(Consts.TYPE_DES, Consts.LENGTH_DES3_3KEY,Consts.ALG_DES_ECB_ISO9797_M2,"TYPE_DES LENGTH_DES3_3KEY ALG_DES_ECB_ISO9797_M2",2,100);
+        testCipher(Consts.TYPE_DES, Consts.LENGTH_DES3_3KEY,Consts.ALG_DES_ECB_PKCS5,"TYPE_DES LENGTH_DES3_3KEY ALG_DES_ECB_PKCS5",2,100); 
+        
+        testCipher(Consts.TYPE_AES, Consts.LENGTH_AES_128,Consts.ALG_AES_BLOCK_128_CBC_NOPAD,"TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_128_CBC_NOPAD",16,200);
+        testCipher(Consts.TYPE_AES, Consts.LENGTH_AES_128,Consts.ALG_AES_BLOCK_128_ECB_NOPAD,"TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_128_ECB_NOPAD",16,200);
+        testCipher(Consts.TYPE_AES, Consts.LENGTH_AES_128,Consts.ALG_AES_BLOCK_192_CBC_NOPAD,"TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_192_CBC_NOPAD",24,200);
+        testCipher(Consts.TYPE_AES, Consts.LENGTH_AES_128,Consts.ALG_AES_BLOCK_192_ECB_NOPAD,"TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_192_ECB_NOPAD",24,200);
+        testCipher(Consts.TYPE_AES, Consts.LENGTH_AES_128,Consts.ALG_AES_BLOCK_256_CBC_NOPAD,"TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_256_CBC_NOPAD",32,200);
+        testCipher(Consts.TYPE_AES, Consts.LENGTH_AES_128,Consts.ALG_AES_BLOCK_256_ECB_NOPAD,"TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_256_ECB_NOPAD",32,200);
+        testCipher(Consts.TYPE_AES, Consts.LENGTH_AES_128,Consts.ALG_AES_CBC_ISO9797_M1,"TYPE_AES LENGTH_AES_128 ALG_AES_CBC_ISO9797_M1",2,100);
+        testCipher(Consts.TYPE_AES, Consts.LENGTH_AES_128,Consts.ALG_AES_CBC_ISO9797_M2,"TYPE_AES LENGTH_AES_128 ALG_AES_CBC_ISO9797_M2",2,100);
+        testCipher(Consts.TYPE_AES, Consts.LENGTH_AES_128,Consts.ALG_AES_CBC_PKCS5,"TYPE_AES LENGTH_AES_128 ALG_AES_CBC_PKCS5",2,100);
+        testCipher(Consts.TYPE_AES, Consts.LENGTH_AES_128,Consts.ALG_AES_ECB_ISO9797_M1,"TYPE_AES LENGTH_AES_128 ALG_AES_ECB_ISO9797_M1",2,100);
+        testCipher(Consts.TYPE_AES, Consts.LENGTH_AES_128,Consts.ALG_AES_ECB_ISO9797_M2,"TYPE_AES LENGTH_AES_128 ALG_AES_ECB_ISO9797_M2",2,100);
+        testCipher(Consts.TYPE_AES, Consts.LENGTH_AES_128,Consts.ALG_AES_ECB_PKCS5,"TYPE_AES LENGTH_AES_128 ALG_AES_ECB_PKCS5",2,100); 
+        testCipher(Consts.TYPE_AES, Consts.LENGTH_AES_192,Consts.ALG_AES_BLOCK_128_CBC_NOPAD,"TYPE_AES LENGTH_AES_192 ALG_AES_BLOCK_128_CBC_NOPAD",16,200);
+        testCipher(Consts.TYPE_AES, Consts.LENGTH_AES_192,Consts.ALG_AES_BLOCK_128_ECB_NOPAD,"TYPE_AES LENGTH_AES_192 ALG_AES_BLOCK_128_ECB_NOPAD",16,200);
+        testCipher(Consts.TYPE_AES, Consts.LENGTH_AES_192,Consts.ALG_AES_BLOCK_192_CBC_NOPAD,"TYPE_AES LENGTH_AES_192 ALG_AES_BLOCK_192_CBC_NOPAD",24,200);
+        testCipher(Consts.TYPE_AES, Consts.LENGTH_AES_192,Consts.ALG_AES_BLOCK_192_ECB_NOPAD,"TYPE_AES LENGTH_AES_192 ALG_AES_BLOCK_192_ECB_NOPAD",24,200);
+        testCipher(Consts.TYPE_AES, Consts.LENGTH_AES_192,Consts.ALG_AES_BLOCK_256_CBC_NOPAD,"TYPE_AES LENGTH_AES_192 ALG_AES_BLOCK_256_CBC_NOPAD",32,200);
+        testCipher(Consts.TYPE_AES, Consts.LENGTH_AES_192,Consts.ALG_AES_BLOCK_256_ECB_NOPAD,"TYPE_AES LENGTH_AES_192 ALG_AES_BLOCK_256_ECB_NOPAD",32,200);
+        testCipher(Consts.TYPE_AES, Consts.LENGTH_AES_192,Consts.ALG_AES_CBC_ISO9797_M1,"TYPE_AES LENGTH_AES_192 ALG_AES_CBC_ISO9797_M1",2,100);
+        testCipher(Consts.TYPE_AES, Consts.LENGTH_AES_192,Consts.ALG_AES_CBC_ISO9797_M2,"TYPE_AES LENGTH_AES_192 ALG_AES_CBC_ISO9797_M2",2,100);
+        testCipher(Consts.TYPE_AES, Consts.LENGTH_AES_192,Consts.ALG_AES_CBC_PKCS5,"TYPE_AES LENGTH_AES_192 ALG_AES_CBC_PKCS5",2,100);
+        testCipher(Consts.TYPE_AES, Consts.LENGTH_AES_192,Consts.ALG_AES_ECB_ISO9797_M1,"TYPE_AES LENGTH_AES_192 ALG_AES_ECB_ISO9797_M1",2,100);
+        testCipher(Consts.TYPE_AES, Consts.LENGTH_AES_192,Consts.ALG_AES_ECB_ISO9797_M2,"TYPE_AES LENGTH_AES_192 ALG_AES_ECB_ISO9797_M2",2,100);
+        testCipher(Consts.TYPE_AES, Consts.LENGTH_AES_192,Consts.ALG_AES_ECB_PKCS5,"TYPE_AES LENGTH_AES_192 ALG_AES_ECB_PKCS5",2,100); 
+        testCipher(Consts.TYPE_AES, Consts.LENGTH_AES_256,Consts.ALG_AES_BLOCK_128_CBC_NOPAD,"TYPE_AES LENGTH_AES_256 ALG_AES_BLOCK_128_CBC_NOPAD",16,200);
+        testCipher(Consts.TYPE_AES, Consts.LENGTH_AES_256,Consts.ALG_AES_BLOCK_128_ECB_NOPAD,"TYPE_AES LENGTH_AES_256 ALG_AES_BLOCK_128_ECB_NOPAD",16,200);
+        testCipher(Consts.TYPE_AES, Consts.LENGTH_AES_256,Consts.ALG_AES_BLOCK_192_CBC_NOPAD,"TYPE_AES LENGTH_AES_256 ALG_AES_BLOCK_192_CBC_NOPAD",24,200);
+        testCipher(Consts.TYPE_AES, Consts.LENGTH_AES_256,Consts.ALG_AES_BLOCK_192_ECB_NOPAD,"TYPE_AES LENGTH_AES_256 ALG_AES_BLOCK_192_ECB_NOPAD",24,200);
+        testCipher(Consts.TYPE_AES, Consts.LENGTH_AES_256,Consts.ALG_AES_BLOCK_256_CBC_NOPAD,"TYPE_AES LENGTH_AES_256 ALG_AES_BLOCK_256_CBC_NOPAD",32,200);
+        testCipher(Consts.TYPE_AES, Consts.LENGTH_AES_256,Consts.ALG_AES_BLOCK_256_ECB_NOPAD,"TYPE_AES LENGTH_AES_256 ALG_AES_BLOCK_256_ECB_NOPAD",32,200);
+        testCipher(Consts.TYPE_AES, Consts.LENGTH_AES_256,Consts.ALG_AES_CBC_ISO9797_M1,"TYPE_AES LENGTH_AES_256 ALG_AES_CBC_ISO9797_M1",2,100);
+        testCipher(Consts.TYPE_AES, Consts.LENGTH_AES_256,Consts.ALG_AES_CBC_ISO9797_M2,"TYPE_AES LENGTH_AES_256 ALG_AES_CBC_ISO9797_M2",2,100);
+        testCipher(Consts.TYPE_AES, Consts.LENGTH_AES_256,Consts.ALG_AES_CBC_PKCS5,"TYPE_AES LENGTH_AES_256 ALG_AES_CBC_PKCS5",2,100);
+        testCipher(Consts.TYPE_AES, Consts.LENGTH_AES_256,Consts.ALG_AES_ECB_ISO9797_M1,"TYPE_AES LENGTH_AES_256 ALG_AES_ECB_ISO9797_M1",2,100);
+        testCipher(Consts.TYPE_AES, Consts.LENGTH_AES_256,Consts.ALG_AES_ECB_ISO9797_M2,"TYPE_AES LENGTH_AES_256 ALG_AES_ECB_ISO9797_M2",2,100);
+        testCipher(Consts.TYPE_AES, Consts.LENGTH_AES_256,Consts.ALG_AES_ECB_PKCS5,"TYPE_AES LENGTH_AES_256 ALG_AES_ECB_PKCS5",2,100); 
+        
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_512,Consts.ALG_RSA_ISO14888,"ALG_RSA LENGTH_RSA_512 ALG_RSA_ISO14888",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_512,Consts.ALG_RSA_ISO9796,"ALG_RSA LENGTH_RSA_512 ALG_RSA_ISO9796",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_512,Consts.ALG_RSA_NOPAD,"ALG_RSA LENGTH_RSA_512 ALG_RSA_NOPAD",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_512,Consts.ALG_RSA_PKCS1,"ALG_RSA LENGTH_RSA_512 ALG_RSA_PKCS1",2,54);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_512,Consts.ALG_RSA_PKCS1_OAEP,"ALG_RSA LENGTH_RSA_512 ALG_RSA_PKCS1_OAEP",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_736,Consts.ALG_RSA_ISO14888,"ALG_RSA LENGTH_RSA_736 ALG_RSA_ISO14888",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_736,Consts.ALG_RSA_ISO9796,"ALG_RSA LENGTH_RSA_736 ALG_RSA_ISO9796",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_736,Consts.ALG_RSA_NOPAD,"ALG_RSA LENGTH_RSA_736 ALG_RSA_NOPAD",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_736,Consts.ALG_RSA_PKCS1,"ALG_RSA LENGTH_RSA_736 ALG_RSA_PKCS1",2,82);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_736,Consts.ALG_RSA_PKCS1_OAEP,"ALG_RSA LENGTH_RSA_736 ALG_RSA_PKCS1_OAEP",2,100);
+        
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_768,Consts.ALG_RSA_ISO14888,"ALG_RSA LENGTH_RSA_768 ALG_RSA_ISO14888",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_768,Consts.ALG_RSA_ISO9796,"ALG_RSA LENGTH_RSA_768 ALG_RSA_ISO9796",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_768,Consts.ALG_RSA_NOPAD,"ALG_RSA LENGTH_RSA_768 ALG_RSA_NOPAD",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_768,Consts.ALG_RSA_PKCS1,"ALG_RSA LENGTH_RSA_768 ALG_RSA_PKCS1",2,86);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_768,Consts.ALG_RSA_PKCS1_OAEP,"ALG_RSA LENGTH_RSA_768 ALG_RSA_PKCS1_OAEP",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_896,Consts.ALG_RSA_ISO14888,"ALG_RSA LENGTH_RSA_896 ALG_RSA_ISO14888",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_896,Consts.ALG_RSA_ISO9796,"ALG_RSA LENGTH_RSA_896 ALG_RSA_ISO9796",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_896,Consts.ALG_RSA_NOPAD,"ALG_RSA LENGTH_RSA_896 ALG_RSA_NOPAD",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_896,Consts.ALG_RSA_PKCS1,"ALG_RSA LENGTH_RSA_896 ALG_RSA_PKCS1",2,102);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_896,Consts.ALG_RSA_PKCS1_OAEP,"ALG_RSA LENGTH_RSA_896 ALG_RSA_PKCS1_OAEP",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_1024,Consts.ALG_RSA_ISO14888,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_ISO14888",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_1024,Consts.ALG_RSA_ISO9796,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_ISO9796",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_1024,Consts.ALG_RSA_NOPAD,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_NOPAD",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_1024,Consts.ALG_RSA_PKCS1,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_PKCS1",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_1024,Consts.ALG_RSA_PKCS1_OAEP,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_PKCS1_OAEP",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_1280,Consts.ALG_RSA_ISO14888,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_ISO14888",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_1280,Consts.ALG_RSA_ISO9796,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_ISO9796",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_1280,Consts.ALG_RSA_NOPAD,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_NOPAD",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_1280,Consts.ALG_RSA_PKCS1,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_PKCS1",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_1280,Consts.ALG_RSA_PKCS1_OAEP,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_PKCS1_OAEP",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_1536,Consts.ALG_RSA_ISO14888,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_ISO14888",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_1536,Consts.ALG_RSA_ISO9796,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_ISO9796",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_1536,Consts.ALG_RSA_NOPAD,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_NOPAD",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_1536,Consts.ALG_RSA_PKCS1,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_PKCS1",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_1536,Consts.ALG_RSA_PKCS1_OAEP,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_PKCS1_OAEP",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_1984,Consts.ALG_RSA_ISO14888,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_ISO14888",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_1984,Consts.ALG_RSA_ISO9796,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_ISO9796",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_1984,Consts.ALG_RSA_NOPAD,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_NOPAD",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_1984,Consts.ALG_RSA_PKCS1,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_PKCS1",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_1984,Consts.ALG_RSA_PKCS1_OAEP,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_PKCS1_OAEP",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_2048,Consts.ALG_RSA_ISO14888,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_ISO14888",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_2048,Consts.ALG_RSA_ISO9796,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_ISO9796",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_2048,Consts.ALG_RSA_NOPAD,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_NOPAD",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_2048,Consts.ALG_RSA_PKCS1,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_PKCS1",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_2048,Consts.ALG_RSA_PKCS1_OAEP,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_PKCS1_OAEP",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_3072,Consts.ALG_RSA_ISO14888,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_ISO14888",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_3072,Consts.ALG_RSA_ISO9796,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_ISO9796",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_3072,Consts.ALG_RSA_NOPAD,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_NOPAD",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_3072,Consts.ALG_RSA_PKCS1,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_PKCS1",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_3072,Consts.ALG_RSA_PKCS1_OAEP,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_PKCS1_OAEP",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_4096,Consts.ALG_RSA_ISO14888,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_ISO14888",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_4096,Consts.ALG_RSA_ISO9796,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_ISO9796",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_4096,Consts.ALG_RSA_NOPAD,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_NOPAD",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_4096,Consts.ALG_RSA_PKCS1,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_PKCS1",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_4096,Consts.ALG_RSA_PKCS1_OAEP,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_PKCS1_OAEP",2,100); 
+        tableName = "CIPHER - END\n";
+        file.write(tableName.getBytes());
+    }
+    private static void testSignature(byte key, int keyLength, byte alg, String info, int step, int max) throws IOException
+    {
+        String message;
+        byte count = 30;
+        int cycle = 5;
+        double time1;
+        double time2;
+        double time;
+        String timeStr; 
+        byte[] cdata = new byte[2];
+        message = info + " " + step + "\n";System.out.println(info);
+        cdata[1] = (byte) (keyLength & mask);
+        int pom = keyLength >> 7;
+        cdata[0] = (byte) (pom & mask);
+        try
+        {
+            cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_SIGNATURE,key, alg, cdata, (byte) 2, Consts.INS_CARD_RESET);
+            for(int length = step;length<max;length+=step)
+            {           
+                double dia = 0;
+                cdata[1] = (byte) (length & mask);
+                pom = length >> 7;
+                cdata[0] = (byte) (pom & mask);
+                System.out.print("(");
+                for (int j = 0;j<cycle;j++)
+                {
+                    time1 = cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_TEST_SIGNATURE,(byte)0, (byte)(count * 2), cdata, (byte) 2, Consts.INS_CARD_RESET);
+                    time2 = cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_TEST_SIGNATURE,(byte)0, count, cdata, (byte) 2, Consts.INS_CARD_RESET);
+                    time = time1-time2;
+                    time = time/count;
+                    dia+=time;
+                    timeStr = String.format("%1f", time);
+                    System.out.print(timeStr + ",");
+                }
+                System.out.print(")");
+                dia = dia/cycle;
+                timeStr = String.format("%1f", dia);
+                message += timeStr + " "; System.out.print(length + "B=" + timeStr +" ");
+            } 
+        }
+        catch(CardCommunicationException ex)
+        {
+            message += ex.toString();
+            System.out.println(ex.toString()); 
+        }
+        catch(Exception ex)
+        {
+            System.out.println("Exception: " + ex);
+        }
+        message += "\n"; System.out.println("\n");
+        file.write(message.getBytes());
+    }
+    private static void testAllSignatures() throws IOException
+    {
+        String tableName = "SIGNATURE\n";
+        file.write(tableName.getBytes());
+        testSignature(Consts.TYPE_AES, Consts.LENGTH_AES_128,Consts.ALG_AES_MAC_128_NOPAD,"TYPE_AES LENGTH_AES_128 ALG_AES_MAC_128_NOPAD",16,200);
+        testSignature(Consts.TYPE_AES, Consts.LENGTH_AES_192,Consts.ALG_AES_MAC_128_NOPAD,"TYPE_AES LENGTH_AES_192 ALG_AES_MAC_128_NOPAD",16,200);
+        testSignature(Consts.TYPE_AES, Consts.LENGTH_AES_256,Consts.ALG_AES_MAC_128_NOPAD,"TYPE_AES LENGTH_AES_256 ALG_AES_MAC_128_NOPAD",16,200);
+        testSignature(Consts.TYPE_DES, Consts.LENGTH_DES3_2KEY,Consts.ALG_DES_MAC4_ISO9797_1_M2_ALG3,"TYPE_DES LENGTH_DES3_2KEY ALG_DES_MAC4_ISO9797_1_M2_ALG3",2,100);
+        testSignature(Consts.TYPE_DES, Consts.LENGTH_DES,Consts.ALG_DES_MAC4_ISO9797_M1,"TYPE_DES LENGTH_DES ALG_DES_MAC4_ISO9797_M1",2,100);
+        testSignature(Consts.TYPE_DES, Consts.LENGTH_DES3_2KEY,Consts.ALG_DES_MAC4_ISO9797_M1,"TYPE_DES LENGTH_DES3_2KEY ALG_DES_MAC4_ISO9797_M1",2,100);
+        testSignature(Consts.TYPE_DES, Consts.LENGTH_DES3_3KEY,Consts.ALG_DES_MAC4_ISO9797_M1,"TYPE_DES LENGTH_DES3_3KEY ALG_DES_MAC4_ISO9797_M1",2,100);
+        testSignature(Consts.TYPE_DES, Consts.LENGTH_DES,Consts.ALG_DES_MAC4_ISO9797_M2,"TYPE_DES LENGTH_DES ALG_DES_MAC4_ISO9797_M2",2,100);
+        testSignature(Consts.TYPE_DES, Consts.LENGTH_DES3_2KEY,Consts.ALG_DES_MAC4_ISO9797_M2,"TYPE_DES LENGTH_DES3_2KEY ALG_DES_MAC4_ISO9797_M2",2,100);
+        testSignature(Consts.TYPE_DES, Consts.LENGTH_DES3_3KEY,Consts.ALG_DES_MAC4_ISO9797_M2,"TYPE_DES LENGTH_DES3_3KEY ALG_DES_MAC4_ISO9797_M2",2,100);
+        testSignature(Consts.TYPE_DES, Consts.LENGTH_DES,Consts.ALG_DES_MAC4_NOPAD,"TYPE_DES LENGTH_DES ALG_DES_MAC4_NOPAD",8,100);
+        testSignature(Consts.TYPE_DES, Consts.LENGTH_DES3_2KEY,Consts.ALG_DES_MAC4_NOPAD,"TYPE_DES LENGTH_DES3_2KEY ALG_DES_MAC4_NOPAD",8,100);
+        testSignature(Consts.TYPE_DES, Consts.LENGTH_DES3_3KEY,Consts.ALG_DES_MAC4_NOPAD,"TYPE_DES LENGTH_DES3_3KEY ALG_DES_MAC4_NOPAD",8,100);
+        testSignature(Consts.TYPE_DES, Consts.LENGTH_DES,Consts.ALG_DES_MAC4_PKCS5,"TYPE_DES LENGTH_DES ALG_DES_MAC4_PKCS5",2,100);
+        testSignature(Consts.TYPE_DES, Consts.LENGTH_DES3_2KEY,Consts.ALG_DES_MAC4_PKCS5,"TYPE_DES LENGTH_DES3_2KEY ALG_DES_MAC4_PKCS5",2,100);
+        testSignature(Consts.TYPE_DES, Consts.LENGTH_DES3_3KEY,Consts.ALG_DES_MAC4_PKCS5,"TYPE_DES LENGTH_DES3_3KEY ALG_DES_MAC4_PKCS5",2,100);
+        testSignature(Consts.TYPE_DES, Consts.LENGTH_DES3_2KEY,Consts.ALG_DES_MAC8_ISO9797_1_M2_ALG3,"TYPE_DES LENGTH_DES3_2KEY ALG_DES_MAC8_ISO9797_1_M2_ALG3",2,100);
+        testSignature(Consts.TYPE_DES, Consts.LENGTH_DES,Consts.ALG_DES_MAC8_ISO9797_M1,"TYPE_DES LENGTH_DES ALG_DES_MAC8_ISO9797_M1",2,100);
+        testSignature(Consts.TYPE_DES, Consts.LENGTH_DES3_2KEY,Consts.ALG_DES_MAC8_ISO9797_M1,"TYPE_DES LENGTH_DES3_2KEY ALG_DES_MAC8_ISO9797_M1",2,100);
+        testSignature(Consts.TYPE_DES, Consts.LENGTH_DES3_3KEY,Consts.ALG_DES_MAC8_ISO9797_M1,"TYPE_DES LENGTH_DES3_3KEY ALG_DES_MAC8_ISO9797_M1",2,100);
+        testSignature(Consts.TYPE_DES, Consts.LENGTH_DES,Consts.ALG_DES_MAC8_ISO9797_M2,"TYPE_DES LENGTH_DES ALG_DES_MAC8_ISO9797_M2",2,100);
+        testSignature(Consts.TYPE_DES, Consts.LENGTH_DES3_2KEY,Consts.ALG_DES_MAC8_ISO9797_M2,"TYPE_DES LENGTH_DES3_2KEY ALG_DES_MAC8_ISO9797_M2",2,100);
+        testSignature(Consts.TYPE_DES, Consts.LENGTH_DES3_3KEY,Consts.ALG_DES_MAC8_ISO9797_M2,"TYPE_DES LENGTH_DES3_3KEY ALG_DES_MAC8_ISO9797_M2",2,100);
+        testSignature(Consts.TYPE_DES, Consts.LENGTH_DES,Consts.ALG_DES_MAC8_NOPAD,"TYPE_DES LENGTH_DES ALG_DES_MAC8_NOPAD",8,100);
+        testSignature(Consts.TYPE_DES, Consts.LENGTH_DES3_2KEY,Consts.ALG_DES_MAC8_NOPAD,"TYPE_DES LENGTH_DES3_2KEY ALG_DES_MAC8_NOPAD",8,100);
+        testSignature(Consts.TYPE_DES, Consts.LENGTH_DES3_3KEY,Consts.ALG_DES_MAC8_NOPAD,"TYPE_DES LENGTH_DES3_3KEY ALG_DES_MAC8_NOPAD",8,100);
+        testSignature(Consts.TYPE_DES, Consts.LENGTH_DES,Consts.ALG_DES_MAC8_PKCS5,"TYPE_DES LENGTH_DES ALG_DES_MAC8_PKCS5",2,100);
+        testSignature(Consts.TYPE_DES, Consts.LENGTH_DES3_2KEY,Consts.ALG_DES_MAC8_PKCS5,"TYPE_DES LENGTH_DES3_2KEY ALG_DES_MAC8_PKCS5",2,100);
+        testSignature(Consts.TYPE_DES, Consts.LENGTH_DES3_3KEY,Consts.ALG_DES_MAC8_PKCS5,"TYPE_DES LENGTH_DES3_3KEY ALG_DES_MAC8_PKCS5",2,100);
+        testSignature(Consts.MY_DSA, Consts.LENGTH_DSA_512,Consts.ALG_DSA_SHA,"MY_DSA LENGTH_DSA_512 ALG_DSA_SHA",2,100);
+        testSignature(Consts.MY_DSA, Consts.LENGTH_DSA_768,Consts.ALG_DSA_SHA,"MY_DSA LENGTH_DSA_768 ALG_DSA_SHA",2,100);
+        testSignature(Consts.MY_DSA, Consts.LENGTH_DSA_1024,Consts.ALG_DSA_SHA,"MY_DSA LENGTH_DSA_1024 ALG_DSA_SHA",2,100);
+        
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_512,Consts.ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_512 ALG_RSA_MD5_PKCS1",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_736,Consts.ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_736 ALG_RSA_MD5_PKCS1",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_768,Consts.ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_768 ALG_RSA_MD5_PKCS1",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_896,Consts.ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_896 ALG_RSA_MD5_PKCS1",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1024,Consts.ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_MD5_PKCS1",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1280,Consts.ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_MD5_PKCS1",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1536,Consts.ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_MD5_PKCS1",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1984,Consts.ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_MD5_PKCS1",2,100);  
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_2048,Consts.ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_MD5_PKCS1",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_3072,Consts.ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_MD5_PKCS1",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_4096,Consts.ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_MD5_PKCS1",2,100);
+        
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_512,Consts.ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_512 ALG_RSA_MD5_PKCS1_PSS",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_736,Consts.ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_736 ALG_RSA_MD5_PKCS1_PSS",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_768,Consts.ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_768 ALG_RSA_MD5_PKCS1_PSS",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_896,Consts.ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_896 ALG_RSA_MD5_PKCS1_PSS",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1024,Consts.ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_MD5_PKCS1_PSS",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1280,Consts.ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_MD5_PKCS1_PSS",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1536,Consts.ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_MD5_PKCS1_PSS",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1984,Consts.ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_MD5_PKCS1_PSS",2,100);  
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_2048,Consts.ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_MD5_PKCS1_PSS",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_3072,Consts.ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_MD5_PKCS1_PSS",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_4096,Consts.ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_MD5_PKCS1_PSS",2,100);
+        
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_512,Consts.ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_512 ALG_RSA_MD5_RFC2409",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_736,Consts.ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_736 ALG_RSA_MD5_RFC2409",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_768,Consts.ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_768 ALG_RSA_MD5_RFC2409",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_896,Consts.ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_896 ALG_RSA_MD5_RFC2409",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1024,Consts.ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_MD5_RFC2409",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1280,Consts.ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_MD5_RFC2409",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1536,Consts.ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_MD5_RFC2409",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1984,Consts.ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_MD5_RFC2409",2,100);  
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_2048,Consts.ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_MD5_RFC2409",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_3072,Consts.ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_MD5_RFC2409",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_4096,Consts.ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_MD5_RFC2409",2,100);
+        
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_512,Consts.ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_512 ALG_RSA_RIPEMD160_ISO9796",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_736,Consts.ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_736 ALG_RSA_RIPEMD160_ISO9796",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_768,Consts.ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_768 ALG_RSA_RIPEMD160_ISO9796",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_896,Consts.ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_896 ALG_RSA_RIPEMD160_ISO9796",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1024,Consts.ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_RIPEMD160_ISO9796",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1280,Consts.ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_RIPEMD160_ISO9796",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1536,Consts.ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_RIPEMD160_ISO9796",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1984,Consts.ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_RIPEMD160_ISO9796",2,100);  
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_2048,Consts.ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_RIPEMD160_ISO9796",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_3072,Consts.ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_RIPEMD160_ISO9796",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_4096,Consts.ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_RIPEMD160_ISO9796",2,100);
+        
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_512,Consts.ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_512 ALG_RSA_RIPEMD160_PKCS1",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_736,Consts.ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_736 ALG_RSA_RIPEMD160_PKCS1",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_768,Consts.ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_768 ALG_RSA_RIPEMD160_PKCS1",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_896,Consts.ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_896 ALG_RSA_RIPEMD160_PKCS1",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1024,Consts.ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_RIPEMD160_PKCS1",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1280,Consts.ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_RIPEMD160_PKCS1",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1536,Consts.ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_RIPEMD160_PKCS1",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1984,Consts.ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_RIPEMD160_PKCS1",2,100);  
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_2048,Consts.ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_RIPEMD160_PKCS1",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_3072,Consts.ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_RIPEMD160_PKCS1",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_4096,Consts.ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_RIPEMD160_PKCS1",2,100);
+        
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_512,Consts.ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_512 ALG_RSA_RIPEMD160_PKCS1_PSS",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_736,Consts.ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_736 ALG_RSA_RIPEMD160_PKCS1_PSS",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_768,Consts.ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_768 ALG_RSA_RIPEMD160_PKCS1_PSS",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_896,Consts.ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_896 ALG_RSA_RIPEMD160_PKCS1_PSS",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1024,Consts.ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_RIPEMD160_PKCS1_PSS",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1280,Consts.ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_RIPEMD160_PKCS1_PSS",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1536,Consts.ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_RIPEMD160_PKCS1_PSS",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1984,Consts.ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_RIPEMD160_PKCS1_PSS",2,100);  
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_2048,Consts.ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_RIPEMD160_PKCS1_PSS",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_3072,Consts.ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_RIPEMD160_PKCS1_PSS",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_4096,Consts.ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_RIPEMD160_PKCS1_PSS",2,100);
+        
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_512,Consts.ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_512 ALG_RSA_SHA_ISO9796",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_736,Consts.ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_736 ALG_RSA_SHA_ISO9796",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_768,Consts.ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_768 ALG_RSA_SHA_ISO9796",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_896,Consts.ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_896 ALG_RSA_SHA_ISO9796",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1024,Consts.ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_SHA_ISO9796",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1280,Consts.ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_SHA_ISO9796",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1536,Consts.ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_SHA_ISO9796",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1984,Consts.ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_SHA_ISO9796",2,100);  
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_2048,Consts.ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_SHA_ISO9796",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_3072,Consts.ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_SHA_ISO9796",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_4096,Consts.ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_SHA_ISO9796",2,100);
+        
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_512,Consts.ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_512 ALG_RSA_SHA_PKCS1",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_736,Consts.ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_736 ALG_RSA_SHA_PKCS1",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_768,Consts.ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_768 ALG_RSA_SHA_PKCS1",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_896,Consts.ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_896 ALG_RSA_SHA_PKCS1",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1024,Consts.ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_SHA_PKCS1",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1280,Consts.ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_SHA_PKCS1",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1536,Consts.ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_SHA_PKCS1",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1984,Consts.ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_SHA_PKCS1",2,100);  
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_2048,Consts.ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_SHA_PKCS1",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_3072,Consts.ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_SHA_PKCS1",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_4096,Consts.ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_SHA_PKCS1",2,100);
+        
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_512,Consts.ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_512 ALG_RSA_SHA_PKCS1_PSS",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_736,Consts.ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_736 ALG_RSA_SHA_PKCS1_PSS",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_768,Consts.ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_768 ALG_RSA_SHA_PKCS1_PSS",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_896,Consts.ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_896 ALG_RSA_SHA_PKCS1_PSS",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1024,Consts.ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_SHA_PKCS1_PSS",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1280,Consts.ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_SHA_PKCS1_PSS",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1536,Consts.ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_SHA_PKCS1_PSS",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1984,Consts.ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_SHA_PKCS1_PSS",2,100);  
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_2048,Consts.ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_SHA_PKCS1_PSS",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_3072,Consts.ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_SHA_PKCS1_PSS",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_4096,Consts.ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_SHA_PKCS1_PSS",2,100);
+        
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_512,Consts.ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_512 ALG_RSA_SHA_RFC2409",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_736,Consts.ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_736 ALG_RSA_SHA_RFC2409",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_768,Consts.ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_768 ALG_RSA_SHA_RFC2409",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_896,Consts.ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_896 ALG_RSA_SHA_RFC2409",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1024,Consts.ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_SHA_RFC2409",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1280,Consts.ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_SHA_RFC2409",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1536,Consts.ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_SHA_RFC2409",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1984,Consts.ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_SHA_RFC2409",2,100);  
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_2048,Consts.ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_SHA_RFC2409",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_3072,Consts.ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_SHA_RFC2409",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_4096,Consts.ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_SHA_RFC2409",2,100);
+               
+        tableName = "SIGNATURE - END\n";
+        file.write(tableName.getBytes());        
+    }    
+    private static void testChecksum(byte alg, String info, int step) throws IOException
+    {
+        String message  = info + " " + step + "\n"; System.out.println(info);
+        byte count = 60;
+        double time;
+        double time1;
+        double time2;
+        String timeStr;
+        int maxLength = 300;
+        int cycle = 10;
+        byte[] cdata = new byte[2];
+        for (int i = step;i<maxLength;i+=step)
+        {            
+            cdata[1] = (byte) (i & mask);
+            int pom = i >> 7;
+            cdata[0] = (byte) (pom & mask);
+            double dia = 0;
+            try
+            {
+                System.out.print("(");
+                for (int j = 0;j<cycle;j++)
+                {
+                    time1 = cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_TEST_CHECKSUM,alg, (byte)(count * 2), cdata, (byte) 2, Consts.INS_CARD_RESET);
+                    time2 = cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_TEST_CHECKSUM,alg, count, cdata, (byte) 2, Consts.INS_CARD_RESET);
+                    time = time1-time2;
+                    time = time/count;
+                    dia+=time;
+                    timeStr = String.format("%1f", time);
+                    System.out.print(timeStr + ",");
+                }
+                System.out.print(")");
+                dia = dia/cycle;
+                timeStr = String.format("%1f", dia);
+                message += timeStr+" ";System.out.print(" " + i + "B=" + timeStr);
+            }
+            catch(CardCommunicationException ex)
+            {
+                message += ex.toString();
+                System.out.println(ex.toString()); 
+            }
+            catch(Exception ex)
+            {
+                System.out.println("Exception: " + ex);
+            }            
+        }
+        System.out.println(); message += "\n";
+        file.write(message.getBytes());
+    }
+    private static void testAllChecksums() throws IOException
+    {
+        String tableName = "CHECKSUM\n";
+        file.write(tableName.getBytes());
+        testChecksum(Consts.ALG_ISO3309_CRC16,"ALG_ISO3309_CRC16",2);
+        testChecksum(Consts.ALG_ISO3309_CRC32,"ALG_ISO3309_CRC32",2);
+        tableName = "CHECKSUM - END\n";
+        file.write(tableName.getBytes());
+    }    
 }

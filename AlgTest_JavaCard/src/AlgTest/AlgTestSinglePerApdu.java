@@ -93,12 +93,31 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
     
     final static byte CLA_CARD_ALGTEST               = (byte) 0xB0;
     final static byte INS_CARD_GETVERSION            = (byte) 0x60;
+    final static byte INS_CARD_RESET                 = (byte) 0x69;
+    
     final static byte INS_CARD_TESTSUPPORTEDMODES    = (byte) 0x70;
     final static byte INS_CARD_TESTAVAILABLE_MEMORY  = (byte) 0x71;
     final static byte INS_CARD_TESTRSAEXPONENTSET    = (byte) 0x72;
     final static byte INS_CARD_JCSYSTEM_INFO         = (byte) 0x73;
     final static byte INS_CARD_TESTEXTAPDU           = (byte) 0x74;
     final static byte INS_CARD_TESTSUPPORTEDMODES_SINGLE    = (byte) 0x75;
+    
+/*    
+    final static byte INS_TEST_MESSAGE_DIGEST =   (byte) 0x70;
+    final static byte INS_TEST_RANDOM_DATA =      (byte) 0x71;
+    final static byte INS_TEST_CIPHER =           (byte) 0x72;
+    final static byte INS_TEST_KEY_BUILDER =      (byte) 0x73;
+    final static byte INS_TEST_KEY_PAIR =         (byte) 0x74;
+    final static byte INS_TEST_CHECKSUM =         (byte) 0x75;
+    final static byte INS_RESET =                 (byte) 0x69;
+    final static byte INS_PREPARE_KEY =           (byte) 0x40;
+    final static byte INS_PREPARE_SIGNATURE =     (byte) 0x42;
+    final static byte INS_PREPARE_KEY_PAIR =      (byte) 0x44;
+    final static byte INS_PREPARE_MESSAGE_DIGEST = (byte) 0x46;
+    final static byte INS_PREPARE_RANDOM_DATA =   (byte) 0x48;
+    final static byte INS_TEST_SIGNATURE =        (byte) 0x76;
+*/    
+    final static byte INS_CARD_PERF_TEST_CLASS_KEY      = (byte) 0x40;
 
     private   Cipher           m_encryptCipher = null;
     private   Cipher           m_encryptCipherRSA = null;
@@ -135,7 +154,9 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
     final static byte SUPP_ALG_EXCEPTION_CODE_OFFSET = (byte) 0;
     
     
-    final static short SW_STAT_OK                   = (short) 0x90000;
+    final static byte SUCCESS =                    (byte) 0xAA;
+
+    final static short SW_STAT_OK                   = (short) 0x9000;
     final static short SW_ALG_TYPE_NOT_SUPPORTED    = (short) 0x6001;
     final static short SW_ALG_OPS_NOT_SUPPORTED     = (short) 0x6002;
     
@@ -224,9 +245,9 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         }
     }
     
+    // Performance testing
     TEST_SETTINGS   m_testSettings = null;
     AESKey          m_aes_key = null;
-    
     byte[]          m_ram1 = null;
     
 
@@ -327,7 +348,8 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                 case INS_CARD_JCSYSTEM_INFO: JCSystemInfo(apdu); break;
                 case INS_CARD_TESTSUPPORTEDMODES_SINGLE: TestSupportedModeSingle(apdu); break;
                 // case INS_CARD_TESTEXTAPDU: TestExtendedAPDUSupport(apdu); break; // this has to be tested by separate applet with ExtAPDU enabled - should succedd during upload and run
-
+                case INS_CARD_PERF_TEST_CLASS_KEY: class_Key_test(apdu); break;        
+                case INS_CARD_RESET: JCSystem.requestObjectDeletion(); break;
                 default : {
                     // The INS code is not supported by the dispatcher
                     ISOException.throwIt( ISO7816.SW_INCORRECT_P1P2  ) ;
@@ -418,16 +440,6 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
        //apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (short) offset);
     }
     
-    /*
-                for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
-                    for (short j = 0; j < m_testSettings.numRepeatSubOperation; j++) {
-                        m_aes_key.setKey(m_ram1, (short) 0);
-                    }
-                    m_sign.sign(plText, (short)0, rest, plText, (short) 0);              
-                }
-    
-    */
-    
     void class_Key_test(APDU apdu) {
         m_testSettings.parse(apdu);  
         byte[] apdubuf = apdu.getBuffer();
@@ -462,7 +474,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                 ISOException.throwIt(SW_ALG_TYPE_NOT_SUPPORTED);
         }
         
-        apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SW_STAT_OK;
+        apdubuf[ISO7816.OFFSET_CDATA] = SUCCESS;
         apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 2);            
     }
 

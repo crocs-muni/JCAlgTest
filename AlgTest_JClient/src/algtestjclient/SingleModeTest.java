@@ -53,6 +53,9 @@ import javax.smartcardio.ResponseAPDU;
  * @version 1.0
  */
 public class SingleModeTest {
+
+    
+    
     CardMngr cardManager = new CardMngr();
     
     /* Argument constants for choosing algorithm to test. */
@@ -542,11 +545,11 @@ public class SingleModeTest {
             apdu[OFFSET_LC] = (byte)0x01;
 
         /* Creates message with class name and writes it in the output file and on the screen. */
-        String message = "\n" + cardManager.GetAlgorithmName(CardMngr.CIPHER_STR[0]) + "\r\n";
+        String message = "\n" + cardManager.GetAlgorithmName(Consts.CIPHER_STR[0]) + "\r\n";
         System.out.println(message);
         file.write(message.getBytes());
         
-        for (int i=1; i<CardMngr.CIPHER_STR.length; i++){    // i = 1 because Cipher[0] is class name
+        for (int i=1; i< Consts.CIPHER_STR.length; i++){    // i = 1 because Cipher[0] is class name
             // get starting time of communication cycle
             elapsedCard = -System.currentTimeMillis();
             apdu[OFFSET_DATA] = (byte)i;
@@ -560,7 +563,7 @@ public class SingleModeTest {
                 elapsedCard += System.currentTimeMillis();
             }
             /* Calls method CheckResult - should add to output error messages. */
-            CheckResult(file, cardManager.GetAlgorithmName(CardMngr.CIPHER_STR[i]), resp[1], elapsedCard);
+            CheckResult(file, cardManager.GetAlgorithmName(Consts.CIPHER_STR[i]), resp[1], elapsedCard);
         }        
     }
     
@@ -580,11 +583,11 @@ public class SingleModeTest {
             apdu[OFFSET_LC] = (byte)0x01;
         
         /* Creates message with class name and writes it in the output file and on the screen. */
-        String message = "\n" + cardManager.GetAlgorithmName(CardMngr.SIGNATURE_STR[0]) + "\r\n";
+        String message = "\n" + cardManager.GetAlgorithmName(Consts.SIGNATURE_STR[0]) + "\r\n";
         System.out.println(message);
         file.write(message.getBytes());
         
-        for (int i=1; i<CardMngr.SIGNATURE_STR.length; i++){    // i = 1 because Signature[0] is class name
+        for (int i=1; i<Consts.SIGNATURE_STR.length; i++){    // i = 1 because Signature[0] is class name
             // get starting time of communication cycle
             elapsedCard = -System.currentTimeMillis();
             apdu[OFFSET_DATA] = (byte)i;
@@ -596,7 +599,7 @@ public class SingleModeTest {
                 elapsedCard += System.currentTimeMillis();
             }
             /* Calls method CheckResult - should add to output error messages. */
-            CheckResult(file, cardManager.GetAlgorithmName(CardMngr.SIGNATURE_STR[i]), resp[1], elapsedCard);
+            CheckResult(file, cardManager.GetAlgorithmName(Consts.SIGNATURE_STR[i]), resp[1], elapsedCard);
         }        
     }
     
@@ -616,11 +619,11 @@ public class SingleModeTest {
             apdu[OFFSET_LC] = (byte)0x01;
         
         /* Creates message with class name and writes it in the output file and on the screen. */
-        String message = "\n" + cardManager.GetAlgorithmName(CardMngr.MESSAGEDIGEST_STR[0]) + "\r\n";
+        String message = "\n" + cardManager.GetAlgorithmName(Consts.MESSAGEDIGEST_STR[0]) + "\r\n";
         System.out.println(message);
         file.write(message.getBytes());
         
-        for (int i=1; i<CardMngr.MESSAGEDIGEST_STR.length; i++){    // i = 1 because MessageDigest[0] is class name
+        for (int i=1; i<Consts.MESSAGEDIGEST_STR.length; i++){    // i = 1 because MessageDigest[0] is class name
             // get starting time of communication cycle
             elapsedCard = -System.currentTimeMillis();
             apdu[OFFSET_DATA] = (byte)i;
@@ -632,7 +635,7 @@ public class SingleModeTest {
                 elapsedCard += System.currentTimeMillis();
             }
             /* Calls method CheckResult - should add to output error messages. */
-            CheckResult(file, cardManager.GetAlgorithmName(CardMngr.MESSAGEDIGEST_STR[i]), resp[1], elapsedCard);
+            CheckResult(file, cardManager.GetAlgorithmName(Consts.MESSAGEDIGEST_STR[i]), resp[1], elapsedCard);
         }
     }
     
@@ -652,11 +655,11 @@ public class SingleModeTest {
             apdu[OFFSET_LC] = (byte)0x01;
         
         /* Creates message with class name and writes it in the output file and on the screen. */
-        String message = "\r\n" + cardManager.GetAlgorithmName(CardMngr.RANDOMDATA_STR[0]) + "\r\n";
+        String message = "\r\n" + cardManager.GetAlgorithmName(Consts.RANDOMDATA_STR[0]) + "\r\n";
         System.out.println(message);
         file.write(message.getBytes());
         
-        for (int i=1; i<CardMngr.RANDOMDATA_STR.length; i++){    // i = 1 because RandomData[0] is class name
+        for (int i=1; i<Consts.RANDOMDATA_STR.length; i++){    // i = 1 because RandomData[0] is class name
             // get starting time of communication cycle
             elapsedCard = -System.currentTimeMillis();
             apdu[OFFSET_DATA] = (byte)i;
@@ -667,7 +670,7 @@ public class SingleModeTest {
                 elapsedCard += System.currentTimeMillis();
             }
             /* Calls method CheckResult - should add to output error messages. */
-            CheckResult(file, cardManager.GetAlgorithmName(CardMngr.RANDOMDATA_STR[i]), resp[1], elapsedCard);
+            CheckResult(file, cardManager.GetAlgorithmName(Consts.RANDOMDATA_STR[i]), resp[1], elapsedCard);
         }
     }
     
@@ -730,11 +733,11 @@ public class SingleModeTest {
             apdu[OFFSET_LC] = (byte)0x01;
     
         /* Creates message with class name and writes it in the output file and on the screen. */
-        String message = "\n" + cardManager.GetAlgorithmName(CardMngr.KEYAGREEMENT_STR[0]) + "\r\n";
+        String message = "\n" + cardManager.GetAlgorithmName(Consts.KEYAGREEMENT_STR[0]) + "\r\n";
         System.out.println(message);
         file.write(message.getBytes());
         
-        for (int i=1; i<CardMngr.KEYAGREEMENT_STR.length; i++){    // i = 1 because KeyAgreement[0] is class name
+        for (int i=1; i<Consts.KEYAGREEMENT_STR.length; i++){    // i = 1 because KeyAgreement[0] is class name
             // get starting time of communication cycle
             elapsedCard = -System.currentTimeMillis();
             apdu[OFFSET_DATA] = (byte)i;
@@ -746,7 +749,7 @@ public class SingleModeTest {
                 elapsedCard += System.currentTimeMillis();
             }
             /* Calls method CheckResult - should add to output error messages. */
-            CheckResult(file, cardManager.GetAlgorithmName(CardMngr.KEYAGREEMENT_STR[i]), resp[1], elapsedCard);
+            CheckResult(file, cardManager.GetAlgorithmName(Consts.KEYAGREEMENT_STR[i]), resp[1], elapsedCard);
         }
     }
     
@@ -766,11 +769,11 @@ public class SingleModeTest {
             apdu[OFFSET_LC] = (byte)0x01;
     
         /* Creates message with class name and writes it in the output file and on the screen. */
-        String message = "\n" + cardManager.GetAlgorithmName(CardMngr.CHECKSUM_STR[0]) + "\r\n";
+        String message = "\n" + cardManager.GetAlgorithmName(Consts.CHECKSUM_STR[0]) + "\r\n";
         System.out.println(message);
         file.write(message.getBytes());
         
-        for (int i=1; i<CardMngr.CHECKSUM_STR.length; i++){    // i = 1 because Checksum[0] is class name
+        for (int i=1; i<Consts.CHECKSUM_STR.length; i++){    // i = 1 because Checksum[0] is class name
             // get starting time of communication cycle
             elapsedCard = -System.currentTimeMillis();
             apdu[OFFSET_DATA] = (byte)i;
@@ -782,7 +785,7 @@ public class SingleModeTest {
                 elapsedCard += System.currentTimeMillis();
             }
             /* Calls method CheckResult - should add to output error messages. */
-            CheckResult(file, cardManager.GetAlgorithmName(CardMngr.CHECKSUM_STR[i]), resp[1], elapsedCard);
+            CheckResult(file, cardManager.GetAlgorithmName(Consts.CHECKSUM_STR[i]), resp[1], elapsedCard);
         }
     }
     
@@ -803,12 +806,12 @@ public class SingleModeTest {
             apdu[OFFSET_DATA] = ALG_RSA;        // 1
         
         /* Creates message with class name and writes it in the output file and on the screen. */
-        String message = "\n" + cardManager.GetAlgorithmName(CardMngr.KEYPAIR_RSA_STR[0]) + "\r\n";
+        String message = "\n" + cardManager.GetAlgorithmName(Consts.KEYPAIR_RSA_STR[0]) + "\r\n";
         System.out.println(message);
         file.write(message.getBytes());
         
         int counter = 24;
-        for (int i=1; i<CardMngr.KEYPAIR_RSA_STR.length; i++){    // i = 1 because KeyPair_RSA_STR[0] is class name
+        for (int i=1; i<Consts.KEYPAIR_RSA_STR.length; i++){    // i = 1 because KeyPair_RSA_STR[0] is class name
             // get starting time of communication cycle
             elapsedCard = -System.currentTimeMillis();
             apdu[OFFSET_DATA + 1] = KEY_LENGTHS_HEX[counter];
@@ -823,7 +826,7 @@ public class SingleModeTest {
                 elapsedCard += System.currentTimeMillis();
             }
             /* Calls method CheckResult - should add to output error messages. */
-            CheckResult(file, cardManager.GetAlgorithmName(CardMngr.KEYPAIR_RSA_STR[i]), resp[1], elapsedCard);
+            CheckResult(file, cardManager.GetAlgorithmName(Consts.KEYPAIR_RSA_STR[i]), resp[1], elapsedCard);
         }
     }
     
@@ -844,12 +847,12 @@ public class SingleModeTest {
         apdu[OFFSET_DATA] = ALG_RSA_CRT;    // 2
         
         /* Creates message with class name and writes it in the output file and on the screen. */
-        String message = "\n" + cardManager.GetAlgorithmName(CardMngr.KEYPAIR_RSACRT_STR[0]) + "\r\n";
+        String message = "\n" + cardManager.GetAlgorithmName(Consts.KEYPAIR_RSACRT_STR[0]) + "\r\n";
         System.out.println(message);
         file.write(message.getBytes());
         
         int counter = 24;
-        for (int i=1; i<CardMngr.KEYPAIR_RSACRT_STR.length; i++){    // i = 1 because KeyPair_RSACRT_STR[0] is class name
+        for (int i=1; i<Consts.KEYPAIR_RSACRT_STR.length; i++){    // i = 1 because KeyPair_RSACRT_STR[0] is class name
             // get starting time of communication cycle
             elapsedCard = -System.currentTimeMillis();
             
@@ -865,7 +868,7 @@ public class SingleModeTest {
                 elapsedCard += System.currentTimeMillis();
             }
             /* Calls method CheckResult - should add to output error messages. */
-            CheckResult(file, cardManager.GetAlgorithmName(CardMngr.KEYPAIR_RSACRT_STR[i]), resp[1], elapsedCard);
+            CheckResult(file, cardManager.GetAlgorithmName(Consts.KEYPAIR_RSACRT_STR[i]), resp[1], elapsedCard);
         }
     }
     
@@ -886,12 +889,12 @@ public class SingleModeTest {
         apdu[OFFSET_DATA] = ALG_DSA;        // 3
         
         /* Creates message with class name and writes it in the output file and on the screen. */
-        String message = "\n" + cardManager.GetAlgorithmName(CardMngr.KEYPAIR_DSA_STR[0]) + "\r\n";
+        String message = "\n" + cardManager.GetAlgorithmName(Consts.KEYPAIR_DSA_STR[0]) + "\r\n";
         System.out.println(message);
         file.write(message.getBytes());
         
         int counter = 24;
-        for (int i=1; i<CardMngr.KEYPAIR_DSA_STR.length; i++){    // i = 1 because KeyPair_DSA_STR[0] is class name
+        for (int i=1; i<Consts.KEYPAIR_DSA_STR.length; i++){    // i = 1 because KeyPair_DSA_STR[0] is class name
             // get starting time of communication cycle
             elapsedCard = -System.currentTimeMillis();
             apdu[OFFSET_DATA + 1] = KEY_LENGTHS_HEX[counter];
@@ -906,7 +909,7 @@ public class SingleModeTest {
                 elapsedCard += System.currentTimeMillis();
             }
             /* Calls method CheckResult - should add to output error messages. */
-            CheckResult(file, cardManager.GetAlgorithmName(CardMngr.KEYPAIR_DSA_STR[i]), resp[1], elapsedCard);
+            CheckResult(file, cardManager.GetAlgorithmName(Consts.KEYPAIR_DSA_STR[i]), resp[1], elapsedCard);
         }
     }
     
@@ -927,12 +930,12 @@ public class SingleModeTest {
         apdu[OFFSET_DATA] = ALG_EC_F2M;     // 4
         
         /* Creates message with class name and writes it in the output file and on the screen. */
-        String message = "\n" + cardManager.GetAlgorithmName(CardMngr.KEYPAIR_EC_F2M_STR[0]) + "\r\n";
+        String message = "\n" + cardManager.GetAlgorithmName(Consts.KEYPAIR_EC_F2M_STR[0]) + "\r\n";
         System.out.println(message);
         file.write(message.getBytes());
         
         int counter = 16;
-        for (int i=1; i<CardMngr.KEYPAIR_EC_F2M_STR.length; i++){    // i = 1 because KeyPair_EC_F2M_STR[0] is class name
+        for (int i=1; i<Consts.KEYPAIR_EC_F2M_STR.length; i++){    // i = 1 because KeyPair_EC_F2M_STR[0] is class name
             // get starting time of communication cycle
             elapsedCard = -System.currentTimeMillis();
             apdu[OFFSET_DATA + 1] = KEY_LENGTHS_HEX[counter];
@@ -947,7 +950,7 @@ public class SingleModeTest {
                 elapsedCard += System.currentTimeMillis();
             }
             /* Calls method CheckResult - should add to output error messages. */
-            CheckResult(file, cardManager.GetAlgorithmName(CardMngr.KEYPAIR_EC_F2M_STR[i]), resp[1], elapsedCard);
+            CheckResult(file, cardManager.GetAlgorithmName(Consts.KEYPAIR_EC_F2M_STR[i]), resp[1], elapsedCard);
         }
     }
     
@@ -968,12 +971,12 @@ public class SingleModeTest {
         apdu[OFFSET_DATA] = ALG_EC_FP;      // 5
         
         /* Creates message with class name and writes it in the output file and on the screen */
-        String message = "\n" + cardManager.GetAlgorithmName(CardMngr.KEYPAIR_EC_FP_STR[0]) + "\r\n";
+        String message = "\n" + cardManager.GetAlgorithmName(Consts.KEYPAIR_EC_FP_STR[0]) + "\r\n";
         System.out.println(message);
         file.write(message.getBytes());
         
         int counter = 0;
-        for (int i=1; i<CardMngr.KEYPAIR_EC_FP_STR.length; i++){    // i = 1 because KeyPair_EC_FP_STR[0] is class name
+        for (int i=1; i<Consts.KEYPAIR_EC_FP_STR.length; i++){    // i = 1 because KeyPair_EC_FP_STR[0] is class name
             // get starting time of communication cycle
             elapsedCard = -System.currentTimeMillis();
             apdu[OFFSET_DATA + 1] = KEY_LENGTHS_HEX[counter];
@@ -988,7 +991,7 @@ public class SingleModeTest {
                 elapsedCard += System.currentTimeMillis();
             }
             /* Calls method CheckResult - should add to output error messages. */
-            CheckResult(file, cardManager.GetAlgorithmName(CardMngr.KEYPAIR_EC_FP_STR[i]), resp[1], elapsedCard);
+            CheckResult(file, cardManager.GetAlgorithmName(Consts.KEYPAIR_EC_FP_STR[i]), resp[1], elapsedCard);
         }
     }
     
@@ -999,23 +1002,23 @@ public class SingleModeTest {
      */
     public void testAllAtOnce (FileOutputStream file) throws Exception{
         TestClassCipher(file);
-                TestClassSignature(file);
-                TestClassMessageDigest(file);
-                TestClassRandomData(file);
-                TestClassKeyBuilder(file);
-                TestClassKeyAgreement(file);
-                TestClassChecksum(file);
-                TestClassKeyPair_ALG_RSA(file);
-                TestClassKeyPair_ALG_RSA_CRT(file);
-                TestClassKeyPair_ALG_DSA(file);
-                TestClassKeyPair_ALG_EC_F2M(file);
-                TestClassKeyPair_ALG_EC_FP(file);
-                // test RSA exponent
-                StringBuilder value = new StringBuilder();
-                value.setLength(0);
-                cardManager.TestVariableRSAPublicExponentSupport(value, file, OFFSET_P2);
-                
-                CloseFile(file);
+        TestClassSignature(file);
+        TestClassMessageDigest(file);
+        TestClassRandomData(file);
+        TestClassKeyBuilder(file);
+        TestClassKeyAgreement(file);
+        TestClassChecksum(file);
+        TestClassKeyPair_ALG_RSA(file);
+        TestClassKeyPair_ALG_RSA_CRT(file);
+        TestClassKeyPair_ALG_DSA(file);
+        TestClassKeyPair_ALG_EC_F2M(file);
+        TestClassKeyPair_ALG_EC_FP(file);
+        // test RSA exponent
+        StringBuilder value = new StringBuilder();
+        value.setLength(0);
+        cardManager.TestVariableRSAPublicExponentSupport(value, file, OFFSET_P2);
+
+        CloseFile(file);
     }
 }   // END OF CLASS 'SINGLEMODETEST'
 

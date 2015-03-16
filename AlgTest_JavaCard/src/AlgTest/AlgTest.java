@@ -919,7 +919,7 @@ public class AlgTest extends javacard.framework.Applet
          apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0x20;
 
         offset++;
-        apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xB0;
+        apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = CLA_CARD_ALGTEST;
 
         try {offset++;m_key = KeyBuilder.buildKey(TYPE_DES_TRANSIENT_RESET, LENGTH_DES, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
         catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
