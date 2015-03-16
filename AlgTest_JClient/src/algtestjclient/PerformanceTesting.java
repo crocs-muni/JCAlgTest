@@ -124,59 +124,103 @@ public class PerformanceTesting {
             }
         }
         else{        
-        System.out.println("\n\n#########################");
-        System.out.println("\n\nQ: Do you like to test support for variable RSA public exponent?");
-        System.out.println("Type 1 for yes, 0 for no: ");	
-        int rsa_answ = sc.nextInt();
-        
-        if (rsa_answ == 1) {
-            // Variable public exponent
-            value.setLength(0);
+            System.out.println("\n\n#########################");
+            System.out.println("\n\nQ: Do you like to test support for variable RSA public exponent?");
+            System.out.println("Type 1 for yes, 0 for no: ");	
+            int rsa_answ = sc.nextInt();
+
+            if (rsa_answ == 1) {
+                // Variable public exponent
+                value.setLength(0);
+
+                if (testingPerformance.TestVariableRSAPublicExponentSupport(value, file, (byte) 0) == cardManager.STAT_OK) {}
+                else { 
+                    message = "\nERROR: Test variable public exponent support fail\n"; 
+                    System.out.println(message); file.write(message.getBytes());
+                }
+                file.flush();
+            }
+
+            System.out.println("\n\n#########################");
+            System.out.println("\n\nQ: Do you like to test RAM memory available for allocation?");
+            System.out.println("\n\nSTRONG WARNING: There is possibility that your card become unresponsive after this test. All cards I tested required just to delete AlgTest applet to reclaim allocated memory. But it might be possible that your card will be unusuable after this test.");
+            System.out.println("\n\nWARNING: Your card should be free from other applets - otherwise memory already claimed by existing applets will not be included in measurement. Value is approximate +- 100B");
+            System.out.println("Type 1 for yes, 0 for no: ");	
+            int ram_answ = sc.nextInt();
+
+            if (ram_answ == 1){
+
+                // Available memory
+                value.setLength(0);
+                if (testingPerformance.TestAvailableRAMMemory(value, file, (byte) 0) == cardManager.STAT_OK) {}
+                else { 
+                    message = "\nERROR: Get available RAM memory fail\n"; 
+                    System.out.println(message); file.write(message.getBytes());
+                }
+                file.flush();
+            }
+
+            System.out.println("\n\n#########################");
+            System.out.println("\n\nQ: Do you like to test EEPROM memory available for allocation?");
+            System.out.println("\n\nSTRONG WARNING: There is possibility that your card become unresponsive after this test. All cards I tested required just to delete AlgTest applet to reclaim allocated memory. But it might be possible that your card will be unusuable after this test.");
+            System.out.println("\n\nWARNING: Your card should be free from other applets - otherwise memory already claimed by existing applets will not be included in measurement. Value is approximate +- 5KB");
+            System.out.println("Type 1 for yes, 0 for no: ");	
+            int eeprom_answ = sc.nextInt();
+
+            if (eeprom_answ == 1){
+                // Available memory
+                value.setLength(0);
+                if (testingPerformance.TestAvailableEEPROMMemory(value, file, (byte) 0) == cardManager.STAT_OK) {}
+                else { 
+                    message = "\nERROR: Get available EEPROM memory fail\n"; 
+                    System.out.println(message); file.write(message.getBytes());
+                }
+                file.flush();
+            }
             
-            if (testingPerformance.TestVariableRSAPublicExponentSupport(value, file, (byte) 0) == cardManager.STAT_OK) {}
-            else { 
-                message = "\nERROR: Test variable public exponent support fail\n"; 
-                System.out.println(message); file.write(message.getBytes());
+            boolean fast = false; 
+            String res = "";
+            System.out.println("Do you want to test every class? WARNING: It could take quite a long time (type 'y' for yes or 'n' for no)");
+            res = sc.nextLine();
+            if(res.equals("y"))
+            {
+                System.out.println("Do you want to past the long key pair test? WARNING: It can take few hours! (type 'l' for long or type 'f' for fast)");
+                res = sc.nextLine();
+                if(res.equals("f")) fast = true;
+                testAllMessageDigests();
+                testAllRandomGenerators();
+                testAllCiphers();
+                testAllChecksums();                    
+                testAllKeyPairs(fast);                    
             }
-            file.flush();
-        }
-        
-        System.out.println("\n\n#########################");
-        System.out.println("\n\nQ: Do you like to test RAM memory available for allocation?");
-        System.out.println("\n\nSTRONG WARNING: There is possibility that your card become unresponsive after this test. All cards I tested required just to delete AlgTest applet to reclaim allocated memory. But it might be possible that your card will be unusuable after this test.");
-        System.out.println("\n\nWARNING: Your card should be free from other applets - otherwise memory already claimed by existing applets will not be included in measurement. Value is approximate +- 100B");
-        System.out.println("Type 1 for yes, 0 for no: ");	
-        int ram_answ = sc.nextInt();
-        
-        if (ram_answ == 1){
-            
-            // Available memory
-            value.setLength(0);
-            if (testingPerformance.TestAvailableRAMMemory(value, file, (byte) 0) == cardManager.STAT_OK) {}
-            else { 
-                message = "\nERROR: Get available RAM memory fail\n"; 
-                System.out.println(message); file.write(message.getBytes());
+            else
+            {
+                System.out.println("Do you want to test class messageDigest? (y/n)");
+                res = sc.nextLine();
+                if(res.equals("y")) testAllMessageDigests();
+                System.out.println("Do you want to test class randomData? (y/n)");
+                res = sc.nextLine();
+                if(res.equals("y")) testAllRandomGenerators();
+                System.out.println("Do you want to test class cipher? (y/n)");
+                res = sc.nextLine();
+                if(res.equals("y")) testAllCiphers();
+                System.out.println("Do you want to test class signature? (y/n)");
+                res = sc.nextLine();
+                if(res.equals("y")) testAllSignatures();
+                System.out.println("Do you want to test class checksum? (y/n)");
+                res = sc.nextLine();
+                if(res.equals("y")) testAllChecksums();
+                System.out.println("Do you want to test class keyPair? (y/n)");
+                res = sc.nextLine();
+                if(res.equals("y")) 
+                {
+                    System.out.println("Do you want to past the long key pair test? WARNING: It can take few hours! (type 'l' for long or type 'f' for fast)");
+                    res = sc.nextLine();
+                    if(res.equals("f")) fast = true;
+                    testAllKeyPairs(fast);
+                }
             }
-            file.flush();
-        }
-        
-        System.out.println("\n\n#########################");
-        System.out.println("\n\nQ: Do you like to test EEPROM memory available for allocation?");
-        System.out.println("\n\nSTRONG WARNING: There is possibility that your card become unresponsive after this test. All cards I tested required just to delete AlgTest applet to reclaim allocated memory. But it might be possible that your card will be unusuable after this test.");
-        System.out.println("\n\nWARNING: Your card should be free from other applets - otherwise memory already claimed by existing applets will not be included in measurement. Value is approximate +- 5KB");
-        System.out.println("Type 1 for yes, 0 for no: ");	
-        int eeprom_answ = sc.nextInt();
-        
-        if (eeprom_answ == 1){
-            // Available memory
-            value.setLength(0);
-            if (testingPerformance.TestAvailableEEPROMMemory(value, file, (byte) 0) == cardManager.STAT_OK) {}
-            else { 
-                message = "\nERROR: Get available EEPROM memory fail\n"; 
-                System.out.println(message); file.write(message.getBytes());
-            }
-            file.flush();
-        }
+
         }
     }
     
