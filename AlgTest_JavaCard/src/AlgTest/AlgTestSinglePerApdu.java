@@ -134,6 +134,101 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
     final static byte SUPP_ALG_SUPPORTED = (byte) 0x00;
     final static byte SUPP_ALG_EXCEPTION_CODE_OFFSET = (byte) 0;
     
+    
+    final static short SW_STAT_OK                   = (short) 0x90000;
+    final static short SW_ALG_TYPE_NOT_SUPPORTED    = (short) 0x6001;
+    final static short SW_ALG_OPS_NOT_SUPPORTED     = (short) 0x6002;
+    
+    final static short RAM1_ARRAY_LENGTH = (short) 300;
+    
+    
+    /* Auxiliary variables to choose class - used in APDU as P1 byte. */
+    public static final byte CLASS_CIPHER          = 0x11;
+    public static final byte CLASS_SIGNATURE       = 0x12;
+    public static final byte CLASS_KEYAGREEMENT    = 0x13;
+    public static final byte CLASS_MESSAGEDIGEST   = 0x15;
+    public static final byte CLASS_RANDOMDATA      = 0x16;
+    public static final byte CLASS_CHECKSUM        = 0x17;
+    public static final byte CLASS_KEYPAIR         = 0x19;
+    public static final byte CLASS_KEYBUILDER      = 0x20;
+    
+    class TEST_SETTINGS {
+        final static short OFFSET_ALGORITHM_CLASS           = ISO7816.OFFSET_CDATA;
+        final static short OFFSET_ALGORITHM_SPECIFICATION   = (short) (OFFSET_ALGORITHM_CLASS + 2);
+        final static short OFFSET_ALGORITHM_PARAM1          = (short) (OFFSET_ALGORITHM_SPECIFICATION + 2);
+        final static short OFFSET_ALGORITHM_PARAM2          = (short) (OFFSET_ALGORITHM_PARAM1 + 2);
+        final static short OFFSET_ALGORITHM_TESTED_OPS      = (short) (OFFSET_ALGORITHM_PARAM2 + 2);
+        final static short OFFSET_DATA_LENGTH1              = (short) (OFFSET_ALGORITHM_TESTED_OPS + 2);
+        final static short OFFSET_DATA_LENGTH2              = (short) (OFFSET_DATA_LENGTH1 + 2);
+        final static short OFFSET_NUM_REPEAT_WHOLE_OP       = (short) (OFFSET_DATA_LENGTH2 + 2);
+        final static short OFFSET_NUM_REPEAT_SUB_OP         = (short) (OFFSET_NUM_REPEAT_WHOLE_OP + 2);
+        
+        final static byte method_setKey         = (byte) 1;
+        final static byte method_clearKey       = (byte) 2;
+        final static byte method_getKey         = (byte) 3;
+        
+        short       algorithmClass = -1;                // e.g., javacardx.crypto.Cipher
+        short       algorithmSpecification = -1;        // e.g., Cipher.ALG_AES_BLOCK_128_CBC_NOPAD
+        short       algorithmType = -1;                 // e.g., KeyBuilder.TYPE_AES
+        short       algorithmKeyLength = -1;            // e.g., KeyBuilder.LENGTH_AES_128
+        short       algorithmOperation = -1;            // e.g., AESKey.setKey() - our custom constant
+        short       dataLength1 = -1;                   // e.g., length of data used during measurement (e.g., for update())
+        short       dataLength2 = -1;                   // e.g., length of data used during measurement (e.g., for doFinal())
+        short       numRepeatWholeOperation = 1;        // whole operation might be setKey, update, doFinal - numRepeatWholeOperation repeats this whole operation
+        short       numRepeatSubOperation = 1;          // relevant suboperation that should be iterated multiple times - e.g., update()
+        
+        void clear() {
+            algorithmClass = -1;               
+            algorithmSpecification = -1;        
+            algorithmType = -1;                 
+            algorithmKeyLength = -1;           
+            algorithmOperation = -1;           
+            dataLength1 = -1;                  
+            dataLength2 = -1;                  
+            numRepeatWholeOperation = -1;        
+            numRepeatSubOperation = -1;          
+        }
+        void parse(APDU apdu) {
+            byte[] apdubuf = apdu.getBuffer();
+            short len = apdu.setIncomingAndReceive();
+
+            this.clear();
+            
+            if (len >= (short) (OFFSET_ALGORITHM_CLASS - ISO7816.OFFSET_CDATA + 2)) { 
+                algorithmClass = Util.getShort(apdubuf, OFFSET_ALGORITHM_CLASS);                    
+            }
+            if (len >= (short) (OFFSET_ALGORITHM_SPECIFICATION - ISO7816.OFFSET_CDATA + 2)) { 
+                algorithmSpecification = Util.getShort(apdubuf, OFFSET_ALGORITHM_SPECIFICATION);    
+            }
+            if (len >= (short) (OFFSET_ALGORITHM_PARAM1 - ISO7816.OFFSET_CDATA + 2)) { 
+                algorithmType = Util.getShort(apdubuf, OFFSET_ALGORITHM_PARAM1);                    
+            }
+            if (len >= (short) (OFFSET_ALGORITHM_PARAM2 - ISO7816.OFFSET_CDATA + 2)) { 
+                algorithmKeyLength = Util.getShort(apdubuf, OFFSET_ALGORITHM_PARAM2);               
+            }
+            if (len >= (short) (OFFSET_ALGORITHM_TESTED_OPS - ISO7816.OFFSET_CDATA + 2)) { 
+                algorithmOperation = Util.getShort(apdubuf, OFFSET_ALGORITHM_TESTED_OPS);           
+            }
+            if (len >= (short) (OFFSET_DATA_LENGTH1 - ISO7816.OFFSET_CDATA + 2)) { 
+                dataLength1 = Util.getShort(apdubuf, OFFSET_DATA_LENGTH1);                         
+            }
+            if (len >= (short) (OFFSET_DATA_LENGTH2 - ISO7816.OFFSET_CDATA + 2)) { 
+                dataLength2 = Util.getShort(apdubuf, OFFSET_DATA_LENGTH2);                          
+            }
+            if (len >= (short) (OFFSET_NUM_REPEAT_WHOLE_OP - ISO7816.OFFSET_CDATA + 2)) { 
+                numRepeatWholeOperation = Util.getShort(apdubuf, OFFSET_NUM_REPEAT_WHOLE_OP);  
+            }
+            if (len >= (short) (OFFSET_NUM_REPEAT_SUB_OP - ISO7816.OFFSET_CDATA + 2)) { 
+                numRepeatSubOperation = Util.getShort(apdubuf, OFFSET_NUM_REPEAT_SUB_OP);  
+            }
+        }
+    }
+    
+    TEST_SETTINGS   m_testSettings = null;
+    AESKey          m_aes_key = null;
+    
+    byte[]          m_ram1 = null;
+    
 
     /**
      * AlgTest default constructor
@@ -172,6 +267,10 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         } else {
        }
 
+        m_testSettings = new TEST_SETTINGS();
+        
+        m_ram1 = JCSystem.makeTransientByteArray(RAM1_ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);
+        
         if (isOP2) { register(buffer, (short)(offset + 1), (byte)buffer[offset]); }
         else { register(); }
     }
@@ -263,31 +362,26 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
            case (byte) 0x11: {
              try {offset++;m_encryptCipher = Cipher.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
              catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-             // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
              break;
            }
            case (byte) 0x12: {
              try {offset++;m_sign = Signature.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
              catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-             // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
              break;
            }
            case (byte) 0x15: {
              try {offset++;m_digest = MessageDigest.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
              catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-             // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
              break;
            }
            case (byte) 0x16: {
              try {offset++;m_random = RandomData.getInstance(algorithmClass); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
              catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-             // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
              break;
            }
            case (byte) 0x20: {
              try {offset++;m_key = KeyBuilder.buildKey(algorithmClass, algorithmParam1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
              catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-             // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
              break;
            }
            case (byte) 0x18: // no break
@@ -299,19 +393,16 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
              }
              catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-             // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
              break;
            }
            case (byte) 0x13: {
              try {offset++;m_object = KeyAgreement.getInstance(ALG_EC_SVDP_DH, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
              catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;  }
-             // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
              break;
            }
            case (byte) 0x17: {
              try {offset++;m_object = Checksum.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
              catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-             // catch (Exception e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte)0x6f;}
              break;
            }
         }
@@ -327,7 +418,54 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
        //apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (short) offset);
     }
     
+    /*
+                for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
+                    for (short j = 0; j < m_testSettings.numRepeatSubOperation; j++) {
+                        m_aes_key.setKey(m_ram1, (short) 0);
+                    }
+                    m_sign.sign(plText, (short)0, rest, plText, (short) 0);              
+                }
     
+    */
+    
+    void class_Key_test(APDU apdu) {
+        m_testSettings.parse(apdu);  
+        byte[] apdubuf = apdu.getBuffer();
+        short repeatWhole = m_testSettings.numRepeatWholeOperation;
+
+        switch (m_testSettings.algorithmType) {
+            case KeyBuilder.TYPE_AES:
+                m_aes_key = (AESKey) KeyBuilder.buildKey((byte) m_testSettings.algorithmType, m_testSettings.algorithmKeyLength, false);
+
+                switch (m_testSettings.algorithmOperation) {
+                    case TEST_SETTINGS.method_setKey: 
+                        // i % 10 => different offset to ensure slightly different key every time
+                        for (short i = 0; i < repeatWhole; i++) { 
+                            m_aes_key.setKey(m_ram1, (short) (i % 10)); 
+                        } 
+                        break;
+                    case TEST_SETTINGS.method_clearKey:
+                        for (short i = 0; i < repeatWhole; i++) {
+                            m_aes_key.clearKey(); // BUGBUG: we should set key before clearing (clearing already cleared key may be very fast)
+                        }
+                        break;
+                    case TEST_SETTINGS.method_getKey:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
+                            m_aes_key.getKey(m_ram1, (short) 0);
+                        }
+                        break;
+                    default:
+                        ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
+                }
+                break;
+            default:
+                ISOException.throwIt(SW_ALG_TYPE_NOT_SUPPORTED);
+        }
+        
+        apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SW_STAT_OK;
+        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 2);            
+    }
+
     void JCSystemInfo(APDU apdu) {
        byte[]    apdubuf = apdu.getBuffer();
        short     dataLen = apdu.setIncomingAndReceive();
@@ -344,7 +482,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         offset = (short)(offset + 2);
         Util.setShort(apdubuf, offset, JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT));
         offset = (short)(offset + 2);
-    /**/    
+
         apdu.setOutgoingAndSend((byte) 0, offset);
       }
   
