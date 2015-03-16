@@ -32,6 +32,7 @@
 package algtestjclient;
 
 /* Import 'ALGTEST_JCLIENT_VERSION' variable - possibly replace with actual import of those variables later? */
+import AlgTest.Consts;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -53,7 +54,7 @@ import javax.smartcardio.ResponseAPDU;
  * @version 1.0
  */
 public class SingleModeTest {
-    CardMngr cardManager = new CardMngr();
+    public static CardMngr cardManager = new CardMngr();
     
     /* Argument constants for choosing algorithm to test. */
     public static final String TEST_ALL_ALGORITHMS = "ALL_ALGS";
@@ -392,7 +393,7 @@ public class SingleModeTest {
         (byte)0x02, (byte)0x00,         // [62,63] - 512
     };
     
-    public final int CLOCKS_PER_SEC = 1000;
+    public final static int CLOCKS_PER_SEC = 1000;
        
     /**
      * Method containing 'menu'.
@@ -563,7 +564,7 @@ public class SingleModeTest {
      * Closes file given in parameter.
      * @param file FileOutputStream object to close.
      */
-    public void CloseFile(FileOutputStream file){
+    public static void CloseFile(FileOutputStream file){
         try {
             file.close();
         } catch (IOException ex) {
@@ -592,7 +593,7 @@ public class SingleModeTest {
      * @param response Response byte of APDU (second byte of incoming APDU) .
      * @throws IOException
      */
-    public void CheckResult (FileOutputStream file, String name, byte response, long elapsedCard) throws IOException{
+    public static void CheckResult (FileOutputStream file, String name, byte response, long elapsedCard) throws IOException{
         String message = "";
         String elTimeStr = "";
         switch (response){
@@ -651,14 +652,14 @@ public class SingleModeTest {
      * @param file FileOutputStream object containing output file.
      * @throws Exception
      */
-    public void TestClassCipher(FileOutputStream file) throws Exception{
+    public static void TestClassCipher(FileOutputStream file) throws Exception{
         long       elapsedCard = 0;
         byte[] apdu = new byte[6];
-            apdu[OFFSET_CLA] = (byte)0xB0;  // for AlgTest applet
-            apdu[OFFSET_INS] = (byte)0x75;  // for AlgTest applet switch to 'TestSupportedModeSingle'
-            apdu[OFFSET_P1] = CLASS_CIPHER;   // 0x11
-            apdu[OFFSET_P2] = (byte)0x00;
-            apdu[OFFSET_LC] = (byte)0x01;
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
+        apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
+        apdu[OFFSET_P1] = CLASS_CIPHER;   // 0x11
+        apdu[OFFSET_P2] = (byte)0x00;
+        apdu[OFFSET_LC] = (byte)0x01;
 
         /* Creates message with class name and writes it in the output file and on the screen. */
         String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.CIPHER_STR[0]) + "\r\n";
@@ -689,14 +690,14 @@ public class SingleModeTest {
      * @throws IOException
      * @throws Exception
      */
-    public void TestClassSignature (FileOutputStream file) throws IOException, Exception{
+    public static void TestClassSignature (FileOutputStream file) throws IOException, Exception{
         long       elapsedCard = 0;
         byte[] apdu = new byte[6];
-            apdu[OFFSET_CLA] = (byte)0xB0;  // for AlgTest applet
-            apdu[OFFSET_INS] = (byte)0x75;  // for AlgTest applet switch to 'TestSupportedModeSingle'
-            apdu[OFFSET_P1] = CLASS_SIGNATURE;   // 0x12
-            apdu[OFFSET_P2] = (byte)0x00;
-            apdu[OFFSET_LC] = (byte)0x01;
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
+        apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
+        apdu[OFFSET_P1] = CLASS_SIGNATURE;   // 0x12
+        apdu[OFFSET_P2] = (byte)0x00;
+        apdu[OFFSET_LC] = (byte)0x01;
         
         /* Creates message with class name and writes it in the output file and on the screen. */
         String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.SIGNATURE_STR[0]) + "\r\n";
@@ -725,14 +726,14 @@ public class SingleModeTest {
      * @throws IOException
      * @throws Exception
      */
-    public void TestClassMessageDigest (FileOutputStream file) throws IOException, Exception{
+    public static void TestClassMessageDigest (FileOutputStream file) throws IOException, Exception{
         long       elapsedCard = 0;
         byte[] apdu = new byte[6];
-            apdu[OFFSET_CLA] = (byte)0xB0;  // for AlgTest applet
-            apdu[OFFSET_INS] = (byte)0x75;  // for AlgTest applet switch to 'TestSupportedModeSingle'
-            apdu[OFFSET_P1] = CLASS_MESSAGEDIGEST;   // 0x15
-            apdu[OFFSET_P2] = (byte)0x00;
-            apdu[OFFSET_LC] = (byte)0x01;
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
+        apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
+        apdu[OFFSET_P1] = CLASS_MESSAGEDIGEST;   // 0x15
+        apdu[OFFSET_P2] = (byte)0x00;
+        apdu[OFFSET_LC] = (byte)0x01;
         
         /* Creates message with class name and writes it in the output file and on the screen. */
         String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.MESSAGEDIGEST_STR[0]) + "\r\n";
@@ -761,11 +762,11 @@ public class SingleModeTest {
      * @throws IOException
      * @throws Exception
      */
-    public void TestClassRandomData (FileOutputStream file) throws IOException, Exception{
+    public static void TestClassRandomData (FileOutputStream file) throws IOException, Exception{
         long       elapsedCard = 0;
         byte[] apdu = new byte[6];
-            apdu[OFFSET_CLA] = (byte)0xB0;  // for AlgTest applet
-            apdu[OFFSET_INS] = (byte)0x75;  // for AlgTest applet switch to 'TestSupportedModeSingle'
+            apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
+            apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
             apdu[OFFSET_P1] = CLASS_RANDOMDATA;   // 0x16
             apdu[OFFSET_P2] = (byte)0x00;
             apdu[OFFSET_LC] = (byte)0x01;
@@ -796,11 +797,11 @@ public class SingleModeTest {
      * @throws IOException
      * @throws Exception
      */
-    public void TestClassKeyBuilder (FileOutputStream file) throws IOException, Exception{
+    public static void TestClassKeyBuilder (FileOutputStream file) throws IOException, Exception{
         long       elapsedCard = 0;
         byte[] apdu = new byte[8];
-            apdu[OFFSET_CLA] = (byte)0xB0;  // for AlgTest applet
-            apdu[OFFSET_INS] = (byte)0x75;  // for AlgTest applet switch to 'TestSupportedModeSingle'
+            apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
+            apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
             apdu[OFFSET_P1] = CLASS_KEYBUILDER;   // 0x20
             apdu[OFFSET_P2] = (byte)0x00;
             apdu[OFFSET_LC] = (byte)0x03;
@@ -839,11 +840,11 @@ public class SingleModeTest {
      * @throws IOException
      * @throws Exception
      */
-    public void TestClassKeyAgreement (FileOutputStream file) throws IOException, Exception{
+    public static void TestClassKeyAgreement (FileOutputStream file) throws IOException, Exception{
         long       elapsedCard = 0;
         byte[] apdu = new byte[6];
-            apdu[OFFSET_CLA] = (byte)0xB0;  // for AlgTest applet
-            apdu[OFFSET_INS] = (byte)0x75;  // for AlgTest applet switch to 'TestSupportedModeSingle'
+            apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
+            apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
             apdu[OFFSET_P1] = CLASS_KEYAGREEMENT;   // 0x13
             apdu[OFFSET_P2] = (byte)0x00;
             apdu[OFFSET_LC] = (byte)0x01;
@@ -875,11 +876,11 @@ public class SingleModeTest {
      * @throws IOException
      * @throws Exception
      */
-    public void TestClassChecksum (FileOutputStream file) throws IOException, Exception{
+    public static void TestClassChecksum (FileOutputStream file) throws IOException, Exception{
         long       elapsedCard = 0;
         byte[] apdu = new byte[6];
-            apdu[OFFSET_CLA] = (byte)0xB0;  // for AlgTest applet
-            apdu[OFFSET_INS] = (byte)0x75;  // for AlgTest applet switch to 'TestSupportedModeSingle'
+            apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
+            apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
             apdu[OFFSET_P1] = CLASS_CHECKSUM;   // 0x17
             apdu[OFFSET_P2] = (byte)0x00;
             apdu[OFFSET_LC] = (byte)0x01;
@@ -911,11 +912,11 @@ public class SingleModeTest {
      * @throws IOException
      * @throws Exception
      */
-    public void TestClassKeyPair_ALG_RSA (FileOutputStream file) throws IOException, Exception{
+    public static void TestClassKeyPair_ALG_RSA (FileOutputStream file) throws IOException, Exception{
         long       elapsedCard = 0;
         byte[] apdu = new byte[8];
-            apdu[OFFSET_CLA] = (byte)0xB0;      // for AlgTest applet
-            apdu[OFFSET_INS] = (byte)0x75;      // for AlgTest applet switch to 'TestSupportedModeSingle'
+            apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;      // for AlgTest applet
+            apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;      // for AlgTest applet switch to 'TestSupportedModeSingle'
             apdu[OFFSET_P1] = CLASS_KEYPAIR;    // 0x19
             apdu[OFFSET_P2] = (byte)0x00;
             apdu[OFFSET_LC] = (byte)0x03;
@@ -952,11 +953,11 @@ public class SingleModeTest {
      * @throws IOException
      * @throws Exception
      */
-    public void TestClassKeyPair_ALG_RSA_CRT (FileOutputStream file) throws IOException, Exception{
+    public static void TestClassKeyPair_ALG_RSA_CRT (FileOutputStream file) throws IOException, Exception{
         long       elapsedCard = 0;
         byte[] apdu = new byte[8];
-        apdu[OFFSET_CLA] = (byte)0xB0;      // for AlgTest applet
-        apdu[OFFSET_INS] = (byte)0x75;      // for AlgTest applet switch to 'TestSupportedModeSingle'
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;      // for AlgTest applet
+        apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;      // for AlgTest applet switch to 'TestSupportedModeSingle'
         apdu[OFFSET_P1] = CLASS_KEYPAIR;    // 0x19
         apdu[OFFSET_P2] = (byte)0x00;
         apdu[OFFSET_LC] = (byte)0x03;
@@ -994,11 +995,11 @@ public class SingleModeTest {
      * @throws IOException
      * @throws Exception
      */
-    public void TestClassKeyPair_ALG_DSA (FileOutputStream file) throws IOException, Exception{
+    public static void TestClassKeyPair_ALG_DSA (FileOutputStream file) throws IOException, Exception{
         long       elapsedCard = 0;
         byte[] apdu = new byte[8];
-        apdu[OFFSET_CLA] = (byte)0xB0;      // for AlgTest applet
-        apdu[OFFSET_INS] = (byte)0x75;      // for AlgTest applet switch to 'TestSupportedModeSingle'
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;      // for AlgTest applet
+        apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;      // for AlgTest applet switch to 'TestSupportedModeSingle'
         apdu[OFFSET_P1] = CLASS_KEYPAIR;    // 0x19
         apdu[OFFSET_P2] = (byte)0x00;
         apdu[OFFSET_LC] = (byte)0x03;
@@ -1035,11 +1036,11 @@ public class SingleModeTest {
      * @throws IOException
      * @throws Exception
      */
-    public void TestClassKeyPair_ALG_EC_F2M (FileOutputStream file) throws IOException, Exception{
+    public static void TestClassKeyPair_ALG_EC_F2M (FileOutputStream file) throws IOException, Exception{
         long       elapsedCard = 0;
         byte[] apdu = new byte[8];
-        apdu[OFFSET_CLA] = (byte)0xB0;      // for AlgTest applet
-        apdu[OFFSET_INS] = (byte)0x75;      // for AlgTest applet switch to 'TestSupportedModeSingle'
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;      // for AlgTest applet
+        apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;      // for AlgTest applet switch to 'TestSupportedModeSingle'
         apdu[OFFSET_P1] = CLASS_KEYPAIR;    // 0x19
         apdu[OFFSET_P2] = (byte)0x00;
         apdu[OFFSET_LC] = (byte)0x03;
@@ -1076,11 +1077,11 @@ public class SingleModeTest {
      * @throws IOException
      * @throws Exception
      */
-    public void TestClassKeyPair_ALG_EC_FP (FileOutputStream file) throws IOException, Exception{
+    public static void TestClassKeyPair_ALG_EC_FP (FileOutputStream file) throws IOException, Exception{
         long       elapsedCard = 0;
         byte[] apdu = new byte[8];
-        apdu[OFFSET_CLA] = (byte)0xB0;      // for AlgTest applet
-        apdu[OFFSET_INS] = (byte)0x75;      // for AlgTest applet switch to 'TestSupportedModeSingle'
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;      // for AlgTest applet
+        apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;      // for AlgTest applet switch to 'TestSupportedModeSingle'
         apdu[OFFSET_P1] = CLASS_KEYPAIR;    // 0x19
         apdu[OFFSET_P2] = (byte)0x00;
         apdu[OFFSET_LC] = (byte)0x03;
@@ -1116,7 +1117,7 @@ public class SingleModeTest {
      * @param file FileOutputStream object containing file for output data.
      * @throws Exception
      */
-    public void testAllAtOnce (FileOutputStream file) throws Exception{
+    public static void testAllAtOnce (FileOutputStream file) throws Exception{
         TestClassCipher(file);
         TestClassSignature(file);
         TestClassMessageDigest(file);

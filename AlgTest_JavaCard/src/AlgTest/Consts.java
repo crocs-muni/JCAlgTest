@@ -1,34 +1,35 @@
 package AlgTest;
+
 /**
  * @author Petr Svenda <petr@svenda.com>
  */
 public class Consts {
-    final static byte CLA_CARD_ALGTEST                  = (byte) 0xB0;
-    final static byte INS_CARD_GETVERSION               = (byte) 0x60;
-    final static byte INS_CARD_RESET                    = (byte) 0x69;
+    public final static byte CLA_CARD_ALGTEST                  = (byte) 0xB0;
+    public final static byte INS_CARD_GETVERSION               = (byte) 0x60;
+    public final static byte INS_CARD_RESET                    = (byte) 0x69;
     
-    final static byte INS_CARD_TESTSUPPORTEDMODES       = (byte) 0x70;
-    final static byte INS_CARD_TESTAVAILABLE_MEMORY     = (byte) 0x71;
-    final static byte INS_CARD_TESTRSAEXPONENTSET       = (byte) 0x72;
-    final static byte INS_CARD_JCSYSTEM_INFO            = (byte) 0x73;
-    final static byte INS_CARD_TESTEXTAPDU              = (byte) 0x74;
-    final static byte INS_CARD_TESTSUPPORTEDMODES_SINGLE= (byte) 0x75;    
+    public final static byte INS_CARD_TESTSUPPORTEDMODES       = (byte) 0x70;
+    public final static byte INS_CARD_TESTAVAILABLE_MEMORY     = (byte) 0x71;
+    public final static byte INS_CARD_TESTRSAEXPONENTSET       = (byte) 0x72;
+    public final static byte INS_CARD_JCSYSTEM_INFO            = (byte) 0x73;
+    public final static byte INS_CARD_TESTEXTAPDU              = (byte) 0x74;
+    public final static byte INS_CARD_TESTSUPPORTEDMODES_SINGLE= (byte) 0x75;    
     
     // BUGBUG: refactor codes
-    final static byte INS_PERF_TEST_CLASS_KEY           = (byte) 0x40;
-    final static byte INS_PERF_TEST_MESSAGE_DIGEST      = (byte) 0x41;
-    final static byte INS_PERF_TEST_RANDOM_DATA         = (byte) 0x42;
-    final static byte INS_PERF_TEST_CIPHER              = (byte) 0x43;
-    final static byte INS_PERF_TEST_KEY_BUILDER         = (byte) 0x44;
-    final static byte INS_PERF_TEST_KEY_PAIR            = (byte) 0x45;
-    final static byte INS_PERF_TEST_CHECKSUM            = (byte) 0x46;
-    final static byte INS_PERF_RESET                    = (byte) 0x47;
-    final static byte INS_PERF_PREPARE_KEY              = (byte) 0x48;
-    final static byte INS_PERF_PREPARE_SIGNATURE        = (byte) 0x49;
-    final static byte INS_PERF_PREPARE_KEY_PAIR         = (byte) 0x50;
-    final static byte INS_PERF_PREPARE_MESSAGE_DIGEST   = (byte) 0x51;
-    final static byte INS_PERF_PREPARE_RANDOM_DATA      = (byte) 0x52;
-    final static byte INS_PERF_TEST_SIGNATURE           = (byte) 0x53;
+    public final static byte INS_PERF_TEST_CLASS_KEY           = (byte) 0x40;
+    public final static byte INS_PERF_TEST_MESSAGE_DIGEST      = (byte) 0x41;
+    public final static byte INS_PERF_TEST_RANDOM_DATA         = (byte) 0x42;
+    public final static byte INS_PERF_TEST_CIPHER              = (byte) 0x43;
+    public final static byte INS_PERF_TEST_KEY_BUILDER         = (byte) 0x44;
+    public final static byte INS_PERF_TEST_KEY_PAIR            = (byte) 0x45;
+    public final static byte INS_PERF_TEST_CHECKSUM            = (byte) 0x46;
+    public final static byte INS_PERF_RESET                    = (byte) 0x47;
+    public final static byte INS_PERF_PREPARE_KEY              = (byte) 0x48;
+    public final static byte INS_PERF_PREPARE_SIGNATURE        = (byte) 0x49;
+    public final static byte INS_PERF_PREPARE_KEY_PAIR         = (byte) 0x50;
+    public final static byte INS_PERF_PREPARE_MESSAGE_DIGEST   = (byte) 0x51;
+    public final static byte INS_PERF_PREPARE_RANDOM_DATA      = (byte) 0x52;
+    public final static byte INS_PERF_TEST_SIGNATURE           = (byte) 0x53;
     
     
     public static final byte MY_DSA = 88;       // bugbug: introduced probably because of value duplicity inside prepareSignature()

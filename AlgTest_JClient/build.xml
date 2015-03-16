@@ -70,4 +70,13 @@
     nbproject/build-impl.xml file. 
 
     -->
+
+          <target name="-post-jar">
+	     <!-- Copy newly build jar into test directory for simulator of smart cards-->
+             <copy file="${basedir}/dist/AlgTestJClient.jar" tofile="${basedir}/test/AlgTestJClient.jar"/>
+
+             <!-- Copy files necessary for compilation of JC applet-->
+             <copy file="${basedir}/src/algtest/AlgTestSinglePerApdu.java" tofile="../AlgTest_JavaCard/src/AlgTest/AlgTestSinglePerApdu.java"/>
+             <copy file="${basedir}/src/algtest/Consts.java" tofile="../AlgTest_JavaCard/src/AlgTest/Consts.java"/>
+          </target>
 </project>

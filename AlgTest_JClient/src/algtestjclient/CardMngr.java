@@ -51,11 +51,18 @@ import java.util.Scanner;
 import javax.smartcardio.*;
 import AlgTest.Consts;
 
+import com.licel.jcardsim.io.CAD;
+import com.licel.jcardsim.io.JavaxSmartCardInterface;
+import javacard.framework.AID;
+
+
 /**
  *
  * @author petrs
  */
 public class CardMngr {
+    public static CAD m_cad = null;
+    public static JavaxSmartCardInterface m_simulator = null;
     
     final static byte SUCCESS =                    (byte) 0xAA;
     
@@ -208,7 +215,7 @@ public class CardMngr {
             System.out.println("ATR: " + atr);
             String fileName = "AlgTest_" + atr + ".csv";
             fileName = fileName.replace(":", "");
-            fileName = fileName.replace(" ", "");
+            fileName = fileName.replace(" ", "_");
             
             FileOutputStream file = new FileOutputStream(fileName);
             
@@ -259,22 +266,18 @@ public class CardMngr {
     
     public boolean ConnectToCard(Class ClassToTest, StringBuilder selectedReader, StringBuilder selectedATR, StringBuilder usedProtocol) throws Exception {
         boolean cardFound = false;        
-        // TRY ALL READERS, FIND FIRST SELECTABLE
-        List terminalList = GetReaderList();
-
-        if(terminalList == null){   // if there are no terminals connected
+        
+        if (ClassToTest != null) {
             System.out.println("No terminals found");
             System.out.println("Creating simulator...");
-            if (ClassToTest == null){   // if there is no class to be tested specified, simulator can't install needed applet
-                System.err.println("No class to test given!");
-            }
-            else{       // simulator will install given class
-                MakeSim(ClassToTest);
-            }
+            MakeSim(ClassToTest);
+
             System.out.println("Simulator created.");
             cardFound = true;
         }
-        else{
+        else {
+            // TRY ALL READERS, FIND FIRST SELECTABLE
+            List terminalList = GetReaderList();
             //List numbers of Card readers        
             for (int i = 0; i < terminalList.size(); i++) {
                 System.out.println(i + " : " + terminalList.get(i));
@@ -341,11 +344,8 @@ public class CardMngr {
 
         System.out.println(bytesToHex(commandAPDU.getBytes()));
         
-        if(m_channel == null){  // in case there is no real card present -> simulator is running
-            /* BUGBUG: we need to figure out how to support JCardSim in nice way (copy of class files, directory structure...)
-            responseAPDU = simulator.transmitCommand(commandAPDU);
-            */
-            return null;
+        if (m_simulator != null){  // in case simulator is running
+            responseAPDU = m_simulator.transmitCommand(commandAPDU);
         }
         else {                  // in case there is actual card present
             responseAPDU = m_channel.transmit(commandAPDU);
@@ -417,7 +417,7 @@ public class CardMngr {
 	// Prepare test memory apdu
         byte apdu[] = new byte[HEADER_LENGTH + 1];
         apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
-        apdu[OFFSET_INS] = (byte) 0x60;
+        apdu[OFFSET_INS] = Consts.INS_CARD_GETVERSION;
         apdu[OFFSET_P1] = 0x00;
         apdu[OFFSET_P2] = 0x00;
         apdu[OFFSET_LC] = 0x01;
@@ -1055,17 +1055,16 @@ public class CardMngr {
      * Sets up simulator using jCardSim API.
      * @param m_applet Class of on-card AlgTest to be installed in simulator.
      */
-    public void MakeSim(Class m_applet){
-    /* BUGBUG: we need to figure out how to support JCardSim in nice way (copy of class files, directory structure...)
+    public void MakeSim(Class applet){
+    ///* BUGBUG: we need to figure out how to support JCardSim in nice way (copy of class files, directory structure...)
         System.setProperty("com.licel.jcardsim.terminal.type", "2");
         CAD cad = new CAD(System.getProperties());
-        simulator = (JavaxSmartCardInterface) cad.getCardInterface();
+        m_simulator = (JavaxSmartCardInterface) cad.getCardInterface();
         AID appletAID = new AID(selectApplet, (short)0, (byte) selectApplet.length);
         // installs applet
-        simulator.installApplet(appletAID, m_applet);
+        m_simulator.installApplet(appletAID, applet);
         // selects applet
-        simulator.selectApplet(appletAID);
-    */
+        m_simulator.selectApplet(appletAID);
     }
     public void PrintHelp () throws FileNotFoundException, IOException{
         System.out.println(helpString);
