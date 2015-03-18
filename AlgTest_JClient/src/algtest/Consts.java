@@ -36,9 +36,11 @@ public class Consts {
     
     
       //  
-      //Class javacard.security.Signature
+      // Class javacard.security.Signature
+      // Search: public static final (byte|short) ([A-Z0-9_]*) 
+      // Collect: assertEquals(Consts.\1, javacard.security.Signature.\1); 
       //
-    public static final byte ALG_DES_MAC4_NOPAD                  = 1;
+    public static final byte ALG_DES_MAC4_NOPAD                  = 1;   
     public static final byte ALG_DES_MAC8_NOPAD                  = 2;
     public static final byte ALG_DES_MAC4_ISO9797_M1             = 3;
     public static final byte ALG_DES_MAC8_ISO9797_M1             = 4;
@@ -187,7 +189,6 @@ public class Consts {
     public static final short LENGTH_RSA_1536       = 1536;
     public static final short LENGTH_RSA_1984       = 1984;
     public static final short LENGTH_RSA_2048       = 2048;
-    public static final short LENGTH_RSA_3072       = 3072;
     public static final short LENGTH_RSA_4096       = 4096;
     public static final short LENGTH_DSA_512        = 512;
     public static final short LENGTH_DSA_768        = 768;
@@ -211,8 +212,8 @@ public class Consts {
     public static final short LENGTH_KOREAN_SEED_128        = 128;
     public static final short LENGTH_HMAC_SHA_1_BLOCK_64    = 64;
     public static final short LENGTH_HMAC_SHA_256_BLOCK_64  = 64;
-    public static final short LENGTH_HMAC_SHA_384_BLOCK_64  = 128;
-    public static final short LENGTH_HMAC_SHA_512_BLOCK_64  = 128;
+    public static final short LENGTH_HMAC_SHA_384_BLOCK_128  = 128;
+    public static final short LENGTH_HMAC_SHA_512_BLOCK_128  = 128;
     
       //
       //Class javacard.security.KeyPair
@@ -222,8 +223,6 @@ public class Consts {
     public static final byte ALG_DSA                       = 3;
     public static final byte ALG_EC_F2M                    = 4;
     public static final byte ALG_EC_FP                     = 5;
-
-
 
     public static final byte CLASS_KEYPAIR_RSA_P2          = 11;
     public static final byte CLASS_KEYPAIR_RSACRT_P2       = 11;

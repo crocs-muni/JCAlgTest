@@ -56,11 +56,11 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
     // NOTE: when incrementing version, don't forget to update ALGTEST_JAVACARD_VERSION_CURRENT value
 
     /**
-     * Version 1.3.1 (15.3.2015)
+     * Version 1.4 (15.3.2015)
      * + Merged separate javacard applet codes into AlgTestSinglePerApdu.java
      * + Added performance testing from L. Kunikova
      */
-    final static byte ALGTEST_JAVACARD_VERSION_1_3_1[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x34};
+    final static byte ALGTEST_JAVACARD_VERSION_1_4[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x34};
     /**
      * Version 1.3 (30.11.2014)
      * + Possibility to test single algorithm at single apdu command (possibility for reset in between) via TestSupportedModeSingle()
@@ -88,7 +88,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
      */
     final static byte ALGTEST_JAVACARD_VERSION_1_0[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x30};
 
-    byte ALGTEST_JAVACARD_VERSION_CURRENT[] = ALGTEST_JAVACARD_VERSION_1_3_1;
+    byte ALGTEST_JAVACARD_VERSION_CURRENT[] = ALGTEST_JAVACARD_VERSION_1_4;
 
     private   Cipher           m_encryptCipher = null;
     private   Cipher           m_encryptCipherRSA = null;
