@@ -156,7 +156,8 @@ public class PerformanceTestingNGTest {
 	out.format("%n");
     }    
     @Test
-    void iterateOverFields() throws Exception {    
+    void debug_iterateOverFields() throws Exception {    
+        // TODO: move into Process app, perform on all required classes
         String longClass = "javacard.security.Signature";
         String shortClass = "Signature";
         Class<?> c = Class.forName(longClass);
