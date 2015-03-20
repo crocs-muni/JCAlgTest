@@ -50,10 +50,12 @@ import java.util.Scanner;
 */
 import javax.smartcardio.*;
 import AlgTest.Consts;
+import AlgTest.TestSettings;
 
 import com.licel.jcardsim.io.CAD;
 import com.licel.jcardsim.io.JavaxSmartCardInterface;
 import javacard.framework.AID;
+import javacard.framework.ISO7816;
 
 
 /**
@@ -206,7 +208,7 @@ public class CardMngr {
     */
     
     /* CLOCKS_PER_SEC also used in 'PerformanceTesting.java' */
-    public final int CLOCKS_PER_SEC = 1000;
+    public static final int CLOCKS_PER_SEC = 1000;
     
     public FileOutputStream establishConnection(Class ClassToTest) throws Exception{
         if (ConnectToCard(ClassToTest, reader, atr, protocol)) {
@@ -985,34 +987,71 @@ public class CardMngr {
         return status;
     }
     
-    private boolean resetApplet(byte cla, byte ins) 
-    {
-        try
-        {
+    private boolean resetApplet(byte cla, byte ins) {
+        try {
             System.out.println("\nReseting card...");
             byte apdu[] = {cla,ins,0,0};
             ResponseAPDU resp = sendAPDU(apdu);
-            if (resp.getSW() != 0x9000)
-            {
+            if (resp.getSW() != 0x9000) {
                 return false;
             }
             return true;
         }
-        catch(Exception e)
-        {
+        catch(Exception e) {
             return false;
         }
-        
     }    
+    
+    public double PerfTestCommand(byte cla, byte ins, TestSettings testSet, byte resetIns) throws Exception {
+        long elapsedCard;
+        byte apdu[] = new byte[HEADER_LENGTH + TestSettings.TEST_SETTINGS_LENGTH];
+        apdu[OFFSET_CLA] = (byte) cla;
+        apdu[OFFSET_INS] = (byte) ins;
+        apdu[OFFSET_LC] = TestSettings.TEST_SETTINGS_LENGTH;
+
+        testSet.serializeToApduBuff(apdu, (short) 0);
+
+        elapsedCard = -System.currentTimeMillis();
+        ResponseAPDU resp = sendAPDU(apdu);
+        if (resp.getSW() != 0x9000) {           
+            boolean succes = resetApplet(cla, resetIns);
+            if (succes) {
+                elapsedCard = -System.currentTimeMillis();
+                resp = sendAPDU(apdu);
+                elapsedCard += System.currentTimeMillis();
+                if (resp.getNr()!=0) {
+                    byte data[] = resp.getData();          
+                    if (data[0] != SUCCESS) throw new CardCommunicationException(data[0]);
+                }                
+            }
+            else
+            {
+                System.out.println("Reset applet didn't work, speed of algorithm couldn't be mesured");
+                throw new CardCommunicationException(CANT_BE_MEASURED);
+            }
+        }
+        else
+        {
+            elapsedCard += System.currentTimeMillis();
+            if (resp.getNr()!=0)
+            {
+                byte data[];
+                data = resp.getData();          
+                if(data[0] != SUCCESS) throw new CardCommunicationException(data[0]);
+            }            
+        }
+        return (double) elapsedCard ;
+    }    
+    
     public double BasicTest(byte algClass, byte alg, byte p1, byte p2, byte[] cdata, byte dataLength, byte resetIns) throws Exception
     {
         long elapsedCard;
         byte apdu[] = new byte[HEADER_LENGTH + dataLength];
-                apdu[OFFSET_CLA] = (byte) algClass;
-                apdu[OFFSET_INS] = (byte) alg;
-                apdu[OFFSET_P1] = p1;
-                apdu[OFFSET_P2] = p2;
-                apdu[OFFSET_LC] = dataLength;
+        apdu[OFFSET_CLA] = (byte) algClass;
+        apdu[OFFSET_INS] = (byte) alg;
+        apdu[OFFSET_P1] = p1;
+        apdu[OFFSET_P2] = p2;
+        apdu[OFFSET_LC] = dataLength;
         System.arraycopy(cdata, 0, apdu, OFFSET_DATA, dataLength);
         elapsedCard = -System.currentTimeMillis();
         ResponseAPDU resp = sendAPDU(apdu);
@@ -1078,4 +1117,26 @@ public class CardMngr {
             System.out.println("List of supported parameters for AlgTest created in project folder.");
         }
     }
+    
+    public static byte[] hexStringToByteArray(String s) {
+        String sanitized = s.replace(" ", "");
+        byte[] b = new byte[sanitized.length() / 2];
+        for (int i = 0; i < b.length; i++) {
+            int index = i * 2;
+            int v = Integer.parseInt(sanitized.substring(index, index + 2), 16);
+            b[i] = (byte) v;
+        }
+        return b;
+    }
+ 
+    public static byte[] valuesStringToByteArray(String s) {
+        String sanitized = s.replace(" ", "");
+        byte[] b = new byte[sanitized.length() / 2];
+        for (int i = 0; i < b.length; i++) {
+            int index = i * 2;
+            int v = Integer.parseInt(sanitized.substring(index, index + 2), 16);
+            b[i] = (byte) v;
+        }
+        return b;
+    }    
 }

@@ -47,6 +47,7 @@ import javacard.framework.*;
 import javacard.security.*;
 import javacardx.crypto.*;
 
+
 // JC 2.2.2 only
 //import javacardx.apdu.ExtendedLength; 
 //public class AlgTest extends javacard.framework.Applet implements ExtendedLength 
@@ -93,7 +94,6 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
     private   Cipher           m_encryptCipher = null;
     private   Cipher           m_encryptCipherRSA = null;
     private   Signature        m_sign = null;
-    private   Key              m_key = null;
     private   MessageDigest    m_digest = null;
     private   RandomData       m_random = null;
     private   Object           m_object = null;
@@ -130,8 +130,9 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
     final static short SW_STAT_OK                   = (short) 0x9000;
     final static short SW_ALG_TYPE_NOT_SUPPORTED    = (short) 0x6001;
     final static short SW_ALG_OPS_NOT_SUPPORTED     = (short) 0x6002;
+    final static short SW_ALG_TYPE_UNKNOWN          = (short) 0x6003;
     
-    final static short RAM1_ARRAY_LENGTH = (short) 300;
+    final static short RAM1_ARRAY_LENGTH = (short) 500;
     
     
     /* Auxiliary variables to choose class - used in APDU as P1 byte. */
@@ -143,82 +144,21 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
     public static final byte CLASS_CHECKSUM        = 0x17;
     public static final byte CLASS_KEYPAIR         = 0x19;
     public static final byte CLASS_KEYBUILDER      = 0x20;
-    
-    class TEST_SETTINGS {
-        final static short OFFSET_ALGORITHM_CLASS           = ISO7816.OFFSET_CDATA;
-        final static short OFFSET_ALGORITHM_SPECIFICATION   = (short) (OFFSET_ALGORITHM_CLASS + 2);
-        final static short OFFSET_ALGORITHM_PARAM1          = (short) (OFFSET_ALGORITHM_SPECIFICATION + 2);
-        final static short OFFSET_ALGORITHM_PARAM2          = (short) (OFFSET_ALGORITHM_PARAM1 + 2);
-        final static short OFFSET_ALGORITHM_TESTED_OPS      = (short) (OFFSET_ALGORITHM_PARAM2 + 2);
-        final static short OFFSET_DATA_LENGTH1              = (short) (OFFSET_ALGORITHM_TESTED_OPS + 2);
-        final static short OFFSET_DATA_LENGTH2              = (short) (OFFSET_DATA_LENGTH1 + 2);
-        final static short OFFSET_NUM_REPEAT_WHOLE_OP       = (short) (OFFSET_DATA_LENGTH2 + 2);
-        final static short OFFSET_NUM_REPEAT_SUB_OP         = (short) (OFFSET_NUM_REPEAT_WHOLE_OP + 2);
-        
-        final static byte method_setKey         = (byte) 1;
-        final static byte method_clearKey       = (byte) 2;
-        final static byte method_getKey         = (byte) 3;
-        
-        short       algorithmClass = -1;                // e.g., javacardx.crypto.Cipher
-        short       algorithmSpecification = -1;        // e.g., Cipher.ALG_AES_BLOCK_128_CBC_NOPAD
-        short       algorithmType = -1;                 // e.g., KeyBuilder.TYPE_AES
-        short       algorithmKeyLength = -1;            // e.g., KeyBuilder.LENGTH_AES_128
-        short       algorithmOperation = -1;            // e.g., AESKey.setKey() - our custom constant
-        short       dataLength1 = -1;                   // e.g., length of data used during measurement (e.g., for update())
-        short       dataLength2 = -1;                   // e.g., length of data used during measurement (e.g., for doFinal())
-        short       numRepeatWholeOperation = 1;        // whole operation might be setKey, update, doFinal - numRepeatWholeOperation repeats this whole operation
-        short       numRepeatSubOperation = 1;          // relevant suboperation that should be iterated multiple times - e.g., update()
-        
-        void clear() {
-            algorithmClass = -1;               
-            algorithmSpecification = -1;        
-            algorithmType = -1;                 
-            algorithmKeyLength = -1;           
-            algorithmOperation = -1;           
-            dataLength1 = -1;                  
-            dataLength2 = -1;                  
-            numRepeatWholeOperation = -1;        
-            numRepeatSubOperation = -1;          
-        }
-        void parse(APDU apdu) {
-            byte[] apdubuf = apdu.getBuffer();
-            short len = apdu.setIncomingAndReceive();
 
-            this.clear();
-            
-            if (len >= (short) (OFFSET_ALGORITHM_CLASS - ISO7816.OFFSET_CDATA + 2)) { 
-                algorithmClass = Util.getShort(apdubuf, OFFSET_ALGORITHM_CLASS);                    
-            }
-            if (len >= (short) (OFFSET_ALGORITHM_SPECIFICATION - ISO7816.OFFSET_CDATA + 2)) { 
-                algorithmSpecification = Util.getShort(apdubuf, OFFSET_ALGORITHM_SPECIFICATION);    
-            }
-            if (len >= (short) (OFFSET_ALGORITHM_PARAM1 - ISO7816.OFFSET_CDATA + 2)) { 
-                algorithmType = Util.getShort(apdubuf, OFFSET_ALGORITHM_PARAM1);                    
-            }
-            if (len >= (short) (OFFSET_ALGORITHM_PARAM2 - ISO7816.OFFSET_CDATA + 2)) { 
-                algorithmKeyLength = Util.getShort(apdubuf, OFFSET_ALGORITHM_PARAM2);               
-            }
-            if (len >= (short) (OFFSET_ALGORITHM_TESTED_OPS - ISO7816.OFFSET_CDATA + 2)) { 
-                algorithmOperation = Util.getShort(apdubuf, OFFSET_ALGORITHM_TESTED_OPS);           
-            }
-            if (len >= (short) (OFFSET_DATA_LENGTH1 - ISO7816.OFFSET_CDATA + 2)) { 
-                dataLength1 = Util.getShort(apdubuf, OFFSET_DATA_LENGTH1);                         
-            }
-            if (len >= (short) (OFFSET_DATA_LENGTH2 - ISO7816.OFFSET_CDATA + 2)) { 
-                dataLength2 = Util.getShort(apdubuf, OFFSET_DATA_LENGTH2);                          
-            }
-            if (len >= (short) (OFFSET_NUM_REPEAT_WHOLE_OP - ISO7816.OFFSET_CDATA + 2)) { 
-                numRepeatWholeOperation = Util.getShort(apdubuf, OFFSET_NUM_REPEAT_WHOLE_OP);  
-            }
-            if (len >= (short) (OFFSET_NUM_REPEAT_SUB_OP - ISO7816.OFFSET_CDATA + 2)) { 
-                numRepeatSubOperation = Util.getShort(apdubuf, OFFSET_NUM_REPEAT_SUB_OP);  
-            }
-        }
-    }
     
+    //
     // Performance testing
-    TEST_SETTINGS   m_testSettings = null;
+    //
+    TestSettings    m_testSettings = null;
+    
+    // class Key 
     AESKey          m_aes_key = null;
+    DESKey          m_des_key = null;
+    KoreanSEEDKey   m_koreanseed_key = null;
+    // TODO:  DSAKey, DSAKeyPrivateKey, DSAPublicKey, ECKey, ECPrivateKey, ECPublicKey, HMACKey, RSAPrivateCrtKey, RSAPrivateKey, RSAPublicKey
+    Key             m_key = null;
+    
+    Cipher          m_cipher = null;
     byte[]          m_ram1 = null;
     
 
@@ -259,7 +199,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         } else {
        }
 
-        m_testSettings = new TEST_SETTINGS();
+        m_testSettings = new TestSettings();
         
         m_ram1 = JCSystem.makeTransientByteArray(RAM1_ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);
         
@@ -321,15 +261,17 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                 // case INS_CARD_TESTEXTAPDU: TestExtendedAPDUSupport(apdu); break; // this has to be tested by separate applet with ExtAPDU enabled - should succedd during upload and run
                 case Consts.INS_CARD_RESET: JCSystem.requestObjectDeletion(); break;
 
-                case Consts.INS_PERF_TEST_CLASS_KEY: class_Key_test(apdu); break;        
+                    
+                case Consts.INS_PREPARE_TEST_CLASS_KEY: prepare_class_Key(apdu); break;        
+                case Consts.INS_PREPARE_TEST_CLASS_CIPHER: prepare_class_Cipher(apdu);break;
+                case Consts.INS_PERF_TEST_CLASS_KEY: perftest_class_Key(apdu); break;        
+                case Consts.INS_PERF_TEST_CLASS_CIPHER: perftest_class_Cipher(apdu); break;        
                     
                 case Consts.INS_PERF_TEST_MESSAGE_DIGEST: messageDigestTest(apdu); break;
                 case Consts.INS_PERF_TEST_RANDOM_DATA: randomDataTest(apdu); break;
-                case Consts.INS_PERF_TEST_CIPHER: cipherTest(apdu);break;
                 case Consts.INS_PERF_TEST_KEY_PAIR: keyPairTest(apdu);break;
                 case Consts.INS_PERF_TEST_CHECKSUM: checksumTest(apdu);break;
                 case Consts.INS_PERF_PREPARE_MESSAGE_DIGEST: prepareMessageDigest(apdu);break;
-                case Consts.INS_PERF_PREPARE_KEY: prepareCipher(apdu);break;
                 case Consts.INS_PERF_PREPARE_SIGNATURE: prepareSignature(apdu);break;
                 case Consts.INS_PERF_PREPARE_KEY_PAIR: prepareKeyPair(apdu);break;
                 case Consts.INS_PERF_PREPARE_RANDOM_DATA: prepareRandomData(apdu);break;
@@ -649,45 +591,180 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
       apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, dataLen);
     }
    
-
-    void class_Key_test(APDU apdu) {
-        m_testSettings.parse(apdu);  
+   
+   
+    void prepare_class_Key(APDU apdu) {
         byte[] apdubuf = apdu.getBuffer();
-        short repeatWhole = m_testSettings.numRepeatWholeOperation;
+        m_testSettings.parse(apdu);  
+        
+        short len = prepare_Key(apdu, m_testSettings, Consts.FALSE);
+        
+        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, len);                
+    }
+    short prepare_Key(APDU apdu, TestSettings testSet, byte bSetKeyValue) {
+        byte[] apdubuf = apdu.getBuffer();
+        short offset = ISO7816.OFFSET_CDATA;
+        try {
+            switch (m_testSettings.algorithmType) {
+                case KeyBuilder.TYPE_AES:
+                case KeyBuilder.TYPE_AES_TRANSIENT_RESET:
+                case KeyBuilder.TYPE_AES_TRANSIENT_DESELECT:
+                    m_aes_key = (AESKey) KeyBuilder.buildKey((byte) m_testSettings.algorithmType, m_testSettings.algorithmKeyLength, false);
+                    if (bSetKeyValue == Consts.TRUE) {  
+                        m_aes_key.setKey(m_ram1, (byte)0); 
+                        m_key = m_aes_key;
+                    }
+                    break;
+                case KeyBuilder.TYPE_DES: 
+                case KeyBuilder.TYPE_DES_TRANSIENT_RESET: 
+                case KeyBuilder.TYPE_DES_TRANSIENT_DESELECT: 
+                    m_des_key = (DESKey) KeyBuilder.buildKey((byte) m_testSettings.algorithmType, m_testSettings.algorithmKeyLength, false);
+                    if (bSetKeyValue == Consts.TRUE) {  
+                        m_des_key.setKey(m_ram1, (byte)0); 
+                        m_key = m_des_key;
+                    }                    
+                    break;
+                case KeyBuilder.TYPE_KOREAN_SEED: 
+                case KeyBuilder.TYPE_KOREAN_SEED_TRANSIENT_RESET: 
+                case KeyBuilder.TYPE_KOREAN_SEED_TRANSIENT_DESELECT: 
+                    m_koreanseed_key = (KoreanSEEDKey) KeyBuilder.buildKey((byte) m_testSettings.algorithmType, m_testSettings.algorithmKeyLength, false);
+                    if (bSetKeyValue == Consts.TRUE) {  
+                        m_koreanseed_key.setKey(m_ram1, (byte)0); 
+                        m_key = m_koreanseed_key;
+                    } 
+                    break;
+/* TODO: use custom constants
+                case Consts.KeyPair_ALG_RSA:                  
+                    m_keyPair = new KeyPair((byte) m_testSettings.algorithmType, m_testSettings.algorithmKeyLength);
+                    m_keyPair.genKeyPair(); // TODO: use fixed key value to shorten time required for key generation?
+                    m_key = m_keyPair.getPublic(); // TODO: selection of public / private key                  
+                    break;
+*/                    
+                // TODO: DSAKey, DSAKeyPrivateKey, DSAPublicKey, ECKey, ECPrivateKey, ECPublicKey, HMACKey, RSAPrivateCrtKey, RSAPrivateKey, RSAPublicKey
+                
+                default:
+                    ISOException.throwIt(SW_ALG_TYPE_UNKNOWN);
+            }
 
-        switch (m_testSettings.algorithmType) {
-            case KeyBuilder.TYPE_AES:
-                m_aes_key = (AESKey) KeyBuilder.buildKey((byte) m_testSettings.algorithmType, m_testSettings.algorithmKeyLength, false);
-
-                switch (m_testSettings.algorithmOperation) {
-                    case TEST_SETTINGS.method_setKey: 
-                        // i % 10 => different offset to ensure slightly different key every time
-                        for (short i = 0; i < repeatWhole; i++) { 
-                            m_aes_key.setKey(m_ram1, (short) (i % 10)); 
-                        } 
-                        break;
-                    case TEST_SETTINGS.method_clearKey:
-                        for (short i = 0; i < repeatWhole; i++) {
-                            m_aes_key.clearKey(); // BUGBUG: we should set key before clearing (clearing already cleared key may be very fast)
-                        }
-                        break;
-                    case TEST_SETTINGS.method_getKey:
-                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
-                            m_aes_key.getKey(m_ram1, (short) 0);
-                        }
-                        break;
-                    default:
-                        ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
-                }
-                break;
-            default:
-                ISOException.throwIt(SW_ALG_TYPE_NOT_SUPPORTED);
+            // If we got here, we were able to sucesfully allocate object
+            apdubuf[offset] = SUCCESS; offset++;
+            apdubuf[offset] = SUPP_ALG_SUPPORTED; offset++;
+        }
+        catch (CryptoException e) { 
+            apdubuf[offset] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); offset++;
         }
         
+        return (short) (offset - ISO7816.OFFSET_CDATA);
+    }
+
+    void perftest_class_Key(APDU apdu) {
+        byte[] apdubuf = apdu.getBuffer();
+        m_testSettings.parse(apdu);  
+        short repeatWhole = m_testSettings.numRepeatWholeOperation;
+        
+        // TODO: pack code once correct
+        for (short i = 0; i < repeatWhole; i++) { 
+            switch (m_testSettings.algorithmType) {
+                case KeyBuilder.TYPE_AES:
+                    switch (m_testSettings.algorithmMethod) {
+                        case Consts.method_setKey: 
+                            m_aes_key.setKey(m_ram1, (short) (i % 10)); // i % 10 => different offset to ensure slightly different key every time
+                            break;
+                        case Consts.method_clearKey:
+                                m_aes_key.clearKey(); // BUGBUG: we should set key before clearing (clearing already cleared key may be very fast)
+                            break;
+                        case Consts.method_getKey:
+                            m_aes_key.getKey(m_ram1, (short) 0);
+                            break;
+                        default:
+                            ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
+                    }
+                    break;
+
+                    // TODO: DESKey, KoreanSEEDKey, DSAKey, DSAKeyPrivateKey, DSAPublicKey, ECKey, ECPrivateKey, ECPublicKey, HMACKey, RSAPrivateCrtKey, RSAPrivateKey, RSAPublicKey
+
+                default:
+                    ISOException.throwIt(SW_ALG_TYPE_NOT_SUPPORTED);
+            }
+    }
         apdubuf[ISO7816.OFFSET_CDATA] = SUCCESS;
-        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 2);            
-    }   
+        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);            
+   }   
    
+    void prepare_class_Cipher(APDU apdu) {
+        byte[] apdubuf = apdu.getBuffer();
+        m_testSettings.parse(apdu);  
+        short offset = ISO7816.OFFSET_CDATA;
+        
+        // Prepare required key object into m_key
+        short len = prepare_Key(apdu, m_testSettings, Consts.TRUE);
+        
+        try {
+            m_cipher = Cipher.getInstance((byte) m_testSettings.algorithmSpecification, false);
+            m_cipher.init(m_key, Cipher.MODE_ENCRYPT);  // TODO: selection of Cipher.MODE_ENCRYPT vs. Cipher.MODE_DECRYPT
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA,(byte)1);
+        }
+        catch(CryptoException e)
+        {
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte)e.getReason();
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
+        }  
+    }
+
+    void perftest_class_Cipher(APDU apdu) {  
+        byte[] apdubuf = apdu.getBuffer();
+        m_testSettings.parse(apdu); 
+        // Operation is performed either in single call with (dataLength1)
+        //   or multiple times (numRepeatSubOperation) on smaller chunks 
+        short chunkDataLen = (short) (m_testSettings.dataLength1 / m_testSettings.numRepeatSubOperation);
+        
+        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 
+            for (short j = 0; j < m_testSettings.numRepeatSubOperation; j++) { 
+                switch (m_testSettings.algorithmMethod) {
+                    case Consts.Cipher_update: m_cipher.update(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) 0); break;
+                    case Consts.Cipher_doFinal: m_cipher.doFinal(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) 0); break;
+                    case Consts.Cipher_init: m_cipher.init(m_key, Cipher.MODE_ENCRYPT); break;
+                    default: ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
+                }
+            }
+        }
+/* del       
+        switch (m_testSettings.algorithmMethod) {
+            case Consts.Cipher_update: 
+                for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 
+                    for (short j = 0; j < m_testSettings.numRepeatSubOperation; j++) { 
+                        m_cipher.update(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) 0);
+                    }
+                } 
+                break;
+            case Consts.Cipher_doFinal: 
+                for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 
+                    for (short j = 0; j < m_testSettings.numRepeatSubOperation; j++) { 
+                        m_cipher.doFinal(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) 0);
+                    }
+                } 
+                break;
+            case Consts.Cipher_init: 
+                for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 
+                    for (short j = 0; j < m_testSettings.numRepeatSubOperation; j++) { 
+                        m_cipher.init(m_key, Cipher.MODE_ENCRYPT);  // TODO: selection of Cipher.MODE_ENCRYPT vs. Cipher.MODE_DECRYPT
+                    }
+                } 
+                break;
+            default:
+                ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
+        }
+*/        
+        apdubuf[ISO7816.OFFSET_CDATA] = SUCCESS;
+        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);            
+    }
+    
+    
+    
+    
+    
+    
    //
    // TODO: Original codes for performance - to be refactored
    //
@@ -696,7 +773,6 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
     final static short CFTEXT_LENGTH                 = (short) 128;
     final static short KEYTEXT_LENGTH                = (short) 1024; 
 
-    private   Cipher           m_cipher = null;
     private   DESKey           des_key = null;
     private   Checksum         m_check = null;
     private   AESKey           aes_key = null;
@@ -704,7 +780,6 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
     private byte[] plText, cfText, initVector;
     private byte count;
     private byte alg;
-    private short keyLength;
     private short dataLength;
     private short seedLength;
     private short randomLength;
@@ -776,7 +851,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         byte keyType = apdubuf[ISO7816.OFFSET_P1];
         byte cipherType = apdubuf[ISO7816.OFFSET_P2];
         apdu.setIncomingAndReceive();
-        keyLength = (short) ((apdubuf[ISO7816.OFFSET_CDATA] << 7) | apdubuf[ISO7816.OFFSET_CDATA +1]);
+        short keyLength = (short) ((apdubuf[ISO7816.OFFSET_CDATA] << 7) | apdubuf[ISO7816.OFFSET_CDATA +1]);
         try
         {
             switch(keyType)
@@ -812,80 +887,13 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA,(byte)1);
         }
     }
-    void prepareCipher(APDU apdu)
-    {
-        Util.arrayFillNonAtomic(initVector, (short) 0, (short)KEYTEXT_LENGTH, (byte) 0x33);
-        byte[] apdubuf = apdu.getBuffer();
-        byte keyType = apdubuf[ISO7816.OFFSET_P1];
-        byte cipherType = apdubuf[ISO7816.OFFSET_P2];
-        apdu.setIncomingAndReceive();
-        keyLength = (short) ((apdubuf[ISO7816.OFFSET_CDATA] << 7) | apdubuf[ISO7816.OFFSET_CDATA +1]);
-        try
-        {
-            switch(keyType)
-            {
-                case KeyBuilder.TYPE_AES:
-                    aes_key = (AESKey)KeyBuilder.buildKey(keyType,keyLength,false);
-                    aes_key.setKey(initVector, (byte)0);
-                    m_key = aes_key;
-                    break;
-                case KeyBuilder.TYPE_DES:
-                    des_key = (DESKey)KeyBuilder.buildKey(keyType,keyLength,false);
-                    des_key.setKey(initVector, (byte)0);
-                    m_key = des_key;
-                    break;
-                case KeyPair.ALG_RSA:                  
-                    m_keyPair = new KeyPair(keyType, keyLength);
-                    m_keyPair.genKeyPair();
-                    m_key = m_keyPair.getPublic();                  
-                    break;
-            }
-            m_cipher = Cipher.getInstance(cipherType, false);
-            m_cipher.init(m_key, Cipher.MODE_ENCRYPT);
-            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
-            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA,(byte)1);
-        }
-        catch(CryptoException e)
-        {
-            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte)e.getReason();
-            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA,(byte)1);
-        }  
-    }
 
-    void cipherTest(APDU apdu)
-    {  
-        byte[] apdubuf = apdu.getBuffer();
-        count = apdubuf[ISO7816.OFFSET_P2]; 
-        apdu.setIncomingAndReceive();
-        dataLength = (short) ((apdubuf[ISO7816.OFFSET_CDATA] << 7) | apdubuf[ISO7816.OFFSET_CDATA +1]);
-        cycles = (short)(dataLength / (short)PLTEXT_LENGTH);
-        rest = (short)(dataLength % (short)PLTEXT_LENGTH);
-        try
-        {   
-            for(short i = 0;i<count;i++)
-            {
-                for(short j = 0;j<cycles;j++)
-                {
-                    m_cipher.update(plText, (short)0, (short)PLTEXT_LENGTH,plText,(short)0);
-                }
-                m_cipher.doFinal(plText, (short)0, rest, plText, (short) 1);              
-            }
-            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
-            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA,(byte)1);
-        }
-        catch(CryptoException e)
-        {
-            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte)(e.getReason());  
-            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA,(byte)1);
-        }
-
-    }
     void prepareKeyPair(APDU apdu)
     {
         byte[] apdubuf = apdu.getBuffer();
         alg = apdubuf[ISO7816.OFFSET_P1]; 
         apdu.setIncomingAndReceive();
-        keyLength = (short) ((apdubuf[ISO7816.OFFSET_CDATA] << 7) | apdubuf[ISO7816.OFFSET_CDATA +1]);
+        short keyLength = (short) ((apdubuf[ISO7816.OFFSET_CDATA] << 7) | apdubuf[ISO7816.OFFSET_CDATA +1]);
         try
         {
             m_keyPair = new KeyPair(alg, keyLength);

@@ -1,10 +1,28 @@
 package AlgTest;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
  * @author Petr Svenda <petr@svenda.com>
  */
+
+
 public class Consts {
-    public final static byte CLA_CARD_ALGTEST                  = (byte) 0xB0;
+
+    public final static byte TRUE                  = (byte) 0x01; 
+    public final static byte FALSE                 = (byte) 0x00; 
+    
+
+    // Declares the annotation Twizzle.
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    public @interface Twizzle { }
+    
+    @Twizzle
+    public final static byte CLA_CARD_ALGTEST                  = (byte) 0xB0; 
     public final static byte INS_CARD_GETVERSION               = (byte) 0x60;
     public final static byte INS_CARD_RESET                    = (byte) 0x69;
     
@@ -17,9 +35,10 @@ public class Consts {
     
     // BUGBUG: refactor codes
     public final static byte INS_PERF_TEST_CLASS_KEY           = (byte) 0x40;
+    public final static byte INS_PERF_TEST_CLASS_CIPHER        = (byte) 0x43;
+
     public final static byte INS_PERF_TEST_MESSAGE_DIGEST      = (byte) 0x41;
     public final static byte INS_PERF_TEST_RANDOM_DATA         = (byte) 0x42;
-    public final static byte INS_PERF_TEST_CIPHER              = (byte) 0x43;
     public final static byte INS_PERF_TEST_KEY_BUILDER         = (byte) 0x44;
     public final static byte INS_PERF_TEST_KEY_PAIR            = (byte) 0x45;
     public final static byte INS_PERF_TEST_CHECKSUM            = (byte) 0x46;
@@ -31,10 +50,36 @@ public class Consts {
     public final static byte INS_PERF_PREPARE_RANDOM_DATA      = (byte) 0x52;
     public final static byte INS_PERF_TEST_SIGNATURE           = (byte) 0x53;
     
+    public final static byte INS_PREPARE_TEST_CLASS_KEY        = (byte) 0x90;
+    public final static byte INS_PREPARE_TEST_CLASS_CIPHER     = (byte) 0x91;
+    
+    
     
     public static final byte MY_DSA = 88;       // bugbug: introduced probably because of value duplicity inside prepareSignature()
     
+    public static final short CLASS_CIPHER                      = (short) 0x11;      
+    public static final short CLASS_SIGNATURE                   = (short) 0x12;      
+    public static final short CLASS_MESSAGEDIGEST               = (short) 0x15;      
+    public static final short CLASS_RANDOMDATA                  = (short) 0x16;      
+    public static final short CLASS_KEYBUILDER                  = (short) 0x20;      
+    public static final short CLASS_KEYAGREEMENT                = (short) 0x13;      
+    public static final short CLASS_CHECKSUM                    = (short) 0x17;      
     
+    public static final short UNUSED    = (short) -1;     
+    
+    public static final short TEST_DATA_LENGTH    = (short) 256;     
+    
+    
+    
+    public final static byte method_setKey                      = (byte) 1;
+    public final static byte method_clearKey                    = (byte) 2;
+    public final static byte method_getKey                      = (byte) 3;
+         
+    public final static byte Cipher_update                      = (byte) 1;
+    public final static byte Cipher_doFinal                     = (byte) 2;
+    public final static byte Cipher_init                        = (byte) 3;
+    
+            
       //  
       // Class javacard.security.Signature
       // Search: public static final (byte|short) ([A-Z0-9_]*) 
@@ -189,6 +234,7 @@ public class Consts {
     public static final short LENGTH_RSA_1536       = 1536;
     public static final short LENGTH_RSA_1984       = 1984;
     public static final short LENGTH_RSA_2048       = 2048;
+    public static final short LENGTH_RSA_3072       = 3072;
     public static final short LENGTH_RSA_4096       = 4096;
     public static final short LENGTH_DSA_512        = 512;
     public static final short LENGTH_DSA_768        = 768;

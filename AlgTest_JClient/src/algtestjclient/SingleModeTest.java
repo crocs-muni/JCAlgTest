@@ -44,6 +44,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javacard.framework.ISO7816;
 import javax.smartcardio.ResponseAPDU;
 
 /**
@@ -675,7 +676,7 @@ public class SingleModeTest {
             byte[] resp = response.getBytes();
             System.out.println("RESPONSE: " + resp[0]);
             
-            if(response.getSW() == 0x9000){
+            if (response.getSW() == 0x9000) {
                 // save time of card response
                 elapsedCard += System.currentTimeMillis();
             }
@@ -711,7 +712,7 @@ public class SingleModeTest {
             ResponseAPDU response = cardManager.sendAPDU(apdu);
             byte[] resp = response.getBytes();
             
-            if(response.getSW() == 0x9000){
+            if (response.getSW() == 0x9000) {
                 // save time of card response
                 elapsedCard += System.currentTimeMillis();
             }
@@ -747,7 +748,7 @@ public class SingleModeTest {
             ResponseAPDU response = cardManager.sendAPDU(apdu);
             byte[] resp = response.getBytes();
             
-            if(response.getSW() == 0x9000){
+            if (response.getSW() == 0x9000) {
                 // save time of card response
                 elapsedCard += System.currentTimeMillis();
             }
@@ -782,7 +783,7 @@ public class SingleModeTest {
             apdu[OFFSET_DATA] = (byte)i;
             ResponseAPDU response = cardManager.sendAPDU(apdu);
             byte[] resp = response.getBytes();
-            if(response.getSW() == 0x9000){
+            if (response.getSW() == 0x9000) {
                 // save time of card response
                 elapsedCard += System.currentTimeMillis();
             }
@@ -824,7 +825,7 @@ public class SingleModeTest {
                 ResponseAPDU response = cardManager.sendAPDU(apdu);
                 byte[] resp = response.getBytes();
             
-                if(response.getSW() == 0x9000){
+                if (response.getSW() == 0x9000) {
                     // save time of card response
                     elapsedCard += System.currentTimeMillis();
                 }
@@ -861,7 +862,7 @@ public class SingleModeTest {
             ResponseAPDU response = cardManager.sendAPDU(apdu);
             byte[] resp = response.getBytes();
             
-            if(response.getSW() == 0x9000){
+            if (response.getSW() == 0x9000) {
                 // save time of card response
                 elapsedCard += System.currentTimeMillis();
             }
@@ -897,7 +898,7 @@ public class SingleModeTest {
             ResponseAPDU response = cardManager.sendAPDU(apdu);
             byte[] resp = response.getBytes();
             
-            if(response.getSW() == 0x9000){
+            if (response.getSW() == 0x9000) {
                 // save time of card response
                 elapsedCard += System.currentTimeMillis();
             }
@@ -938,7 +939,7 @@ public class SingleModeTest {
             ResponseAPDU response = cardManager.sendAPDU(apdu);
             byte[] resp = response.getBytes();
             
-            if(response.getSW() == 0x9000){
+            if (response.getSW() == 0x9000) {
                 // save time of card response
                 elapsedCard += System.currentTimeMillis();
             }
@@ -980,7 +981,7 @@ public class SingleModeTest {
             ResponseAPDU response = cardManager.sendAPDU(apdu);
             byte[] resp = response.getBytes();
             
-            if(response.getSW() == 0x9000){
+            if (response.getSW() == 0x9000) {
                 // save time of card response
                 elapsedCard += System.currentTimeMillis();
             }
@@ -1021,7 +1022,7 @@ public class SingleModeTest {
             ResponseAPDU response = cardManager.sendAPDU(apdu);
             byte[] resp = response.getBytes();
             
-            if(response.getSW() == 0x9000){
+            if (response.getSW() == 0x9000) {
                 // save time of card response
                 elapsedCard += System.currentTimeMillis();
             }
@@ -1062,7 +1063,7 @@ public class SingleModeTest {
             ResponseAPDU response = cardManager.sendAPDU(apdu);
             byte[] resp = response.getBytes();
             
-            if(response.getSW() == 0x9000){
+            if (response.getSW() == 0x9000) {
                 // save time of card response
                 elapsedCard += System.currentTimeMillis();
             }
@@ -1103,7 +1104,7 @@ public class SingleModeTest {
             ResponseAPDU response = cardManager.sendAPDU(apdu);
             byte[] resp = response.getBytes();
             
-            if(response.getSW() == 0x9000){
+            if (response.getSW() == 0x9000) {
                 // save time of card response
                 elapsedCard += System.currentTimeMillis();
             }

@@ -38,6 +38,7 @@ import java.util.Arrays;
 import java.util.Scanner;
 import javax.smartcardio.ResponseAPDU;
 import AlgTest.Consts;
+import AlgTest.TestSettings;
 /**
  *
  * @author lukas.srom
@@ -68,7 +69,12 @@ public class PerformanceTesting {
     public String message = "";
     
     public static final byte mask = 0b01111111;
-    static FileOutputStream file;
+    public static FileOutputStream file;
+    
+    
+    //static String CLASS_AESKEY_TEST_SETTINGS = "";
+    public static final short[] CLASS_AESKEY_TEST_SETTINGS = {Consts.CLASS_KEYBUILDER, (short) 0, Consts.TYPE_AES, };
+        
     
     
     /**
@@ -93,7 +99,7 @@ public class PerformanceTesting {
             if(Arrays.asList(args).contains(TEST_ALL_ALGORITHMS)){testAllAtOnce(file);}
             else if (Arrays.asList(args).contains(TEST_RSAEXPONENT)){
                 value.setLength(0);            
-                if (testingPerformance.TestVariableRSAPublicExponentSupport(value, file, (byte) 0) == cardManager.STAT_OK) {}
+                if (testingPerformance.TestVariableRSAPublicExponentSupport(value, file, (byte) 0) == CardMngr.STAT_OK) {}
                 else { 
                     message = "\nERROR: Test variable public exponent support fail\n"; 
                     System.out.println(message); file.write(message.getBytes());
@@ -102,7 +108,7 @@ public class PerformanceTesting {
             }
             else if (Arrays.asList(args).contains(TEST_RAM)){
                 value.setLength(0);
-                if (testingPerformance.TestAvailableRAMMemory(value, file, (byte) 0) == cardManager.STAT_OK) {}
+                if (testingPerformance.TestAvailableRAMMemory(value, file, (byte) 0) == CardMngr.STAT_OK) {}
                 else { 
                     message = "\nERROR: Get available RAM memory fail\n"; 
                     System.out.println(message); file.write(message.getBytes());
@@ -111,7 +117,7 @@ public class PerformanceTesting {
             }
             else if (Arrays.asList(args).contains(TEST_EEPROM)){
                 value.setLength(0);
-                if (testingPerformance.TestAvailableEEPROMMemory(value, file, (byte) 0) == cardManager.STAT_OK) {}
+                if (testingPerformance.TestAvailableEEPROMMemory(value, file, (byte) 0) == CardMngr.STAT_OK) {}
                 else { 
                     message = "\nERROR: Get available EEPROM memory fail\n"; 
                     System.out.println(message); file.write(message.getBytes());
@@ -133,7 +139,7 @@ public class PerformanceTesting {
                 // Variable public exponent
                 value.setLength(0);
 
-                if (testingPerformance.TestVariableRSAPublicExponentSupport(value, file, (byte) 0) == cardManager.STAT_OK) {}
+                if (testingPerformance.TestVariableRSAPublicExponentSupport(value, file, (byte) 0) == CardMngr.STAT_OK) {}
                 else { 
                     message = "\nERROR: Test variable public exponent support fail\n"; 
                     System.out.println(message); file.write(message.getBytes());
@@ -152,7 +158,7 @@ public class PerformanceTesting {
 
                 // Available memory
                 value.setLength(0);
-                if (testingPerformance.TestAvailableRAMMemory(value, file, (byte) 0) == cardManager.STAT_OK) {}
+                if (testingPerformance.TestAvailableRAMMemory(value, file, (byte) 0) == CardMngr.STAT_OK) {}
                 else { 
                     message = "\nERROR: Get available RAM memory fail\n"; 
                     System.out.println(message); file.write(message.getBytes());
@@ -170,7 +176,7 @@ public class PerformanceTesting {
             if (eeprom_answ == 1){
                 // Available memory
                 value.setLength(0);
-                if (testingPerformance.TestAvailableEEPROMMemory(value, file, (byte) 0) == cardManager.STAT_OK) {}
+                if (testingPerformance.TestAvailableEEPROMMemory(value, file, (byte) 0) == CardMngr.STAT_OK) {}
                 else { 
                     message = "\nERROR: Get available EEPROM memory fail\n"; 
                     System.out.println(message); file.write(message.getBytes());
@@ -232,7 +238,7 @@ public class PerformanceTesting {
     public void testAllAtOnce (FileOutputStream file) throws Exception{
         /* Variable RSA public exponent support */
         value.setLength(0);            
-        if (testingPerformance.TestVariableRSAPublicExponentSupport(value, file, (byte) 0) == cardManager.STAT_OK) {}
+        if (testingPerformance.TestVariableRSAPublicExponentSupport(value, file, (byte) 0) == CardMngr.STAT_OK) {}
         else { 
             message = "\nERROR: Test variable public exponent support fail\n"; 
             System.out.println(message); file.write(message.getBytes());
@@ -241,7 +247,7 @@ public class PerformanceTesting {
         
         /* Available RAM memory. */
         value.setLength(0);
-        if (testingPerformance.TestAvailableRAMMemory(value, file, (byte) 0) == cardManager.STAT_OK) {}
+        if (testingPerformance.TestAvailableRAMMemory(value, file, (byte) 0) == CardMngr.STAT_OK) {}
         else { 
             message = "\nERROR: Get available RAM memory fail\n"; 
             System.out.println(message); file.write(message.getBytes());
@@ -250,7 +256,7 @@ public class PerformanceTesting {
         
         /* Available EEPROM memory. */
         value.setLength(0);
-        if (testingPerformance.TestAvailableEEPROMMemory(value, file, (byte) 0) == cardManager.STAT_OK) {}
+        if (testingPerformance.TestAvailableEEPROMMemory(value, file, (byte) 0) == CardMngr.STAT_OK) {}
         else { 
             message = "\nERROR: Get available EEPROM memory fail\n"; 
             System.out.println(message); file.write(message.getBytes());
@@ -259,16 +265,16 @@ public class PerformanceTesting {
     }
     
     public int TestAvailableRAMMemory(StringBuilder pValue, FileOutputStream pFile, byte algPartP2) throws Exception {
-        int         status = cardManager.STAT_OK;
+        int         status = CardMngr.STAT_OK;
         long     elapsedCard;
 
         // Prepare test memory apdu
-        byte apdu[] = new byte[cardManager.HEADER_LENGTH];
-        apdu[cardManager.OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
-        apdu[cardManager.OFFSET_INS] = (byte) 0x71;
-        apdu[cardManager.OFFSET_P1] = 0x00;
-        apdu[cardManager.OFFSET_P2] = 0x00;
-        apdu[cardManager.OFFSET_LC] = 0x00;
+        byte apdu[] = new byte[CardMngr.HEADER_LENGTH];
+        apdu[CardMngr.OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
+        apdu[CardMngr.OFFSET_INS] = (byte) 0x71;
+        apdu[CardMngr.OFFSET_P1] = 0x00;
+        apdu[CardMngr.OFFSET_P2] = 0x00;
+        apdu[CardMngr.OFFSET_LC] = 0x00;
             
         elapsedCard = -System.currentTimeMillis();
 
@@ -284,7 +290,7 @@ public class PerformanceTesting {
                 
             String elTimeStr = "";
             // OUTPUT REQUIRED TIME WHEN PARTITIONED CHECk WAS PERFORMED (NOTMULTIPLE ALGORITHMS IN SINGLE RUN)
-            elTimeStr = String.format("%1f", (double) elapsedCard / (float) cardManager.CLOCKS_PER_SEC);
+            elTimeStr = String.format("%1f", (double) elapsedCard / (float) CardMngr.CLOCKS_PER_SEC);
 
             String message = "";
             message += "\r\n\r\nAvailable RAM memory;"; 
@@ -304,16 +310,16 @@ public class PerformanceTesting {
 
 
     public int TestAvailableEEPROMMemory(StringBuilder pValue, FileOutputStream pFile, byte algPartP2) throws Exception {
-        int         status = cardManager.STAT_OK;
+        int         status = CardMngr.STAT_OK;
         long     elapsedCard;
 
         // Prepare test memory apdu
-        byte apdu[] = new byte[cardManager.HEADER_LENGTH];
-        apdu[cardManager.OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
-        apdu[cardManager.OFFSET_INS] = (byte) 0x71;
-        apdu[cardManager.OFFSET_P1] = 0x01;
-        apdu[cardManager.OFFSET_P2] = 0x00;
-        apdu[cardManager.OFFSET_LC] = 0x00;
+        byte apdu[] = new byte[CardMngr.HEADER_LENGTH];
+        apdu[CardMngr.OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
+        apdu[CardMngr.OFFSET_INS] = (byte) 0x71;
+        apdu[CardMngr.OFFSET_P1] = 0x01;
+        apdu[CardMngr.OFFSET_P2] = 0x00;
+        apdu[CardMngr.OFFSET_LC] = 0x00;
             
         elapsedCard = -System.currentTimeMillis();
 
@@ -331,7 +337,7 @@ public class PerformanceTesting {
             elapsedCard += System.currentTimeMillis();
             String elTimeStr = "";
             // OUTPUT REQUIRED TIME WHEN PARTITIONED CHECk WAS PERFORMED (NOTMULTIPLE ALGORITHMS IN SINGLE RUN)
-            elTimeStr = String.format("%1f", (double) elapsedCard / (float) cardManager.CLOCKS_PER_SEC);
+            elTimeStr = String.format("%1f", (double) elapsedCard / (float) CardMngr.CLOCKS_PER_SEC);
 
             String message = "";
             message += "\"\\r\\n\r\nAvailable EEPROM memory;"; 
@@ -358,7 +364,7 @@ public class PerformanceTesting {
     }
 
     public int TestAction(String actionName, byte apdu[], StringBuilder pValue, FileOutputStream pFile) throws Exception {
-	int		status = cardManager.STAT_OK;
+	int		status = CardMngr.STAT_OK;
 
         long     elapsedCard = 0;
 	elapsedCard -= System.currentTimeMillis();
@@ -380,7 +386,7 @@ public class PerformanceTesting {
             elapsedCard += System.currentTimeMillis();
             String elTimeStr;
             // OUTPUT REQUIRED TIME WHEN PARTITIONED CHECk WAS PERFORMED (NOTMULTIPLE ALGORITHMS IN SINGLE RUN)
-            elTimeStr = String.format("%1f", (double) elapsedCard / (float) cardManager.CLOCKS_PER_SEC);
+            elTimeStr = String.format("%1f", (double) elapsedCard / (float) CardMngr.CLOCKS_PER_SEC);
 
             message = String.format("yes;%1s sec;", elTimeStr); 
             System.out.println(message);
@@ -392,14 +398,14 @@ public class PerformanceTesting {
     }
 
     public int TestVariableRSAPublicExponentSupport(StringBuilder pValue, FileOutputStream pFile, byte algPartP2) throws Exception {
-        int         status = cardManager.STAT_OK;
+        int         status = CardMngr.STAT_OK;
         
-        byte apdu[] = new byte[cardManager.HEADER_LENGTH];
-        apdu[cardManager.OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
-        apdu[cardManager.OFFSET_INS] = (byte) 0x72;
-        apdu[cardManager.OFFSET_P1] = 0x00;
-        apdu[cardManager.OFFSET_P2] = 0x00;
-        apdu[cardManager.OFFSET_LC] = 0x00;
+        byte apdu[] = new byte[CardMngr.HEADER_LENGTH];
+        apdu[CardMngr.OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
+        apdu[CardMngr.OFFSET_INS] = (byte) 0x72;
+        apdu[CardMngr.OFFSET_P1] = 0x00;
+        apdu[CardMngr.OFFSET_P2] = 0x00;
+        apdu[CardMngr.OFFSET_LC] = 0x00;
             
         String message;
         message = "\r\nSupport for variable public exponent for RSA 1024. If supported, user-defined fast modular exponentiation can be executed on the smart card via cryptographic coprocessor. This is very specific feature and you will probably not need it;"; 
@@ -408,35 +414,35 @@ public class PerformanceTesting {
         pValue.append(message);
 
         // Allocate RSA 1024 objects (RSAPublicKey and ALG_RSA_NOPAD cipher)
-        apdu[cardManager.OFFSET_P1] = 0x01;	
+        apdu[CardMngr.OFFSET_P1] = 0x01;	
         TestAction("Allocate RSA 1024 objects", apdu, pValue,pFile);
         // Try to set random modulus
-        apdu[cardManager.OFFSET_P1] = 0x02;	
+        apdu[CardMngr.OFFSET_P1] = 0x02;	
         TestAction("Set random modulus", apdu, pValue,pFile);
         // Try to set random exponent
-        apdu[cardManager.OFFSET_P1] = 0x03;	
+        apdu[CardMngr.OFFSET_P1] = 0x03;	
         TestAction("Set random public exponent", apdu, pValue,pFile);
         // Try to initialize cipher with public key with random exponent
-        apdu[cardManager.OFFSET_P1] = 0x04;	
+        apdu[CardMngr.OFFSET_P1] = 0x04;	
         TestAction("Initialize cipher with public key with random exponent", apdu, pValue,pFile);
         // Try to encrypt block of data
-        apdu[cardManager.OFFSET_P1] = 0x05;	
+        apdu[CardMngr.OFFSET_P1] = 0x05;	
         TestAction("Use random public exponent", apdu, pValue,pFile);        
  
         return status;
     }
     
-    public int TestExtendedAPDUSupportSupport(StringBuilder pValue, FileOutputStream pFile, byte algPartP2) throws Exception {
-        int         status = cardManager.STAT_OK;
+    public static int TestExtendedAPDUSupportSupport(StringBuilder pValue, FileOutputStream pFile, byte algPartP2) throws Exception {
+        int         status = CardMngr.STAT_OK;
         
-        byte apdu[] = new byte[cardManager.HEADER_LENGTH + 2 + cardManager.EXTENDED_APDU_TEST_LENGTH]; // + 2 is because of encoding of LC length into three bytes total
-        apdu[cardManager.OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
-        apdu[cardManager.OFFSET_INS] = (byte) 0x74;
-        apdu[cardManager.OFFSET_P1] = 0x00;
-        apdu[cardManager.OFFSET_P2] = 0x00;
-        apdu[cardManager.OFFSET_LC] = 0x00;
-        apdu[cardManager.OFFSET_LC+1] = (byte)(cardManager.EXTENDED_APDU_TEST_LENGTH & 0xff00 >> 8);
-        apdu[cardManager.OFFSET_LC+2] = (byte)(cardManager.EXTENDED_APDU_TEST_LENGTH & 0xff);
+        byte apdu[] = new byte[CardMngr.HEADER_LENGTH + 2 + CardMngr.EXTENDED_APDU_TEST_LENGTH]; // + 2 is because of encoding of LC length into three bytes total
+        apdu[CardMngr.OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
+        apdu[CardMngr.OFFSET_INS] = (byte) 0x74;
+        apdu[CardMngr.OFFSET_P1] = 0x00;
+        apdu[CardMngr.OFFSET_P2] = 0x00;
+        apdu[CardMngr.OFFSET_LC] = 0x00;
+        apdu[CardMngr.OFFSET_LC+1] = (byte)(CardMngr.EXTENDED_APDU_TEST_LENGTH & 0xff00 >> 8);
+        apdu[CardMngr.OFFSET_LC+2] = (byte)(CardMngr.EXTENDED_APDU_TEST_LENGTH & 0xff);
             
         String message;
         message = "\r\nSupport for extended APDU. If supported, APDU longer than 255 bytes can be send.;"; 
@@ -455,7 +461,7 @@ public class PerformanceTesting {
             short LC = (short) ((temp[0] << 8) + (temp[1] & 0xff));
             short realLC = (short) ((temp[2] << 8) + (temp[3] & 0xff));
             
-            if (LC == cardManager.EXTENDED_APDU_TEST_LENGTH && realLC == cardManager.EXTENDED_APDU_TEST_LENGTH) {
+            if (LC == CardMngr.EXTENDED_APDU_TEST_LENGTH && realLC == CardMngr.EXTENDED_APDU_TEST_LENGTH) {
                 message = String.format("yes;"); 
             }
             else {
@@ -471,24 +477,44 @@ public class PerformanceTesting {
 
     
         
+
+    public static TestSettings prepareTestSettings(short classType, short algorithmSpecification, short algorithmType, short algorithmKeyLength, short algorithmMethod, short dataLength1, short dataLength2, short numRepeatWholeOperation, short numRepeatSubOperation, short numRepeatWholeMeasurement) {
+        TestSettings    testSet = new TestSettings();
+        
+        testSet.classType = classType;                              // custom constant signalizing javacard class - e.g., javacardx.crypto.Cipher
+        testSet.algorithmSpecification = algorithmSpecification;   // e.g., Cipher.ALG_AES_BLOCK_128_CBC_NOPAD
+        testSet.algorithmType = algorithmType;                    // e.g., KeyBuilder.TYPE_AES
+        testSet.algorithmKeyLength = algorithmKeyLength;            // e.g., KeyBuilder.LENGTH_AES_128
+        testSet.algorithmMethod = algorithmMethod;                   // custom constant signalizing target javacard method e.g., 
+        testSet.dataLength1 = dataLength1;                       // e.g., length of data used during measurement (e.g., for update())
+        testSet.dataLength2 = dataLength2;                       // e.g., length of data used during measurement (e.g., for doFinal())
+        testSet.numRepeatWholeOperation = numRepeatWholeOperation;  // whole operation might be setKey, update, doFinal - numRepeatWholeOperation repeats this whole operation
+        testSet.numRepeatSubOperation = numRepeatSubOperation;              // relevant suboperation that should be iterated multiple times - e.g., update()
+        testSet.numRepeatWholeMeasurement = numRepeatWholeMeasurement;  // whole operation might be setKey, update, doFinal - numRepeatWholeOperation repeats this whole operation
+        
+        return testSet;
+    }
+    public static void perftest_prepareClass(byte appletCLA, byte appletINS, short classType, short algorithmSpecification, short algorithmType, short algorithmKeyLength, short algorithmMethod, short dataLength1, short dataLength2, short numRepeatWholeOperation, short numRepeatSubOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
+        TestSettings testSet = prepareTestSettings(classType, algorithmSpecification, algorithmType, algorithmKeyLength, algorithmMethod, dataLength1, dataLength2, numRepeatWholeOperation, numRepeatSubOperation, numRepeatWholeMeasurement);
+        cardManager.PerfTestCommand(appletCLA, appletINS, testSet, Consts.INS_CARD_RESET);
+    }
+    public static void perftest_prepareClass(byte appletCLA, byte appletINS, TestSettings testSet) throws IOException, Exception {
+        cardManager.PerfTestCommand(appletCLA, appletINS, testSet, Consts.INS_CARD_RESET);
+    }
     
-    private static void testKeyPair(byte alg, int length, String info, int round, boolean fast) throws IOException
-    {
-        int max = 500;
-        if (fast) {max = 10; round = 0;}
-        double time;
-        String timeStr;
-        String message = info + " " + round + "\n"; System.out.println(info);
-        byte[] cdata = new byte[2];
-        cdata[1] = (byte) (length & mask);
-        int pom = length >> 7;
-        cdata[0] = (byte) (pom & mask);
-        try
-        {            
-            cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_PERF_PREPARE_KEY_PAIR,alg,(byte)0,cdata,(byte) 2, Consts.INS_CARD_RESET);
-            for(int i = 0;i<max;i++)
-            {
-                time = cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_PERF_TEST_KEY_PAIR,alg, (byte)0, cdata, (byte) 2, Consts.INS_CARD_RESET);
+    public static void perftest_measure(byte appletCLA, byte appletINS, short classType, short algorithmSpecification, short algorithmType, short algorithmKeyLength, short algorithmMethod, short dataLength1, short dataLength2, short numRepeatWholeOperation, short numRepeatSubOperation, short numRepeatWholeMeasurement, String info) throws IOException, Exception {
+        TestSettings testSet = prepareTestSettings(classType, algorithmSpecification, algorithmType, algorithmKeyLength, algorithmMethod, dataLength1, dataLength2, numRepeatWholeOperation, numRepeatSubOperation, numRepeatWholeMeasurement);
+        perftest_measure(appletCLA, appletINS, testSet, info);
+    }
+    
+    public static void perftest_measure(byte appletCLA, byte appletINS, TestSettings testSet, String info) throws IOException, Exception {
+        String message = "";
+        try {            
+            String timeStr;
+            double time = cardManager.PerfTestCommand(appletCLA, appletINS, testSet, Consts.INS_CARD_RESET);
+            message += info + "\n";
+            for(int i = 0; i < testSet.numRepeatWholeMeasurement;i++) {
+                time = cardManager.PerfTestCommand(appletCLA, appletINS, testSet, Consts.INS_CARD_RESET);
                 timeStr = String.format("%1f", time);
                 message +=  timeStr + " " ;
                 System.out.print(timeStr + " ");
@@ -507,6 +533,51 @@ public class PerformanceTesting {
         System.out.println(); message += "\n";
         file.write(message.getBytes());
     }
+    
+    
+    
+        
+    //
+    // TODO refactor:
+    //
+    
+    
+    private static void testKeyPair(byte alg, int length, String info, int round, boolean fast) throws IOException
+    {
+        int max = 500;
+        if (fast) {max = 10; round = 0;}
+        double time;
+        String timeStr;
+        String message = info + " " + round + "\n"; System.out.println(info);
+        byte[] cdata = new byte[2];
+        cdata[1] = (byte) (length & mask);
+        int pom = length >> 7;
+        cdata[0] = (byte) (pom & mask);
+        try
+        {            
+            cardManager.BasicTest(Consts.CLA_CARD_ALGTEST,Consts.INS_PERF_PREPARE_KEY_PAIR,alg,(byte)0,cdata,(byte) 2, Consts.INS_CARD_RESET);
+            for(int i = 0;i<max;i++)
+            {
+                time = cardManager.BasicTest(Consts.CLA_CARD_ALGTEST,Consts.INS_PERF_TEST_KEY_PAIR,alg, (byte)0, cdata, (byte) 2, Consts.INS_CARD_RESET);
+                timeStr = String.format("%1f", time);
+                message +=  timeStr + " " ;
+                System.out.print(timeStr + " ");
+            }
+            System.out.println();      
+        }
+        catch (CardCommunicationException ex)
+        {
+            message += ex.toString();
+            System.out.println(ex.toString()); 
+        }
+        catch (Exception ex) 
+        {
+            System.out.println("Exception: " + ex);
+        }
+        System.out.println(); message += "\n";
+        file.write(message.getBytes());
+    }
+    
     private static void testAllKeyPairs(boolean fast) throws IOException
     {
         String tableName = "KEY PAIR\n";
@@ -520,6 +591,7 @@ public class PerformanceTesting {
         testKeyPair(Consts.ALG_RSA,Consts.LENGTH_RSA_1536,"ALG_RSA LENGTH_RSA_1536",300,fast);
         testKeyPair(Consts.ALG_RSA,Consts.LENGTH_RSA_1984,"ALG_RSA LENGTH_RSA_1984",500,fast);
         testKeyPair(Consts.ALG_RSA,Consts.LENGTH_RSA_2048,"ALG_RSA LENGTH_RSA_2048",500,fast);
+        testKeyPair(Consts.ALG_RSA,Consts.LENGTH_RSA_3072,"ALG_RSA LENGTH_RSA_3072",500,fast);        
         testKeyPair(Consts.ALG_RSA,Consts.LENGTH_RSA_4096,"ALG_RSA LENGTH_RSA_4096",500,fast);        
         testKeyPair(Consts.ALG_RSA_CRT,Consts.LENGTH_RSA_512,"ALG_RSA_CRT LENGTH_RSA_512",50,fast);
         testKeyPair(Consts.ALG_RSA_CRT,Consts.LENGTH_RSA_736,"ALG_RSA_CRT LENGTH_RSA_736",100,fast);
@@ -530,6 +602,7 @@ public class PerformanceTesting {
         testKeyPair(Consts.ALG_RSA_CRT,Consts.LENGTH_RSA_1536,"ALG_RSA_CRT LENGTH_RSA_1536",300,fast);
         testKeyPair(Consts.ALG_RSA_CRT,Consts.LENGTH_RSA_1984,"ALG_RSA_CRT LENGTH_RSA_1984",500,fast);
         testKeyPair(Consts.ALG_RSA_CRT,Consts.LENGTH_RSA_2048,"ALG_RSA_CRT LENGTH_RSA_2048",500,fast);
+        testKeyPair(Consts.ALG_RSA_CRT,Consts.LENGTH_RSA_3072,"ALG_RSA_CRT LENGTH_RSA_3072",500,fast);        
         testKeyPair(Consts.ALG_RSA_CRT,Consts.LENGTH_RSA_4096,"ALG_RSA_CRT LENGTH_RSA_4096",500,fast);        
         testKeyPair(Consts.ALG_DSA,Consts.LENGTH_DSA_512,"ALG_DSA LENGTH_DSA_512",100,fast);
         testKeyPair(Consts.ALG_DSA,Consts.LENGTH_DSA_768,"ALG_DSA LENGTH_DSA_768",100,fast);
@@ -709,8 +782,8 @@ public class PerformanceTesting {
                 System.out.print("(");
                 for (int j = 0;j<cycle;j++)
                 {
-                    time1 = cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_PERF_TEST_CIPHER,(byte)alg, (byte)(count * 2), cdata, (byte) 2, Consts.INS_CARD_RESET);
-                    time2 = cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_PERF_TEST_CIPHER,(byte)alg, count, cdata, (byte) 2, Consts.INS_CARD_RESET);
+                    time1 = cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_PERF_TEST_CLASS_CIPHER,(byte)alg, (byte)(count * 2), cdata, (byte) 2, Consts.INS_CARD_RESET);
+                    time2 = cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_PERF_TEST_CLASS_CIPHER,(byte)alg, count, cdata, (byte) 2, Consts.INS_CARD_RESET);
                     time = time1-time2;
                     time = time/count;
                     timeStr = String.format("%1f", time);
@@ -848,6 +921,11 @@ public class PerformanceTesting {
         testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_2048,Consts.ALG_RSA_NOPAD,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_NOPAD",2,100);
         testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_2048,Consts.ALG_RSA_PKCS1,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_PKCS1",2,100);
         testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_2048,Consts.ALG_RSA_PKCS1_OAEP,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_PKCS1_OAEP",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_3072,Consts.ALG_RSA_ISO14888,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_ISO14888",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_3072,Consts.ALG_RSA_ISO9796,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_ISO9796",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_3072,Consts.ALG_RSA_NOPAD,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_NOPAD",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_3072,Consts.ALG_RSA_PKCS1,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_PKCS1",2,100);
+        testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_3072,Consts.ALG_RSA_PKCS1_OAEP,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_PKCS1_OAEP",2,100);
         testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_4096,Consts.ALG_RSA_ISO14888,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_ISO14888",2,100);
         testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_4096,Consts.ALG_RSA_ISO9796,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_ISO9796",2,100);
         testCipher(Consts.ALG_RSA, Consts.LENGTH_RSA_4096,Consts.ALG_RSA_NOPAD,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_NOPAD",2,100);
@@ -954,6 +1032,7 @@ public class PerformanceTesting {
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1536,Consts.ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_MD5_PKCS1",2,100);
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1984,Consts.ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_MD5_PKCS1",2,100);  
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_2048,Consts.ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_MD5_PKCS1",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_3072,Consts.ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_MD5_PKCS1",2,100);
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_4096,Consts.ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_MD5_PKCS1",2,100);
         
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_512,Consts.ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_512 ALG_RSA_MD5_PKCS1_PSS",2,100);
@@ -965,6 +1044,7 @@ public class PerformanceTesting {
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1536,Consts.ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_MD5_PKCS1_PSS",2,100);
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1984,Consts.ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_MD5_PKCS1_PSS",2,100);  
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_2048,Consts.ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_MD5_PKCS1_PSS",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_3072,Consts.ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_MD5_PKCS1_PSS",2,100);
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_4096,Consts.ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_MD5_PKCS1_PSS",2,100);
         
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_512,Consts.ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_512 ALG_RSA_MD5_RFC2409",2,100);
@@ -976,6 +1056,7 @@ public class PerformanceTesting {
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1536,Consts.ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_MD5_RFC2409",2,100);
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1984,Consts.ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_MD5_RFC2409",2,100);  
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_2048,Consts.ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_MD5_RFC2409",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_3072,Consts.ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_MD5_RFC2409",2,100);
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_4096,Consts.ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_MD5_RFC2409",2,100);
         
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_512,Consts.ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_512 ALG_RSA_RIPEMD160_ISO9796",2,100);
@@ -987,6 +1068,7 @@ public class PerformanceTesting {
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1536,Consts.ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_RIPEMD160_ISO9796",2,100);
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1984,Consts.ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_RIPEMD160_ISO9796",2,100);  
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_2048,Consts.ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_RIPEMD160_ISO9796",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_3072,Consts.ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_RIPEMD160_ISO9796",2,100);
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_4096,Consts.ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_RIPEMD160_ISO9796",2,100);
         
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_512,Consts.ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_512 ALG_RSA_RIPEMD160_PKCS1",2,100);
@@ -998,6 +1080,7 @@ public class PerformanceTesting {
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1536,Consts.ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_RIPEMD160_PKCS1",2,100);
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1984,Consts.ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_RIPEMD160_PKCS1",2,100);  
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_2048,Consts.ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_RIPEMD160_PKCS1",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_3072,Consts.ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_RIPEMD160_PKCS1",2,100);
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_4096,Consts.ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_RIPEMD160_PKCS1",2,100);
         
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_512,Consts.ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_512 ALG_RSA_RIPEMD160_PKCS1_PSS",2,100);
@@ -1009,6 +1092,7 @@ public class PerformanceTesting {
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1536,Consts.ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_RIPEMD160_PKCS1_PSS",2,100);
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1984,Consts.ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_RIPEMD160_PKCS1_PSS",2,100);  
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_2048,Consts.ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_RIPEMD160_PKCS1_PSS",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_3072,Consts.ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_RIPEMD160_PKCS1_PSS",2,100);
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_4096,Consts.ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_RIPEMD160_PKCS1_PSS",2,100);
         
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_512,Consts.ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_512 ALG_RSA_SHA_ISO9796",2,100);
@@ -1020,6 +1104,7 @@ public class PerformanceTesting {
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1536,Consts.ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_SHA_ISO9796",2,100);
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1984,Consts.ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_SHA_ISO9796",2,100);  
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_2048,Consts.ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_SHA_ISO9796",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_3072,Consts.ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_SHA_ISO9796",2,100);
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_4096,Consts.ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_SHA_ISO9796",2,100);
         
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_512,Consts.ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_512 ALG_RSA_SHA_PKCS1",2,100);
@@ -1031,6 +1116,7 @@ public class PerformanceTesting {
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1536,Consts.ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_SHA_PKCS1",2,100);
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1984,Consts.ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_SHA_PKCS1",2,100);  
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_2048,Consts.ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_SHA_PKCS1",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_3072,Consts.ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_SHA_PKCS1",2,100);
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_4096,Consts.ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_SHA_PKCS1",2,100);
         
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_512,Consts.ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_512 ALG_RSA_SHA_PKCS1_PSS",2,100);
@@ -1042,6 +1128,7 @@ public class PerformanceTesting {
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1536,Consts.ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_SHA_PKCS1_PSS",2,100);
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1984,Consts.ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_SHA_PKCS1_PSS",2,100);  
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_2048,Consts.ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_SHA_PKCS1_PSS",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_3072,Consts.ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_SHA_PKCS1_PSS",2,100);
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_4096,Consts.ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_SHA_PKCS1_PSS",2,100);
         
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_512,Consts.ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_512 ALG_RSA_SHA_RFC2409",2,100);
@@ -1053,6 +1140,7 @@ public class PerformanceTesting {
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1536,Consts.ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_SHA_RFC2409",2,100);
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_1984,Consts.ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_SHA_RFC2409",2,100);  
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_2048,Consts.ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_SHA_RFC2409",2,100);
+        testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_3072,Consts.ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_SHA_RFC2409",2,100);
         testSignature(Consts.ALG_RSA, Consts.LENGTH_RSA_4096,Consts.ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_SHA_RFC2409",2,100);
                
         tableName = "SIGNATURE - END\n";
