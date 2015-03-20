@@ -15,13 +15,14 @@ public class Consts {
     public final static byte TRUE                  = (byte) 0x01; 
     public final static byte FALSE                 = (byte) 0x00; 
     
-
+/*
     // Declares the annotation Twizzle.
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
     public @interface Twizzle { }
     
     @Twizzle
+*/    
     public final static byte CLA_CARD_ALGTEST                  = (byte) 0xB0; 
     public final static byte INS_CARD_GETVERSION               = (byte) 0x60;
     public final static byte INS_CARD_RESET                    = (byte) 0x69;
@@ -36,6 +37,8 @@ public class Consts {
     // BUGBUG: refactor codes
     public final static byte INS_PERF_TEST_CLASS_KEY           = (byte) 0x40;
     public final static byte INS_PERF_TEST_CLASS_CIPHER        = (byte) 0x43;
+    public final static byte INS_PERF_TEST_CLASS_SIGNATURE     = (byte) 0x49;
+    
 
     public final static byte INS_PERF_TEST_MESSAGE_DIGEST      = (byte) 0x41;
     public final static byte INS_PERF_TEST_RANDOM_DATA         = (byte) 0x42;
@@ -44,14 +47,15 @@ public class Consts {
     public final static byte INS_PERF_TEST_CHECKSUM            = (byte) 0x46;
     public final static byte INS_PERF_RESET                    = (byte) 0x47;
     public final static byte INS_PERF_PREPARE_KEY              = (byte) 0x48;
-    public final static byte INS_PERF_PREPARE_SIGNATURE        = (byte) 0x49;
     public final static byte INS_PERF_PREPARE_KEY_PAIR         = (byte) 0x50;
     public final static byte INS_PERF_PREPARE_MESSAGE_DIGEST   = (byte) 0x51;
     public final static byte INS_PERF_PREPARE_RANDOM_DATA      = (byte) 0x52;
     public final static byte INS_PERF_TEST_SIGNATURE           = (byte) 0x53;
     
-    public final static byte INS_PREPARE_TEST_CLASS_KEY        = (byte) 0x90;
-    public final static byte INS_PREPARE_TEST_CLASS_CIPHER     = (byte) 0x91;
+    public final static byte INS_PREPARE_TEST_CLASS_KEY        = (byte) 0x30;
+    public final static byte INS_PREPARE_TEST_CLASS_CIPHER     = (byte) 0x31;
+    public final static byte INS_PREPARE_TEST_CLASS_SIGNATURE  = (byte) 0x32;
+    
     
     
     
@@ -75,11 +79,19 @@ public class Consts {
     public final static byte method_clearKey                    = (byte) 2;
     public final static byte method_getKey                      = (byte) 3;
          
+    public final static byte overhead = 0;
     public final static byte Cipher_update                      = (byte) 1;
     public final static byte Cipher_doFinal                     = (byte) 2;
     public final static byte Cipher_init                        = (byte) 3;
     
+    public final static byte Signature_update                   = (byte) 1;
+    public final static byte Signature_sign                     = (byte) 2;
+    public final static byte Signature_init                     = (byte) 3;
+    public final static byte Signature_verify                   = (byte) 4;
+    public final static byte Signature_signPreComputedHash      = (byte) 5;
+    public final static byte Signature_setInitialDigest         = (byte) 6;
             
+    
       //  
       // Class javacard.security.Signature
       // Search: public static final (byte|short) ([A-Z0-9_]*) 

@@ -33,7 +33,7 @@ public class CardCommunicationException extends Exception
                 case CardMngr.UNINITIALIZED_KEY:
                     return "UNINITIALIZED_KEY";
                 default:
-                    return "UNKONWN_ERROR-card_has_return_value_" + reason;                    
+                    return "UNKONWN_ERROR-card_has_return_value_" + Integer.toHexString(reason);                    
             }
     }
 }

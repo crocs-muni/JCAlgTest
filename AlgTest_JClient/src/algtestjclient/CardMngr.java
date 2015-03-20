@@ -139,7 +139,7 @@ public class CardMngr {
     public static final byte selectApplet[] = {
         (byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00, (byte) 0x09, 
         (byte) 0x6D, (byte) 0x79, (byte) 0x70, (byte) 0x61, (byte) 0x63, (byte) 0x30, (byte) 0x30, (byte) 0x30, (byte) 0x31}; 
-    
+
     public static final String helpString = "This program can be used with following parameters:\r\n"
             + ALGTEST_MULTIPERAPDU + " -> for using classic AlgTest with multiple tests per APDU command\r\n"
             + ALGTEST_SINGLEPERAPDU + " -> for using AlgTest with single test per APDU command\r\n"
@@ -987,9 +987,9 @@ public class CardMngr {
         return status;
     }
     
-    private boolean resetApplet(byte cla, byte ins) {
+    public boolean resetApplet(byte cla, byte ins) {
         try {
-            System.out.println("\nReseting card...");
+            System.out.println("Free unused card objects...");
             byte apdu[] = {cla,ins,0,0};
             ResponseAPDU resp = sendAPDU(apdu);
             if (resp.getSW() != 0x9000) {
@@ -1019,10 +1019,13 @@ public class CardMngr {
                 elapsedCard = -System.currentTimeMillis();
                 resp = sendAPDU(apdu);
                 elapsedCard += System.currentTimeMillis();
-                if (resp.getNr()!=0) {
+                if (resp.getNr() != 0) {
                     byte data[] = resp.getData();          
                     if (data[0] != SUCCESS) throw new CardCommunicationException(data[0]);
-                }                
+                } 
+                else {
+                    throw new CardCommunicationException(resp.getSW());
+                }
             }
             else
             {
@@ -1030,15 +1033,17 @@ public class CardMngr {
                 throw new CardCommunicationException(CANT_BE_MEASURED);
             }
         }
-        else
-        {
+        else {
             elapsedCard += System.currentTimeMillis();
-            if (resp.getNr()!=0)
-            {
+            if (resp.getNr()!=0) {
                 byte data[];
                 data = resp.getData();          
                 if(data[0] != SUCCESS) throw new CardCommunicationException(data[0]);
             }            
+            else {
+                throw new CardCommunicationException(resp.getSW());
+            }
+            
         }
         return (double) elapsedCard ;
     }    

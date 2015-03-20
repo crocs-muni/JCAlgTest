@@ -85,20 +85,11 @@
             <exec executable="${gpshell.cmd}">
                 <arg value="build//scripts//${gpshell.script}"/>
             </exec>
-            <!-- Copy class files from package AlgTest_JavaCard to AlgTestJClient for jCardSim-->
-            <copy file="${basedir}/build/classes/AlgTest/AlgTest.class" tofile="${basedir}/test/AlgTest.class"/>
-            <copy file="${basedir}/build/classes/AlgTest/AlgTestPerformance/AlgTestPerformance.class" tofile="${basedir}/test/AlgTestPerformance.class"/>
-            <copy file="${basedir}/build/classes/AlgTest/AlgTestSinglePerApdu/AlgTestSinglePerApdu.class" tofile="${basedir}/test/AlgTestSinglePerApdu.class"/>
         </target>
      
         <!-- Overriding target, which runs script during testing -->
         <target name="test" depends="jar,run-script">
         </target>
 
-<!--
-        <target name="-post-jar">
-	     <exec dir="d:\Documents\Develop\AlgTest\" executable="d:\Documents\Develop\AlgTest\post_build.bat">
-	     </exec> 
-        </target>
--->
+
 </project>

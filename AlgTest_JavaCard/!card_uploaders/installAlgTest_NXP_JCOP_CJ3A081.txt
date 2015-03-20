@@ -4,11 +4,28 @@ enable_trace
 establish_context
 card_connect -readerNumber 1
 select -AID a000000003000000
-open_sc -security 1 -keyind 0 -keyver 0 -mac_key 404142434445464748494a4b4c4d4e4f -enc_key 404142434445464748494a4b4c4d4e4f
+open_sc -security 0 -keyind 0 -keyver 0 -mac_key 404142434445464748494a4b4c4d4e4f -enc_key 404142434445464748494a4b4c4d4e4f
+
+#get_status -element 10 
 
 delete -AID 6D7970616330303031
 delete -AID 6D797061636B616731
+
+
+#delete -AID a000000003535041
+#delete -AID a0000000035350
+
+
+
 install -file AlgTest.cap -nvDataLimit 2000 -instParam 00 
+
+
+
+select -AID 6D7970616330303031
+
+send_apdu -sc 0 -APDU B060000000 
+
+
 
 card_disconnect
 release_context

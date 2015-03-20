@@ -63,7 +63,7 @@ public class PerformanceTesting {
     public static final String TEST_EXTENDEDAPDU = "EXTENDEDAPDU";
     public static final String TEST_RSAEXPONENT = "RSAEXPONENT";
     
-    static CardMngr cardManager = new CardMngr();
+    public static CardMngr cardManager = new CardMngr();
     
     public StringBuilder value = new StringBuilder();
     public String message = "";
@@ -496,30 +496,78 @@ public class PerformanceTesting {
     }
     public static void perftest_prepareClass(byte appletCLA, byte appletINS, short classType, short algorithmSpecification, short algorithmType, short algorithmKeyLength, short algorithmMethod, short dataLength1, short dataLength2, short numRepeatWholeOperation, short numRepeatSubOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
         TestSettings testSet = prepareTestSettings(classType, algorithmSpecification, algorithmType, algorithmKeyLength, algorithmMethod, dataLength1, dataLength2, numRepeatWholeOperation, numRepeatSubOperation, numRepeatWholeMeasurement);
-        cardManager.PerfTestCommand(appletCLA, appletINS, testSet, Consts.INS_CARD_RESET);
+        perftest_prepareClass(appletCLA, appletINS, testSet);
     }
     public static void perftest_prepareClass(byte appletCLA, byte appletINS, TestSettings testSet) throws IOException, Exception {
+        // Free previously allocated objects
+        boolean succes = cardManager.resetApplet(appletCLA, Consts.INS_CARD_RESET);
+        // Prepare new set
         cardManager.PerfTestCommand(appletCLA, appletINS, testSet, Consts.INS_CARD_RESET);
     }
     
-    public static void perftest_measure(byte appletCLA, byte appletINS, short classType, short algorithmSpecification, short algorithmType, short algorithmKeyLength, short algorithmMethod, short dataLength1, short dataLength2, short numRepeatWholeOperation, short numRepeatSubOperation, short numRepeatWholeMeasurement, String info) throws IOException, Exception {
+    public static double perftest_measure(byte appletCLA, byte appletPrepareINS, byte appletMeasureINS, short classType, short algorithmSpecification, short algorithmType, short algorithmKeyLength, short algorithmMethod, short dataLength1, short dataLength2, short numRepeatWholeOperation, short numRepeatSubOperation, short numRepeatWholeMeasurement, String info) throws IOException, Exception {
         TestSettings testSet = prepareTestSettings(classType, algorithmSpecification, algorithmType, algorithmKeyLength, algorithmMethod, dataLength1, dataLength2, numRepeatWholeOperation, numRepeatSubOperation, numRepeatWholeMeasurement);
-        perftest_measure(appletCLA, appletINS, testSet, info);
+        return perftest_measure(appletCLA, appletPrepareINS, appletMeasureINS, testSet, info);
     }
     
-    public static void perftest_measure(byte appletCLA, byte appletINS, TestSettings testSet, String info) throws IOException, Exception {
+    public static double perftest_measure(byte appletCLA, byte appletPrepareINS, byte appletMeasureINS, TestSettings testSet, String info) throws IOException, Exception {
+        // Prepare fresh set of objects
+        perftest_prepareClass(appletCLA, appletPrepareINS, testSet);        
+        
+        // Do measurements
         String message = "";
+        double sumTimes = 0;
+        double avgOverhead = 0;
+        double avgOpTime = -1;
         try {            
             String timeStr;
-            double time = cardManager.PerfTestCommand(appletCLA, appletINS, testSet, Consts.INS_CARD_RESET);
-            message += info + "\n";
+            message += "\n" + info + "\n";
+            
+            // Measure processing time without actually calling measured operation
+            short bkpNumRepeatWholeOperation = testSet.numRepeatWholeOperation;
+            testSet.numRepeatWholeOperation = 0;
             for(int i = 0; i < testSet.numRepeatWholeMeasurement;i++) {
-                time = cardManager.PerfTestCommand(appletCLA, appletINS, testSet, Consts.INS_CARD_RESET);
+                double overheadTime = cardManager.PerfTestCommand(appletCLA, appletMeasureINS, testSet, Consts.INS_CARD_RESET);
+                sumTimes += overheadTime;
+                timeStr = String.format("%1f", overheadTime);
+                message +=  timeStr + " " ;
+                System.out.print(timeStr + " ");
+            }
+            avgOverhead = sumTimes / testSet.numRepeatWholeMeasurement;
+            System.out.print("Avg overhead time: " + avgOverhead);
+            System.out.println();     
+            System.out.println(); message += "\n";
+            file.write(message.getBytes());
+            message = "";
+
+            
+            
+            
+            // Restore required number of required measurements 
+            testSet.numRepeatWholeOperation = bkpNumRepeatWholeOperation;
+            
+            double time = 0;
+            sumTimes = 0;
+            for(int i = 0; i < testSet.numRepeatWholeMeasurement;i++) {
+                time = cardManager.PerfTestCommand(appletCLA, appletMeasureINS, testSet, Consts.INS_CARD_RESET);
+                time -= avgOverhead;
+                sumTimes += time;
                 timeStr = String.format("%1f", time);
                 message +=  timeStr + " " ;
                 System.out.print(timeStr + " ");
             }
-            System.out.println();      
+            System.out.println();     
+            
+            System.out.println(); message += "\n";
+            file.write(message.getBytes());
+            message = "";
+        
+            // Compute average per operation
+            int totalIterations = testSet.numRepeatWholeOperation * testSet.numRepeatWholeMeasurement;
+            avgOpTime = (totalIterations != 0) ? sumTimes / totalIterations : 0;       
+            String messageOpTime = String.format("%f ms/op (%d total iterations, %d total invocations)\n", avgOpTime, totalIterations, totalIterations * testSet.numRepeatSubOperation);
+            file.write(messageOpTime.getBytes());
+            System.out.println(messageOpTime);  
         }
         catch (CardCommunicationException ex) 
         {
@@ -532,6 +580,8 @@ public class PerformanceTesting {
         }
         System.out.println(); message += "\n";
         file.write(message.getBytes());
+        
+        return avgOpTime;
     }
     
     
@@ -950,7 +1000,7 @@ public class PerformanceTesting {
         cdata[0] = (byte) (pom & mask);
         try
         {
-            cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_PERF_PREPARE_SIGNATURE,key, alg, cdata, (byte) 2, Consts.INS_CARD_RESET);
+            cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE,key, alg, cdata, (byte) 2, Consts.INS_CARD_RESET);
             for(int length = step;length<max;length+=step)
             {           
                 double dia = 0;
