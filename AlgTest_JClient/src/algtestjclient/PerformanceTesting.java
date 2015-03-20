@@ -526,14 +526,16 @@ public class PerformanceTesting {
             // Measure processing time without actually calling measured operation
             short bkpNumRepeatWholeOperation = testSet.numRepeatWholeOperation;
             testSet.numRepeatWholeOperation = 0;
+            message +=  "debug overhead:";
             for(int i = 0; i < testSet.numRepeatWholeMeasurement;i++) {
                 double overheadTime = cardManager.PerfTestCommand(appletCLA, appletMeasureINS, testSet, Consts.INS_CARD_RESET);
                 sumTimes += overheadTime;
-                timeStr = String.format("%1f", overheadTime);
+                timeStr = String.format(" %1f", overheadTime);
                 message +=  timeStr + " " ;
                 System.out.print(timeStr + " ");
             }
             avgOverhead = sumTimes / testSet.numRepeatWholeMeasurement;
+            message += "Avg overhead time: " + avgOverhead;
             System.out.print("Avg overhead time: " + avgOverhead);
             System.out.println();     
             System.out.println(); message += "\n";
@@ -605,10 +607,10 @@ public class PerformanceTesting {
         cdata[0] = (byte) (pom & mask);
         try
         {            
-            cardManager.BasicTest(Consts.CLA_CARD_ALGTEST,Consts.INS_PERF_PREPARE_KEY_PAIR,alg,(byte)0,cdata,(byte) 2, Consts.INS_CARD_RESET);
+            cardManager.BasicTest(Consts.CLA_CARD_ALGTEST,Consts.INS_PREPARE_TEST_CLASS_KEYPAIR,alg,(byte)0,cdata,(byte) 2, Consts.INS_CARD_RESET);
             for(int i = 0;i<max;i++)
             {
-                time = cardManager.BasicTest(Consts.CLA_CARD_ALGTEST,Consts.INS_PERF_TEST_KEY_PAIR,alg, (byte)0, cdata, (byte) 2, Consts.INS_CARD_RESET);
+                time = cardManager.BasicTest(Consts.CLA_CARD_ALGTEST,Consts.INS_PERF_TEST_CLASS_KEYPAIR,alg, (byte)0, cdata, (byte) 2, Consts.INS_CARD_RESET);
                 timeStr = String.format("%1f", time);
                 message +=  timeStr + " " ;
                 System.out.print(timeStr + " ");
@@ -687,7 +689,7 @@ public class PerformanceTesting {
         byte[] cdata = new byte[2];
         try
         {
-            cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_PERF_PREPARE_MESSAGE_DIGEST,alg, (byte) 0, cdata, (byte) 0, Consts.INS_CARD_RESET); 
+            cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_MESSAGEDIGEST,alg, (byte) 0, cdata, (byte) 0, Consts.INS_CARD_RESET); 
             for (int i = step;i<maxLength;i+=step)
             {            
                 cdata[1] = (byte) (i & mask);
@@ -697,8 +699,8 @@ public class PerformanceTesting {
                 System.out.print("(");
                 for (int j = 0;j<cycle;j++)
                 {
-                    time1 = cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_PERF_TEST_MESSAGE_DIGEST,alg,(byte)(count * 2), cdata, (byte) 2, Consts.INS_CARD_RESET);
-                    time2 = cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_PERF_TEST_MESSAGE_DIGEST,alg, count, cdata, (byte) 2, Consts.INS_CARD_RESET);
+                    time1 = cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_PERF_TEST_CLASS_MESSAGEDIGEST,alg,(byte)(count * 2), cdata, (byte) 2, Consts.INS_CARD_RESET);
+                    time2 = cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_PERF_TEST_CLASS_MESSAGEDIGEST,alg, count, cdata, (byte) 2, Consts.INS_CARD_RESET);
                     time = time1-time2;
                     time = time/count;
                     dia+= time;
@@ -753,7 +755,7 @@ public class PerformanceTesting {
         String message = info + " " + step + " " + seedStep + " " + seedCount + "\n"; System.out.println(info);
         try
         {
-            cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_PERF_PREPARE_RANDOM_DATA,alg, (byte)0, cdata, (byte) 0, Consts.INS_CARD_RESET);
+            cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_RANDOMDATA,alg, (byte)0, cdata, (byte) 0, Consts.INS_CARD_RESET);
             for(int seed = 0;seed<seedCount*seedStep+1;seed+=seedStep)
             {            
                 if (seed == 0) System.out.print("NOSEED ");
@@ -770,8 +772,8 @@ public class PerformanceTesting {
                     System.out.print("(");
                     for (int j = 0;j<cycle;j++)
                     {
-                        time1 = cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_PERF_TEST_RANDOM_DATA,alg, (byte)(count * 2), cdata, (byte) 4, Consts.INS_CARD_RESET);
-                        time2 = cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_PERF_TEST_RANDOM_DATA,alg, count, cdata, (byte) 4, Consts.INS_CARD_RESET);
+                        time1 = cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_PERF_TEST_CLASS_RANDOMDATA,alg, (byte)(count * 2), cdata, (byte) 4, Consts.INS_CARD_RESET);
+                        time2 = cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_PERF_TEST_CLASS_RANDOMDATA,alg, count, cdata, (byte) 4, Consts.INS_CARD_RESET);
                         time = time1-time2;
                         time = time/count;
                         dia+= time;
@@ -822,7 +824,7 @@ public class PerformanceTesting {
             cdata[1] = (byte) (keyLength & mask);
             int pom = keyLength >> 7;
             cdata[0] = (byte) (pom & mask);
-            cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_PERF_PREPARE_KEY,key, alg, cdata, (byte) 2, Consts.INS_CARD_RESET);
+            cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER,key, alg, cdata, (byte) 2, Consts.INS_CARD_RESET);
             for(int length = step;length<max;length+=step)
             {                
                 double dia = 0;
@@ -1010,8 +1012,8 @@ public class PerformanceTesting {
                 System.out.print("(");
                 for (int j = 0;j<cycle;j++)
                 {
-                    time1 = cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_PERF_TEST_SIGNATURE,(byte)0, (byte)(count * 2), cdata, (byte) 2, Consts.INS_CARD_RESET);
-                    time2 = cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_PERF_TEST_SIGNATURE,(byte)0, count, cdata, (byte) 2, Consts.INS_CARD_RESET);
+                    time1 = cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_PERF_TEST_CLASS_SIGNATURE,(byte)0, (byte)(count * 2), cdata, (byte) 2, Consts.INS_CARD_RESET);
+                    time2 = cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_PERF_TEST_CLASS_SIGNATURE,(byte)0, count, cdata, (byte) 2, Consts.INS_CARD_RESET);
                     time = time1-time2;
                     time = time/count;
                     dia+=time;
@@ -1218,8 +1220,8 @@ public class PerformanceTesting {
                 System.out.print("(");
                 for (int j = 0;j<cycle;j++)
                 {
-                    time1 = cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_PERF_TEST_CHECKSUM,alg, (byte)(count * 2), cdata, (byte) 2, Consts.INS_CARD_RESET);
-                    time2 = cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_PERF_TEST_CHECKSUM,alg, count, cdata, (byte) 2, Consts.INS_CARD_RESET);
+                    time1 = cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_PERF_TEST_CLASS_CHECKSUM,alg, (byte)(count * 2), cdata, (byte) 2, Consts.INS_CARD_RESET);
+                    time2 = cardManager.BasicTest(Consts.CLA_CARD_ALGTEST, Consts.INS_PERF_TEST_CLASS_CHECKSUM,alg, count, cdata, (byte) 2, Consts.INS_CARD_RESET);
                     time = time1-time2;
                     time = time/count;
                     dia+=time;

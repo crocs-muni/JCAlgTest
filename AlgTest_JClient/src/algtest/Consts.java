@@ -36,25 +36,30 @@ public class Consts {
     
     // BUGBUG: refactor codes
     public final static byte INS_PERF_TEST_CLASS_KEY           = (byte) 0x40;
+    public final static byte INS_PERF_TEST_CLASS_MESSAGEDIGEST = (byte) 0x41;
+    public final static byte INS_PERF_TEST_CLASS_RANDOMDATA    = (byte) 0x42;
     public final static byte INS_PERF_TEST_CLASS_CIPHER        = (byte) 0x43;
+    public final static byte INS_PERF_TEST_CLASS_KEYPAIR       = (byte) 0x45;
+    public final static byte INS_PERF_TEST_CLASS_CHECKSUM      = (byte) 0x46;
     public final static byte INS_PERF_TEST_CLASS_SIGNATURE     = (byte) 0x49;
     
-
-    public final static byte INS_PERF_TEST_MESSAGE_DIGEST      = (byte) 0x41;
-    public final static byte INS_PERF_TEST_RANDOM_DATA         = (byte) 0x42;
+    
+    
+/*
     public final static byte INS_PERF_TEST_KEY_BUILDER         = (byte) 0x44;
-    public final static byte INS_PERF_TEST_KEY_PAIR            = (byte) 0x45;
-    public final static byte INS_PERF_TEST_CHECKSUM            = (byte) 0x46;
     public final static byte INS_PERF_RESET                    = (byte) 0x47;
     public final static byte INS_PERF_PREPARE_KEY              = (byte) 0x48;
-    public final static byte INS_PERF_PREPARE_KEY_PAIR         = (byte) 0x50;
-    public final static byte INS_PERF_PREPARE_MESSAGE_DIGEST   = (byte) 0x51;
-    public final static byte INS_PERF_PREPARE_RANDOM_DATA      = (byte) 0x52;
-    public final static byte INS_PERF_TEST_SIGNATURE           = (byte) 0x53;
+*/    
+    
     
     public final static byte INS_PREPARE_TEST_CLASS_KEY        = (byte) 0x30;
     public final static byte INS_PREPARE_TEST_CLASS_CIPHER     = (byte) 0x31;
     public final static byte INS_PREPARE_TEST_CLASS_SIGNATURE  = (byte) 0x32;
+    public final static byte INS_PREPARE_TEST_CLASS_RANDOMDATA = (byte) 0x33;
+    public final static byte INS_PREPARE_TEST_CLASS_MESSAGEDIGEST = (byte) 0x34;
+    public final static byte INS_PREPARE_TEST_CLASS_CHECKSUM    = (byte) 0x35;
+    public final static byte INS_PREPARE_TEST_CLASS_KEYPAIR     = (byte) 0x36;
+    
     
     
     
@@ -68,6 +73,7 @@ public class Consts {
     public static final short CLASS_KEYBUILDER                  = (short) 0x20;      
     public static final short CLASS_KEYAGREEMENT                = (short) 0x13;      
     public static final short CLASS_CHECKSUM                    = (short) 0x17;      
+    public static final short CLASS_KEYPAIR                     = (short) 0x18;      
     
     public static final short UNUSED    = (short) -1;     
     
@@ -91,6 +97,18 @@ public class Consts {
     public final static byte Signature_signPreComputedHash      = (byte) 5;
     public final static byte Signature_setInitialDigest         = (byte) 6;
             
+    public final static byte RandomData_generateData            = (byte) 1;
+    public final static byte RandomData_setSeed                 = (byte) 2;
+    
+    public final static byte MessageDigest_update               = (byte) 1;
+    public final static byte MessageDigest_doFinal              = (byte) 2;
+    public final static byte MessageDigest_reset                = (byte) 3;
+    
+    public final static byte Checksum_update                    = (byte) 1;
+    public final static byte Checksum_doFinal                   = (byte) 2;
+    
+    public final static byte KeyPair_genKeyPair                 = (byte) 1;
+    
     
       //  
       // Class javacard.security.Signature

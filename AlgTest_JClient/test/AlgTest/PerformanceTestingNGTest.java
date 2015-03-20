@@ -149,7 +149,7 @@ public class PerformanceTestingNGTest {
         testSet = PerformanceTesting.prepareTestSettings(CLASS_SIGNATURE, ALG_AES_MAC_128_NOPAD, TYPE_AES, LENGTH_AES_128, Signature_sign, 
                 TEST_DATA_LENGTH, UNUSED, (short) 1, (short) 1, (short) 1);      
 
-        PerformanceTesting.perftest_prepareClass(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, testSet);
+        //PerformanceTesting.perftest_prepareClass(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, testSet);
         
         // Test single execution of operation
         testSet.numRepeatWholeMeasurement = 2;
@@ -176,7 +176,116 @@ public class PerformanceTestingNGTest {
     
     }
     
+    @Test
+    void perftest_testClass_RandomData() throws Exception {
+        // Prepare connection to simulated card
+        PerformanceTesting.file = cardManager.establishConnection(AlgTestSinglePerApdu.class);
+        //PerformanceTesting.file = cardManager.establishConnection(null);
+        assertNotEquals(PerformanceTesting.file, null);
+
+        // Prepare test
+        TestSettings testSet = null;
+        testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_RANDOMDATA, Consts.ALG_SECURE_RANDOM, UNUSED, UNUSED, Consts.RandomData_generateData, 
+                TEST_DATA_LENGTH, UNUSED, (short) 1, (short) 1, (short) 1);      
+
+        // Test single execution of operation
+        testSet.numRepeatWholeMeasurement = 2;
+        testSet.numRepeatWholeOperation = 100;
+        testSet.numRepeatSubOperation = 1;
+        testSet.algorithmMethod = Consts.RandomData_generateData;
+        assertTrue(PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_RANDOMDATA, Consts.INS_PERF_TEST_CLASS_RANDOMDATA, testSet, "RandomData ALG_SECURE_RANDOM RandomData_generateData()") > -1);
+        testSet.algorithmMethod = Consts.RandomData_setSeed;
+        assertTrue(PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_RANDOMDATA, Consts.INS_PERF_TEST_CLASS_RANDOMDATA, testSet, "RandomData ALG_SECURE_RANDOM RandomData_setSeed()") > -1);
+
+        testSet.algorithmSpecification = Consts.ALG_PSEUDO_RANDOM;
+        testSet.algorithmMethod = Consts.RandomData_generateData;
+        assertTrue(PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_RANDOMDATA, Consts.INS_PERF_TEST_CLASS_RANDOMDATA, testSet, "RandomData ALG_PSEUDO_RANDOM RandomData_generateData()") > -1);
+        testSet.algorithmMethod = Consts.RandomData_setSeed;
+        assertTrue(PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_RANDOMDATA, Consts.INS_PERF_TEST_CLASS_RANDOMDATA, testSet, "RandomData ALG_PSEUDO_RANDOM RandomData_setSeed()") > -1);
+    }    
     
+   @Test
+    void perftest_testClass_MessageDigest() throws Exception {
+        // Prepare connection to simulated card
+        PerformanceTesting.file = cardManager.establishConnection(AlgTestSinglePerApdu.class);
+        //PerformanceTesting.file = cardManager.establishConnection(null);
+        assertNotEquals(PerformanceTesting.file, null);
+
+        // BUGBUG: other types from MessageDigest
+        
+        // Prepare test
+        TestSettings testSet = null;
+        testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_MESSAGEDIGEST, Consts.ALG_SHA, Consts.ALG_SHA, UNUSED, Consts.MessageDigest_update, 
+                TEST_DATA_LENGTH, UNUSED, (short) 1, (short) 1, (short) 1);      
+
+        // Test single execution of operation
+        testSet.numRepeatWholeMeasurement = 2;
+        testSet.numRepeatWholeOperation = 100;
+        testSet.numRepeatSubOperation = 1;
+        testSet.algorithmMethod = Consts.MessageDigest_update;
+        assertTrue(PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_MESSAGEDIGEST, Consts.INS_PERF_TEST_CLASS_MESSAGEDIGEST, testSet, "MessageDigest ALG_SHA MessageDigest_update()") > -1);
+        testSet.algorithmMethod = Consts.MessageDigest_doFinal;
+        assertTrue(PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_MESSAGEDIGEST, Consts.INS_PERF_TEST_CLASS_MESSAGEDIGEST, testSet, "MessageDigest ALG_SHA MessageDigest_doFinal()") > -1);
+        testSet.algorithmMethod = Consts.MessageDigest_reset;
+        assertTrue(PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_MESSAGEDIGEST, Consts.INS_PERF_TEST_CLASS_MESSAGEDIGEST, testSet, "MessageDigest ALG_SHA MessageDigest_reset()") > -1);
+
+    }    
+    
+   @Test
+    void perftest_testClass_Checksum() throws Exception {
+        // Prepare connection to simulated card
+        PerformanceTesting.file = cardManager.establishConnection(AlgTestSinglePerApdu.class);
+        //PerformanceTesting.file = cardManager.establishConnection(null);
+        assertNotEquals(PerformanceTesting.file, null);
+
+        // BUGBUG: other types from MessageDigest
+        
+        // Prepare test
+        TestSettings testSet = null;
+        testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_CHECKSUM, Consts.ALG_ISO3309_CRC16, Consts.ALG_ISO3309_CRC16, UNUSED, Consts.Checksum_update, 
+                TEST_DATA_LENGTH, UNUSED, (short) 1, (short) 1, (short) 1);      
+        // BUGBUG: ALG_ISO3309_CRC32
+        
+        // Test single execution of operation
+        testSet.numRepeatWholeMeasurement = 2;
+        testSet.numRepeatWholeOperation = 100;
+        testSet.numRepeatSubOperation = 1;
+        testSet.algorithmMethod = Consts.Checksum_update;
+        assertTrue(PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CHECKSUM, Consts.INS_PERF_TEST_CLASS_CHECKSUM, testSet, "Checksum ALG_ISO3309_CRC16 Checksum_update()") > -1);
+        testSet.algorithmMethod = Consts.Checksum_doFinal;
+        assertTrue(PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CHECKSUM, Consts.INS_PERF_TEST_CLASS_CHECKSUM, testSet, "Checksum ALG_ISO3309_CRC16 Checksum_doFinal()") > -1);
+
+        testSet.numRepeatSubOperation = 1;
+        testSet.algorithmType = testSet.algorithmSpecification = Consts.ALG_ISO3309_CRC32;
+        testSet.algorithmMethod = Consts.Checksum_update;
+        assertTrue(PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CHECKSUM, Consts.INS_PERF_TEST_CLASS_CHECKSUM, testSet, "Checksum ALG_ISO3309_CRC32 Checksum_update()") > -1);
+        testSet.algorithmMethod = Consts.Checksum_doFinal;
+        assertTrue(PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CHECKSUM, Consts.INS_PERF_TEST_CLASS_CHECKSUM, testSet, "Checksum ALG_ISO3309_CRC32 Checksum_doFinal()") > -1);
+        
+    }     
+    
+   @Test
+    void perftest_testClass_KeyPair() throws Exception {
+        // Prepare connection to simulated card
+        PerformanceTesting.file = cardManager.establishConnection(AlgTestSinglePerApdu.class);
+        //PerformanceTesting.file = cardManager.establishConnection(null);
+        assertNotEquals(PerformanceTesting.file, null);
+
+        // BUGBUG: other types from MessageDigest
+        
+        // Prepare test
+        TestSettings testSet = null;
+        testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYPAIR, Consts.ALG_RSA_CRT, Consts.ALG_RSA_CRT, Consts.LENGTH_RSA_1024, Consts.KeyPair_genKeyPair, 
+                UNUSED, UNUSED, (short) 1, (short) 1, (short) 1);      
+
+        // BUGBUG: ALG_RSA, ALG_DSA, ALG_EC_F2M, ALG_EC_FP
+        
+        // Test single execution of operation
+        testSet.numRepeatWholeMeasurement = 2;  // TODO: measure repeatedly
+        testSet.algorithmMethod = Consts.KeyPair_genKeyPair;
+        assertTrue(PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEYPAIR, Consts.INS_PERF_TEST_CLASS_KEYPAIR, testSet, "KeyPair ALG_RSA_CRT LENGTH_RSA_1024 KeyPair_genKeyPair()") > -1);
+    }        
+        
     private static void printMembers(Member[] mbrs, String s, String longClassName, String shortClassName) throws IllegalArgumentException, IllegalAccessException {
 	int methodIndex = 0;
         out.format("%s:%n", s);

@@ -98,6 +98,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
     private   RandomData       m_random = null;
     private   Object           m_object = null;
     private   KeyPair          m_keyPair = null;
+    private   Checksum         m_checksum = null;
   
   
     private   byte[]           m_ramArray = null;
@@ -266,10 +267,18 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                 case Consts.INS_PREPARE_TEST_CLASS_KEY: prepare_class_Key(apdu); break;        
                 case Consts.INS_PREPARE_TEST_CLASS_CIPHER: prepare_class_Cipher(apdu);break;
                 case Consts.INS_PREPARE_TEST_CLASS_SIGNATURE: prepare_class_Signature(apdu);break;
+                case Consts.INS_PREPARE_TEST_CLASS_RANDOMDATA: prepare_class_RandomData(apdu);break;
+                case Consts.INS_PREPARE_TEST_CLASS_MESSAGEDIGEST: prepare_class_MessageDigest(apdu);break;
+                case Consts.INS_PREPARE_TEST_CLASS_CHECKSUM: prepare_class_Checksum(apdu);break;
+                case Consts.INS_PREPARE_TEST_CLASS_KEYPAIR: prepare_class_KeyPair(apdu);break;
 
                 case Consts.INS_PERF_TEST_CLASS_KEY: perftest_class_Key(apdu); break;        
                 case Consts.INS_PERF_TEST_CLASS_CIPHER: perftest_class_Cipher(apdu); break;        
                 case Consts.INS_PERF_TEST_CLASS_SIGNATURE: perftest_class_Signature(apdu); break;        
+                case Consts.INS_PERF_TEST_CLASS_RANDOMDATA: perftest_class_RandomData(apdu); break;        
+                case Consts.INS_PERF_TEST_CLASS_MESSAGEDIGEST: perftest_class_MessageDigest(apdu); break;        
+                case Consts.INS_PERF_TEST_CLASS_CHECKSUM: perftest_class_Checksum(apdu); break;        
+                case Consts.INS_PERF_TEST_CLASS_KEYPAIR: perftest_class_KeyPair(apdu); break;        
                     
                     
 /*                    
@@ -783,8 +792,130 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);            
     }    
     
+    void prepare_class_RandomData(APDU apdu) {
+        byte[] apdubuf = apdu.getBuffer();
+        m_testSettings.parse(apdu);  
+
+        try {
+            m_random = RandomData.getInstance((byte) m_testSettings.algorithmSpecification);
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
+        }
+        catch(CryptoException e)
+        {
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte)e.getReason();
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
+        }  
+    }      
+    void perftest_class_RandomData(APDU apdu) {  
+        byte[] apdubuf = apdu.getBuffer();
+        m_testSettings.parse(apdu); 
+        short repeats = (short) (m_testSettings.numRepeatWholeOperation * m_testSettings.numRepeatSubOperation);
+        short chunkDataLen = (short) (m_testSettings.dataLength1 / m_testSettings.numRepeatSubOperation);
+
+        switch (m_testSettings.algorithmMethod) {
+            case Consts.RandomData_generateData:for (short i = 0; i < repeats; i++) { m_random.generateData(m_ram1, (short) 0, chunkDataLen); } break;
+            case Consts.RandomData_setSeed:     for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_random.setSeed(m_ram1, (short) 0,m_testSettings.dataLength1); } break;
     
-   
+            default: ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
+        }
+
+        apdubuf[ISO7816.OFFSET_CDATA] = SUCCESS;
+        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);            
+    }    
+    
+      void prepare_class_MessageDigest(APDU apdu) {
+        byte[] apdubuf = apdu.getBuffer();
+        m_testSettings.parse(apdu);  
+
+        try {
+            m_digest = MessageDigest.getInstance((byte) m_testSettings.algorithmSpecification, false);
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
+        }
+        catch(CryptoException e)
+        {
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte)e.getReason();
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
+        }  
+    }      
+    void perftest_class_MessageDigest(APDU apdu) {  
+        byte[] apdubuf = apdu.getBuffer();
+        m_testSettings.parse(apdu); 
+        short repeats = (short) (m_testSettings.numRepeatWholeOperation * m_testSettings.numRepeatSubOperation);
+        short chunkDataLen = (short) (m_testSettings.dataLength1 / m_testSettings.numRepeatSubOperation);
+
+        switch (m_testSettings.algorithmMethod) {
+            case Consts.MessageDigest_update:   for (short i = 0; i < repeats; i++) { m_digest.update(m_ram1, (short) 0, chunkDataLen); } break;
+            case Consts.MessageDigest_doFinal:  for (short i = 0; i < repeats; i++) { m_digest.doFinal(m_ram1, (short) 0, chunkDataLen, m_ram1, chunkDataLen); } break;
+            case Consts.MessageDigest_reset:  for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_digest.reset(); } break; // BUGBUG: second reset may be very fast
+    
+            default: ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
+        }
+
+        apdubuf[ISO7816.OFFSET_CDATA] = SUCCESS;
+        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);            
+    }    
+    
+     void prepare_class_Checksum(APDU apdu) {
+        byte[] apdubuf = apdu.getBuffer();
+        m_testSettings.parse(apdu);  
+
+        try {
+            m_checksum = Checksum.getInstance((byte) m_testSettings.algorithmSpecification, false);
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
+        }
+        catch(CryptoException e) {
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte)e.getReason(); 
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
+        }  
+    }      
+    void perftest_class_Checksum(APDU apdu) {  
+        byte[] apdubuf = apdu.getBuffer();
+        m_testSettings.parse(apdu); 
+        short repeats = (short) (m_testSettings.numRepeatWholeOperation * m_testSettings.numRepeatSubOperation);
+        short chunkDataLen = (short) (m_testSettings.dataLength1 / m_testSettings.numRepeatSubOperation);
+
+        switch (m_testSettings.algorithmMethod) {
+            case Consts.Checksum_update:   for (short i = 0; i < repeats; i++) { m_checksum.update(m_ram1, (short) 0, chunkDataLen); } break;
+            case Consts.Checksum_doFinal:  for (short i = 0; i < repeats; i++) { m_checksum.doFinal(m_ram1, (short) 0, chunkDataLen, m_ram1, chunkDataLen); } break;
+    
+            default: ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
+        }
+
+        apdubuf[ISO7816.OFFSET_CDATA] = SUCCESS;
+        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);            
+    }   
+    
+     void prepare_class_KeyPair(APDU apdu) {
+        byte[] apdubuf = apdu.getBuffer();
+        m_testSettings.parse(apdu);  
+        
+        try {
+            m_keyPair = new KeyPair((byte) m_testSettings.algorithmSpecification, (byte) m_testSettings.algorithmKeyLength);
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
+        }
+        catch(CryptoException e) {
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte)e.getReason(); 
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
+        }  
+    }      
+    void perftest_class_KeyPair(APDU apdu) {  
+        byte[] apdubuf = apdu.getBuffer();
+        m_testSettings.parse(apdu); 
+
+        switch (m_testSettings.algorithmMethod) {
+            case Consts.KeyPair_genKeyPair:   for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_keyPair.genKeyPair(); } break;
+    
+            default: ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
+        }
+
+        apdubuf[ISO7816.OFFSET_CDATA] = SUCCESS;
+        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);            
+    }            
+    
     
    //
    // TODO: Original codes for performance - to be refactored
