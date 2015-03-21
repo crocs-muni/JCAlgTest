@@ -695,7 +695,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         m_testSettings.parse(apdu);  
 
         switch (m_testSettings.keyType) {
-            case KeyBuilder.TYPE_AES:
+            case JCConsts.KeyBuilder_TYPE_AES:
                 switch (m_testSettings.algorithmMethod) {
                     case JCConsts.AESKey_setKey: 
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_aes_key.setKey(m_ram1, (short) (i % 10)); } // i % 10 => different offset to ensure slightly different key every time

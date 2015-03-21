@@ -62,8 +62,7 @@ public class Consts {
     
     
     
-    public static final byte MY_DSA = 88;       // bugbug: introduced probably because of value duplicity inside prepareSignature()
-    
+   
     public static final short CLASS_CIPHER                      = (short) 0x11;      
     public static final short CLASS_SIGNATURE                   = (short) 0x12;      
     public static final short CLASS_KEYAGREEMENT                = (short) 0x13;      

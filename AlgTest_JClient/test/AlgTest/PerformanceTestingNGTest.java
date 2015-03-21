@@ -44,12 +44,18 @@ public class PerformanceTestingNGTest {
         PerformanceTesting.file = (bTestRealCards) ? cardManager.establishConnection(null) : cardManager.establishConnection(AlgTestSinglePerApdu.class);   
         assertNotEquals(PerformanceTesting.file, null);
 
-        PerformanceTesting.testAllMessageDigests(1, 1);
-        PerformanceTesting.testAllRandomGenerators(1, 1);
-        PerformanceTesting.testAllCiphers(1, 1);
-        PerformanceTesting.testAllSignatures(1, 1);
-        PerformanceTesting.testAllChecksums(1, 1);     
-        PerformanceTesting.testAllKeyPairs(1, 1);   
+        short numRepeatWholeOperation = 10;
+        short numRepeatWholeMeasurement = 3;
+        
+        PerformanceTesting.testAllMessageDigests(numRepeatWholeOperation, numRepeatWholeMeasurement);
+        PerformanceTesting.testAllRandomGenerators(numRepeatWholeOperation, numRepeatWholeMeasurement);
+        PerformanceTesting.testAllCiphers(numRepeatWholeOperation, numRepeatWholeMeasurement);
+        PerformanceTesting.testAllSignatures(numRepeatWholeOperation, numRepeatWholeMeasurement);
+        PerformanceTesting.testAllChecksums(numRepeatWholeOperation, numRepeatWholeMeasurement);     
+        
+        PerformanceTesting.testAllKeyPairs(1, numRepeatWholeMeasurement);   
+
+        PerformanceTesting.testAllKeys(numRepeatWholeOperation, numRepeatWholeMeasurement);     
     }                   
 
     @Test

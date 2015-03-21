@@ -185,6 +185,7 @@ public class PerformanceTesting {
                 testAllCiphers(Consts.NUM_REPEAT_WHOLE_OPERATION, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
                 testAllSignatures(Consts.NUM_REPEAT_WHOLE_OPERATION, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
                 testAllChecksums(Consts.NUM_REPEAT_WHOLE_OPERATION, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);     
+                testAllKeys(Consts.NUM_REPEAT_WHOLE_OPERATION, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);     
 
                 if (fast) {
                     testAllKeyPairs(1, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);    // repeat on-card only once (long operation), but perform 5x                                   
@@ -210,6 +211,9 @@ public class PerformanceTesting {
                 System.out.println("Do you want to test class checksum? (y/n)");
                 res = sc.nextLine();
                 if(res.equals("y")) { testAllChecksums(Consts.NUM_REPEAT_WHOLE_OPERATION, Consts.NUM_REPEAT_WHOLE_MEASUREMENT); }
+                System.out.println("Do you want to test class Key? (y/n)");
+                res = sc.nextLine();
+                if(res.equals("y")) { testAllKeys(Consts.NUM_REPEAT_WHOLE_OPERATION, Consts.NUM_REPEAT_WHOLE_MEASUREMENT); }
                 System.out.println("Do you want to test class keyPair? (y/n)");
                 res = sc.nextLine();
                 if(res.equals("y")) 
@@ -1252,9 +1256,41 @@ public class PerformanceTesting {
         file.write(tableName.getBytes());
     }    
     
-    
     // TODO: KeyAgreement tests
     
-    // TODO: all *Key tests
+    public static void testAESKey(byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
+        TestSettings testSet = null;
+        testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.AESKey_setKey, 
+                Consts.TEST_DATA_LENGTH, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);      
+        
+        testSet.algorithmMethod = JCConsts.AESKey_setKey;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setKey()");
+        testSet.algorithmMethod = JCConsts.AESKey_getKey;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getKey()");
+        testSet.algorithmMethod = JCConsts.AESKey_clearKey;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearKey()");
+
+    }   
+    public static void testAllAESKeys(int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception {
+        testAllAESKeys((short) numRepeatWholeOperation, (short) numRepeatWholeMeasurement);
+    }
+    public static void testAllAESKeys(short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
+        String tableName = "\n\nAESKey\n";
+        file.write(tableName.getBytes());
+        testAESKey(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,"TYPE_AES LENGTH_AES_128", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testAESKey(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_192,"TYPE_AES LENGTH_AES_192", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testAESKey(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_256,"TYPE_AES LENGTH_AES_256", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        tableName = "AESKey - END\n";
+        file.write(tableName.getBytes());
+    }  
+    
+    public static void testAllKeys(int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception {
+        testAllKeys((short) numRepeatWholeOperation, (short) numRepeatWholeMeasurement);
+    }
+    public static void testAllKeys(short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
+        testAllAESKeys(numRepeatWholeOperation, numRepeatWholeMeasurement);
+        // TODO: all *Key tests: DESKey, KoreanSEEDKey, DSAKey, DSAKeyPrivateKey, DSAPublicKey, ECKey, ECPrivateKey, ECPublicKey, HMACKey, RSAPrivateCrtKey, RSAPrivateKey, RSAPublicKey
+    }
+    
 
 }
