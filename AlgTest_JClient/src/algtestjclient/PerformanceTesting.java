@@ -788,7 +788,7 @@ public class PerformanceTesting {
         testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_256,JCConsts.Cipher_ALG_AES_ECB_ISO9797_M1,"TYPE_AES LENGTH_AES_256 ALG_AES_ECB_ISO9797_M1", numRepeatWholeOperation, numRepeatWholeMeasurement);
         testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_256,JCConsts.Cipher_ALG_AES_ECB_ISO9797_M2,"TYPE_AES LENGTH_AES_256 ALG_AES_ECB_ISO9797_M2", numRepeatWholeOperation, numRepeatWholeMeasurement);
         testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_256,JCConsts.Cipher_ALG_AES_ECB_PKCS5,"TYPE_AES LENGTH_AES_256 ALG_AES_ECB_PKCS5", numRepeatWholeOperation, numRepeatWholeMeasurement); 
-        
+        // ALG_RSA
         testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Cipher_ALG_RSA_ISO14888,"ALG_RSA LENGTH_RSA_512 ALG_RSA_ISO14888", numRepeatWholeOperation, numRepeatWholeMeasurement);
         testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Cipher_ALG_RSA_ISO9796,"ALG_RSA LENGTH_RSA_512 ALG_RSA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
         testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Cipher_ALG_RSA_NOPAD,"ALG_RSA LENGTH_RSA_512 ALG_RSA_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
@@ -845,6 +845,64 @@ public class PerformanceTesting {
         testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Cipher_ALG_RSA_NOPAD,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
         testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Cipher_ALG_RSA_PKCS1,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
         testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_PKCS1_OAEP", numRepeatWholeOperation, numRepeatWholeMeasurement); 
+        // ALG_RSA_CRT
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Cipher_ALG_RSA_ISO14888,"ALG_RSA_CRT LENGTH_RSA_512 ALG_RSA_ISO14888", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Cipher_ALG_RSA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_512 ALG_RSA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Cipher_ALG_RSA_NOPAD,"ALG_RSA_CRT LENGTH_RSA_512 ALG_RSA_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Cipher_ALG_RSA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_512 ALG_RSA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"ALG_RSA_CRT LENGTH_RSA_512 ALG_RSA_PKCS1_OAEP", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Cipher_ALG_RSA_ISO14888,"ALG_RSA_CRT LENGTH_RSA_736 ALG_RSA_ISO14888", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Cipher_ALG_RSA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_736 ALG_RSA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Cipher_ALG_RSA_NOPAD,"ALG_RSA_CRT LENGTH_RSA_736 ALG_RSA_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Cipher_ALG_RSA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_736 ALG_RSA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"ALG_RSA_CRT LENGTH_RSA_736 ALG_RSA_PKCS1_OAEP", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Cipher_ALG_RSA_ISO14888,"ALG_RSA_CRT LENGTH_RSA_768 ALG_RSA_ISO14888", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Cipher_ALG_RSA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_768 ALG_RSA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Cipher_ALG_RSA_NOPAD,"ALG_RSA_CRT LENGTH_RSA_768 ALG_RSA_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Cipher_ALG_RSA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_768 ALG_RSA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"ALG_RSA_CRT LENGTH_RSA_768 ALG_RSA_PKCS1_OAEP", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Cipher_ALG_RSA_ISO14888,"ALG_RSA_CRT LENGTH_RSA_896 ALG_RSA_ISO14888", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Cipher_ALG_RSA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_896 ALG_RSA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Cipher_ALG_RSA_NOPAD,"ALG_RSA_CRT LENGTH_RSA_896 ALG_RSA_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Cipher_ALG_RSA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_896 ALG_RSA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"ALG_RSA_CRT LENGTH_RSA_896 ALG_RSA_PKCS1_OAEP", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Cipher_ALG_RSA_ISO14888,"ALG_RSA_CRT LENGTH_RSA_1024 ALG_RSA_ISO14888", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Cipher_ALG_RSA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_1024 ALG_RSA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Cipher_ALG_RSA_NOPAD,"ALG_RSA_CRT LENGTH_RSA_1024 ALG_RSA_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Cipher_ALG_RSA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_1024 ALG_RSA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"ALG_RSA_CRT LENGTH_RSA_1024 ALG_RSA_PKCS1_OAEP", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Cipher_ALG_RSA_ISO14888,"ALG_RSA_CRT LENGTH_RSA_1280 ALG_RSA_ISO14888", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Cipher_ALG_RSA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_1280 ALG_RSA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Cipher_ALG_RSA_NOPAD,"ALG_RSA_CRT LENGTH_RSA_1280 ALG_RSA_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Cipher_ALG_RSA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_1280 ALG_RSA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"ALG_RSA_CRT LENGTH_RSA_1280 ALG_RSA_PKCS1_OAEP", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Cipher_ALG_RSA_ISO14888,"ALG_RSA_CRT LENGTH_RSA_1536 ALG_RSA_ISO14888", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Cipher_ALG_RSA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_1536 ALG_RSA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Cipher_ALG_RSA_NOPAD,"ALG_RSA_CRT LENGTH_RSA_1536 ALG_RSA_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Cipher_ALG_RSA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_1536 ALG_RSA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"ALG_RSA_CRT LENGTH_RSA_1536 ALG_RSA_PKCS1_OAEP", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Cipher_ALG_RSA_ISO14888,"ALG_RSA_CRT LENGTH_RSA_1984 ALG_RSA_ISO14888", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Cipher_ALG_RSA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_1984 ALG_RSA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Cipher_ALG_RSA_NOPAD,"ALG_RSA_CRT LENGTH_RSA_1984 ALG_RSA_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Cipher_ALG_RSA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_1984 ALG_RSA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"ALG_RSA_CRT LENGTH_RSA_1984 ALG_RSA_PKCS1_OAEP", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_ISO14888,"ALG_RSA_CRT LENGTH_RSA_2048 ALG_RSA_ISO14888", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_2048 ALG_RSA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_NOPAD,"ALG_RSA_CRT LENGTH_RSA_2048 ALG_RSA_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_2048 ALG_RSA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"ALG_RSA_CRT LENGTH_RSA_2048 ALG_RSA_PKCS1_OAEP", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Cipher_ALG_RSA_ISO14888,"ALG_RSA_CRT LENGTH_RSA_3072 ALG_RSA_ISO14888", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Cipher_ALG_RSA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_3072 ALG_RSA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Cipher_ALG_RSA_NOPAD,"ALG_RSA_CRT LENGTH_RSA_3072 ALG_RSA_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Cipher_ALG_RSA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_3072 ALG_RSA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"ALG_RSA_CRT LENGTH_RSA_3072 ALG_RSA_PKCS1_OAEP", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Cipher_ALG_RSA_ISO14888,"ALG_RSA_CRT LENGTH_RSA_4096 ALG_RSA_ISO14888", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Cipher_ALG_RSA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_4096 ALG_RSA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Cipher_ALG_RSA_NOPAD,"ALG_RSA_CRT LENGTH_RSA_4096 ALG_RSA_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Cipher_ALG_RSA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_4096 ALG_RSA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"ALG_RSA_CRT LENGTH_RSA_4096 ALG_RSA_PKCS1_OAEP", numRepeatWholeOperation, numRepeatWholeMeasurement); 
+        
         tableName = "CIPHER - END\n";
         file.write(tableName.getBytes());
     }
