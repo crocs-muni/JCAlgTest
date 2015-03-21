@@ -7,6 +7,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 
 import static algtestjclient.PerformanceTesting.cardManager;
+import static algtestjclient.PerformanceTesting.testSignature;
 import java.io.FileOutputStream;
 import static java.lang.System.out;
 import java.lang.reflect.*;
@@ -38,6 +39,18 @@ public class PerformanceTestingNGTest {
         if (PerformanceTesting.file != null) PerformanceTesting.file.close();
     }
     
+    @Test
+    void perftest_testAll() throws Exception {    
+        PerformanceTesting.file = (bTestRealCards) ? cardManager.establishConnection(null) : cardManager.establishConnection(AlgTestSinglePerApdu.class);   
+        assertNotEquals(PerformanceTesting.file, null);
+
+        PerformanceTesting.testAllMessageDigests(1, 1);
+        PerformanceTesting.testAllRandomGenerators(1, 1);
+        PerformanceTesting.testAllCiphers(1, 1);
+        PerformanceTesting.testAllSignatures(1, 1);
+        PerformanceTesting.testAllChecksums(1, 1);     
+        PerformanceTesting.testAllKeyPairs(1, 1);   
+    }                   
 
     @Test
     void perftest_testClass_AESKey() throws Exception {
@@ -231,7 +244,7 @@ public class PerformanceTestingNGTest {
         assertTrue(PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CHECKSUM, Consts.INS_PERF_TEST_CLASS_CHECKSUM, testSet, "Checksum ALG_ISO3309_CRC16 Checksum_doFinal()") > -1);
 
         testSet.numRepeatSubOperation = 1;
-        testSet.algorithmType = testSet.algorithmSpecification = JCConsts.Checksum_ALG_ISO3309_CRC32;
+        testSet.keyType = testSet.algorithmSpecification = JCConsts.Checksum_ALG_ISO3309_CRC32;
         testSet.algorithmMethod = JCConsts.Checksum_update;
         assertTrue(PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CHECKSUM, Consts.INS_PERF_TEST_CLASS_CHECKSUM, testSet, "Checksum ALG_ISO3309_CRC32 Checksum_update()") > -1);
         testSet.algorithmMethod = JCConsts.Checksum_doFinal;
@@ -245,7 +258,7 @@ public class PerformanceTestingNGTest {
         assertNotEquals(PerformanceTesting.file, null);
 
 
-        // BUGBUG: other types from MessageDigest
+        // BUGBUG: other types from KeyPair
         
         // Prepare test
         TestSettings testSet = null;
@@ -282,4 +295,9 @@ public class PerformanceTestingNGTest {
         assertTrue(PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEYAGREEMENT, Consts.INS_PERF_TEST_CLASS_KEYAGREEMENT, testSet, "CLASS_KEYAGREEMENT ALG_EC_SVDP_DH LENGTH_EC_FP_192 KeyAgreement_generateSecret()") > -1);
     }     
 
+    @Test
+    void debug() throws Exception { 
+        PerformanceTesting.file = (bTestRealCards) ? cardManager.establishConnection(null) : cardManager.establishConnection(AlgTestSinglePerApdu.class);   
+        PerformanceTesting.testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_512 ALG_RSA_SHA_ISO9796", (short) 1, (short) 1);
+    }
 }

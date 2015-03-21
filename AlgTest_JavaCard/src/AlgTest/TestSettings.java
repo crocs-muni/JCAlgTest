@@ -12,7 +12,8 @@ public class TestSettings {
     public final static short OFFSET_ALGORITHM_SPECIFICATION   = (short) (OFFSET_ALGORITHM_CLASS + 2);
     public final static short OFFSET_ALGORITHM_PARAM1          = (short) (OFFSET_ALGORITHM_SPECIFICATION + 2);
     public final static short OFFSET_ALGORITHM_PARAM2          = (short) (OFFSET_ALGORITHM_PARAM1 + 2);
-    public final static short OFFSET_ALGORITHM_TESTED_OPS      = (short) (OFFSET_ALGORITHM_PARAM2 + 2);
+    public final static short OFFSET_ALGORITHM_PARAM3          = (short) (OFFSET_ALGORITHM_PARAM2 + 2);
+    public final static short OFFSET_ALGORITHM_TESTED_OPS      = (short) (OFFSET_ALGORITHM_PARAM3 + 2);
     public final static short OFFSET_DATA_LENGTH1              = (short) (OFFSET_ALGORITHM_TESTED_OPS + 2);
     public final static short OFFSET_DATA_LENGTH2              = (short) (OFFSET_DATA_LENGTH1 + 2);
     public final static short OFFSET_NUM_REPEAT_WHOLE_OP       = (short) (OFFSET_DATA_LENGTH2 + 2);
@@ -20,10 +21,11 @@ public class TestSettings {
     public final static short TEST_SETTINGS_LENGTH             = (short) (OFFSET_NUM_REPEAT_SUB_OP + 2 - OFFSET_ALGORITHM_CLASS);
     
 
-    public short       classType = -1;                // e.g., javacardx.crypto.Cipher
+    public short       classType = -1;                     // e.g., javacardx.crypto.Cipher
     public short       algorithmSpecification = -1;        // e.g., Cipher.ALG_AES_BLOCK_128_CBC_NOPAD
-    public short       algorithmType = -1;                 // e.g., KeyBuilder.TYPE_AES
-    public short       algorithmKeyLength = -1;            // e.g., KeyBuilder.LENGTH_AES_128
+    public short       keyClass = -1;                      // unused for ALG_AES, but e.g., KeyPair.ALG_RSA for KeyBuilder.TYPE_RSA_PRIVATE
+    public short       keyType = -1;                       // e.g., KeyBuilder.TYPE_AES
+    public short       keyLength = -1;                     // e.g., KeyBuilder.LENGTH_AES_128
     public short       algorithmMethod = -1;               // e.g., AESKey.setKey() - our custom constant
     public short       dataLength1 = -1;                   // e.g., length of data used during measurement (e.g., for update())
     public short       dataLength2 = -1;                   // e.g., length of data used during measurement (e.g., for doFinal())
@@ -35,8 +37,9 @@ public class TestSettings {
     public void clear() {
         classType = -1;               
         algorithmSpecification = -1;        
-        algorithmType = -1;                 
-        algorithmKeyLength = -1;           
+        keyClass = -1;                 
+        keyType = -1;                 
+        keyLength = -1;           
         algorithmMethod = -1;           
         dataLength1 = -1;                  
         dataLength2 = -1;                  
@@ -61,10 +64,13 @@ public class TestSettings {
             algorithmSpecification = Util.getShort(apdubuf, (short) (OFFSET_ALGORITHM_SPECIFICATION + offset));    
         }
         if (len >= (short) (OFFSET_ALGORITHM_PARAM1 - ISO7816.OFFSET_CDATA + 2)) { 
-            algorithmType = Util.getShort(apdubuf, (short) (OFFSET_ALGORITHM_PARAM1 + offset));                    
+            keyClass = Util.getShort(apdubuf, (short) (OFFSET_ALGORITHM_PARAM1 + offset));                    
         }
         if (len >= (short) (OFFSET_ALGORITHM_PARAM2 - ISO7816.OFFSET_CDATA + 2)) { 
-            algorithmKeyLength = Util.getShort(apdubuf, (short) (OFFSET_ALGORITHM_PARAM2 + offset));               
+            keyType = Util.getShort(apdubuf, (short) (OFFSET_ALGORITHM_PARAM2 + offset));                    
+        }
+        if (len >= (short) (OFFSET_ALGORITHM_PARAM3 - ISO7816.OFFSET_CDATA + 2)) { 
+            keyLength = Util.getShort(apdubuf, (short) (OFFSET_ALGORITHM_PARAM3 + offset));               
         }
         if (len >= (short) (OFFSET_ALGORITHM_TESTED_OPS - ISO7816.OFFSET_CDATA + 2)) { 
             algorithmMethod = Util.getShort(apdubuf, (short) (OFFSET_ALGORITHM_TESTED_OPS + offset));           
@@ -86,8 +92,9 @@ public class TestSettings {
     public short serializeToApduBuff(byte[] apdubuf, short offset) {
         Util.setShort(apdubuf, (short) (offset + OFFSET_ALGORITHM_CLASS), classType);                    
         Util.setShort(apdubuf, (short) (offset + OFFSET_ALGORITHM_SPECIFICATION), algorithmSpecification);                    
-        Util.setShort(apdubuf, (short) (offset + OFFSET_ALGORITHM_PARAM1), algorithmType);                  
-        Util.setShort(apdubuf, (short) (offset + OFFSET_ALGORITHM_PARAM2), algorithmKeyLength);               
+        Util.setShort(apdubuf, (short) (offset + OFFSET_ALGORITHM_PARAM1), keyClass);                  
+        Util.setShort(apdubuf, (short) (offset + OFFSET_ALGORITHM_PARAM2), keyType);               
+        Util.setShort(apdubuf, (short) (offset + OFFSET_ALGORITHM_PARAM3), keyLength);               
         Util.setShort(apdubuf, (short) (offset + OFFSET_ALGORITHM_TESTED_OPS), algorithmMethod);                   
         Util.setShort(apdubuf, (short) (offset + OFFSET_DATA_LENGTH1), dataLength1);                   
         Util.setShort(apdubuf, (short) (offset + OFFSET_DATA_LENGTH2), dataLength2);                   

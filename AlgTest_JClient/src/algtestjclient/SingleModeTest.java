@@ -34,17 +34,12 @@ package algtestjclient;
 /* Import 'ALGTEST_JCLIENT_VERSION' variable - possibly replace with actual import of those variables later? */
 import AlgTest.Consts;
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javacard.framework.ISO7816;
 import javax.smartcardio.ResponseAPDU;
 
 /**
@@ -83,15 +78,7 @@ public class SingleModeTest {
     public static final byte OFFSET_DATA = 0x05;
     public static final byte HEADER_LENGTH = 0x05;
     
-    /* Auxiliary variables to choose class - used in APDU as P1 byte. */
-    public static final byte CLASS_CIPHER          = 0x11;
-    public static final byte CLASS_SIGNATURE       = 0x12;
-    public static final byte CLASS_KEYAGREEMENT    = 0x13;
-    public static final byte CLASS_MESSAGEDIGEST   = 0x15;
-    public static final byte CLASS_RANDOMDATA      = 0x16;
-    public static final byte CLASS_CHECKSUM        = 0x17;
-    public static final byte CLASS_KEYPAIR         = 0x19;
-    public static final byte CLASS_KEYBUILDER      = 0x20;
+
     
     /* Response values - send back by on card application as response to command APDU. */
     public static final short   SUPP_ALG_SUPPORTED  = 0;
@@ -658,7 +645,7 @@ public class SingleModeTest {
         byte[] apdu = new byte[6];
         apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
         apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
-        apdu[OFFSET_P1] = CLASS_CIPHER;   // 0x11
+        apdu[OFFSET_P1] = Consts.CLASS_CIPHER;   // 0x11
         apdu[OFFSET_P2] = (byte)0x00;
         apdu[OFFSET_LC] = (byte)0x01;
 
@@ -696,7 +683,7 @@ public class SingleModeTest {
         byte[] apdu = new byte[6];
         apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
         apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
-        apdu[OFFSET_P1] = CLASS_SIGNATURE;   // 0x12
+        apdu[OFFSET_P1] = Consts.CLASS_SIGNATURE;   // 0x12
         apdu[OFFSET_P2] = (byte)0x00;
         apdu[OFFSET_LC] = (byte)0x01;
         
@@ -732,7 +719,7 @@ public class SingleModeTest {
         byte[] apdu = new byte[6];
         apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
         apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
-        apdu[OFFSET_P1] = CLASS_MESSAGEDIGEST;   // 0x15
+        apdu[OFFSET_P1] = Consts.CLASS_MESSAGEDIGEST;   // 0x15
         apdu[OFFSET_P2] = (byte)0x00;
         apdu[OFFSET_LC] = (byte)0x01;
         
@@ -768,7 +755,7 @@ public class SingleModeTest {
         byte[] apdu = new byte[6];
             apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
             apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
-            apdu[OFFSET_P1] = CLASS_RANDOMDATA;   // 0x16
+            apdu[OFFSET_P1] = Consts.CLASS_RANDOMDATA;   // 0x16
             apdu[OFFSET_P2] = (byte)0x00;
             apdu[OFFSET_LC] = (byte)0x01;
         
@@ -803,7 +790,7 @@ public class SingleModeTest {
         byte[] apdu = new byte[8];
             apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
             apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
-            apdu[OFFSET_P1] = CLASS_KEYBUILDER;   // 0x20
+            apdu[OFFSET_P1] = Consts.CLASS_KEYBUILDER;   // 0x20
             apdu[OFFSET_P2] = (byte)0x00;
             apdu[OFFSET_LC] = (byte)0x03;
             
@@ -846,7 +833,7 @@ public class SingleModeTest {
         byte[] apdu = new byte[6];
             apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
             apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
-            apdu[OFFSET_P1] = CLASS_KEYAGREEMENT;   // 0x13
+            apdu[OFFSET_P1] = Consts.CLASS_KEYAGREEMENT;   // 0x13
             apdu[OFFSET_P2] = (byte)0x00;
             apdu[OFFSET_LC] = (byte)0x01;
     
@@ -882,7 +869,7 @@ public class SingleModeTest {
         byte[] apdu = new byte[6];
             apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
             apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
-            apdu[OFFSET_P1] = CLASS_CHECKSUM;   // 0x17
+            apdu[OFFSET_P1] = Consts.CLASS_CHECKSUM;   // 0x17
             apdu[OFFSET_P2] = (byte)0x00;
             apdu[OFFSET_LC] = (byte)0x01;
     
@@ -918,7 +905,7 @@ public class SingleModeTest {
         byte[] apdu = new byte[8];
             apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;      // for AlgTest applet
             apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;      // for AlgTest applet switch to 'TestSupportedModeSingle'
-            apdu[OFFSET_P1] = CLASS_KEYPAIR;    // 0x19
+            apdu[OFFSET_P1] = Consts.CLASS_KEYPAIR;    // 0x19
             apdu[OFFSET_P2] = (byte)0x00;
             apdu[OFFSET_LC] = (byte)0x03;
             apdu[OFFSET_DATA] = ALG_RSA;        // 1
@@ -959,7 +946,7 @@ public class SingleModeTest {
         byte[] apdu = new byte[8];
         apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;      // for AlgTest applet
         apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;      // for AlgTest applet switch to 'TestSupportedModeSingle'
-        apdu[OFFSET_P1] = CLASS_KEYPAIR;    // 0x19
+        apdu[OFFSET_P1] = Consts.CLASS_KEYPAIR;    // 0x19
         apdu[OFFSET_P2] = (byte)0x00;
         apdu[OFFSET_LC] = (byte)0x03;
         apdu[OFFSET_DATA] = ALG_RSA_CRT;    // 2
@@ -1001,7 +988,7 @@ public class SingleModeTest {
         byte[] apdu = new byte[8];
         apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;      // for AlgTest applet
         apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;      // for AlgTest applet switch to 'TestSupportedModeSingle'
-        apdu[OFFSET_P1] = CLASS_KEYPAIR;    // 0x19
+        apdu[OFFSET_P1] = Consts.CLASS_KEYPAIR;    // 0x19
         apdu[OFFSET_P2] = (byte)0x00;
         apdu[OFFSET_LC] = (byte)0x03;
         apdu[OFFSET_DATA] = ALG_DSA;        // 3
@@ -1042,7 +1029,7 @@ public class SingleModeTest {
         byte[] apdu = new byte[8];
         apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;      // for AlgTest applet
         apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;      // for AlgTest applet switch to 'TestSupportedModeSingle'
-        apdu[OFFSET_P1] = CLASS_KEYPAIR;    // 0x19
+        apdu[OFFSET_P1] = Consts.CLASS_KEYPAIR;    // 0x19
         apdu[OFFSET_P2] = (byte)0x00;
         apdu[OFFSET_LC] = (byte)0x03;
         apdu[OFFSET_DATA] = ALG_EC_F2M;     // 4
@@ -1083,7 +1070,7 @@ public class SingleModeTest {
         byte[] apdu = new byte[8];
         apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;      // for AlgTest applet
         apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;      // for AlgTest applet switch to 'TestSupportedModeSingle'
-        apdu[OFFSET_P1] = CLASS_KEYPAIR;    // 0x19
+        apdu[OFFSET_P1] = Consts.CLASS_KEYPAIR;    // 0x19
         apdu[OFFSET_P2] = (byte)0x00;
         apdu[OFFSET_LC] = (byte)0x03;
         apdu[OFFSET_DATA] = ALG_EC_FP;      // 5

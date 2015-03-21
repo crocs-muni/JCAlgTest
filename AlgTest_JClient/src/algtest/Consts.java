@@ -70,11 +70,11 @@ public class Consts {
     public static final short CLASS_MESSAGEDIGEST               = (short) 0x15;      
     public static final short CLASS_RANDOMDATA                  = (short) 0x16;      
     public static final short CLASS_CHECKSUM                    = (short) 0x17;      
-    public static final short CLASS_KEYPAIR                     = (short) 0x18;      
-    public static final short CLASS_KEYENCRYPTION               = (short) 0x19;      
+    public static final short CLASS_KEYENCRYPTION               = (short) 0x18;      
+    public static final short CLASS_KEYPAIR                     = (short) 0x19;      
     public static final short CLASS_KEYBUILDER                  = (short) 0x20;      
     
-    public static final short UNUSED    = (short) -1;     
+    public static final byte UNUSED    = (byte) -1;     
     
     public static final short TEST_DATA_LENGTH    = (short) 256;     
     
@@ -86,7 +86,12 @@ public class Consts {
     public static final byte CLASS_KEYPAIR_EC_FP_P2        = 4;	
 	// end refactor - do we need this?
         
-/* del   
+    
+    public static final short NUM_REPEAT_WHOLE_OPERATION        = (short) 50;
+    public static final short NUM_REPEAT_WHOLE_MEASUREMENT      = (short) 5;
+
+    
+    /* del   
     
     public final static byte method_setKey                      = (byte) 1;
     public final static byte method_clearKey                    = (byte) 2;

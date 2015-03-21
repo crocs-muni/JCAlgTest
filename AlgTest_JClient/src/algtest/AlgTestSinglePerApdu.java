@@ -626,42 +626,52 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         short offset = ISO7816.OFFSET_CDATA;
         
         try {
-            switch (m_testSettings.algorithmType) {
-                case KeyBuilder.TYPE_AES:
-                case KeyBuilder.TYPE_AES_TRANSIENT_RESET:
-                case KeyBuilder.TYPE_AES_TRANSIENT_DESELECT:
-                    m_aes_key = (AESKey) KeyBuilder.buildKey((byte) m_testSettings.algorithmType, m_testSettings.algorithmKeyLength, false);
+            switch (m_testSettings.keyType) {
+                case JCConsts.KeyBuilder_TYPE_AES:
+                case JCConsts.KeyBuilder_TYPE_AES_TRANSIENT_RESET:
+                case JCConsts.KeyBuilder_TYPE_AES_TRANSIENT_DESELECT:
+                    m_aes_key = (AESKey) KeyBuilder.buildKey((byte) m_testSettings.keyType, m_testSettings.keyLength, false);
                     if (bSetKeyValue == Consts.TRUE) {  
                         m_aes_key.setKey(m_ram1, (byte)0); 
                         m_key = m_aes_key;
                     }
                     break;
-                case KeyBuilder.TYPE_DES: 
-                case KeyBuilder.TYPE_DES_TRANSIENT_RESET: 
-                case KeyBuilder.TYPE_DES_TRANSIENT_DESELECT: 
-                    m_des_key = (DESKey) KeyBuilder.buildKey((byte) m_testSettings.algorithmType, m_testSettings.algorithmKeyLength, false);
+                case JCConsts.KeyBuilder_TYPE_DES: 
+                case JCConsts.KeyBuilder_TYPE_DES_TRANSIENT_RESET: 
+                case JCConsts.KeyBuilder_TYPE_DES_TRANSIENT_DESELECT: 
+                    m_des_key = (DESKey) KeyBuilder.buildKey((byte) m_testSettings.keyType, m_testSettings.keyLength, false);
                     if (bSetKeyValue == Consts.TRUE) {  
                         m_des_key.setKey(m_ram1, (byte)0); 
                         m_key = m_des_key;
                     }                    
                     break;
-                case KeyBuilder.TYPE_KOREAN_SEED: 
-                case KeyBuilder.TYPE_KOREAN_SEED_TRANSIENT_RESET: 
-                case KeyBuilder.TYPE_KOREAN_SEED_TRANSIENT_DESELECT: 
-                    m_koreanseed_key = (KoreanSEEDKey) KeyBuilder.buildKey((byte) m_testSettings.algorithmType, m_testSettings.algorithmKeyLength, false);
+                case JCConsts.KeyBuilder_TYPE_KOREAN_SEED: 
+                case JCConsts.KeyBuilder_TYPE_KOREAN_SEED_TRANSIENT_RESET: 
+                case JCConsts.KeyBuilder_TYPE_KOREAN_SEED_TRANSIENT_DESELECT: 
+                    m_koreanseed_key = (KoreanSEEDKey) KeyBuilder.buildKey((byte) m_testSettings.keyType, m_testSettings.keyLength, false);
                     if (bSetKeyValue == Consts.TRUE) {  
                         m_koreanseed_key.setKey(m_ram1, (byte)0); 
                         m_key = m_koreanseed_key;
                     } 
                     break;
-/* TODO: use custom constants
-                case Consts.KeyPair_ALG_RSA:                  
-                    m_keyPair = new KeyPair((byte) m_testSettings.algorithmType, m_testSettings.algorithmKeyLength);
+                case JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE:                  
+                case JCConsts.KeyBuilder_TYPE_RSA_PRIVATE:         
+                case JCConsts.KeyBuilder_TYPE_DSA_PRIVATE:
+                case JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE:
+                case JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE:
+                    m_keyPair = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
                     m_keyPair.genKeyPair(); // TODO: use fixed key value to shorten time required for key generation?
-                    m_key = m_keyPair.getPublic();                   
-                    m_privateKey = m_keyPair.getPublic();
+                    m_key = m_keyPair.getPrivate();                
+                    m_privateKey = m_keyPair.getPrivate();
                     break;
-*/                    
+                case JCConsts.KeyBuilder_TYPE_RSA_PUBLIC:                  
+                case JCConsts.KeyBuilder_TYPE_DSA_PUBLIC:
+                case JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC:
+                case JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC:
+                    m_keyPair = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
+                    m_keyPair.genKeyPair(); // TODO: use fixed key value to shorten time required for key generation?
+                    m_key = m_keyPair.getPublic();                
+                    break;
                 // TODO: DSAKey, DSAKeyPrivateKey, DSAPublicKey, ECKey, ECPrivateKey, ECPublicKey, HMACKey, RSAPrivateCrtKey, RSAPrivateKey, RSAPublicKey
                 
                 default:
@@ -674,6 +684,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         }
         catch (CryptoException e) { 
             apdubuf[offset] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); offset++;
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
         }
         
         return (short) (offset - ISO7816.OFFSET_CDATA);
@@ -683,7 +694,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         byte[] apdubuf = apdu.getBuffer();
         m_testSettings.parse(apdu);  
 
-        switch (m_testSettings.algorithmType) {
+        switch (m_testSettings.keyType) {
             case KeyBuilder.TYPE_AES:
                 switch (m_testSettings.algorithmMethod) {
                     case JCConsts.AESKey_setKey: 
@@ -728,8 +739,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA,(byte)1);
         }
-        catch(CryptoException e)
-        {
+        catch(CryptoException e) {
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte)e.getReason();
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
         }  
@@ -898,7 +908,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         m_testSettings.parse(apdu);  
         
         try {
-            m_keyPair = new KeyPair((byte) m_testSettings.algorithmSpecification, m_testSettings.algorithmKeyLength);
+            m_keyPair = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
         }
