@@ -1227,8 +1227,8 @@ public class CardMngr {
     }    
     public int GenerateAndGetKeys(String fileName, int numRepeats, int resetFrequency, int readerIndex) throws Exception { 
         byte apdu[] = new byte[HEADER_LENGTH]; 
-        apdu[OFFSET_CLA] = (byte) 0xB0;
-        apdu[OFFSET_INS] = (byte) 0x77;
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
+        apdu[OFFSET_INS] = Consts.INS_CARD_GETRSAKEY;
         apdu[OFFSET_P1] = 0x00;
         apdu[OFFSET_P2] = 0x00;
         apdu[OFFSET_LC] = 0x00;
