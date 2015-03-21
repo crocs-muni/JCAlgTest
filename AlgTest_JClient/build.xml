@@ -78,6 +78,7 @@
              <!-- Copy files necessary for compilation of JC applet-->
              <copy file="${basedir}/src/algtest/AlgTestSinglePerApdu.java" tofile="../AlgTest_JavaCard/src/AlgTest/AlgTestSinglePerApdu.java"/>
              <copy file="${basedir}/src/algtest/Consts.java" tofile="../AlgTest_JavaCard/src/AlgTest/Consts.java"/>
+             <copy file="${basedir}/src/algtest/JCConsts.java" tofile="../AlgTest_JavaCard/src/AlgTest/JCConsts.java"/>
              <copy file="${basedir}/src/algtest/TestSettings.java" tofile="../AlgTest_JavaCard/src/AlgTest/TestSettings.java"/>
           </target>
 </project>

@@ -130,8 +130,7 @@ public class CardMngr {
     public static final byte CLASS_KEYPAIR_EC_F2M  = 0x1B;
     public static final byte CLASS_KEYPAIR_EC_FP   = 0x1C;
 
-
-    
+   
     CardTerminal m_terminal = null;
     CardChannel m_channel = null;
     Card m_card = null;

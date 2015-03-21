@@ -1,10 +1,5 @@
 package AlgTest;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
  * @author Petr Svenda <petr@svenda.com>
  */
@@ -69,18 +64,27 @@ public class Consts {
     
     public static final short CLASS_CIPHER                      = (short) 0x11;      
     public static final short CLASS_SIGNATURE                   = (short) 0x12;      
+    public static final short CLASS_KEYAGREEMENT                = (short) 0x13;      
     public static final short CLASS_MESSAGEDIGEST               = (short) 0x15;      
     public static final short CLASS_RANDOMDATA                  = (short) 0x16;      
-    public static final short CLASS_KEYBUILDER                  = (short) 0x20;      
-    public static final short CLASS_KEYAGREEMENT                = (short) 0x13;      
     public static final short CLASS_CHECKSUM                    = (short) 0x17;      
     public static final short CLASS_KEYPAIR                     = (short) 0x18;      
+    public static final short CLASS_KEYENCRYPTION               = (short) 0x19;      
+    public static final short CLASS_KEYBUILDER                  = (short) 0x20;      
     
     public static final short UNUSED    = (short) -1;     
     
     public static final short TEST_DATA_LENGTH    = (short) 256;     
     
-    
+	// TODO: refactor - do we need this?
+    public static final byte CLASS_KEYPAIR_RSA_P2          = 11;
+    public static final byte CLASS_KEYPAIR_RSACRT_P2       = 11;
+    public static final byte CLASS_KEYPAIR_DSA_P2          = 3;
+    public static final byte CLASS_KEYPAIR_EC_F2M_P2       = 4;
+    public static final byte CLASS_KEYPAIR_EC_FP_P2        = 4;	
+	// end refactor - do we need this?
+        
+/* del   
     
     public final static byte method_setKey                      = (byte) 1;
     public final static byte method_clearKey                    = (byte) 2;
@@ -332,5 +336,5 @@ public class Consts {
     public static final byte ALG_ISO3309_CRC16             = 1;
     public static final byte ALG_ISO3309_CRC32             = 2;
 
-
+*/
 }

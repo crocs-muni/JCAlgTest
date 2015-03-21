@@ -606,8 +606,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
 
       // RETURN INPUT DATA UNCHANGED
       apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, dataLen);
-    }
-   
+    }  
    
    
     void prepare_class_Key(APDU apdu) {
@@ -685,17 +684,17 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         switch (m_testSettings.algorithmType) {
             case KeyBuilder.TYPE_AES:
                 switch (m_testSettings.algorithmMethod) {
-                    case Consts.method_setKey: 
+                    case JCConsts.AESKey_setKey: 
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_aes_key.setKey(m_ram1, (short) (i % 10)); } // i % 10 => different offset to ensure slightly different key every time
                         break;
-                    case Consts.method_clearKey:
+                    case JCConsts.AESKey_clearKey:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 
                             // BUGBUG: we should set key before clearing (clearing already cleared key may be very fast) - true at least for NXP J3A80
                             // TODO: m_aes_key.setKey(m_ram1, (short) (i % 10)); and postprocessing on client side with knowledge of setKey() length    
                             m_aes_key.clearKey(); 
                         } 
                         break;
-                    case Consts.method_getKey:
+                    case JCConsts.AESKey_getKey:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_aes_key.getKey(m_ram1, (short) 0); }
                         break;
                     default:
@@ -742,9 +741,9 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         short repeats = (short) (m_testSettings.numRepeatWholeOperation * m_testSettings.numRepeatSubOperation);
         short chunkDataLen = (short) (m_testSettings.dataLength1 / m_testSettings.numRepeatSubOperation);
         switch (m_testSettings.algorithmMethod) {
-            case Consts.Cipher_update:  for (short i = 0; i < repeats; i++) { m_cipher.update(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) 0); } break;
-            case Consts.Cipher_doFinal: for (short i = 0; i < repeats; i++) { m_cipher.doFinal(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) 0); } break;
-            case Consts.Cipher_init:    for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_cipher.init(m_key, Cipher.MODE_ENCRYPT); } break;
+            case JCConsts.Cipher_update:  for (short i = 0; i < repeats; i++) { m_cipher.update(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) 0); } break;
+            case JCConsts.Cipher_doFinal: for (short i = 0; i < repeats; i++) { m_cipher.doFinal(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) 0); } break;
+            case JCConsts.Cipher_init:    for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_cipher.init(m_key, Cipher.MODE_ENCRYPT); } break;
             default: ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
         }
         
@@ -781,10 +780,10 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         short repeats = (short) (m_testSettings.numRepeatWholeOperation * m_testSettings.numRepeatSubOperation);
         short chunkDataLen = (short) (m_testSettings.dataLength1 / m_testSettings.numRepeatSubOperation);
         switch (m_testSettings.algorithmMethod) {
-            case Consts.Signature_update:   for (short i = 0; i < repeats; i++) { m_signature.update(m_ram1, (short) 0, chunkDataLen); } break;
-            case Consts.Signature_sign:     for (short i = 0; i < repeats; i++) { m_signature.sign(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) 0); } break;
-            case Consts.Signature_verify:   for (short i = 0; i < repeats; i++) { m_signature.verify(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) chunkDataLen, m_signature.getLength()); } break;
-            case Consts.Signature_init:     for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_signature.init(m_key, Signature.MODE_SIGN); } break;
+            case JCConsts.Signature_update:   for (short i = 0; i < repeats; i++) { m_signature.update(m_ram1, (short) 0, chunkDataLen); } break;
+            case JCConsts.Signature_sign:     for (short i = 0; i < repeats; i++) { m_signature.sign(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) 0); } break;
+            case JCConsts.Signature_verify:   for (short i = 0; i < repeats; i++) { m_signature.verify(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) chunkDataLen, m_signature.getLength()); } break;
+            case JCConsts.Signature_init:     for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_signature.init(m_key, Signature.MODE_SIGN); } break;
 /* JC 3.0.1                        
             case Consts.Signature_signPreComputedHash: for (short i = 0; i < repeats; i++) { m_signature.signPreComputedHash(m_ram1, (short) 0, chunkDataLen); } break;
             case Consts.Signature_setInitialDigest: for (short i = 0; i < repeats; i++) { m_signature.setInitialDigest(m_ram1, (short) 0, chunkDataLen); } break;
@@ -818,8 +817,8 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         short chunkDataLen = (short) (m_testSettings.dataLength1 / m_testSettings.numRepeatSubOperation);
 
         switch (m_testSettings.algorithmMethod) {
-            case Consts.RandomData_generateData:for (short i = 0; i < repeats; i++) { m_random.generateData(m_ram1, (short) 0, chunkDataLen); } break;
-            case Consts.RandomData_setSeed:     for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_random.setSeed(m_ram1, (short) 0,m_testSettings.dataLength1); } break;
+            case JCConsts.RandomData_generateData:for (short i = 0; i < repeats; i++) { m_random.generateData(m_ram1, (short) 0, chunkDataLen); } break;
+            case JCConsts.RandomData_setSeed:     for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_random.setSeed(m_ram1, (short) 0,m_testSettings.dataLength1); } break;
     
             default: ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
         }
@@ -850,9 +849,9 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         short chunkDataLen = (short) (m_testSettings.dataLength1 / m_testSettings.numRepeatSubOperation);
 
         switch (m_testSettings.algorithmMethod) {
-            case Consts.MessageDigest_update:   for (short i = 0; i < repeats; i++) { m_digest.update(m_ram1, (short) 0, chunkDataLen); } break;
-            case Consts.MessageDigest_doFinal:  for (short i = 0; i < repeats; i++) { m_digest.doFinal(m_ram1, (short) 0, chunkDataLen, m_ram1, chunkDataLen); } break;
-            case Consts.MessageDigest_reset:  for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_digest.reset(); } break; // BUGBUG: second reset may be very fast
+            case JCConsts.MessageDigest_update:   for (short i = 0; i < repeats; i++) { m_digest.update(m_ram1, (short) 0, chunkDataLen); } break;
+            case JCConsts.MessageDigest_doFinal:  for (short i = 0; i < repeats; i++) { m_digest.doFinal(m_ram1, (short) 0, chunkDataLen, m_ram1, chunkDataLen); } break;
+            case JCConsts.MessageDigest_reset:  for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_digest.reset(); } break; // BUGBUG: second reset may be very fast
     
             default: ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
         }
@@ -882,8 +881,8 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         short chunkDataLen = (short) (m_testSettings.dataLength1 / m_testSettings.numRepeatSubOperation);
 
         switch (m_testSettings.algorithmMethod) {
-            case Consts.Checksum_update:   for (short i = 0; i < repeats; i++) { m_checksum.update(m_ram1, (short) 0, chunkDataLen); } break;
-            case Consts.Checksum_doFinal:  for (short i = 0; i < repeats; i++) { m_checksum.doFinal(m_ram1, (short) 0, chunkDataLen, m_ram1, chunkDataLen); } break;
+            case JCConsts.Checksum_update:   for (short i = 0; i < repeats; i++) { m_checksum.update(m_ram1, (short) 0, chunkDataLen); } break;
+            case JCConsts.Checksum_doFinal:  for (short i = 0; i < repeats; i++) { m_checksum.doFinal(m_ram1, (short) 0, chunkDataLen, m_ram1, chunkDataLen); } break;
     
             default: ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
         }
@@ -911,7 +910,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         m_testSettings.parse(apdu); 
 
         switch (m_testSettings.algorithmMethod) {
-            case Consts.KeyPair_genKeyPair:   for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_keyPair.genKeyPair(); } break;
+            case JCConsts.KeyPair_genKeyPair:   for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_keyPair.genKeyPair(); } break;
     
             default: ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
         }
@@ -942,8 +941,8 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         m_testSettings.parse(apdu); 
 
         switch (m_testSettings.algorithmMethod) {
-            case Consts.KeyAgreement_init:   for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_keyAgreement.init(m_privateKey);} break;
-            case Consts.KeyAgreement_generateSecret:   for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_keyAgreement.generateSecret(m_ram1, (short) 0, m_testSettings.dataLength1, m_ram1, m_testSettings.dataLength1); } break;
+            case JCConsts.KeyAgreement_init:   for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_keyAgreement.init(m_privateKey);} break;
+            case JCConsts.KeyAgreement_generateSecret:   for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_keyAgreement.generateSecret(m_ram1, (short) 0, m_testSettings.dataLength1, m_ram1, m_testSettings.dataLength1); } break;
     
             default: ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
         }
