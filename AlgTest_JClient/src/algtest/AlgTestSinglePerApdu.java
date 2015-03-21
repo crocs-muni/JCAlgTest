@@ -774,7 +774,8 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         
         try {
             m_signature = Signature.getInstance((byte) m_testSettings.algorithmSpecification, false);
-            m_signature.init(m_key, Signature.MODE_SIGN);  // TODO: selection of Signature.MODE_SIGN vs. Signature.MODE_VERIFY
+            if (m_testSettings.algorithmMethod == JCConsts.Signature_verify) { m_signature.init(m_key, Signature.MODE_SIGN); }  
+            else { m_signature.init(m_key, Signature.MODE_VERIFY); }
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
         }
