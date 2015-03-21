@@ -1209,11 +1209,11 @@ public class CardMngr {
     public void UploadApplet(int readerIndex) throws Exception {
         System.out.println(getTerminalName() + " : Uploading applet...");
 
-        //String batFileName = "d:\\Documents\\Develop\\SmartHSM\\SmartHSMRepo\\UtilityTest_JClient\\!card_uploaders\\run" + readerIndex + "_GXPE64" + ".bat";
-        String batFileName = "d:\\Documents\\Develop\\SmartHSM\\SmartHSMRepo\\UtilityTest_JClient\\!card_uploaders\\run" + readerIndex + "_TwinGCX4" + ".bat";
+        //String batFileName = "d:\\Documents\\Develop\\AlgTest\\AlgTest_JavaCard\\!card_uploaders\\keyHarvest\\run" + readerIndex + "_GXPE64" + ".bat";
+        String batFileName = "d:\\Documents\\Develop\\AlgTest\\AlgTest_JavaCard\\!card_uploaders\\keyHarvest\\run" + readerIndex + "_TwinGCX4" + ".bat";
         
         ProcessBuilder pb = new ProcessBuilder(batFileName);
-        pb.directory(new File("d:\\Documents\\Develop\\SmartHSM\\SmartHSMRepo\\UtilityTest_JClient\\!card_uploaders\\"));
+        pb.directory(new File("d:\\Documents\\Develop\\AlgTest\\AlgTest_JavaCard\\!card_uploaders\\"));
 
         File log = new File("upload_log_" + readerIndex + ".txt");
         pb.redirectErrorStream(true);

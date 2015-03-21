@@ -42,6 +42,8 @@ public class AlgTestJClient {
     static CardMngr cardManager = new CardMngr();
     static SingleModeTest singleTest = new SingleModeTest();
     static PerformanceTesting testingPerformance = new PerformanceTesting();
+    static KeyHarvest keyHarvest = new KeyHarvest();
+    
     
     /* Arguments for choosing which AlgTest version to run. */
     public static final String ALGTEST_MULTIPERAPDU = "AT_MULTIPERAPDU";        // for 'old' AlgTest
@@ -130,6 +132,9 @@ public class AlgTestJClient {
                 /* In this case Performance tests are used. */
                 case 3:
                     testingPerformance.testPerformance(args);
+                break;
+                case 4:
+                    keyHarvest.gatherRSAKeys();
                 break;
                 /* In this case, user pressed wrong key */
                 default:
