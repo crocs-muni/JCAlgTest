@@ -46,7 +46,7 @@ public class PerformanceTestingNGTest {
 
     @AfterMethod
     public void tearDownMethod() throws Exception {
-        PerformanceTesting.file.close();
+        if (PerformanceTesting.file != null) PerformanceTesting.file.close();
     }
     
 
@@ -285,6 +285,29 @@ public class PerformanceTestingNGTest {
         testSet.algorithmMethod = Consts.KeyPair_genKeyPair;
         assertTrue(PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEYPAIR, Consts.INS_PERF_TEST_CLASS_KEYPAIR, testSet, "KeyPair ALG_RSA_CRT LENGTH_RSA_1024 KeyPair_genKeyPair()") > -1);
     }        
+    
+   @Test
+    void perftest_testClass_KeyAgreement() throws Exception {
+        // Prepare connection to simulated card
+        PerformanceTesting.file = cardManager.establishConnection(AlgTestSinglePerApdu.class);
+        //PerformanceTesting.file = cardManager.establishConnection(null);
+        assertNotEquals(PerformanceTesting.file, null);
+
+        // BUGBUG: other types from KeyAgreement
+        
+        // Prepare test
+        TestSettings testSet = null;
+        testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYAGREEMENT, Consts.ALG_EC_SVDP_DH, Consts.ALG_EC_FP, Consts.LENGTH_EC_FP_192, Consts.KeyAgreement_init, 
+                UNUSED, UNUSED, (short) 1, (short) 1, (short) 1);      
+
+        // BUGBUG: ALG_EC_SVDP_DHC, ALG_EC_SVDP_DH_PLAIN, ALG_EC_SVDP_DHC_PLAIN
+        
+        testSet.numRepeatWholeMeasurement = 2;  
+        testSet.algorithmMethod = Consts.KeyAgreement_init;
+        assertTrue(PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEYAGREEMENT, Consts.INS_PERF_TEST_CLASS_KEYAGREEMENT, testSet, "CLASS_KEYAGREEMENT ALG_EC_SVDP_DH LENGTH_EC_FP_192 KeyAgreement_init()") > -1);
+        testSet.algorithmMethod = Consts.KeyAgreement_generateSecret;
+        assertTrue(PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEYAGREEMENT, Consts.INS_PERF_TEST_CLASS_KEYAGREEMENT, testSet, "CLASS_KEYAGREEMENT ALG_EC_SVDP_DH LENGTH_EC_FP_192 KeyAgreement_generateSecret()") > -1);
+    }     
         
     private static void printMembers(Member[] mbrs, String s, String longClassName, String shortClassName) throws IllegalArgumentException, IllegalAccessException {
 	int methodIndex = 0;
@@ -334,16 +357,28 @@ public class PerformanceTestingNGTest {
 	    out.format("  -- No %s --%n", s);
 	out.format("%n");
     }    
-    @Test
-    void debug_iterateOverFields() throws Exception {    
-        // TODO: move into Process app, perform on all required classes
-        String longClass = "javacard.security.Signature";
-        String shortClass = "Signature";
-        Class<?> c = Class.forName(longClass);
+    
+    void formatClass(String longClassName, String shortClassName) throws ClassNotFoundException, IllegalArgumentException, IllegalAccessException {
+        out.format("// Class %s\n", longClassName);
+        Class<?> c = Class.forName(longClassName);
         Field[] fields = c.getDeclaredFields();
-        printMembers(fields, "Fields", longClass, shortClass);
+        printMembers(fields, "Fields", longClassName, shortClassName);
         Method[] methods = c.getDeclaredMethods();
-        printMembers(methods, "Methods", longClass, shortClass);
+        printMembers(methods, "Methods", longClassName, shortClassName);
+    }
+    @Test
+    void debug_iterateOverFields() throws Exception {   
+        formatClass("javacard.security.Signature", "Signature");
+        formatClass("javacardx.crypto.Cipher", "Cipher");
+        formatClass("javacard.security.KeyAgreement", "KeyAgreement");
+        formatClass("javacard.security.KeyBuilder", "KeyBuilder");
+        formatClass("javacard.security.KeyPair", "KeyPair");
+        formatClass("javacard.security.MessageDigest", "MessageDigest");
+        formatClass("javacard.security.RandomData", "RandomData");
+        formatClass("javacard.security.Checksum", "Checksum");
+        formatClass("javacardx.crypto.KeyEncryption", "KeyEncryption");
+        
+        
     }    
         
 }

@@ -41,13 +41,13 @@ public class Consts {
     public final static byte INS_PERF_TEST_CLASS_CIPHER        = (byte) 0x43;
     public final static byte INS_PERF_TEST_CLASS_KEYPAIR       = (byte) 0x45;
     public final static byte INS_PERF_TEST_CLASS_CHECKSUM      = (byte) 0x46;
+    public final static byte INS_PERF_TEST_CLASS_KEYAGREEMENT  = (byte) 0x47;
     public final static byte INS_PERF_TEST_CLASS_SIGNATURE     = (byte) 0x49;
     
     
     
 /*
     public final static byte INS_PERF_TEST_KEY_BUILDER         = (byte) 0x44;
-    public final static byte INS_PERF_RESET                    = (byte) 0x47;
     public final static byte INS_PERF_PREPARE_KEY              = (byte) 0x48;
 */    
     
@@ -59,6 +59,7 @@ public class Consts {
     public final static byte INS_PREPARE_TEST_CLASS_MESSAGEDIGEST = (byte) 0x34;
     public final static byte INS_PREPARE_TEST_CLASS_CHECKSUM    = (byte) 0x35;
     public final static byte INS_PREPARE_TEST_CLASS_KEYPAIR     = (byte) 0x36;
+    public final static byte INS_PREPARE_TEST_CLASS_KEYAGREEMENT= (byte) 0x37;
     
     
     
@@ -108,6 +109,10 @@ public class Consts {
     public final static byte Checksum_doFinal                   = (byte) 2;
     
     public final static byte KeyPair_genKeyPair                 = (byte) 1;
+
+    public final static byte KeyAgreement_init                 = (byte) 1;
+    public final static byte KeyAgreement_generateSecret       = (byte) 2;
+    
     
     
       //  

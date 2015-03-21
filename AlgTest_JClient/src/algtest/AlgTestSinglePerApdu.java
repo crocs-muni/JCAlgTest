@@ -99,6 +99,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
     private   Object           m_object = null;
     private   KeyPair          m_keyPair = null;
     private   Checksum         m_checksum = null;
+    private   KeyAgreement     m_keyAgreement = null;   
   
   
     private   byte[]           m_ramArray = null;
@@ -158,6 +159,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
     KoreanSEEDKey   m_koreanseed_key = null;
     // TODO:  DSAKey, DSAKeyPrivateKey, DSAPublicKey, ECKey, ECPrivateKey, ECPublicKey, HMACKey, RSAPrivateCrtKey, RSAPrivateKey, RSAPublicKey
     Key             m_key = null;
+    PrivateKey      m_privateKey = null;
     
     Cipher          m_cipher = null;
     Signature       m_signature = null;
@@ -271,6 +273,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                 case Consts.INS_PREPARE_TEST_CLASS_MESSAGEDIGEST: prepare_class_MessageDigest(apdu);break;
                 case Consts.INS_PREPARE_TEST_CLASS_CHECKSUM: prepare_class_Checksum(apdu);break;
                 case Consts.INS_PREPARE_TEST_CLASS_KEYPAIR: prepare_class_KeyPair(apdu);break;
+                case Consts.INS_PREPARE_TEST_CLASS_KEYAGREEMENT: prepare_class_KeyAgreement(apdu);break;
 
                 case Consts.INS_PERF_TEST_CLASS_KEY: perftest_class_Key(apdu); break;        
                 case Consts.INS_PERF_TEST_CLASS_CIPHER: perftest_class_Cipher(apdu); break;        
@@ -278,7 +281,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                 case Consts.INS_PERF_TEST_CLASS_RANDOMDATA: perftest_class_RandomData(apdu); break;        
                 case Consts.INS_PERF_TEST_CLASS_MESSAGEDIGEST: perftest_class_MessageDigest(apdu); break;        
                 case Consts.INS_PERF_TEST_CLASS_CHECKSUM: perftest_class_Checksum(apdu); break;        
-                case Consts.INS_PERF_TEST_CLASS_KEYPAIR: perftest_class_KeyPair(apdu); break;        
+                case Consts.INS_PERF_TEST_CLASS_KEYAGREEMENT: perftest_class_KeyAgreement(apdu); break;        
                     
                     
 /*                    
@@ -654,7 +657,8 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                 case Consts.KeyPair_ALG_RSA:                  
                     m_keyPair = new KeyPair((byte) m_testSettings.algorithmType, m_testSettings.algorithmKeyLength);
                     m_keyPair.genKeyPair(); // TODO: use fixed key value to shorten time required for key generation?
-                    m_key = m_keyPair.getPublic(); // TODO: selection of public / private key                  
+                    m_key = m_keyPair.getPublic();                   
+                    m_privateKey = m_keyPair.getPublic();
                     break;
 */                    
                 // TODO: DSAKey, DSAKeyPrivateKey, DSAPublicKey, ECKey, ECPrivateKey, ECPublicKey, HMACKey, RSAPrivateCrtKey, RSAPrivateKey, RSAPublicKey
@@ -916,7 +920,37 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);            
     }            
     
+     void prepare_class_KeyAgreement(APDU apdu) {
+        byte[] apdubuf = apdu.getBuffer();
+        m_testSettings.parse(apdu);  
+
+        // Prepare required key object into m_key
+        short len = prepare_Key(apdu, m_testSettings, Consts.TRUE);
+        
+        try {
+            m_keyAgreement = KeyAgreement.getInstance((byte) m_testSettings.algorithmSpecification, false);
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
+        }
+        catch(CryptoException e) {
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte)e.getReason(); 
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
+        }  
+    }      
+    void perftest_class_KeyAgreement(APDU apdu) {  
+        byte[] apdubuf = apdu.getBuffer();
+        m_testSettings.parse(apdu); 
+
+        switch (m_testSettings.algorithmMethod) {
+            case Consts.KeyAgreement_init:   for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_keyAgreement.init(m_privateKey);} break;
+            case Consts.KeyAgreement_generateSecret:   for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_keyAgreement.generateSecret(m_ram1, (short) 0, m_testSettings.dataLength1, m_ram1, m_testSettings.dataLength1); } break;
     
+            default: ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
+        }
+
+        apdubuf[ISO7816.OFFSET_CDATA] = SUCCESS;
+        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);            
+    }          
    //
    // TODO: Original codes for performance - to be refactored
    //
