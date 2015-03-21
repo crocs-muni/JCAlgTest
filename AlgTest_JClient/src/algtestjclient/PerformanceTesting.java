@@ -529,6 +529,7 @@ public class PerformanceTesting {
             testSet.numRepeatWholeOperation = 0;
             message +=  "debug overhead:";
             for(int i = 0; i < testSet.numRepeatWholeMeasurement;i++) {
+                cardManager.resetApplet(appletCLA, Consts.INS_CARD_RESET);
                 double overheadTime = cardManager.PerfTestCommand(appletCLA, appletMeasureINS, testSet, Consts.INS_CARD_RESET);
                 sumTimes += overheadTime;
                 timeStr = String.format(" %1f", overheadTime);
@@ -536,8 +537,8 @@ public class PerformanceTesting {
                 System.out.print(timeStr + " ");
             }
             avgOverhead = sumTimes / testSet.numRepeatWholeMeasurement;
-            message += "Avg overhead time: " + avgOverhead;
-            System.out.print("Avg overhead time: " + avgOverhead);
+            message += "\nAvg overhead time: " + avgOverhead;
+            System.out.print("\nAvg overhead time: " + avgOverhead);
             System.out.println();     
             System.out.println(); message += "\n";
             file.write(message.getBytes());
@@ -552,6 +553,7 @@ public class PerformanceTesting {
             double time = 0;
             sumTimes = 0;
             for(int i = 0; i < testSet.numRepeatWholeMeasurement;i++) {
+                cardManager.resetApplet(appletCLA, Consts.INS_CARD_RESET);
                 time = cardManager.PerfTestCommand(appletCLA, appletMeasureINS, testSet, Consts.INS_CARD_RESET);
                 time -= avgOverhead;
                 sumTimes += time;

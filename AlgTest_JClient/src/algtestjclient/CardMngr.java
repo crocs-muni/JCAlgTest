@@ -54,6 +54,8 @@ import AlgTest.TestSettings;
 
 import com.licel.jcardsim.io.CAD;
 import com.licel.jcardsim.io.JavaxSmartCardInterface;
+import java.io.File;
+import java.lang.ProcessBuilder.Redirect;
 import javacard.framework.AID;
 import javacard.framework.ISO7816;
 
@@ -76,6 +78,8 @@ public class CardMngr {
     final static byte NO_SUCH_ALGORITHM = (byte) 3;
     final static byte UNINITIALIZED_KEY = (byte) 2;       
 
+    public final int MAX_SERIOUS_PROBLEMS_IN_ROW = 5;
+    
     /* Argument constants for choosing algorithm to test. */
     
     /* Arguments for choosing which AlgTest version to run. */
@@ -131,7 +135,7 @@ public class CardMngr {
     public static final byte CLASS_KEYPAIR_EC_FP   = 0x1C;
 
    
-    CardTerminal m_terminal = null;
+    public CardTerminal m_terminal = null;
     CardChannel m_channel = null;
     Card m_card = null;
     
@@ -209,6 +213,16 @@ public class CardMngr {
     /* CLOCKS_PER_SEC also used in 'PerformanceTesting.java' */
     public static final int CLOCKS_PER_SEC = 1000;
     
+    public String getTerminalName() {
+        if (m_terminal != null) { return m_terminal.getName(); }
+        if (m_simulator != null) { return "JCardSim simulator"; }
+        return "No terminal found";
+    }
+    public String getATR() {
+        if (m_card != null) { return m_card.getATR().toString(); }
+        if (m_simulator != null) { return SIMULATOR_ATR; }
+        return "No card available";
+    }    
     public FileOutputStream establishConnection(Class ClassToTest) throws Exception{
         if (ConnectToCard(ClassToTest, reader, atr, protocol)) {
             String message = "";
@@ -279,6 +293,7 @@ public class CardMngr {
         else {
             // TRY ALL READERS, FIND FIRST SELECTABLE
             List terminalList = GetReaderList();
+           if (terminalList.isEmpty()) { System.out.println("No terminals found"); }
             //List numbers of Card readers        
             for (int i = 0; i < terminalList.size(); i++) {
                 System.out.println(i + " : " + terminalList.get(i));
@@ -312,6 +327,29 @@ public class CardMngr {
         }
         return cardFound;        
     }
+    
+    public String ConnectToCard(CardTerminal cardTerminal, StringBuilder selectedATR, StringBuilder usedProtocol) throws Exception {
+        m_terminal = cardTerminal;
+        m_card = m_terminal.connect("*");
+        System.out.println("card: " + m_card);
+        m_channel = m_card.getBasicChannel();
+
+        //reset the card
+        ATR atr = m_card.getATR();
+        System.out.println(getTerminalName() + " : " + bytesToHex(atr.getBytes()));
+
+        // SELECT APPLET
+        ResponseAPDU resp = sendAPDU(selectApplet);
+        if (resp.getSW() != 0x9000) {
+            System.out.println(m_card + " : SELECT FAILED.");
+            return "";
+        } else {
+            if (selectedATR != null) { selectedATR.append(bytesToHex(m_card.getATR().getBytes())); }
+            if (usedProtocol != null) {usedProtocol.append(m_card.getProtocol()); }
+
+            return bytesToHex(atr.getBytes());
+        }
+    }    
 
     public void DisconnectFromCard() throws Exception {
         if (m_card != null) {
@@ -347,6 +385,7 @@ public class CardMngr {
         
         if (m_simulator != null){  // in case simulator is running
             responseAPDU = m_simulator.transmitCommand(commandAPDU);
+            Thread.sleep(20);   // introduce some delay to simulate card communication speed bit more accuratelly 
         }
         else {                  // in case there is actual card present
             responseAPDU = m_channel.transmit(commandAPDU);
@@ -988,7 +1027,7 @@ public class CardMngr {
     
     public boolean resetApplet(byte cla, byte ins) {
         try {
-            System.out.println("Free unused card objects...");
+            System.out.println("\nFree unused card objects...\n");
             byte apdu[] = {cla,ins,0,0};
             ResponseAPDU resp = sendAPDU(apdu);
             if (resp.getSW() != 0x9000) {
@@ -1143,4 +1182,158 @@ public class CardMngr {
         }
         return b;
     }    
+    
+    public int RestartCardWithUpload(int seriousProblemCounter, int readerIndex, FileOutputStream file) throws Exception {
+        seriousProblemCounter++;
+        if (seriousProblemCounter > MAX_SERIOUS_PROBLEMS_IN_ROW) {
+            throw new Exception("Too many problems with card, stopping.");
+        }
+
+        try {
+            Thread.sleep(3000);
+            // Some problem, upload applet again
+            UploadApplet(readerIndex);
+            file.write("# Applet uploaded\n\n".toString().getBytes());
+
+            Thread.sleep(3000);
+
+            ConnectToCard(m_terminal, null, null);
+        }
+        catch (Exception ex) {
+            System.out.println(getTerminalName() + " : Failed with " + ex.getMessage());
+            seriousProblemCounter = RestartCardWithUpload(seriousProblemCounter, readerIndex, file);
+        }
+        return seriousProblemCounter;
+    }
+        
+    public void UploadApplet(int readerIndex) throws Exception {
+        System.out.println(getTerminalName() + " : Uploading applet...");
+
+        //String batFileName = "d:\\Documents\\Develop\\SmartHSM\\SmartHSMRepo\\UtilityTest_JClient\\!card_uploaders\\run" + readerIndex + "_GXPE64" + ".bat";
+        String batFileName = "d:\\Documents\\Develop\\SmartHSM\\SmartHSMRepo\\UtilityTest_JClient\\!card_uploaders\\run" + readerIndex + "_TwinGCX4" + ".bat";
+        
+        ProcessBuilder pb = new ProcessBuilder(batFileName);
+        pb.directory(new File("d:\\Documents\\Develop\\SmartHSM\\SmartHSMRepo\\UtilityTest_JClient\\!card_uploaders\\"));
+
+        File log = new File("upload_log_" + readerIndex + ".txt");
+        pb.redirectErrorStream(true);
+        pb.redirectOutput(Redirect.appendTo(log));
+
+        Process p = pb.start();
+
+        p.waitFor();        
+        System.out.println(getTerminalName() + ": Done");                
+        
+    }    
+    public int GenerateAndGetKeys(String fileName, int numRepeats, int resetFrequency, int readerIndex) throws Exception { 
+        byte apdu[] = new byte[HEADER_LENGTH]; 
+        apdu[OFFSET_CLA] = (byte) 0xB0;
+        apdu[OFFSET_INS] = (byte) 0x77;
+        apdu[OFFSET_P1] = 0x00;
+        apdu[OFFSET_P2] = 0x00;
+        apdu[OFFSET_LC] = 0x00;
+            
+        String message;
+        int numKeysGenerated = 0;
+        FileOutputStream file = new FileOutputStream(fileName);                   
+        StringBuilder key = new StringBuilder();
+        boolean bResetCard = false;
+        if (numRepeats == -1) numRepeats = 3000000;
+        
+        int seriousProblemCounter = 0;
+        
+        for (int i = 0; i < numRepeats; i++) {
+            try {
+                key.setLength(0);
+
+                if ((resetFrequency != -1) && (i % resetFrequency == 0)) { bResetCard = true; }
+
+                // Reset card if required
+                if (bResetCard) {
+                    System.out.println(getTerminalName() + " : Reseting card...");
+                    key.append("# Card reseted\n\n");
+                    file.write(key.toString().getBytes());
+
+                    m_card.disconnect(true);
+                    ConnectToCard(m_terminal, null, null);
+                    bResetCard = false;
+                }
+
+                // Prepare for new key generation
+                apdu[OFFSET_P1] = 0x00;
+
+                long elapsedCard = - System.currentTimeMillis();
+                ResponseAPDU resp = sendAPDU(apdu);
+                elapsedCard += System.currentTimeMillis();
+
+                if (resp.getSW() != 0x9000) {
+                    System.out.println(getTerminalName() + " : Failed to generate new key with " + Integer.toHexString(resp.getSW()));
+                    // Some problem, upload applet again
+                    UploadApplet(readerIndex);
+
+                    key.append("# Applet uploaded\n\n");
+                    file.write(key.toString().getBytes());
+
+                    ConnectToCard(m_terminal, null, null);
+                    continue;
+                }
+                else {
+                    // We got public key out
+                    byte pubKey[] = resp.getData();
+                    key.append("PUBL: ");
+                    key.append(bytesToHex(pubKey));
+                    key.append("\n");
+                }
+
+
+                // Ask for private key
+                apdu[OFFSET_P1] = 0x01;
+                ResponseAPDU respPrivate = sendAPDU(apdu);
+                if (respPrivate.getSW() != 0x9000) {
+                    System.out.println(getTerminalName() + " : Failed to obtain private key with " + Integer.toHexString(respPrivate.getSW()));
+                    continue;
+                }  
+                else {
+                    // We got private key out
+                    byte privKey[] = respPrivate.getData();
+                    key.append("PRIV: ");
+                    key.append(bytesToHex(privKey));
+                    key.append("\n");
+                }
+
+
+                String elTimeStr;
+                // OUTPUT REQUIRED TIME WHEN PARTITIONED CHECK WAS PERFORMED (NOTMULTIPLE ALGORITHMS IN SINGLE RUN)
+                elTimeStr = String.valueOf((double) elapsedCard / (float) CLOCKS_PER_SEC);
+                key.append("# ");
+                key.append(numKeysGenerated + 1);
+                key.append(":");
+                key.append(elTimeStr);
+                key.append("\n\n");
+
+                // Save key to file
+                file.write(key.toString().getBytes());
+
+
+                numKeysGenerated++; 
+
+                message = getTerminalName() + " | " + numKeysGenerated + " : " ;
+                message += elTimeStr;
+                System.out.println(message);
+
+                file.flush();
+                
+                seriousProblemCounter = 0;   // problems were solved now
+            }
+            catch (Exception ex) {
+                System.out.println(getTerminalName() + " : Failed with " + ex.getMessage());
+                seriousProblemCounter = RestartCardWithUpload(seriousProblemCounter, readerIndex, file);
+            }
+        }
+        file.close();     
+        
+        return numKeysGenerated;
+    }    
+   
+    
 }

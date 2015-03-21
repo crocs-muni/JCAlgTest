@@ -20,7 +20,7 @@ import org.testng.annotations.Test;
  */
 public class PerformanceTestingNGTest {
 
-    static boolean bTestRealCards = false;
+    static boolean bTestRealCards = true;
     
     public PerformanceTestingNGTest() {
     }

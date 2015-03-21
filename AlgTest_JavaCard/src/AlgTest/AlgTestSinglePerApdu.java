@@ -264,6 +264,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                 case Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE: TestSupportedModeSingle(apdu); break;
                 // case INS_CARD_TESTEXTAPDU: TestExtendedAPDUSupport(apdu); break; // this has to be tested by separate applet with ExtAPDU enabled - should succedd during upload and run
                 case Consts.INS_CARD_RESET: JCSystem.requestObjectDeletion(); break;
+                case Consts.INS_CARD_GETRSAKEY: GetRSAKey(apdu); break;
 
                     
                 case Consts.INS_PREPARE_TEST_CLASS_KEY: prepare_class_Key(apdu); break;        
@@ -275,6 +276,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                 case Consts.INS_PREPARE_TEST_CLASS_KEYPAIR: prepare_class_KeyPair(apdu);break;
                 case Consts.INS_PREPARE_TEST_CLASS_KEYAGREEMENT: prepare_class_KeyAgreement(apdu);break;
 
+        
                 case Consts.INS_PERF_TEST_CLASS_KEY: perftest_class_Key(apdu); break;        
                 case Consts.INS_PERF_TEST_CLASS_CIPHER: perftest_class_Cipher(apdu); break;        
                 case Consts.INS_PERF_TEST_CLASS_SIGNATURE: perftest_class_Signature(apdu); break;        
@@ -282,6 +284,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                 case Consts.INS_PERF_TEST_CLASS_MESSAGEDIGEST: perftest_class_MessageDigest(apdu); break;        
                 case Consts.INS_PERF_TEST_CLASS_CHECKSUM: perftest_class_Checksum(apdu); break;        
                 case Consts.INS_PERF_TEST_CLASS_KEYAGREEMENT: perftest_class_KeyAgreement(apdu); break;        
+                case Consts.INS_PERF_TEST_CLASS_KEYPAIR: perftest_class_KeyPair(apdu); break;        
                     
                     
 /*                    
@@ -296,7 +299,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                     
                 default : {
                     // The INS code is not supported by the dispatcher
-                    ISOException.throwIt( ISO7816.SW_INCORRECT_P1P2  ) ;
+                    ISOException.throwIt( ISO7816.SW_INS_NOT_SUPPORTED) ;
                     break;
                 }
             }
@@ -896,7 +899,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         m_testSettings.parse(apdu);  
         
         try {
-            m_keyPair = new KeyPair((byte) m_testSettings.algorithmSpecification, (byte) m_testSettings.algorithmKeyLength);
+            m_keyPair = new KeyPair((byte) m_testSettings.algorithmSpecification, m_testSettings.algorithmKeyLength);
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
         }
@@ -1191,4 +1194,6 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         }
     }   
 */   
+    
+    
 }
