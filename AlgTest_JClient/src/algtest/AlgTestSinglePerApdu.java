@@ -284,17 +284,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                 case Consts.INS_PERF_TEST_CLASS_CHECKSUM: perftest_class_Checksum(apdu); break;        
                 case Consts.INS_PERF_TEST_CLASS_KEYAGREEMENT: perftest_class_KeyAgreement(apdu); break;        
                 case Consts.INS_PERF_TEST_CLASS_KEYPAIR: perftest_class_KeyPair(apdu); break;        
-                    
-                    
-/*                    
-                case Consts.INS_PERF_TEST_MESSAGE_DIGEST: messageDigestTest(apdu); break;
-                case Consts.INS_PERF_TEST_RANDOM_DATA: randomDataTest(apdu); break;
-                case Consts.INS_PERF_TEST_KEY_PAIR: keyPairTest(apdu);break;
-                case Consts.INS_PERF_TEST_CHECKSUM: checksumTest(apdu);break;
-                case Consts.INS_PERF_PREPARE_MESSAGE_DIGEST: prepareMessageDigest(apdu);break;
-                case Consts.INS_PERF_PREPARE_KEY_PAIR: prepareKeyPair(apdu);break;
-                case Consts.INS_PERF_PREPARE_RANDOM_DATA: prepareRandomData(apdu);break;
-*/                    
+                 
                     
                 default : {
                     // The INS code is not supported by the dispatcher
