@@ -48,14 +48,21 @@ public class PerformanceTestingNGTest {
         short numRepeatWholeMeasurement = 3;
         
         PerformanceTesting.testAllMessageDigests(numRepeatWholeOperation, numRepeatWholeMeasurement);
+        PerformanceTesting.cardManager.UploadApplet(0);
         PerformanceTesting.testAllRandomGenerators(numRepeatWholeOperation, numRepeatWholeMeasurement);
+        PerformanceTesting.cardManager.UploadApplet(0);
         PerformanceTesting.testAllCiphers(numRepeatWholeOperation, numRepeatWholeMeasurement);
+        PerformanceTesting.cardManager.UploadApplet(0);
         PerformanceTesting.testAllSignatures(numRepeatWholeOperation, numRepeatWholeMeasurement);
+        PerformanceTesting.cardManager.UploadApplet(0);
         PerformanceTesting.testAllChecksums(numRepeatWholeOperation, numRepeatWholeMeasurement);     
+        PerformanceTesting.cardManager.UploadApplet(0);
         
         PerformanceTesting.testAllKeyPairs(1, numRepeatWholeMeasurement);   
+        PerformanceTesting.cardManager.UploadApplet(0);
 
         PerformanceTesting.testAllKeys(numRepeatWholeOperation, numRepeatWholeMeasurement);     
+        PerformanceTesting.cardManager.UploadApplet(0);
     }                   
 
     @Test

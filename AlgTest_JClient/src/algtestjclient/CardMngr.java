@@ -517,6 +517,7 @@ public class CardMngr {
                 int eepromSize = (temp[3] << 8) + (temp[4] & 0xff);
                 int ramResetSize = (temp[5] << 8) + (temp[6] & 0xff);
                 int ramDeselectSize = (temp[7] << 8) + (temp[8] & 0xff);
+                int maxCommitSize = (temp[9] << 8) + (temp[10] & 0xff);
 
 
 
@@ -540,6 +541,12 @@ public class CardMngr {
                 pValue.append(message);
                 message = String.format("\r\n%s;%s%dB;\n", GetAlgorithmName(SingleModeTest.JCSYSTEM_STR[5]),(ramDeselectSize == 32767) ? ">" : "", ramDeselectSize); 
                 System.out.println(message);
+                message = String.format("\r\n%s;%dB;", GetAlgorithmName(SingleModeTest.JCSYSTEM_STR[5]), maxCommitSize); 
+                System.out.println(message);
+                pFile.write(message.getBytes());
+                pValue.append(message);
+                
+                
                 message += "\r\n";
 
                 pFile.write(message.getBytes());
@@ -1210,7 +1217,8 @@ public class CardMngr {
         System.out.println(getTerminalName() + " : Uploading applet...");
 
         //String batFileName = "d:\\Documents\\Develop\\AlgTest\\AlgTest_JavaCard\\!card_uploaders\\keyHarvest\\run" + readerIndex + "_GXPE64" + ".bat";
-        String batFileName = "d:\\Documents\\Develop\\AlgTest\\AlgTest_JavaCard\\!card_uploaders\\keyHarvest\\run" + readerIndex + "_TwinGCX4" + ".bat";
+        //String batFileName = "d:\\Documents\\Develop\\AlgTest\\AlgTest_JavaCard\\!card_uploaders\\keyHarvest\\run" + readerIndex + "_TwinGCX4" + ".bat";
+        String batFileName = "d:\\Documents\\Develop\\AlgTest\\AlgTest_JavaCard\\!card_uploaders\\run.bat";
         
         ProcessBuilder pb = new ProcessBuilder(batFileName);
         pb.directory(new File("d:\\Documents\\Develop\\AlgTest\\AlgTest_JavaCard\\!card_uploaders\\"));

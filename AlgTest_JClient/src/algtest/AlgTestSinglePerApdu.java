@@ -403,6 +403,8 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         offset = (short)(offset + 2);
         Util.setShort(apdubuf, offset, JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT));
         offset = (short)(offset + 2);
+        Util.setShort(apdubuf, offset, JCSystem.getMaxCommitCapacity());
+        offset = (short)(offset + 2);
 
         apdu.setOutgoingAndSend((byte) 0, offset);
       }
