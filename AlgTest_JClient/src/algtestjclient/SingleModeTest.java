@@ -33,11 +33,10 @@ package algtestjclient;
 
 /* Import 'ALGTEST_JCLIENT_VERSION' variable - possibly replace with actual import of those variables later? */
 import AlgTest.Consts;
-import java.io.BufferedReader;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.smartcardio.ResponseAPDU;
@@ -396,8 +395,8 @@ public class SingleModeTest {
         Class testClassSingleApdu = null;
         /* Reads text from a character-input stream, buffering characters so as to provide
            for the efficient reading of characters, arrays, and lines. */
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));  
-        int answ = 0;   // When set to 0, program will ask for each algorithm to test.
+        Scanner br = new Scanner(System.in);  
+        String answ = "";   // When set to 0, program will ask for each algorithm to test.
                 
         FileOutputStream file = cardManager.establishConnection(testClassSingleApdu);
         
@@ -426,88 +425,88 @@ public class SingleModeTest {
             }
         }
         else{       // in case there are no arguments from command line present
-            System.out.println("Do you want to test all possible algorithms at once?\n1 = YES, 0 = NO");
-            answ = Integer.decode(br.readLine());       
+            System.out.println("Do you want to test all possible algorithms at once? (y/n)");
+            answ = br.nextLine();       
         
-            /* Chooses action based on input argument 'answ' (1/0). */
+            /* Chooses action based on input argument 'answ' (y/n). */
             switch (answ) {
                 /* Program will ask for every class. */
-                case 0:
+                case "n":
                     /* Class 'javacardx.crypto.Cipher'. */
-                    System.out.println("Do you want to test algorithms from class 'Cipher'?\n1 = YES, 0 = NO");
-                        answ = Integer.decode(br.readLine());
-                        if (answ == 1){TestClassCipher(file);}
+                    System.out.println("Do you want to test algorithms from class 'Cipher'? (y/n)");
+                        answ = br.nextLine();
+                        if (answ.equals("y")){TestClassCipher(file);}
                         else{ClassSkipped(file, "javacardx.crypto.Cipher");}
 
                     /* Class 'javacard.security.Singnature'. */
-                    System.out.println("Do you want to test algorithms from class 'Signature'?\n1 = YES, 0 = NO");
-                        answ = Integer.decode(br.readLine());
-                        if (answ == 1){TestClassSignature(file);}
+                    System.out.println("Do you want to test algorithms from class 'Signature'? (y/n)");
+                        answ = br.nextLine();
+                        if (answ.equals("y")){TestClassSignature(file);}
                         else{ClassSkipped(file, "javacard.security.Signature");}
 
                     /* Class 'javacard.security.MessageDigest'. */
-                    System.out.println("Do you want to test algorithms from class 'MessageDigest'?\n1 = YES, 0 = NO");
-                        answ = Integer.decode(br.readLine());
-                        if (answ == 1){TestClassMessageDigest(file);}
+                    System.out.println("Do you want to test algorithms from class 'MessageDigest'? (y/n)");
+                        answ = br.nextLine();
+                        if (answ.equals("y")){TestClassMessageDigest(file);}
                         else{ClassSkipped(file, "javacard.security.MessageDigest");}
 
                     /* Class 'javacard.security.RandomData'. */
-                    System.out.println("Do you want to test algorithms from class 'RandomData'?\n1 = YES, 0 = NO");
-                        answ = Integer.decode(br.readLine());
-                        if (answ == 1){TestClassRandomData(file);}
+                    System.out.println("Do you want to test algorithms from class 'RandomData'? (y/n)");
+                        answ = br.nextLine();
+                        if (answ.equals("y")){TestClassRandomData(file);}
                         else{ClassSkipped(file, "javacard.security.RandomData");}
 
                     /* Class 'javacard.security.KeyBuilder'. */
-                    System.out.println("Do you want to test algorithms from class 'KeyBuilder'?\n1 = YES, 0 = NO");
-                        answ = Integer.decode(br.readLine());
-                        if (answ == 1){TestClassKeyBuilder(file);}
+                    System.out.println("Do you want to test algorithms from class 'KeyBuilder'? (y/n)");
+                        answ = br.nextLine();
+                        if (answ.equals("y")){TestClassKeyBuilder(file);}
                         else{ClassSkipped(file, "javacard.security.KeyBuilder");}
 
                     /* Class 'javacard.security.KeyAgreement'. */
-                    System.out.println("Do you want to test algorithms from class 'KeyAgreement'?\n1 = YES, 0 = NO");
-                        answ = Integer.decode(br.readLine());
-                        if (answ == 1){TestClassKeyAgreement(file);}
+                    System.out.println("Do you want to test algorithms from class 'KeyAgreement'? (y/n)");
+                        answ = br.nextLine();
+                        if (answ.equals("y")){TestClassKeyAgreement(file);}
                         else{ClassSkipped(file, "javacard.security.KeyAgreement");}
 
                     /* Class 'javacard.security.Checksum'. */
-                    System.out.println("Do you want to test algorithms from class 'Checksum'?\n1 = YES, 0 = NO");
-                        answ = Integer.decode(br.readLine());
-                        if (answ == 1){TestClassChecksum(file);}
+                    System.out.println("Do you want to test algorithms from class 'Checksum'? (y/n)");
+                        answ = br.nextLine();
+                        if (answ.equals("y")){TestClassChecksum(file);}
                         else{ClassSkipped(file, "javacard.security.Checksum");}
 
                     /* Class 'javacard.security.KeyPair_RSA'. */
-                    System.out.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_RSA on-card generation'?\n1 = YES, 0 = NO");
-                        answ = Integer.decode(br.readLine());
-                        if (answ == 1){TestClassKeyPair_ALG_RSA(file);}
+                    System.out.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_RSA on-card generation'? (y/n)");
+                        answ = br.nextLine();
+                        if (answ.equals("y")){TestClassKeyPair_ALG_RSA(file);}
                         else{ClassSkipped(file, "javacard.security.KeyPair ALG_RSA on-card generation");}
 
                     /* Class 'javacard.security.KeyPair_RSA_CRT'. */
-                    System.out.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_RSA_CRT on-card generation'?\n1 = YES, 0 = NO");
-                        answ = Integer.decode(br.readLine());
-                        if (answ == 1){TestClassKeyPair_ALG_RSA_CRT(file);}
+                    System.out.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_RSA_CRT on-card generation'? (y/n)");
+                        answ = br.nextLine();
+                        if (answ.equals("y")){TestClassKeyPair_ALG_RSA_CRT(file);}
                         else{ClassSkipped(file, "javacard.security.KeyPair ALG_RSA_CRT on-card generation");}   
 
                     /* Class 'javacard.security.KeyPair_DSA'. */
-                    System.out.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_DSA on-card generation'?\n1 = YES, 0 = NO");
-                        answ = Integer.decode(br.readLine());
-                        if (answ == 1){TestClassKeyPair_ALG_DSA(file);}
+                    System.out.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_DSA on-card generation'? (y/n)");
+                        answ = br.nextLine();
+                        if (answ.equals("y")){TestClassKeyPair_ALG_DSA(file);}
                         else{ClassSkipped(file, "javacard.security.KeyPair ALG_DSA on-card generation");} 
 
                     /* Class 'javacard.security.KeyPair_DSA'. */
-                    System.out.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_EC_F2M on-card generation'?\n1 = YES, 0 = NO");
-                        answ = Integer.decode(br.readLine());
-                        if (answ == 1){TestClassKeyPair_ALG_EC_F2M(file);}
+                    System.out.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_EC_F2M on-card generation'? (y/n)");
+                        answ = br.nextLine();
+                        if (answ.equals("y")){TestClassKeyPair_ALG_EC_F2M(file);}
                         else{ClassSkipped(file, "javacard.security.KeyPair ALG_EC_F2M on-card generation");}
 
                     /* Class 'javacard.security.KeyPair_DSA'. */
-                    System.out.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_EC_FP on-card generation'?\n1 = YES, 0 = NO");
-                        answ = Integer.decode(br.readLine());
-                        if (answ == 1){TestClassKeyPair_ALG_EC_FP(file);}
+                    System.out.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_EC_FP on-card generation'? (y/n)");
+                        answ = br.nextLine();
+                        if (answ.equals("y")){TestClassKeyPair_ALG_EC_FP(file);}
                         else{ClassSkipped(file, "javacard.security.KeyPair ALG_EC_FP on-card generation");}
                     /* RSA exponent */
-                    System.out.println("\n\nQ: Do you like to test support for variable RSA public exponent?\n1 = YES, 0 = NO");
-                        answ = Integer.decode(br.readLine());
-                        if (answ == 1) {
+                    System.out.println("\n\nQ: Do you like to test support for variable RSA public exponent? (y/n)");
+                        answ = br.nextLine();
+                        if (answ.equals("y")) {
                         // Variable public exponent
                         StringBuilder value = new StringBuilder();
                         value.setLength(0);
@@ -521,7 +520,7 @@ public class SingleModeTest {
                 break;
 
                 /* Program will test all algorithms at once. */
-                case 1:
+                case "y":
                     /*
                     TestClassCipher(file);
                     TestClassSignature(file);
@@ -542,7 +541,7 @@ public class SingleModeTest {
 
                 /* In case of wrong argument. */
                 default:
-                    System.err.println("First argument must be 0 or 1!");
+                    System.err.println("First argument must be \"y\" or \"n\"!");
                 break;
             }
         }
