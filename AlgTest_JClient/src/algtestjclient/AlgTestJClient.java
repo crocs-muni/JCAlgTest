@@ -121,7 +121,7 @@ public class AlgTestJClient {
                     FileOutputStream file = cardManager.establishConnection(testClassClassic);
                     System.out.println("\n\n#########################");
                     System.out.println("\n\nQ: Do you like to test all supported algorithms or be asked separately for every class? Separate questions help when testing all algorithms at once will provide incorrect answers due too many internal allocation of cryptographic objects (e.g., KeyBuilder class).");
-                    System.out.println("Type 1 for test all algorithms, 0 for asking for every class separately: ");	
+                    System.out.println("Type \"y\" for test all algorithms, \"n\" for asking for every class separately: ");	
                     answ = sc.nextInt();
                     cardManager.testClassic(args, answ);
                 break;
