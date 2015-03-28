@@ -11,6 +11,8 @@
 <path id="classpath.libs">
 <pathelement location="../libs/jcardsim-2.2.2-all.jar" />
 </path>    
+
+
 <!--
         <classpath path="${classpath}"> 
           <pathelement location="../libs/jcardsim-2.2.2-all.jar"/> 
@@ -29,15 +31,14 @@
             </javac>
         </target>
 -->
- <target name="compile">
+<target name="compile">
 <mkdir dir="${main.build.dir}"/>
-<javac srcdir="${main.src.dir}" destdir="${main.build.dir}" includeantruntime="false">
-<classpath refid="classpath.libs"/>
-</javac>
+<javac srcdir="${main.src.dir}" destdir="${main.build.dir}" includeantruntime="false" classpath="../libs/jcardsim-2.2.2-all.jar"/>
+<!-- <javac srcdir="${main.src.dir}" destdir="${main.build.dir}" includeantruntime="false" classpath="${classpath.libs}"/> -->
 </target>
 
         <target name="-post-jar">
-           <!-- Copy newly build jar into test directory for simulator of smart cards-->
+           <!-- Copy newly build jar into test directory for simulator of smart cards -->
            <copy file="${basedir}/dist/AlgTestJClient.jar" tofile="${basedir}/test/AlgTestJClient.jar"/>
            <copy file="${basedir}/dist/lib/jcardsim-2.2.2-all.jar" tofile="${basedir}/test/jcardsim-2.2.2-all.jar"/>
 
