@@ -5,21 +5,6 @@
 
 
 
-    <property name="libs.dir" value="../libs"/>
-    <path id="classpath">
-        <fileset dir="${libs.dir}" includes="**/*.jar"/>
-    </path>
-
-    <target name="run" depends="jar">
-        <java fork="true" classname="${main-class}">
-            <classpath>
-                <path refid="classpath"/>
-                <path location="${jar.dir}/${ant.project.name}.jar"/>
-            </classpath>
-        </java>
-    </target>
-
-
           <target name="-post-jar">
 	     <!-- Copy newly build jar into test directory for simulator of smart cards-->
              <copy file="${basedir}/dist/AlgTestJClient.jar" tofile="${basedir}/test/AlgTestJClient.jar"/>
