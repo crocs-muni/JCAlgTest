@@ -1,52 +1,105 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="AlgTestJClient" default="default" basedir=".">
     <description>Builds, tests, and runs the project AlgTestJClient.</description>
-    <import file="nbproject/build-impl.xml"/>
 
-<property name="main.build.dir" value="build/classes" />
-<property name="main.src.dir" value="src" />
-<property name="test.build.dir" value="build/test" />
-<property name="test.src.dir" value="test" />
+
+    <property name="dist" value="dist"/>
+    <property name="classes" value="build/classes"/>
+    <property name="test_classes" value="build/test_classes"/>
+
+    <path id="compile_classpath">
+        <pathelement location="${classes}"/>
+        <fileset dir="../libs">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+    <path id="build_classpath">
+        <path refid="compile_classpath"/>
+        <fileset dir="build_time_libs">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+    <path id="test_classpath">
+        <path refid="compile_classpath"/>
+        <fileset dir="build_time_libs">
+            <include name="*.jar"/>
+        </fileset>
+        <pathelement  location="${test_classes}"/>
+    </path>
+
+    <path id="run_classpath">
+        <fileset dir="../libs">
+            <include name="*.jar"/>
+        </fileset>
+        <fileset dir="dist">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+    <target name="clean">
+        <delete dir="${classes}" failonerror="true"/>
+        <mkdir dir="${classes}"/>
+        <delete dir="${test_classes}" failonerror="true"/>
+        <mkdir dir="${test_classes}"/>
+        <delete dir="${dist}" failonerror="true"/>
+        <mkdir dir="${dist}"/>
+    </target>
+
+    <target name="compile" depends="clean">
+        <javac srcdir="src" destdir="${classes}" debug="on" optimize="off" deprecation="off" includeantruntime="false">
+            <classpath refid="compile_classpath"/>
+        </javac>
+    </target>
+
+
+    <target name="compile_tests" depends="compile">
+        <javac srcdir="test" destdir="${test_classes}" debug="on" optimize="off" deprecation="off" includeantruntime="false">
+            <classpath refid="build_classpath"/>
+        </javac>
+    </target>
+
+    <target name="instrument" depends="compile_tests">
+        <java classname="org.javalite.instrumentation.Main">
+            <sysproperty key="outputDirectory" value="${classes}"/>
+            <classpath refid="build_classpath"/>
+        </java>
+    </target>
     
-<path id="classpath.libs">
-<pathelement location="../libs/jcardsim-2.2.2-all.jar" />
-</path>    
+    <target name="jar" depends="compile"/>
+    
+    <target name="-post-jar">
+       <!-- Copy newly build jar into test directory for simulator of smart cards -->
+       <copy file="${basedir}/dist/AlgTestJClient.jar" tofile="${basedir}/test/AlgTestJClient.jar"/>
+       <copy file="${basedir}/dist/lib/jcardsim-2.2.2-all.jar" tofile="${basedir}/test/jcardsim-2.2.2-all.jar"/>
 
-
+       <!-- Copy files necessary for compilation of JC applet-->
+       <copy file="${basedir}/src/algtest/AlgTestSinglePerApdu.java" tofile="../AlgTest_JavaCard/src/AlgTest/AlgTestSinglePerApdu.java"/>
+       <copy file="${basedir}/src/algtest/Consts.java" tofile="../AlgTest_JavaCard/src/AlgTest/Consts.java"/>
+       <copy file="${basedir}/src/algtest/JCConsts.java" tofile="../AlgTest_JavaCard/src/AlgTest/JCConsts.java"/>
+       <copy file="${basedir}/src/algtest/TestSettings.java" tofile="../AlgTest_JavaCard/src/AlgTest/TestSettings.java"/>
+    </target>    
 <!--
-        <classpath path="${classpath}"> 
-          <pathelement location="../libs/jcardsim-2.2.2-all.jar"/> 
-        </classpath> 
+    <target name="test" depends="instrument">
+        <junit  printsummary="yes"  haltonfailure="true" showoutput="true">
+            <classpath>
+                <path refid="test_classpath"/>
+            </classpath>
+            <formatter type="plain"/>            
+            <test name="activejdbc.ant.example.EmployeeSpec"/>
+        </junit>
+    </target>
 
-	<path id="external.classpath">
-    		<pathelement location="../${basedir}/jcardsim-2.2.2-all.jar"/>
-	</path>
-
-        <target name="compile">
-            <mkdir dir="build/classes" />
-            <javac srcdir="src" destdir="build/classes">
-                <classpath>
-                <path refid="external.classpath" />
-                </classpath>
-            </javac>
-        </target>
+    <target name="package" depends="test">
+        <jar destfile="${dist}/ant-example.jar" basedir="${classes}"/>
+    </target>
+    
+    <target name="run" depends="package">
+        <java classname="activejdbc.ant.example.Main" failonerror="true" fork="true">
+            <jvmarg value="-Dactivejdbc.log"/>
+            <classpath refid="run_classpath"/>
+        </java>
+    </target>
 -->
-<target name="compile">
-<mkdir dir="${main.build.dir}"/>
-<javac srcdir="${main.src.dir}" destdir="${main.build.dir}" includeantruntime="false" classpath="../libs/jcardsim-2.2.2-all.jar"/>
-<!-- <javac srcdir="${main.src.dir}" destdir="${main.build.dir}" includeantruntime="false" classpath="${classpath.libs}"/> -->
-</target>
-
-        <target name="-post-jar">
-           <!-- Copy newly build jar into test directory for simulator of smart cards -->
-           <copy file="${basedir}/dist/AlgTestJClient.jar" tofile="${basedir}/test/AlgTestJClient.jar"/>
-           <copy file="${basedir}/dist/lib/jcardsim-2.2.2-all.jar" tofile="${basedir}/test/jcardsim-2.2.2-all.jar"/>
-
-           <!-- Copy files necessary for compilation of JC applet-->
-           <copy file="${basedir}/src/algtest/AlgTestSinglePerApdu.java" tofile="../AlgTest_JavaCard/src/AlgTest/AlgTestSinglePerApdu.java"/>
-           <copy file="${basedir}/src/algtest/Consts.java" tofile="../AlgTest_JavaCard/src/AlgTest/Consts.java"/>
-           <copy file="${basedir}/src/algtest/JCConsts.java" tofile="../AlgTest_JavaCard/src/AlgTest/JCConsts.java"/>
-           <copy file="${basedir}/src/algtest/TestSettings.java" tofile="../AlgTest_JavaCard/src/AlgTest/TestSettings.java"/>
-        </target>
-
 </project>
