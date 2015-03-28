@@ -3,17 +3,49 @@
     <description>Builds, tests, and runs the project AlgTestJClient.</description>
     <import file="nbproject/build-impl.xml"/>
 
+<property name="main.build.dir" value="build/classes" />
+<property name="main.src.dir" value="src" />
+<property name="test.build.dir" value="build/test" />
+<property name="test.src.dir" value="test" />
+    
+<path id="classpath.libs">
+<pathelement location="../libs/jcardsim-2.2.2-all.jar" />
+</path>    
+<!--
+        <classpath path="${classpath}"> 
+          <pathelement location="../libs/jcardsim-2.2.2-all.jar"/> 
+        </classpath> 
 
+	<path id="external.classpath">
+    		<pathelement location="../${basedir}/jcardsim-2.2.2-all.jar"/>
+	</path>
 
-          <target name="-post-jar">
-	     <!-- Copy newly build jar into test directory for simulator of smart cards-->
-             <copy file="${basedir}/dist/AlgTestJClient.jar" tofile="${basedir}/test/AlgTestJClient.jar"/>
+        <target name="compile">
+            <mkdir dir="build/classes" />
+            <javac srcdir="src" destdir="build/classes">
+                <classpath>
+                <path refid="external.classpath" />
+                </classpath>
+            </javac>
+        </target>
+-->
+ <target name="compile">
+<mkdir dir="${main.build.dir}"/>
+<javac srcdir="${main.src.dir}" destdir="${main.build.dir}" includeantruntime="false">
+<classpath refid="classpath.libs"/>
+</javac>
+</target>
 
-             <!-- Copy files necessary for compilation of JC applet-->
-             <copy file="${basedir}/src/algtest/AlgTestSinglePerApdu.java" tofile="../AlgTest_JavaCard/src/AlgTest/AlgTestSinglePerApdu.java"/>
-             <copy file="${basedir}/src/algtest/Consts.java" tofile="../AlgTest_JavaCard/src/AlgTest/Consts.java"/>
-             <copy file="${basedir}/src/algtest/JCConsts.java" tofile="../AlgTest_JavaCard/src/AlgTest/JCConsts.java"/>
-             <copy file="${basedir}/src/algtest/TestSettings.java" tofile="../AlgTest_JavaCard/src/AlgTest/TestSettings.java"/>
-          </target>
+        <target name="-post-jar">
+           <!-- Copy newly build jar into test directory for simulator of smart cards-->
+           <copy file="${basedir}/dist/AlgTestJClient.jar" tofile="${basedir}/test/AlgTestJClient.jar"/>
+           <copy file="${basedir}/dist/lib/jcardsim-2.2.2-all.jar" tofile="${basedir}/test/jcardsim-2.2.2-all.jar"/>
+
+           <!-- Copy files necessary for compilation of JC applet-->
+           <copy file="${basedir}/src/algtest/AlgTestSinglePerApdu.java" tofile="../AlgTest_JavaCard/src/AlgTest/AlgTestSinglePerApdu.java"/>
+           <copy file="${basedir}/src/algtest/Consts.java" tofile="../AlgTest_JavaCard/src/AlgTest/Consts.java"/>
+           <copy file="${basedir}/src/algtest/JCConsts.java" tofile="../AlgTest_JavaCard/src/AlgTest/JCConsts.java"/>
+           <copy file="${basedir}/src/algtest/TestSettings.java" tofile="../AlgTest_JavaCard/src/AlgTest/TestSettings.java"/>
+        </target>
 
 </project>
