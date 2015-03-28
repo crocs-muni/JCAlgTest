@@ -284,17 +284,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                 case Consts.INS_PERF_TEST_CLASS_CHECKSUM: perftest_class_Checksum(apdu); break;        
                 case Consts.INS_PERF_TEST_CLASS_KEYAGREEMENT: perftest_class_KeyAgreement(apdu); break;        
                 case Consts.INS_PERF_TEST_CLASS_KEYPAIR: perftest_class_KeyPair(apdu); break;        
-                    
-                    
-/*                    
-                case Consts.INS_PERF_TEST_MESSAGE_DIGEST: messageDigestTest(apdu); break;
-                case Consts.INS_PERF_TEST_RANDOM_DATA: randomDataTest(apdu); break;
-                case Consts.INS_PERF_TEST_KEY_PAIR: keyPairTest(apdu);break;
-                case Consts.INS_PERF_TEST_CHECKSUM: checksumTest(apdu);break;
-                case Consts.INS_PERF_PREPARE_MESSAGE_DIGEST: prepareMessageDigest(apdu);break;
-                case Consts.INS_PERF_PREPARE_KEY_PAIR: prepareKeyPair(apdu);break;
-                case Consts.INS_PERF_PREPARE_RANDOM_DATA: prepareRandomData(apdu);break;
-*/                    
+                 
                     
                 default : {
                     // The INS code is not supported by the dispatcher
@@ -402,6 +392,8 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         Util.setShort(apdubuf, offset, JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_RESET));
         offset = (short)(offset + 2);
         Util.setShort(apdubuf, offset, JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT));
+        offset = (short)(offset + 2);
+        Util.setShort(apdubuf, offset, JCSystem.getMaxCommitCapacity());
         offset = (short)(offset + 2);
 
         apdu.setOutgoingAndSend((byte) 0, offset);
@@ -774,8 +766,8 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         
         try {
             m_signature = Signature.getInstance((byte) m_testSettings.algorithmSpecification, false);
-            if (m_testSettings.algorithmMethod == JCConsts.Signature_verify) { m_signature.init(m_key, Signature.MODE_SIGN); }  
-            else { m_signature.init(m_key, Signature.MODE_VERIFY); }
+            if (m_testSettings.algorithmMethod == JCConsts.Signature_verify) { m_signature.init(m_key, Signature.MODE_VERIFY); }  
+            else { m_signature.init(m_key, Signature.MODE_SIGN); }
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
         }
