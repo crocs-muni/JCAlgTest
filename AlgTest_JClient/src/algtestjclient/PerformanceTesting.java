@@ -79,7 +79,7 @@ public class PerformanceTesting {
         String message = "";
         
         /* Variable 'file' for output data. */
-        FileOutputStream file = cardManager.establishConnection(testClassPerformance);
+        this.file = cardManager.establishConnection(testClassPerformance);
 /*        
         if(args.length > 1){    // in case there are arguments present
             if(Arrays.asList(args).contains(TEST_ALL_ALGORITHMS)){testAllAtOnce(file);}
