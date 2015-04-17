@@ -1269,28 +1269,433 @@ public class PerformanceTesting {
         PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getKey()");
         testSet.algorithmMethod = JCConsts.AESKey_clearKey;
         PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearKey()");
-
-    }   
+    }
+    
     public static void testAllAESKeys(int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception {
         testAllAESKeys((short) numRepeatWholeOperation, (short) numRepeatWholeMeasurement);
     }
     public static void testAllAESKeys(short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
         String tableName = "\n\nAESKey\n";
         file.write(tableName.getBytes());
+        
         testAESKey(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,"TYPE_AES LENGTH_AES_128", numRepeatWholeOperation, numRepeatWholeMeasurement);
         testAESKey(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_192,"TYPE_AES LENGTH_AES_192", numRepeatWholeOperation, numRepeatWholeMeasurement);
         testAESKey(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_256,"TYPE_AES LENGTH_AES_256", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        
         tableName = "AESKey - END\n";
         file.write(tableName.getBytes());
-    }  
+    }
+    
+    public static void testDESKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
+        TestSettings testSet = null;
+        testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.DESKey_setKey,
+                Consts.TEST_DATA_LENGTH, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
+        testSet.algorithmMethod = JCConsts.DESKey_setKey;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setKey()");
+        testSet.algorithmMethod = JCConsts.DESKey_getKey;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getKey()");
+        testSet.algorithmMethod = JCConsts.DESKey_clearKey;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearKey()");
+    }
+    
+    public static void testAllDESKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws Exception{
+        testAllDESKeys((short)numRepeatWholeOperation, (short)numRepeatWholeMeasurement);
+    }
+    
+    public static void testAllDESKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
+        String tableName = "\n\nDESKey";
+        file.write(tableName.getBytes());
+        
+        testDESKey(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES, "TYPE_DES LENGTH_DES_64", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testDESKey(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_2KEY, "TYPE_DES LENGTH_DES_128", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testDESKey(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_3KEY, "TYPE_DES LENGTH_DES_192", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        
+        tableName = "DESKey - END\n";
+        file.write(tableName.getBytes());
+    }
+    
+    public static void testKoreanSEEDKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
+        TestSettings testSet = null;
+        testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.KoreanSEEDKey_setKey,
+                Consts.TEST_DATA_LENGTH, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
+        
+        testSet.algorithmMethod = JCConsts.KoreanSEEDKey_setKey;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setKey()");
+        testSet.algorithmMethod = JCConsts.KoreanSEEDKey_getKey;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getKey()");
+        testSet.algorithmMethod = JCConsts.KoreanSEEDKey_clearKey;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearKey()");
+    }
+    public static void testAllKoreanSEEDKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
+        testAllKoreanSEEDKeys((short)numRepeatWholeOperation, (short)numRepeatWholeMeasurement);
+    }
+    public static void testAllKoreanSEEDKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
+        String tableName = "\n\nKoreanSEEDKey";
+        file.write(tableName.getBytes());
+        
+        testKoreanSEEDKey(JCConsts.KeyBuilder_TYPE_KOREAN_SEED, JCConsts.KeyBuilder_LENGTH_KOREAN_SEED_128, "TYPE KOREAN SEED LENGTH KOREAN SEED 128", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        
+        tableName = "KoreanSEEDKey - END\n";
+        file.write(tableName.getBytes());
+    }
+    
+    public static void testDSAPrivateKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
+        TestSettings testSet = null;
+        testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.DSAPrivateKey_getX,
+                Consts.TEST_DATA_LENGTH, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
+        
+        testSet.algorithmMethod = JCConsts.DSAPrivateKey_getX;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setX()");
+        testSet.algorithmMethod = JCConsts.DSAPrivateKey_setX;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getX()");
+        testSet.algorithmMethod = JCConsts.DSAPrivateKey_clearX;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearX()");
+    }
+    public static void testAllDSAPrivateKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
+        testAllDSAPrivateKeys((short)numRepeatWholeOperation, (short)numRepeatWholeMeasurement);
+    }
+    public static void testAllDSAPrivateKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
+        String tableName = "\n\nDSAPrivateKey";
+        file.write(tableName.getBytes());
+        
+        testDSAPrivateKey(JCConsts.KeyBuilder_TYPE_DSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_DSA_512, "TYPE DSA PRIVATE LENGTH DSA 512", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testDSAPrivateKey(JCConsts.KeyBuilder_TYPE_DSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_DSA_768, "TYPE DSA PRIVATE LENGTH DSA 768", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testDSAPrivateKey(JCConsts.KeyBuilder_TYPE_DSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_DSA_1024, "TYPE DSA PRIVATE LENGTH DSA 1024", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        
+        tableName = "DSAPrivateKey - END\n";
+        file.write(tableName.getBytes());
+    }
+    
+    public static void testDSAPublicKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
+        TestSettings testSet = null;
+        testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.DSAPublicKey_getY,
+                Consts.TEST_DATA_LENGTH, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
+        
+        testSet.algorithmMethod = JCConsts.DSAPublicKey_getY;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setY()");
+        testSet.algorithmMethod = JCConsts.DSAPublicKey_setY;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getY()");
+        testSet.algorithmMethod = JCConsts.DSAPublicKey_clearY;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearY()");
+    }
+    public static void testAllDSAPublicKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
+        testAllDSAPublicKeys((short)numRepeatWholeOperation, (short)numRepeatWholeMeasurement);
+    }
+    public static void testAllDSAPublicKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
+        String tableName = "\n\nDSAPublicKey";
+        file.write(tableName.getBytes());
+        
+        testDSAPublicKey(JCConsts.KeyBuilder_TYPE_DSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_DSA_512, "TYPE DSA PUBLIC LENGTH DSA 512", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testDSAPublicKey(JCConsts.KeyBuilder_TYPE_DSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_DSA_768, "TYPE DSA PUBLIC LENGTH DSA 768", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testDSAPublicKey(JCConsts.KeyBuilder_TYPE_DSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_DSA_1024, "TYPE DSA PUBLIC LENGTH DSA 1024", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        
+        tableName = "DSAPublicKey - END\n";
+        file.write(tableName.getBytes());
+    }
+    
+    public static void testECF2MPublicKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
+        TestSettings testSet = null;
+        testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.ECPublicKey_setW,
+                Consts.TEST_DATA_LENGTH, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
+        
+        testSet.algorithmMethod = JCConsts.ECPublicKey_setW;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setW()");
+        testSet.algorithmMethod = JCConsts.ECPublicKey_getW;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getW()");
+        testSet.algorithmMethod = JCConsts.ECPublicKey_clearKey;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearW()");
+    }
+    public static void testAllECF2MPublicKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
+        testAllECF2MPublicKeys((short)numRepeatWholeOperation, (short)numRepeatWholeMeasurement);
+    }
+    public static void testAllECF2MPublicKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
+        String tableName = "\n\nECF2MPublicKey";
+        file.write(tableName.getBytes());
+        
+        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_F2M_113, "TYPE EC F2M PUBLIC LENGTH EC F2M 113", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_F2M_131, "TYPE EC F2M PUBLIC LENGTH EC F2M 131", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_F2M_163, "TYPE EC F2M PUBLIC LENGTH EC F2M 163", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_F2M_193, "TYPE EC F2M PUBLIC LENGTH EC F2M 193", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        
+        tableName = "ECF2MPublicKey - END\n";
+        file.write(tableName.getBytes());
+    }
+    
+    public static void testECF2mPrivateKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
+        TestSettings testSet = null;
+        testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.ECPrivateKey_setS,
+                Consts.TEST_DATA_LENGTH, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
+        
+        testSet.algorithmMethod = JCConsts.ECPrivateKey_setS;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setS()");
+        testSet.algorithmMethod = JCConsts.ECPrivateKey_getS;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getS()");
+        testSet.algorithmMethod = JCConsts.ECPrivateKey_clearKey;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearS()");
+    }
+    public static void testAllECF2MPrivateKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
+        testAllECF2MPrivateKeys((short)numRepeatWholeOperation, (short)numRepeatWholeMeasurement);
+    }
+    public static void testAllECF2MPrivateKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
+        String tableName = "\n\nECF2MPrivateKey";
+        file.write(tableName.getBytes());
+        
+        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_113, "TYPE EC F2M PRIVATE LENGTH EC F2M 113", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_131, "TYPE EC F2M PRIVATE LENGTH EC F2M 131", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_163, "TYPE EC F2M PRIVATE LENGTH EC F2M 163", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_193, "TYPE EC F2M PRIVATE LENGTH EC F2M 193", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        
+        tableName = "ECF2MPrivateKey - END\n";
+        file.write(tableName.getBytes());
+    }
+    
+    public static void testECFPPublicKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
+        TestSettings testSet = null;
+        testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.ECPublicKey_setW,
+                Consts.TEST_DATA_LENGTH, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
+        
+        testSet.algorithmMethod = JCConsts.ECPublicKey_setW;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setW()");
+        testSet.algorithmMethod = JCConsts.ECPublicKey_getW;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getW()");
+        testSet.algorithmMethod = JCConsts.ECPublicKey_clearKey;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearW()");
+    }
+    public static void testAllECFPPublicKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
+        testAllECFPPublicKeys((short)numRepeatWholeOperation, (short)numRepeatWholeMeasurement);
+    }
+    public static void testAllECFPPublicKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
+        String tableName = "\n\nECFPPublicKey";
+        file.write(tableName.getBytes());
+        
+        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_112, "TYPE EC FP PUBLIC LENGTH EC FP 112", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_128, "TYPE EC FP PUBLIC LENGTH EC FP 128", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_160, "TYPE EC FP PUBLIC LENGTH EC FP 160", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_192, "TYPE EC FP PUBLIC LENGTH EC FP 192", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_224, "TYPE EC FP PUBLIC LENGTH EC FP 224", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_256, "TYPE EC FP PUBLIC LENGTH EC FP 256", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_384, "TYPE EC FP PUBLIC LENGTH EC FP 384", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_521, "TYPE EC FP PUBLIC LENGTH EC FP 521", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        
+        tableName = "ECFPPublicKey - END\n";
+        file.write(tableName.getBytes());
+    }
+    
+    public static void testECFPPrivateKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
+        TestSettings testSet = null;
+        testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.ECPrivateKey_setS,
+                Consts.TEST_DATA_LENGTH, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
+        
+        testSet.algorithmMethod = JCConsts.ECPrivateKey_setS;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setS()");
+        testSet.algorithmMethod = JCConsts.ECPrivateKey_getS;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getS()");
+        testSet.algorithmMethod = JCConsts.ECPrivateKey_clearKey;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearS()");
+    }
+    public static void testAllECFPPrivateKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
+        testAllECFPPrivateKeys((short)numRepeatWholeOperation, (short)numRepeatWholeMeasurement);
+    }
+    public static void testAllECFPPrivateKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
+        String tableName = "\n\nECFPPublicKey";
+        file.write(tableName.getBytes());
+        
+        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_112, "TYPE EC FP PRIVATE LENGTH EC FP 112", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_128, "TYPE EC FP PRIVATE LENGTH EC FP 128", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_160, "TYPE EC FP PRIVATE LENGTH EC FP 160", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_192, "TYPE EC FP PRIVATE LENGTH EC FP 192", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_224, "TYPE EC FP PRIVATE LENGTH EC FP 224", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_256, "TYPE EC FP PRIVATE LENGTH EC FP 256", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_384, "TYPE EC FP PRIVATE LENGTH EC FP 384", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_521, "TYPE EC FP PRIVATE LENGTH EC FP 521", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        
+        tableName = "ECFPPublicKey - END\n";
+        file.write(tableName.getBytes());
+    }
+    
+    public static void testHMACKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
+        TestSettings testSet = null;
+        testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.HMACKey_getKey,
+                Consts.TEST_DATA_LENGTH, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
+        
+        testSet.algorithmMethod = JCConsts.HMACKey_setKey;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setKey()");
+        testSet.algorithmMethod = JCConsts.HMACKey_getKey;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getKey()");
+        testSet.algorithmMethod = JCConsts.HMACKey_clearKey;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearKey()");
+    }
+    public static void testAllHMACKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
+        testAllHMACKeys((short)numRepeatWholeOperation, (short)numRepeatWholeMeasurement);
+    }
+    public static void testAllHMACKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
+        String tableName = "\n\nHMACKey";
+        file.write(tableName.getBytes());
+        
+        testHMACKey(JCConsts.KeyBuilder_TYPE_HMAC, JCConsts.KeyBuilder_LENGTH_HMAC_SHA_1_BLOCK_64, "TYPE HMAC SHA-1 LENGTH HMAC 64", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testHMACKey(JCConsts.KeyBuilder_TYPE_HMAC, JCConsts.KeyBuilder_LENGTH_HMAC_SHA_256_BLOCK_64, "TYPE HMAC SHA-256 LENGTH HMAC 64", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testHMACKey(JCConsts.KeyBuilder_TYPE_HMAC, JCConsts.KeyBuilder_LENGTH_HMAC_SHA_384_BLOCK_128, "TYPE HMAC SHA-384 LENGTH HMAC 128", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testHMACKey(JCConsts.KeyBuilder_TYPE_HMAC, JCConsts.KeyBuilder_LENGTH_HMAC_SHA_512_BLOCK_128, "TYPE HMAC SHA-512 LENGTH HMAC 128", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        
+        tableName = "HMACKey - END\n";
+        file.write(tableName.getBytes());
+    }
+    
+    public static void testRSAPrivateCrtKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
+        TestSettings testSet = null;
+        testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.RSAPrivateCrtKey_setDP1,
+                Consts.TEST_DATA_LENGTH, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
+        
+        testSet.algorithmMethod = JCConsts.RSAPrivateCrtKey_setDP1;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setDP1()");
+        testSet.algorithmMethod = JCConsts.RSAPrivateCrtKey_setDQ1;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setDQ1()");
+        testSet.algorithmMethod = JCConsts.RSAPrivateCrtKey_setP;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setP()");
+        testSet.algorithmMethod = JCConsts.RSAPrivateCrtKey_setPQ;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setPQ()");
+        testSet.algorithmMethod = JCConsts.RSAPrivateCrtKey_setQ;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setQ()");
+        
+        testSet.algorithmMethod = JCConsts.RSAPrivateCrtKey_getDP1;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getDP1()");
+        testSet.algorithmMethod = JCConsts.RSAPrivateCrtKey_getDQ1;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getDQ1()");
+        testSet.algorithmMethod = JCConsts.RSAPrivateCrtKey_getP;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getP()");
+        testSet.algorithmMethod = JCConsts.RSAPrivateCrtKey_getPQ;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getPQ()");
+        testSet.algorithmMethod = JCConsts.RSAPrivateCrtKey_getQ;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getQ()");
+        
+        testSet.algorithmMethod = JCConsts.RSAPrivateCrtKey_clearKey;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearKey()");
+    }
+    public static void testAllRSAPrivateCrtKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
+        testAllRSAPrivateCrtKeys((short)numRepeatWholeOperation, (short)numRepeatWholeMeasurement);
+    }
+    public static void testAllRSAPrivateCrtKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
+        String tableName = "\n\nRSAPrivateCRTKey";
+        file.write(tableName.getBytes());
+        
+        testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512, "TYPE RSA PRIVATE CRT LENGTH RSA 512", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736, "TYPE RSA PRIVATE CRT LENGTH RSA 736", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768, "TYPE RSA PRIVATE CRT LENGTH RSA 768", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896, "TYPE RSA PRIVATE CRT LENGTH RSA 896", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024, "TYPE RSA PRIVATE CRT LENGTH RSA 1024", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280, "TYPE RSA PRIVATE CRT LENGTH RSA 1280", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536, "TYPE RSA PRIVATE CRT LENGTH RSA 1536", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984, "TYPE RSA PRIVATE CRT LENGTH RSA 1984", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048, "TYPE RSA PRIVATE CRT LENGTH RSA 2048", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072, "TYPE RSA PRIVATE CRT LENGTH RSA 3072", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096, "TYPE RSA PRIVATE CRT LENGTH RSA 4096", numRepeatWholeOperation, numRepeatWholeMeasurement);
+
+        tableName = "RSAPrivateCRTKey - END\n";
+        file.write(tableName.getBytes());
+    }
+    
+    public static void testRSAPrivateKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
+        TestSettings testSet = null;
+        testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.RSAPrivateKey_setExponent,
+                Consts.TEST_DATA_LENGTH, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
+        
+        testSet.algorithmMethod = JCConsts.RSAPrivateKey_setExponent;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setExponent()");
+        testSet.algorithmMethod = JCConsts.RSAPrivateKey_setModulus;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setModulus()");
+        
+        testSet.algorithmMethod = JCConsts.RSAPrivateKey_getExponent;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getExponent()");
+        testSet.algorithmMethod = JCConsts.RSAPrivateKey_getModulus;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getModulus()");
+        
+        testSet.algorithmMethod = JCConsts.RSAPrivateKey_clearKey;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearKey()");
+    }
+    public static void testAllRSAPrivateKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
+        testAllRSAPrivateKeys((short)numRepeatWholeOperation, (short)numRepeatWholeMeasurement);
+    }
+    public static void testAllRSAPrivateKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
+        String tableName = "\n\nRSAPrivateKey";
+        file.write(tableName.getBytes());
+        
+        testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512, "TYPE RSA PRIVATE LENGTH RSA 512", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736, "TYPE RSA PRIVATE LENGTH RSA 736", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768, "TYPE RSA PRIVATE LENGTH RSA 768", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896, "TYPE RSA PRIVATE LENGTH RSA 896", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024, "TYPE RSA PRIVATE LENGTH RSA 1024", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280, "TYPE RSA PRIVATE LENGTH RSA 1280", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536, "TYPE RSA PRIVATE LENGTH RSA 1536", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984, "TYPE RSA PRIVATE LENGTH RSA 1984", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048, "TYPE RSA PRIVATE LENGTH RSA 2048", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072, "TYPE RSA PRIVATE LENGTH RSA 3072", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096, "TYPE RSA PRIVATE LENGTH RSA 4096", numRepeatWholeOperation, numRepeatWholeMeasurement);
+
+        tableName = "RSAPrivateKey - END\n";
+        file.write(tableName.getBytes());
+    }
+    
+    public static void testRSAPublicKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
+        TestSettings testSet = null;
+        testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.RSAPublicKey_setExponent,
+                Consts.TEST_DATA_LENGTH, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
+        
+        testSet.algorithmMethod = JCConsts.RSAPublicKey_setExponent;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setExponent()");
+        testSet.algorithmMethod = JCConsts.RSAPublicKey_setModulus;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setModulus()");
+        
+        testSet.algorithmMethod = JCConsts.RSAPublicKey_getExponent;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getExponent()");
+        testSet.algorithmMethod = JCConsts.RSAPublicKey_getModulus;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getModulus()");
+        
+        testSet.algorithmMethod = JCConsts.RSAPublicKey_clearKey;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearKey()");
+    }
+    public static void testAllRSAPublicKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
+        testAllRSAPublicKeys((short)numRepeatWholeOperation, (short)numRepeatWholeMeasurement);
+    }
+    public static void testAllRSAPublicKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
+        String tableName = "\n\nRSAPublicKey";
+        file.write(tableName.getBytes());
+        
+        testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_512, "TYPE RSA PUBLIC LENGTH RSA 512", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_736, "TYPE RSA PUBLIC LENGTH RSA 736", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_768, "TYPE RSA PUBLIC LENGTH RSA 768", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_896, "TYPE RSA PUBLIC LENGTH RSA 896", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1024, "TYPE RSA PUBLIC LENGTH RSA 1024", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1280, "TYPE RSA PUBLIC LENGTH RSA 1280", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1536, "TYPE RSA PUBLIC LENGTH RSA 1536", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1984, "TYPE RSA PUBLIC LENGTH RSA 1984", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_2048, "TYPE RSA PUBLIC LENGTH RSA 2048", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_3072, "TYPE RSA PUBLIC LENGTH RSA 3072", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_4096, "TYPE RSA PUBLIC LENGTH RSA 4096", numRepeatWholeOperation, numRepeatWholeMeasurement);
+
+        tableName = "RSAPublicKey - END\n";
+        file.write(tableName.getBytes());
+    }
     
     public static void testAllKeys(int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception {
         testAllKeys((short) numRepeatWholeOperation, (short) numRepeatWholeMeasurement);
     }
     public static void testAllKeys(short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
         testAllAESKeys(numRepeatWholeOperation, numRepeatWholeMeasurement);
-        // TODO: all *Key tests: DESKey, KoreanSEEDKey, DSAKey, DSAKeyPrivateKey, DSAPublicKey, ECKey, ECPrivateKey, ECPublicKey, HMACKey, RSAPrivateCrtKey, RSAPrivateKey, RSAPublicKey
+        testAllDESKeys(numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testAllKoreanSEEDKeys(numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testAllDSAPrivateKeys(numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testAllDSAPublicKeys(numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testAllECF2MPublicKeys(numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testAllECF2MPrivateKeys(numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testAllECFPPublicKeys(numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testAllECFPPrivateKeys(numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testAllHMACKeys(numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testAllRSAPrivateCrtKeys(numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testAllRSAPrivateKeys(numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testAllRSAPublicKeys(numRepeatWholeOperation, numRepeatWholeMeasurement);
+        
     }
+    
     
 
 }

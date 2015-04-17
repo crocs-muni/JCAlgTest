@@ -585,7 +585,13 @@ public class SingleModeTest {
         String elTimeStr = "";
         switch (response){
             case SUPP_ALG_SUPPORTED:
-                elTimeStr = String.format("%1f", (double) elapsedCard / (float) CLOCKS_PER_SEC);
+                // in case negative value is returned as timestamp
+                if (elapsedCard < 0){
+                    elTimeStr = "Not executed!";
+                }
+                else{
+                elTimeStr = String.format("%1f", (double) elapsedCard / (float) CLOCKS_PER_SEC);}
+                
                 message += name + ";" + "yes;" + elTimeStr + "\r\n";
                 System.out.println(message);
                 file.write(message.getBytes());
