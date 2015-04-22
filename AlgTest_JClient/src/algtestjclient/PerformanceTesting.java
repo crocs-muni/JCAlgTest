@@ -513,6 +513,7 @@ public class PerformanceTesting {
     }
     
     public static double perftest_measure(byte appletCLA, byte appletPrepareINS, byte appletMeasureINS, TestSettings testSet, String info) throws IOException, Exception {
+        double check = 0.05; // Maximum percentage difference in which should be all times of individual operations, 0.1 = 10%
         double avgOpTime = -1;
         String message = "";
         message += "\n" + info + "\n";
@@ -529,6 +530,8 @@ public class PerformanceTesting {
 
             double sumTimes = 0;
             double avgOverhead = 0;
+            double minOverhead = Double.MAX_VALUE;
+            double maxOverhead = -Double.MAX_VALUE;
             String timeStr;
             
             //
@@ -536,17 +539,22 @@ public class PerformanceTesting {
             //
             short bkpNumRepeatWholeOperation = testSet.numRepeatWholeOperation;
             testSet.numRepeatWholeOperation = 0;
-            message +=  "debug overhead:";
+            message +=  "debug overhead:;";
             for(int i = 0; i < testSet.numRepeatWholeMeasurement;i++) {
                 cardManager.resetApplet(appletCLA, Consts.INS_CARD_RESET);
                 double overheadTime = cardManager.PerfTestCommand(appletCLA, appletMeasureINS, testSet, Consts.INS_CARD_RESET);
                 sumTimes += overheadTime;
-                timeStr = String.format(" %1f", overheadTime);
-                message +=  timeStr + " " ;
+                timeStr = String.format("%.2f", overheadTime);
+                message +=  timeStr + ";" ;
                 System.out.print(timeStr + " ");
+                if (overheadTime<minOverhead) minOverhead=overheadTime;
+                if (overheadTime>maxOverhead) maxOverhead=overheadTime;
             }
             avgOverhead = sumTimes / testSet.numRepeatWholeMeasurement;
-            message += "\ndebug avg overhead time: " + avgOverhead;
+            message += "\navg:;" + String.format("%.2f", avgOverhead);
+            message += ";min:;" + String.format("%.2f", minOverhead);
+            message += ";max:;" + String.format("%.2f", maxOverhead);
+            if ((minOverhead/avgOverhead < (1-check)) || (maxOverhead/avgOverhead > (1+check)))  message += ";;CHECK";
             System.out.print("\ndebug avg overhead time: " + avgOverhead);
             System.out.println();     
             System.out.println(); message += "\n";
@@ -560,27 +568,42 @@ public class PerformanceTesting {
             // Restore required number of required measurements 
             testSet.numRepeatWholeOperation = bkpNumRepeatWholeOperation;
             
+            double minOpTime = 9999;
+            double maxOpTime = -9999;
+            
             double time = 0;
             sumTimes = 0;
+            message += "operations raw:;";
             for(int i = 0; i < testSet.numRepeatWholeMeasurement;i++) {
                 cardManager.resetApplet(appletCLA, Consts.INS_CARD_RESET);
                 time = cardManager.PerfTestCommand(appletCLA, appletMeasureINS, testSet, Consts.INS_CARD_RESET);
                 time -= avgOverhead;
                 sumTimes += time;
-                timeStr = String.format("%1f", time);
-                message +=  timeStr + " " ;
+                timeStr = String.format("%.2f", time);
+                message +=  timeStr + ";" ;
                 System.out.print(timeStr + " ");
+                if (time<minOpTime) minOpTime=time;
+                if (time>maxOpTime) maxOpTime=time;
             }
             System.out.println();     
             
             System.out.println(); message += "\n";
             file.write(message.getBytes());
             message = "";
-        
-            // Compute average per operation
+            
+            // Compute average per operation       
+            String messageOpTime =  "";
             int totalIterations = testSet.numRepeatWholeOperation * testSet.numRepeatWholeMeasurement;
-            avgOpTime = (totalIterations != 0) ? sumTimes / totalIterations : 0;       
-            String messageOpTime = String.format("%f ms/op (%d total iterations, %d total invocations)\n", avgOpTime, totalIterations, totalIterations * testSet.numRepeatSubOperation);
+            avgOpTime = (totalIterations != 0) ? sumTimes/totalIterations : 0;
+            minOpTime = (totalIterations != 0) ? minOpTime/testSet.numRepeatWholeOperation : 0;
+            maxOpTime = (totalIterations != 0) ? maxOpTime/testSet.numRepeatWholeOperation : 0;
+            messageOpTime += "avg op:;" + String.format("%.2f", avgOpTime);
+            messageOpTime += ";min op:;" + String.format("%.2f", minOpTime);
+            messageOpTime += ";max op:;" + String.format("%.2f", maxOpTime);
+            messageOpTime += ";ms/op";
+            if ((minOpTime/avgOpTime < (1-check)) || (maxOpTime/avgOpTime >(1+check)))  messageOpTime += ";CHECK";
+            messageOpTime += "\n" + (int)totalIterations + ";" + (int)(totalIterations * testSet.numRepeatSubOperation) + ";";
+            messageOpTime += "total iterations & total invocations\n";
             file.write(messageOpTime.getBytes());
             System.out.println(messageOpTime);  
         }
