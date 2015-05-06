@@ -264,6 +264,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                 // case INS_CARD_TESTEXTAPDU: TestExtendedAPDUSupport(apdu); break; // this has to be tested by separate applet with ExtAPDU enabled - should succedd during upload and run
                 case Consts.INS_CARD_RESET: JCSystem.requestObjectDeletion(); break;
                 case Consts.INS_CARD_GETRSAKEY: GetRSAKey(apdu); break;
+                case Consts.INS_CARD_TESTIOSPEED: TestIOSpeed(apdu); break;
 
                     
                 case Consts.INS_PREPARE_TEST_CLASS_KEY: prepare_class_Key(apdu); break;        

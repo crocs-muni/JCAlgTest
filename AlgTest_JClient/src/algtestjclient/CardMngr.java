@@ -937,7 +937,7 @@ public class CardMngr {
 
                 ResponseAPDU resp = sendAPDU(apdu);
                 if (resp.getSW() != 0x9000) {
-                    String message = "Fail to obtain response for GetSupportedAndParse\r\n";
+                    String message = "Fail to obtain response for GetSupportedAndParse(" + algNames[0] + ") with 0x" + Integer.toHexString(resp.getSW());
                     System.out.println(message);
                     pFile.write(message.getBytes());
                 } else {
