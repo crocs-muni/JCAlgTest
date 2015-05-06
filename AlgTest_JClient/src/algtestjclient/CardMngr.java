@@ -292,7 +292,7 @@ public class CardMngr {
         }
         else {
             // TRY ALL READERS, FIND FIRST SELECTABLE
-            List terminalList = GetReaderList();
+           List<CardTerminal> terminalList = GetReaderList();
            if (terminalList.isEmpty()) { System.out.println("No terminals found"); }
             //List numbers of Card readers        
             for (int i = 0; i < terminalList.size(); i++) {
@@ -358,10 +358,10 @@ public class CardMngr {
         }
     }
 
-    public List GetReaderList() {
+    public List<CardTerminal> GetReaderList() {
         try {
             TerminalFactory factory = TerminalFactory.getDefault();
-            List readersList = factory.terminals().list();
+            List<CardTerminal> readersList = factory.terminals().list();
             return readersList;
         } catch (CardException ex) {
             System.out.println("Exception : " + ex);
@@ -397,7 +397,7 @@ public class CardMngr {
         if (responseAPDU.getSW1() == (byte) 0x61) {
             CommandAPDU apduToSend = new CommandAPDU((byte) 0x00,
                     (byte) 0xC0, (byte) 0x00, (byte) 0x00,
-                    (int) responseAPDU.getSW1());
+                    responseAPDU.getSW1());
 
             responseAPDU = m_channel.transmit(apduToSend);
             System.out.println(bytesToHex(responseAPDU.getBytes()));
@@ -1050,8 +1050,8 @@ public class CardMngr {
     public double PerfTestCommand(byte cla, byte ins, TestSettings testSet, byte resetIns) throws Exception {
         long elapsedCard;
         byte apdu[] = new byte[HEADER_LENGTH + TestSettings.TEST_SETTINGS_LENGTH];
-        apdu[OFFSET_CLA] = (byte) cla;
-        apdu[OFFSET_INS] = (byte) ins;
+        apdu[OFFSET_CLA] = cla;
+        apdu[OFFSET_INS] = ins;
         apdu[OFFSET_LC] = TestSettings.TEST_SETTINGS_LENGTH;
 
         testSet.serializeToApduBuff(apdu, (short) 0);
@@ -1097,8 +1097,8 @@ public class CardMngr {
     {
         long elapsedCard;
         byte apdu[] = new byte[HEADER_LENGTH + dataLength];
-        apdu[OFFSET_CLA] = (byte) algClass;
-        apdu[OFFSET_INS] = (byte) alg;
+        apdu[OFFSET_CLA] = algClass;
+        apdu[OFFSET_INS] = alg;
         apdu[OFFSET_P1] = p1;
         apdu[OFFSET_P2] = p2;
         apdu[OFFSET_LC] = dataLength;

@@ -79,7 +79,7 @@ public class PerformanceTesting {
         String message = "";
         
         /* Variable 'file' for output data. */
-        this.file = cardManager.establishConnection(testClassPerformance);
+        PerformanceTesting.file = cardManager.establishConnection(testClassPerformance);
 /*        
         if(args.length > 1){    // in case there are arguments present
             if(Arrays.asList(args).contains(TEST_ALL_ALGORITHMS)){testAllAtOnce(file);}
@@ -602,7 +602,7 @@ public class PerformanceTesting {
             messageOpTime += ";max op:;" + String.format("%.2f", maxOpTime);
             messageOpTime += ";ms/op";
             if ((minOpTime/avgOpTime < (1-check)) || (maxOpTime/avgOpTime >(1+check)))  messageOpTime += ";CHECK";
-            messageOpTime += "\n" + (int)totalIterations + ";" + (int)(totalIterations * testSet.numRepeatSubOperation) + ";";
+            messageOpTime += "\n" + totalIterations + ";" + (totalIterations * testSet.numRepeatSubOperation) + ";";
             messageOpTime += "total iterations & total invocations\n";
             file.write(messageOpTime.getBytes());
             System.out.println(messageOpTime);  

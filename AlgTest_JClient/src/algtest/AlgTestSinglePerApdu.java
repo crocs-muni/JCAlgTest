@@ -217,7 +217,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         
         m_ram1 = JCSystem.makeTransientByteArray(RAM1_ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);
         
-        if (isOP2) { register(buffer, (short)(offset + 1), (byte)buffer[offset]); }
+        if (isOP2) { register(buffer, (short)(offset + 1), buffer[offset]); }
         else { register(); }
     }
 
@@ -230,7 +230,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
     public static void install(byte[] bArray, short bOffset, byte bLength) throws ISOException
     {
         /* applet  instance creation */
-        new AlgTestSinglePerApdu (bArray, bOffset, (byte)bLength );
+        new AlgTestSinglePerApdu (bArray, bOffset, bLength );
     }
 
     /**
@@ -323,7 +323,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
        byte      algorithmClass = apdubuf[ISO7816.OFFSET_CDATA];
        short     algorithmParam1 = Util.makeShort(apdubuf[(short) (ISO7816.OFFSET_CDATA + 1)], apdubuf[(short) (ISO7816.OFFSET_CDATA + 2)]);
        
-       Util.arrayFillNonAtomic(apdubuf, ISO7816.OFFSET_CDATA, (short) 240, (byte) SUPP_ALG_UNTOUCHED);
+       Util.arrayFillNonAtomic(apdubuf, ISO7816.OFFSET_CDATA, (short) 240, SUPP_ALG_UNTOUCHED);
        offset++;
        apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = apdubuf[ISO7816.OFFSET_P1];
 
@@ -495,7 +495,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
          offset = (short)(offset + 2);
 /**/
        }
-       apdu.setOutgoingAndSend((short) 0, (short) (offset));
+       apdu.setOutgoingAndSend((short) 0, offset);
    }  
    
    /**
@@ -1034,6 +1034,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                     break;
                     case JCConsts.RSAPublicKey_getModulus:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_rsapublic_key.getModulus(m_ram1, (short) 0);}
+                        break;
                     case JCConsts.RSAPublicKey_clearKey:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
                         if (m_rsapublic_key.isInitialized()){m_rsapublic_key.clearKey();}

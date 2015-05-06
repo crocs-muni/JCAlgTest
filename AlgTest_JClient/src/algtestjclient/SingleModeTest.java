@@ -809,7 +809,7 @@ public class SingleModeTest {
                 // get starting time of communication cycle
                 elapsedCard = -System.currentTimeMillis();
                 // byte to choose subclass
-                apdu[OFFSET_DATA] = (byte)KEYBUILDER_CONST[i-1];    // (byte)3 => TYPE DES
+                apdu[OFFSET_DATA] = KEYBUILDER_CONST[i-1];    // (byte)3 => TYPE DES
                 // bytes to carry the length of tested key
                 apdu[OFFSET_DATA + 1] = KEYBUILDER_LENGTHS[(i*2)-1];
                 apdu[OFFSET_DATA + 2] = KEYBUILDER_LENGTHS[(i*2)];

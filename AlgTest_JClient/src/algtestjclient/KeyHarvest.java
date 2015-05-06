@@ -28,8 +28,8 @@ public class KeyHarvest {
             // Obtain all readers with cards
             //
             TerminalFactory factory = TerminalFactory.getDefault();
-            List readersList = factory.terminals().list();
-            ArrayList readersWithCardList = new ArrayList();
+            List<CardTerminal> readersList = factory.terminals().list();
+            ArrayList<CardTerminal> readersWithCardList = new ArrayList();
             if (readersList.isEmpty()) { System.out.println("No terminals found"); }
             for (int i = 0; i < readersList.size(); i++) {
                 CardTerminal terminal = (CardTerminal) readersList.get(i);

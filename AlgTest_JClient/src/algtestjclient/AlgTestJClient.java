@@ -117,8 +117,7 @@ public class AlgTestJClient {
                     /* BUGBUG: we need to figure out how to support JCardSim in nice way (copy of class files, directory structure...)
                     Class testClassClassic = AlgTest.class;
                     */
-                    Class testClassClassic = null;
-                    FileOutputStream file = cardManager.establishConnection(testClassClassic);
+                    FileOutputStream file = cardManager.establishConnection(null);
                     System.out.println("\n\n#########################");
                     System.out.println("\n\nQ: Do you like to test all supported algorithms or be asked separately for every class? Separate questions help when testing all algorithms at once will provide incorrect answers due too many internal allocation of cryptographic objects (e.g., KeyBuilder class).");
                     System.out.println("Type \"y\" for test all algorithms, \"n\" for asking for every class separately: ");	
