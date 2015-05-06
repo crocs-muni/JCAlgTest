@@ -7,11 +7,25 @@
     <property name="classes" value="build/classes"/>
     <property name="test_classes" value="build/test_classes"/>
 
+	
     <path id="compile_classpath">
         <pathelement location="${classes}"/>
         <fileset dir="../libs">
             <include name="*.jar"/>
         </fileset>
+		<!-- JavaCard-specific directories -->
+		<pathelement path="${basedir}/libs"/>
+		<pathelement path="${basedir}/libs/api.jar"/>
+		<pathelement path="${basedir}/libs/installer.jar"/>
+        <pathelement path="${basedir}/libs/javacardframework.jar"/>
+        <pathelement path="${basedir}/libs/converter.jar"/>
+        <pathelement path="${basedir}/libs/offcardverifier.jar"/>
+        <pathelement path="${basedir}/libs/scriptgen.jar"/>
+        <pathelement path="${basedir}/libs/apdutool.jar"/>
+        <pathelement path="${basedir}/libs/apduio.jar"/>
+        <pathelement path="."/>
+        <pathelement path="${classes}"/>
+        <pathelement path="${basedir}"/>				
     </path>
 
     <path id="build_classpath">
@@ -50,9 +64,10 @@
     <target name="compile" depends="clean">
         <javac srcdir="src" destdir="${classes}" debug="on" optimize="off" deprecation="off" includeantruntime="false">
             <classpath refid="compile_classpath"/>
+            <compilerarg line="-target 1.5 -source 1.5 -Xlint:all -Xlint:-serial"/>			
         </javac>
     </target>
-
+	
 
     <target name="compile_tests" depends="compile">
         <javac srcdir="test" destdir="${test_classes}" debug="on" optimize="off" deprecation="off" includeantruntime="false">
@@ -80,26 +95,4 @@
        <copy file="${basedir}/src/algtest/JCConsts.java" tofile="../AlgTest_JavaCard/src/AlgTest/JCConsts.java"/>
        <copy file="${basedir}/src/algtest/TestSettings.java" tofile="../AlgTest_JavaCard/src/AlgTest/TestSettings.java"/>
     </target>    
-<!--
-    <target name="test" depends="instrument">
-        <junit  printsummary="yes"  haltonfailure="true" showoutput="true">
-            <classpath>
-                <path refid="test_classpath"/>
-            </classpath>
-            <formatter type="plain"/>            
-            <test name="activejdbc.ant.example.EmployeeSpec"/>
-        </junit>
-    </target>
-
-    <target name="package" depends="test">
-        <jar destfile="${dist}/ant-example.jar" basedir="${classes}"/>
-    </target>
-    
-    <target name="run" depends="package">
-        <java classname="activejdbc.ant.example.Main" failonerror="true" fork="true">
-            <jvmarg value="-Dactivejdbc.log"/>
-            <classpath refid="run_classpath"/>
-        </java>
-    </target>
--->
 </project>
