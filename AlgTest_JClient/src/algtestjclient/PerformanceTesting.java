@@ -59,7 +59,7 @@ public class PerformanceTesting {
     public StringBuilder value = new StringBuilder();
     public String message = "";
     
-    public static final byte mask = 0b01111111;
+    //public static final byte mask = 0b01111111;
     public static FileOutputStream file;
     
     

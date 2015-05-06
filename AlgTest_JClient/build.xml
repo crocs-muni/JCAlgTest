@@ -64,7 +64,7 @@
     <target name="compile" depends="clean">
         <javac srcdir="src" destdir="${classes}" debug="on" optimize="off" deprecation="off" includeantruntime="false">
             <classpath refid="compile_classpath"/>
-            <compilerarg line="-target 1.5 -source 1.5 -Xlint:all -Xlint:-serial"/>			
+            <compilerarg line="-target 1.8 -source 1.8 -Xlint:all -Xlint:-serial"/>			
         </javac>
     </target>
 	
