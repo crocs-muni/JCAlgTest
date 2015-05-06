@@ -333,4 +333,139 @@ public class JCConsts {
     public static final short AESKey_clearKey                                       = 2;
     public static final short AESKey_getKey                                         = 3;
     
+    // Class javacard.security.DESKey
+    // javacard.security.DESKey Fields:
+    //  -- No Fields --
+    // javacard.security.DESKey Methods:
+    public static final short DESKey_getKey                                         = 1;
+    public static final short DESKey_setKey                                         = 2;
+    public static final short DESKey_clearKey                                       = 3;
+    
+    // Class javacard.security.KoreanSEEDKey
+    // javacard.security.KoreanSEEDKey Fields:
+    //  -- No Fields --
+    // javacard.security.KoreanSEEDKey Methods:
+    public static final short KoreanSEEDKey_getKey                                  = 1;
+    public static final short KoreanSEEDKey_setKey                                  = 2;
+    public static final short KoreanSEEDKey_clearKey                                = 3;
+
+    // Class javacard.security.DSAKey
+    // javacard.security.DSAKey Fields:
+    //  -- No Fields --
+    // javacard.security.DSAKey Methods:
+    public static final short DSAKey_setQ                                           = 1;
+    public static final short DSAKey_getP                                           = 2;
+    public static final short DSAKey_getG                                           = 3;
+    public static final short DSAKey_setG                                           = 4;
+    public static final short DSAKey_setP                                           = 5;
+    public static final short DSAKey_getQ                                           = 6;
+    public static final short DSAKey_clearKey                                       = 7;
+
+    // Class javacard.security.DSAPrivateKey
+    // javacard.security.DSAPrivateKey Fields:
+    //  -- No Fields --
+    // javacard.security.DSAPrivateKey Methods:
+    public static final short DSAPrivateKey_getX                                    = 1;
+    public static final short DSAPrivateKey_setX                                    = 2;
+    public static final short DSAPrivateKey_clearX                                  = 3;
+
+    // Class javacard.security.DSAPublicKey
+    // javacard.security.DSAPublicKey Fields:
+    //  -- No Fields --
+    // javacard.security.DSAPublicKey Methods:
+    public static final short DSAPublicKey_setY                                     = 1;
+    public static final short DSAPublicKey_getY                                     = 2;
+    public static final short DSAPublicKey_clearY                                   = 3;
+
+    // Class javacard.security.ECKey
+    // javacard.security.ECKey Fields:
+    //  -- No Fields --
+    // javacard.security.ECKey Methods:
+    public static final short ECKey_getField                                        = 1;
+    public static final short ECKey_getB                                            = 2;
+    public static final short ECKey_getK                                            = 3;
+    public static final short ECKey_setFieldFP                                      = 4;
+    public static final short ECKey_setR                                            = 5;
+    public static final short ECKey_getA                                            = 6;
+    public static final short ECKey_setFieldF2M                                     = 7;
+    //public static final short ECKey_setFieldF2M                                     = 8;  // @askpetr
+    public static final short ECKey_setB                                            = 9;
+    public static final short ECKey_getR                                            = 10;
+    public static final short ECKey_setA                                            = 11;
+    public static final short ECKey_setK                                            = 12;
+    public static final short ECKey_getG                                            = 13;
+    public static final short ECKey_setG                                            = 14;
+    public static final short ECKey_clearKey                                        = 15;
+
+    // Class javacard.security.ECPrivateKey
+    // javacard.security.ECPrivateKey Fields:
+    //  -- No Fields --
+    // javacard.security.ECPrivateKey Methods:
+    public static final short ECPrivateKey_setS                                     = 1;
+    public static final short ECPrivateKey_getS                                     = 2;
+    public static final short ECPrivateKey_clearKey                                 = 3;
+    
+    // Class javacard.security.ECPublicKey
+    // javacard.security.ECPublicKey Fields:
+    //  -- No Fields --
+    // javacard.security.ECPublicKey Methods:
+    public static final short ECPublicKey_setW                                      = 1;
+    public static final short ECPublicKey_getW                                      = 2;
+    public static final short ECPublicKey_clearKey                                  = 3;
+    
+    // Class javacard.security.HMACKey
+    // javacard.security.HMACKey Fields:
+    //  -- No Fields --
+    // javacard.security.HMACKey Methods:
+    public static final short HMACKey_getKey                                        = 1;
+    public static final short HMACKey_setKey                                        = 2;
+    public static final short HMACKey_clearKey                                      = 3;
+
+    // Class javacard.security.RSAPrivateCrtKey
+    // javacard.security.RSAPrivateCrtKey Fields:
+    //  -- No Fields --
+    // javacard.security.RSAPrivateCrtKey Methods:
+    public static final short RSAPrivateCrtKey_setDP1                               = 1;
+    public static final short RSAPrivateCrtKey_setPQ                                = 2;
+    public static final short RSAPrivateCrtKey_getDP1                               = 3;
+    public static final short RSAPrivateCrtKey_setDQ1                               = 4;
+    public static final short RSAPrivateCrtKey_getDQ1                               = 5;
+    public static final short RSAPrivateCrtKey_getPQ                                = 6;
+    public static final short RSAPrivateCrtKey_setQ                                 = 7;
+    public static final short RSAPrivateCrtKey_getP                                 = 8;
+    public static final short RSAPrivateCrtKey_setP                                 = 9;
+    public static final short RSAPrivateCrtKey_getQ                                 = 10;
+    public static final short RSAPrivateCrtKey_clearKey                             = 11;
+
+    // Class javacard.security.RSAPrivateKey
+    // javacard.security.RSAPrivateKey Fields:
+    //  -- No Fields --
+    // javacard.security.RSAPrivateKey Methods:
+    public static final short RSAPrivateKey_getExponent                             = 1;
+    public static final short RSAPrivateKey_setExponent                             = 2;
+    public static final short RSAPrivateKey_getModulus                              = 3;
+    public static final short RSAPrivateKey_setModulus                              = 4;
+    public static final short RSAPrivateKey_clearKey                                = 5;
+
+    // Class javacard.security.RSAPublicKey
+    // javacard.security.RSAPublicKey Fields:
+    //  -- No Fields --
+    // javacard.security.RSAPublicKey Methods:
+    public static final short RSAPublicKey_getExponent                              = 1;
+    public static final short RSAPublicKey_setExponent                              = 2;
+    public static final short RSAPublicKey_getModulus                               = 3;
+    public static final short RSAPublicKey_setModulus                               = 4;
+    public static final short RSAPublicKey_clearKey                                 = 5;
+
+    // Class javacard.security.SignatureMessageRecovery
+    // javacard.security.SignatureMessageRecovery Fields:
+    //  -- No Fields --
+    // javacard.security.SignatureMessageRecovery Methods:
+    public static final short SignatureMessageRecovery_getLength                    = 1;
+    public static final short SignatureMessageRecovery_update                       = 2;
+    public static final short SignatureMessageRecovery_init                         = 3;
+    public static final short SignatureMessageRecovery_verify                       = 4;
+    public static final short SignatureMessageRecovery_getAlgorithm                 = 5;
+    public static final short SignatureMessageRecovery_beginVerify                  = 6;
+    public static final short SignatureMessageRecovery_sign                         = 7;    
 } 

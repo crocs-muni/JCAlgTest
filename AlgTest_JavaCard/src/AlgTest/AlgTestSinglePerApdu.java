@@ -154,16 +154,27 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
     TestSettings    m_testSettings = null;
     
     // class Key 
-    AESKey          m_aes_key = null;
-    DESKey          m_des_key = null;
-    KoreanSEEDKey   m_koreanseed_key = null;
-    // TODO:  DSAKey, DSAKeyPrivateKey, DSAPublicKey, ECKey, ECPrivateKey, ECPublicKey, HMACKey, RSAPrivateCrtKey, RSAPrivateKey, RSAPublicKey
+    AESKey              m_aes_key = null;
+    DESKey              m_des_key = null;
+    KoreanSEEDKey       m_koreanseed_key = null;
+    DSAKey              m_dsa_key = null;
+    DSAPrivateKey       m_dsaprivate_key = null;
+    DSAPublicKey        m_dsapublic_key = null;
+    ECKey               m_ex_key = null;
+    ECPrivateKey        m_ecprivate_key = null;
+    ECPublicKey         m_ecpublic_key = null;
+    HMACKey             m_hmac_key = null;
+    RSAPrivateCrtKey    m_rsaprivatecrt_key = null;
+    RSAPrivateKey       m_rsaprivate_key = null;
+    RSAPublicKey        m_rsapublic_key = null;
     Key             m_key = null;
     PrivateKey      m_privateKey = null;
+    PublicKey       m_publicKey = null;
     
     Cipher          m_cipher = null;
     Signature       m_signature = null;
     byte[]          m_ram1 = null;
+    
     
 
     /**
@@ -626,17 +637,15 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                     m_aes_key = (AESKey) KeyBuilder.buildKey((byte) m_testSettings.keyType, m_testSettings.keyLength, false);
                     if (bSetKeyValue == Consts.TRUE) {  
                         m_aes_key.setKey(m_ram1, (byte)0); 
-                        m_key = m_aes_key;
-                    }
+                        m_key = m_aes_key;}
                     break;
-                case JCConsts.KeyBuilder_TYPE_DES: 
+                case JCConsts.KeyBuilder_TYPE_DES:
                 case JCConsts.KeyBuilder_TYPE_DES_TRANSIENT_RESET: 
                 case JCConsts.KeyBuilder_TYPE_DES_TRANSIENT_DESELECT: 
                     m_des_key = (DESKey) KeyBuilder.buildKey((byte) m_testSettings.keyType, m_testSettings.keyLength, false);
                     if (bSetKeyValue == Consts.TRUE) {  
                         m_des_key.setKey(m_ram1, (byte)0); 
-                        m_key = m_des_key;
-                    }                    
+                        m_key = m_des_key;}                    
                     break;
                 case JCConsts.KeyBuilder_TYPE_KOREAN_SEED: 
                 case JCConsts.KeyBuilder_TYPE_KOREAN_SEED_TRANSIENT_RESET: 
@@ -644,29 +653,72 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                     m_koreanseed_key = (KoreanSEEDKey) KeyBuilder.buildKey((byte) m_testSettings.keyType, m_testSettings.keyLength, false);
                     if (bSetKeyValue == Consts.TRUE) {  
                         m_koreanseed_key.setKey(m_ram1, (byte)0); 
-                        m_key = m_koreanseed_key;
-                    } 
+                        m_key = m_koreanseed_key;} 
                     break;
-                case JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE:                  
-                case JCConsts.KeyBuilder_TYPE_RSA_PRIVATE:         
-                case JCConsts.KeyBuilder_TYPE_DSA_PRIVATE:
+                case JCConsts.KeyBuilder_TYPE_HMAC:
+                break;
+                case JCConsts.KeyBuilder_TYPE_HMAC_TRANSIENT_RESET:
+                break;
+                case JCConsts.KeyBuilder_TYPE_HMAC_TRANSIENT_DESELECT:
+                    m_hmac_key = (HMACKey) KeyBuilder.buildKey((byte) m_testSettings.keyType, m_testSettings.keyLength, false);
+                    if (bSetKeyValue == Consts.TRUE){
+                        m_hmac_key.setKey(m_ram1, (byte) 0, m_testSettings.keyLength);
+                        m_key = m_hmac_key;}
+                break;
+                case JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE:
+                    m_rsaprivatecrt_key = (RSAPrivateCrtKey) new KeyPair(KeyPair.ALG_RSA_CRT, m_testSettings.keyLength).getPrivate();
+                    if (bSetKeyValue == Consts.TRUE){
+                    m_keyPair = new KeyPair(KeyPair.ALG_RSA_CRT, m_testSettings.keyLength);
+                    m_keyPair.genKeyPair();
+                    m_key = m_keyPair.getPrivate();
+                    m_rsaprivatecrt_key = (RSAPrivateCrtKey) m_keyPair.getPrivate();}
+                    break;
+                case JCConsts.KeyBuilder_TYPE_RSA_PRIVATE:
+                    m_keyPair = new KeyPair(KeyPair.ALG_RSA, m_testSettings.keyLength);
+                    m_keyPair.genKeyPair();
+                    m_key = m_keyPair.getPrivate();
+                    m_rsaprivate_key = (RSAPrivateKey) m_keyPair.getPrivate();
+                    break;                
                 case JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE:
+                    m_keyPair = new KeyPair(KeyPair.ALG_EC_F2M, m_testSettings.keyLength);
+                    m_keyPair.genKeyPair();
+                    m_key = m_keyPair.getPrivate();
+                    m_ecprivate_key = (ECPrivateKey) m_keyPair.getPrivate();
+                    break;
                 case JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE:
-                    m_keyPair = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
+                    m_keyPair = new KeyPair(KeyPair.ALG_EC_FP, m_testSettings.keyLength);
                     m_keyPair.genKeyPair(); // TODO: use fixed key value to shorten time required for key generation?
                     m_key = m_keyPair.getPrivate();                
-                    m_privateKey = m_keyPair.getPrivate();
+                    m_ecprivate_key= (ECPrivateKey) m_keyPair.getPrivate();
                     break;
-                case JCConsts.KeyBuilder_TYPE_RSA_PUBLIC:                  
-                case JCConsts.KeyBuilder_TYPE_DSA_PUBLIC:
-                case JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC:
-                case JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC:
-                    m_keyPair = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
+                case JCConsts.KeyBuilder_TYPE_RSA_PUBLIC:   
+                    m_keyPair = new KeyPair(KeyPair.ALG_RSA, m_testSettings.keyLength);
                     m_keyPair.genKeyPair(); // TODO: use fixed key value to shorten time required for key generation?
                     m_key = m_keyPair.getPublic();                
+                    m_rsapublic_key = (RSAPublicKey) m_keyPair.getPublic();
                     break;
-                // TODO: DSAKey, DSAKeyPrivateKey, DSAPublicKey, ECKey, ECPrivateKey, ECPublicKey, HMACKey, RSAPrivateCrtKey, RSAPrivateKey, RSAPublicKey
-                
+                case JCConsts.KeyBuilder_TYPE_DSA_PRIVATE:
+                    m_keyPair = new KeyPair(KeyPair.ALG_DSA, m_testSettings.keyLength);
+                    m_keyPair.genKeyPair();
+                    m_key = m_keyPair.getPrivate();
+                    m_dsaprivate_key = (DSAPrivateKey) m_keyPair.getPrivate();
+                    break;
+                case JCConsts.KeyBuilder_TYPE_DSA_PUBLIC:
+                    m_keyPair = new KeyPair(KeyPair.ALG_DSA, m_testSettings.keyLength);
+                    m_keyPair.genKeyPair();
+                    m_dsapublic_key = (DSAPublicKey) m_keyPair.getPublic();
+                    break;
+                case JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC:
+                    m_keyPair = new KeyPair(KeyPair.ALG_EC_F2M, m_testSettings.keyLength);
+                    m_keyPair.genKeyPair();
+                    m_key = m_keyPair.getPublic();
+                    m_ecpublic_key = (ECPublicKey) m_keyPair.getPublic();
+                    break;
+                case JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC:
+                    m_keyPair = new KeyPair(KeyPair.ALG_EC_FP, m_testSettings.keyLength);
+                    m_keyPair.genKeyPair(); // TODO: use fixed key value to shorten time required for key generation?
+                    m_ecpublic_key = (ECPublicKey) m_keyPair.getPublic();              
+                    break;                
                 default:
                     ISOException.throwIt(SW_ALG_TYPE_UNKNOWN);
             }
@@ -694,10 +746,11 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_aes_key.setKey(m_ram1, (short) (i % 10)); } // i % 10 => different offset to ensure slightly different key every time
                         break;
                     case JCConsts.AESKey_clearKey:
-                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 
-                            // BUGBUG: we should set key before clearing (clearing already cleared key may be very fast) - true at least for NXP J3A80
-                            // TODO: m_aes_key.setKey(m_ram1, (short) (i % 10)); and postprocessing on client side with knowledge of setKey() length    
-                            m_aes_key.clearKey(); 
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
+                            if (m_aes_key.isInitialized()){m_aes_key.clearKey();}
+                            else{
+                                m_aes_key.setKey(m_ram1, (short) (i % 10));
+                                m_aes_key.clearKey();}
                         } 
                         break;
                     case JCConsts.AESKey_getKey:
@@ -707,9 +760,295 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                         ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
                 }
                 break;
-
-                // TODO: DESKey, KoreanSEEDKey, DSAKey, DSAKeyPrivateKey, DSAPublicKey, ECKey, ECPrivateKey, ECPublicKey, HMACKey, RSAPrivateCrtKey, RSAPrivateKey, RSAPublicKey
-
+                case JCConsts.KeyBuilder_TYPE_DES:
+                switch (m_testSettings.algorithmMethod){
+                    case JCConsts.DESKey_setKey: 
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_des_key.setKey(m_ram1, (short) (i % 10)); } // i % 10 => different offset to ensure slightly different key every time
+                        break;
+                    case JCConsts.DESKey_clearKey:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
+                            if (m_des_key.isInitialized()){m_des_key.clearKey();}
+                            else{
+                                m_des_key.setKey(m_ram1, (short) (i % 10));
+                                m_des_key.clearKey();}}
+                        break;
+                    case JCConsts.DESKey_getKey:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_des_key.getKey(m_ram1, (short) 0); }
+                        break;
+                    default:
+                        ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
+                    break;
+                }
+            break;
+            
+            case JCConsts.KeyBuilder_TYPE_KOREAN_SEED:
+                switch (m_testSettings.algorithmMethod){
+                    case JCConsts.KoreanSEEDKey_setKey: 
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_koreanseed_key.setKey(m_ram1, (short) (i % 10)); } // i % 10 => different offset to ensure slightly different key every time
+                        break;                    
+                    case JCConsts.KoreanSEEDKey_getKey:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_koreanseed_key.getKey(m_ram1, (short) 0); }
+                        break;
+                    case JCConsts.KoreanSEEDKey_clearKey:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
+                        if (m_koreanseed_key.isInitialized()){m_koreanseed_key.clearKey();}
+                            else{
+                                m_koreanseed_key.setKey(m_ram1, (short) (i % 10));
+                                m_koreanseed_key.clearKey();}} 
+                        break;
+                    default:
+                        ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
+                    break;
+                }
+            break;
+                
+            case JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE:
+                switch (m_testSettings.algorithmMethod){
+                    case JCConsts.ECPrivateKey_setS:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_ecprivate_key.setS(m_ram1, (short) (i %10), m_testSettings.keyLength);}
+                    break;
+                    case JCConsts.ECPrivateKey_getS:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_ecprivate_key.getS(m_ram1, (short) 0);}
+                    break;
+                    case JCConsts.ECPrivateKey_clearKey:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
+                        if (m_ecprivate_key.isInitialized()){m_ecprivate_key.clearKey();}
+                            else{
+                                m_ecprivate_key.setS(m_ram1, (short) (i % 10), m_testSettings.keyLength);
+                                m_ecprivate_key.clearKey();}}
+                    break;
+                    default:
+                        ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
+                    break;
+                }
+            break;
+            case JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC:
+                switch (m_testSettings.algorithmMethod){
+                    case JCConsts.ECPublicKey_setW:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_ecpublic_key.setW(m_ram1, (short) (i %10), m_testSettings.keyLength);}
+                    break;
+                    case JCConsts.ECPublicKey_getW:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_ecpublic_key.getW(m_ram1, (short) 0);}
+                    break;
+                    case JCConsts.ECPublicKey_clearKey:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
+                        if (m_ecpublic_key.isInitialized()){m_ecpublic_key.clearKey();}
+                            else{
+                                m_ecpublic_key.setW(m_ram1, (short) (i % 10), m_testSettings.keyLength);
+                                m_ecpublic_key.clearKey();}}
+                    break;
+                    default:
+                        ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
+                    break;
+                }
+            break;
+            case JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE:
+                switch (m_testSettings.algorithmMethod){
+                    case JCConsts.ECPrivateKey_setS:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_ecprivate_key.setS(m_ram1, (short) (i %10), m_testSettings.keyLength);}
+                    break;
+                    case JCConsts.ECPrivateKey_getS:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_ecprivate_key.getS(m_ram1, (short) 0);}
+                    break;
+                    case JCConsts.ECPrivateKey_clearKey:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
+                        if (m_ecprivate_key.isInitialized()){m_ecprivate_key.clearKey();}
+                            else{
+                                m_ecprivate_key.setS(m_ram1, (short) (i % 10), m_testSettings.keyLength);
+                                m_ecprivate_key.clearKey();}}
+                    break;
+                    default:
+                        ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
+                    break;
+                }
+            break;
+            case JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC:
+                switch (m_testSettings.algorithmMethod){
+                    case JCConsts.ECPublicKey_setW:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_ecpublic_key.setW(m_ram1, (short) (i %10), m_testSettings.keyLength);}
+                    break;
+                    case JCConsts.ECPublicKey_getW:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_ecpublic_key.getW(m_ram1, (short) 0);}
+                    break;
+                    case JCConsts.ECPublicKey_clearKey:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
+                        if (m_ecpublic_key.isInitialized()){m_ecpublic_key.clearKey();}
+                            else{
+                                m_ecpublic_key.setW(m_ram1, (short) (i % 10), m_testSettings.keyLength);
+                                m_ecpublic_key.clearKey();}}
+                    break;
+                    default:
+                        ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
+                    break;
+                }
+            break;
+                
+            case JCConsts.KeyBuilder_TYPE_HMAC:
+                switch (m_testSettings.algorithmMethod){
+                    case JCConsts.HMACKey_setKey: 
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {m_hmac_key.setKey(m_ram1, (short) (i % 10), m_testSettings.keyLength); } // i % 10 => different offset to ensure slightly different key every time
+                        break;
+                    case JCConsts.HMACKey_getKey:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {m_hmac_key.getKey(m_ram1, (short) 0); }
+                        break;
+                    case JCConsts.HMACKey_clearKey:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
+                        if (m_hmac_key.isInitialized()){m_hmac_key.clearKey();}
+                            else{
+                                m_hmac_key.setKey(m_ram1, (short) (i % 10), m_testSettings.keyLength);
+                                m_hmac_key.clearKey();}}
+                        break;
+                    default:
+                        ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
+                    break;
+                }
+            break;
+                
+            case JCConsts.KeyBuilder_TYPE_DSA_PRIVATE:
+                switch (m_testSettings.algorithmMethod){
+                    case JCConsts.DSAPrivateKey_setX: 
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_dsaprivate_key.setX(m_ram1, (short) (i % 10), m_testSettings.keyLength); } // i % 10 => different offset to ensure slightly different key every time
+                        break;                    
+                    case JCConsts.DSAPrivateKey_getX:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_dsaprivate_key.getX(m_ram1, (short) 0); }
+                        break;
+                    case JCConsts.DSAPrivateKey_clearX:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
+                        if (m_dsaprivate_key.isInitialized()){m_dsaprivate_key.clearKey();}
+                            else{
+                                m_dsaprivate_key.setX(m_ram1, (short) (i % 10), m_testSettings.keyLength);
+                                m_dsaprivate_key.clearKey();}}
+                        break;
+                    default:
+                        ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
+                    break;
+                }
+            break;
+                
+            case JCConsts.KeyBuilder_TYPE_DSA_PUBLIC:
+                switch (m_testSettings.algorithmMethod){
+                    case JCConsts.DSAPublicKey_setY: 
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_dsapublic_key.setY(m_ram1, (short) (i % 10), m_testSettings.keyLength); } // i % 10 => different offset to ensure slightly different key every time
+                        break;                    
+                    case JCConsts.DSAPublicKey_getY:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_dsapublic_key.getY(m_ram1, (short) 0); }
+                        break;
+                    case JCConsts.DSAPublicKey_clearY:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
+                        if (m_dsapublic_key.isInitialized()){m_dsapublic_key.clearKey();}
+                            else{
+                                m_dsapublic_key.setY(m_ram1, (short) (i % 10), m_testSettings.keyLength);
+                                m_dsapublic_key.clearKey();}}
+                        break;
+                    default:
+                        ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
+                    break;
+                }
+            break;
+                
+            case JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE:                
+                switch (m_testSettings.algorithmMethod){
+                    case JCConsts.RSAPrivateCrtKey_setDP1: 
+                        byte[] m = new byte[m_testSettings.keyLength];
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_rsaprivatecrt_key.setDP1(m, (short) (i % 10), m_testSettings.keyLength); } // i % 10 => different offset to ensure slightly different key every time
+                        break;
+                    case JCConsts.RSAPrivateCrtKey_setDQ1: 
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_rsaprivatecrt_key.setDQ1(m_ram1, (short) (i % 10), m_testSettings.keyLength); } // i % 10 => different offset to ensure slightly different key every time
+                        break;
+                    case JCConsts.RSAPrivateCrtKey_setP: 
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_rsaprivatecrt_key.setP(m_ram1, (short) (i % 10), m_testSettings.keyLength); } // i % 10 => different offset to ensure slightly different key every time
+                        break;
+                    case JCConsts.RSAPrivateCrtKey_setPQ: 
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_rsaprivatecrt_key.setPQ(m_ram1, (short) (i % 10), m_testSettings.keyLength); } // i % 10 => different offset to ensure slightly different key every time
+                        break;  
+                    case JCConsts.RSAPrivateCrtKey_setQ: 
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_rsaprivatecrt_key.setQ(m_ram1, (short) (i % 10), m_testSettings.keyLength); } // i % 10 => different offset to ensure slightly different key every time
+                        break;  
+                    case JCConsts.RSAPrivateCrtKey_getDP1:
+                        m = new byte[m_testSettings.keyLength];
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_rsaprivatecrt_key.getDP1(m, (short) 0); }
+                        break;
+                    case JCConsts.RSAPrivateCrtKey_getDQ1:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_rsaprivatecrt_key.getDQ1(m_ram1, (short) 0); }
+                        break;
+                    case JCConsts.RSAPrivateCrtKey_getP:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_rsaprivatecrt_key.getP(m_ram1, (short) 0); }
+                        break;
+                    case JCConsts.RSAPrivateCrtKey_getPQ:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_rsaprivatecrt_key.getPQ(m_ram1, (short) 0); }
+                        break;
+                    case JCConsts.RSAPrivateCrtKey_getQ:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_rsaprivatecrt_key.getQ(m_ram1, (short) 0); }
+                        break;
+                    case JCConsts.RSAPrivateCrtKey_clearKey:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
+                        if (m_rsaprivatecrt_key.isInitialized()){m_rsaprivatecrt_key.clearKey();}
+                            else{
+                            m_keyPair = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
+                            m_keyPair.genKeyPair();
+                            m_rsaprivatecrt_key = (RSAPrivateCrtKey) m_keyPair.getPrivate();
+                            m_rsaprivatecrt_key.clearKey();}}
+                    break;
+                    default:
+                        ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
+                    break;
+                }
+                        break;
+            case JCConsts.KeyBuilder_TYPE_RSA_PRIVATE:
+                switch (m_testSettings.algorithmMethod){
+                    case JCConsts.RSAPrivateKey_setExponent:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){
+                            m_rsaprivate_key.setExponent(m_ram1, (short) (i = 10), m_testSettings.keyLength);}
+                    break;
+                    case JCConsts.RSAPrivateKey_setModulus:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_rsaprivate_key.setModulus(m_ram1, (short) (i = 10), m_testSettings.keyLength);}
+                    break;
+                    case JCConsts.RSAPrivateKey_getExponent:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_rsaprivate_key.getExponent(m_ram1, (short) 0);}
+                    break;
+                    case JCConsts.RSAPrivateKey_getModulus:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_rsaprivate_key.getModulus(m_ram1, (short) 0);}
+                    case JCConsts.RSAPrivateKey_clearKey:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
+                        if (m_rsaprivate_key.isInitialized()){m_rsaprivate_key.clearKey();}
+                            else{
+                            m_keyPair = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
+                            m_keyPair.genKeyPair();
+                            m_rsaprivate_key = (RSAPrivateKey) m_keyPair.getPrivate();
+                            m_rsaprivate_key.clearKey();}}
+                    break;
+                    default:
+                        ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
+                    break;
+                }
+                break;
+            case JCConsts.KeyBuilder_TYPE_RSA_PUBLIC:
+                switch (m_testSettings.algorithmMethod){
+                    case JCConsts.RSAPublicKey_setExponent:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_rsapublic_key.setExponent(m_ram1, (short) (i = 10), m_testSettings.keyLength);}
+                    break;
+                    case JCConsts.RSAPublicKey_setModulus:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_rsapublic_key.setModulus(m_ram1, (short) (i = 10), m_testSettings.keyLength);}
+                    break;
+                    case JCConsts.RSAPublicKey_getExponent:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_rsapublic_key.getExponent(m_ram1, (short) 0);}
+                    break;
+                    case JCConsts.RSAPublicKey_getModulus:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_rsapublic_key.getModulus(m_ram1, (short) 0);}
+                    case JCConsts.RSAPublicKey_clearKey:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
+                        if (m_rsapublic_key.isInitialized()){m_rsapublic_key.clearKey();}
+                            else{
+                            m_keyPair = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
+                            m_keyPair.genKeyPair();
+                            m_rsapublic_key = (RSAPublicKey) m_keyPair.getPublic();
+                            m_rsapublic_key.clearKey();}}
+                    break;
+                    default:
+                        ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
+                    break;
+                }
+                break;
             default:
                 ISOException.throwIt(SW_ALG_TYPE_NOT_SUPPORTED);
         }
