@@ -52,8 +52,10 @@ import java.util.StringTokenizer;
 public class AlgTestProcess {
     /* Arguments for AlgTestProcess. */
     public static final String GENERATE_HTML = "HTML";
+    public static final String GENERATE_JCINFO = "JCINFO";
     public static final String COMPARE_CARDS = "COMPARE";
     public static final String GENERATE_JCCONSTANTS = "JCCONSTS";
+    
     
     
     // if one card results are generated
@@ -99,6 +101,14 @@ public class AlgTestProcess {
                     else if (args[1].equals(GENERATE_JCCONSTANTS)){
                         System.out.println("Generating file with JC constants.");
                         generateJCConstantsFile(args[0]);}
+                    else if (args[1].equals(GENERATE_JCINFO)){
+                        System.out.println("Generating JC performance testing to HTML.");
+                        if (args.length < 3){
+                            JCinfohtml.run(args[0],"N/A"); 
+                        }else{
+                            JCinfohtml.run(args[0],args[2]);
+                        }
+                    }
                     else {System.err.println("Incorrect arguments!");}
                 }
                 else{                
