@@ -157,7 +157,7 @@ public class PerformanceTesting {
             System.out.println("\n\nQ: Do you like to test EEPROM memory available for allocation?");
             System.out.println("\n\nSTRONG WARNING: There is possibility that your card become unresponsive after this test. All cards I tested required just to delete AlgTest applet to reclaim allocated memory. But it might be possible that your card will be unusuable after this test.");
             System.out.println("\n\nWARNING: Your card should be free from other applets - otherwise memory already claimed by existing applets will not be included in measurement. Value is approximate +- 5KB");
-            System.out.println("Type 1 for yes, 0 for no: ");	
+            System.out.println("Type y for yes, n for no: ");	
             String eeprom_answ = sc.nextLine();
 
             if (eeprom_answ.equals("y")){

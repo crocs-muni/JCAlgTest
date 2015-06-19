@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="AlgTestJClient" default="default" basedir=".">
     <description>Builds, tests, and runs the project AlgTestJClient.</description>
+    <import file="nbproject/build-impl.xml"/>
 
 
     <property name="dist" value="dist"/>
@@ -84,15 +85,16 @@
     
     <target name="jar" depends="compile"/>
     
-    <target name="-post-jar">
-       <!-- Copy newly build jar into test directory for simulator of smart cards -->
-       <copy file="${basedir}/dist/AlgTestJClient.jar" tofile="${basedir}/test/AlgTestJClient.jar"/>
-       <copy file="${basedir}/dist/lib/jcardsim-2.2.2-all.jar" tofile="${basedir}/test/jcardsim-2.2.2-all.jar"/>
-
+    <target name="test" depends="compile">
        <!-- Copy files necessary for compilation of JC applet-->
        <copy file="${basedir}/src/algtest/AlgTestSinglePerApdu.java" tofile="../AlgTest_JavaCard/src/AlgTest/AlgTestSinglePerApdu.java"/>
        <copy file="${basedir}/src/algtest/Consts.java" tofile="../AlgTest_JavaCard/src/AlgTest/Consts.java"/>
        <copy file="${basedir}/src/algtest/JCConsts.java" tofile="../AlgTest_JavaCard/src/AlgTest/JCConsts.java"/>
        <copy file="${basedir}/src/algtest/TestSettings.java" tofile="../AlgTest_JavaCard/src/AlgTest/TestSettings.java"/>
+
+       <!-- Copy newly build jar into test directory for simulator of smart cards -->
+       <copy file="${basedir}/dist/AlgTestJClient.jar" tofile="${basedir}/test/AlgTestJClient.jar"/>
+       <copy file="${basedir}/dist/lib/jcardsim-2.2.2-all.jar" tofile="${basedir}/test/jcardsim-2.2.2-all.jar"/>
+
     </target>    
 </project>

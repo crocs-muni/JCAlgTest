@@ -217,7 +217,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         
         m_ram1 = JCSystem.makeTransientByteArray(RAM1_ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);
         
-        if (isOP2) { register(buffer, (short)(offset + 1), (byte)buffer[offset]); }
+        if (isOP2) { register(buffer, (short)(offset + 1), buffer[offset]); }
         else { register(); }
     }
 
@@ -230,7 +230,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
     public static void install(byte[] bArray, short bOffset, byte bLength) throws ISOException
     {
         /* applet  instance creation */
-        new AlgTestSinglePerApdu (bArray, bOffset, (byte)bLength );
+        new AlgTestSinglePerApdu (bArray, bOffset, bLength );
     }
 
     /**
@@ -275,7 +275,6 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                 // case INS_CARD_TESTEXTAPDU: TestExtendedAPDUSupport(apdu); break; // this has to be tested by separate applet with ExtAPDU enabled - should succedd during upload and run
                 case Consts.INS_CARD_RESET: JCSystem.requestObjectDeletion(); break;
                 case Consts.INS_CARD_GETRSAKEY: GetRSAKey(apdu); break;
-                case Consts.INS_CARD_TESTIOSPEED: TestIOSpeed(apdu); break;
 
                     
                 case Consts.INS_PREPARE_TEST_CLASS_KEY: prepare_class_Key(apdu); break;        
@@ -324,7 +323,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
        byte      algorithmClass = apdubuf[ISO7816.OFFSET_CDATA];
        short     algorithmParam1 = Util.makeShort(apdubuf[(short) (ISO7816.OFFSET_CDATA + 1)], apdubuf[(short) (ISO7816.OFFSET_CDATA + 2)]);
        
-       Util.arrayFillNonAtomic(apdubuf, ISO7816.OFFSET_CDATA, (short) 240, (byte) SUPP_ALG_UNTOUCHED);
+       Util.arrayFillNonAtomic(apdubuf, ISO7816.OFFSET_CDATA, (short) 240, SUPP_ALG_UNTOUCHED);
        offset++;
        apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = apdubuf[ISO7816.OFFSET_P1];
 
@@ -496,7 +495,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
          offset = (short)(offset + 2);
 /**/
        }
-       apdu.setOutgoingAndSend((short) 0, (short) (offset));
+       apdu.setOutgoingAndSend((short) 0, offset);
    }  
    
    /**
@@ -998,10 +997,10 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                 switch (m_testSettings.algorithmMethod){
                     case JCConsts.RSAPrivateKey_setExponent:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){
-                            m_rsaprivate_key.setExponent(m_ram1, (short) (i = 10), m_testSettings.keyLength);}
+                            m_rsaprivate_key.setExponent(m_ram1, (short) (i % 10), m_testSettings.keyLength);}
                     break;
                     case JCConsts.RSAPrivateKey_setModulus:
-                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_rsaprivate_key.setModulus(m_ram1, (short) (i = 10), m_testSettings.keyLength);}
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_rsaprivate_key.setModulus(m_ram1, (short) (i % 10), m_testSettings.keyLength);}
                     break;
                     case JCConsts.RSAPrivateKey_getExponent:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_rsaprivate_key.getExponent(m_ram1, (short) 0);}
@@ -1025,16 +1024,17 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
             case JCConsts.KeyBuilder_TYPE_RSA_PUBLIC:
                 switch (m_testSettings.algorithmMethod){
                     case JCConsts.RSAPublicKey_setExponent:
-                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_rsapublic_key.setExponent(m_ram1, (short) (i = 10), m_testSettings.keyLength);}
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_rsapublic_key.setExponent(m_ram1, (short) (i % 10), m_testSettings.keyLength);}
                     break;
                     case JCConsts.RSAPublicKey_setModulus:
-                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_rsapublic_key.setModulus(m_ram1, (short) (i = 10), m_testSettings.keyLength);}
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_rsapublic_key.setModulus(m_ram1, (short) (i % 10), m_testSettings.keyLength);}
                     break;
                     case JCConsts.RSAPublicKey_getExponent:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_rsapublic_key.getExponent(m_ram1, (short) 0);}
                     break;
                     case JCConsts.RSAPublicKey_getModulus:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_rsapublic_key.getModulus(m_ram1, (short) 0);}
+                        break;
                     case JCConsts.RSAPublicKey_clearKey:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
                         if (m_rsapublic_key.isInitialized()){m_rsapublic_key.clearKey();}
@@ -1172,7 +1172,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);            
     }    
     
-      void prepare_class_MessageDigest(APDU apdu) {
+    void prepare_class_MessageDigest(APDU apdu) {
         byte[] apdubuf = apdu.getBuffer();
         m_testSettings.parse(apdu);  
 
@@ -1205,7 +1205,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);            
     }    
     
-     void prepare_class_Checksum(APDU apdu) {
+    void prepare_class_Checksum(APDU apdu) {
         byte[] apdubuf = apdu.getBuffer();
         m_testSettings.parse(apdu);  
 
@@ -1236,7 +1236,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);            
     }   
     
-     void prepare_class_KeyPair(APDU apdu) {
+    void prepare_class_KeyPair(APDU apdu) {
         byte[] apdubuf = apdu.getBuffer();
         m_testSettings.parse(apdu);  
         
@@ -1264,7 +1264,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);            
     }            
     
-     void prepare_class_KeyAgreement(APDU apdu) {
+    void prepare_class_KeyAgreement(APDU apdu) {
         byte[] apdubuf = apdu.getBuffer();
         m_testSettings.parse(apdu);  
 
@@ -1294,5 +1294,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
 
         apdubuf[ISO7816.OFFSET_CDATA] = SUCCESS;
         apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);            
-    }          
+    }  
+    
+    //test
 }
