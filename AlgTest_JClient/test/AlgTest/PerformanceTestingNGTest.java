@@ -73,7 +73,7 @@ public class PerformanceTestingNGTest {
         // Prepare test
         TestSettings testSet = null;
         testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128, JCConsts.AESKey_setKey, 
-                Consts.UNUSED, Consts.UNUSED, (short) 1, Consts.UNUSED, (short) 1);      
+                Consts.UNUSED, Consts.UNUSED, Consts.UNUSED, (short) 1, Consts.UNUSED, (short) 1);      
 
         //PerformanceTesting.perftest_prepareClass(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, testSet);
         
@@ -107,7 +107,7 @@ public class PerformanceTestingNGTest {
         // Prepare test
         TestSettings testSet = null;
         testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_CIPHER, JCConsts.Cipher_ALG_AES_BLOCK_128_CBC_NOPAD, JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128, JCConsts.Cipher_update, 
-                Consts.TEST_DATA_LENGTH, Consts.UNUSED, (short) 1, (short) 1, (short) 1);      
+                Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, (short) 1, (short) 1, (short) 1);      
 
         
         //PerformanceTesting.perftest_prepareClass(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, testSet);
@@ -143,6 +143,15 @@ public class PerformanceTestingNGTest {
     }    
 
     @Test
+    void perftest_testClass_Cipher_RSA() throws Exception {
+        bTestRealCards = true;
+        PerformanceTesting.file = (bTestRealCards) ? cardManager.establishConnection(null) : cardManager.establishConnection(AlgTestSinglePerApdu.class);   
+        assertNotEquals(PerformanceTesting.file, null);
+
+        PerformanceTesting.testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512, JCConsts.Cipher_ALG_RSA_NOPAD, "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_512 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, (short) 1, (short) 3);
+    }    
+    
+    @Test
     void perftest_testClass_Signature() throws Exception {
         PerformanceTesting.file = (bTestRealCards) ? cardManager.establishConnection(null) : cardManager.establishConnection(AlgTestSinglePerApdu.class);   
         assertNotEquals(PerformanceTesting.file, null);
@@ -151,7 +160,7 @@ public class PerformanceTestingNGTest {
         // Prepare test
         TestSettings testSet = null;
         testSet = PerformanceTesting.prepareTestSettings(CLASS_SIGNATURE, JCConsts.Signature_ALG_AES_MAC_128_NOPAD, JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128, JCConsts.Signature_sign, 
-                Consts.TEST_DATA_LENGTH, Consts.UNUSED, (short) 1, (short) 1, (short) 1);      
+                Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, (short) 1, (short) 1, (short) 1);      
 
         //PerformanceTesting.perftest_prepareClass(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, testSet);
         
@@ -189,7 +198,7 @@ public class PerformanceTestingNGTest {
         // Prepare test
         TestSettings testSet = null;
         testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_RANDOMDATA, JCConsts.RandomData_ALG_SECURE_RANDOM, Consts.UNUSED, Consts.UNUSED, JCConsts.RandomData_generateData, 
-                Consts.TEST_DATA_LENGTH, Consts.UNUSED, (short) 1, (short) 1, (short) 1);      
+                Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, (short) 1, (short) 1, (short) 1);      
 
         // Test single execution of operation
         testSet.numRepeatWholeMeasurement = 2;
@@ -218,7 +227,7 @@ public class PerformanceTestingNGTest {
         // Prepare test
         TestSettings testSet = null;
         testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_MESSAGEDIGEST, JCConsts.MessageDigest_ALG_SHA, JCConsts.MessageDigest_ALG_SHA, Consts.UNUSED, JCConsts.MessageDigest_update, 
-                Consts.TEST_DATA_LENGTH, Consts.UNUSED, (short) 1, (short) 1, (short) 1);      
+                Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, (short) 1, (short) 1, (short) 1);      
 
         // Test single execution of operation
         testSet.numRepeatWholeMeasurement = 2;
@@ -244,7 +253,7 @@ public class PerformanceTestingNGTest {
         // Prepare test
         TestSettings testSet = null;
         testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_CHECKSUM, JCConsts.Checksum_ALG_ISO3309_CRC16, JCConsts.Checksum_ALG_ISO3309_CRC16, Consts.UNUSED, JCConsts.Checksum_update, 
-                Consts.TEST_DATA_LENGTH, Consts.UNUSED, (short) 1, (short) 1, (short) 1);      
+                Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, (short) 1, (short) 1, (short) 1);      
         // BUGBUG: ALG_ISO3309_CRC32
         
         // Test single execution of operation
@@ -276,7 +285,7 @@ public class PerformanceTestingNGTest {
         // Prepare test
         TestSettings testSet = null;
         testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYPAIR, JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1024, JCConsts.KeyPair_genKeyPair, 
-                Consts.UNUSED, Consts.UNUSED, (short) 1, (short) 1, (short) 1);      
+                Consts.UNUSED, Consts.UNUSED, Consts.UNUSED, (short) 1, (short) 1, (short) 1);      
 
         // BUGBUG: ALG_RSA, ALG_DSA, ALG_EC_F2M, ALG_EC_FP
         
@@ -297,7 +306,7 @@ public class PerformanceTestingNGTest {
         // Prepare test
         TestSettings testSet = null;
         testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYAGREEMENT, JCConsts.KeyAgreement_ALG_EC_SVDP_DH, JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_LENGTH_EC_FP_192, JCConsts.KeyAgreement_init, 
-                Consts.UNUSED, Consts.UNUSED, (short) 1, (short) 1, (short) 1);      
+                Consts.UNUSED, Consts.UNUSED, Consts.UNUSED, (short) 1, (short) 1, (short) 1);      
 
         // BUGBUG: ALG_EC_SVDP_DHC, ALG_EC_SVDP_DH_PLAIN, ALG_EC_SVDP_DHC_PLAIN
         

@@ -29,7 +29,6 @@ public class Consts {
     public final static byte INS_CARD_TESTEXTAPDU              = (byte) 0x74;
     public final static byte INS_CARD_TESTSUPPORTEDMODES_SINGLE= (byte) 0x75;    
     public final static byte INS_CARD_GETRSAKEY                = (byte) 0x77;    
-    public final static byte INS_CARD_TESTIOSPEED              = (byte) 0x78;    
     
     
     // BUGBUG: refactor codes
@@ -77,6 +76,7 @@ public class Consts {
     public static final byte UNUSED    = (byte) -1;     
     
     public static final short TEST_DATA_LENGTH    = (short) 256;     
+    //public static final short TEST_DATA_LENGTH    = (short) 64;     
     
 	// TODO: refactor - do we need this?
     public static final byte CLASS_KEYPAIR_RSA_P2          = 11;

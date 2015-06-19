@@ -1,100 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- You may freely edit this file. See commented blocks below for -->
+<!-- some examples of how to customize the build. -->
+<!-- (If you delete it and reopen the project it will be recreated.) -->
+<!-- By default, only the Clean and Build commands use this build script. -->
+<!-- Commands such as Run, Debug, and Test only use this build script if -->
+<!-- the Compile on Save feature is turned off for the project. -->
+<!-- You can turn off the Compile on Save (or Deploy on Save) setting -->
+<!-- in the project's Project Properties dialog box.-->
 <project name="AlgTestJClient" default="default" basedir=".">
     <description>Builds, tests, and runs the project AlgTestJClient.</description>
     <import file="nbproject/build-impl.xml"/>
+    <!--
+    There exist several targets which are by default empty and which can be 
+    used for execution of your tasks. These targets are usually executed 
+    before and after some main targets. They are: 
+      -pre-init:                 called before initialization of project properties
+      -post-init:                called after initialization of project properties
+      -pre-compile:              called before javac compilation
+      -post-compile:             called after javac compilation
+      -pre-compile-single:       called before javac compilation of single file
+      -post-compile-single:      called after javac compilation of single file
+      -pre-compile-test:         called before javac compilation of JUnit tests
+      -post-compile-test:        called after javac compilation of JUnit tests
+      -pre-compile-test-single:  called before javac compilation of single JUnit test
+      -post-compile-test-single: called after javac compilation of single JUunit test
+      -pre-jar:                  called before JAR building
+      -post-jar:                 called after JAR building
+      -post-clean:               called after cleaning build products
+    (Targets beginning with '-' are not intended to be called on their own.)
+    Example of inserting an obfuscator after compilation could look like this:
+        <target name="-post-compile">
+            <obfuscate>
+                <fileset dir="${build.classes.dir}"/>
+            </obfuscate>
+        </target>
+    For list of available properties check the imported 
+    nbproject/build-impl.xml file. 
+    Another way to customize the build is by overriding existing main targets.
+    The targets of interest are: 
+      -init-macrodef-javac:     defines macro for javac compilation
+      -init-macrodef-junit:     defines macro for junit execution
+      -init-macrodef-debug:     defines macro for class debugging
+      -init-macrodef-java:      defines macro for class execution
+      -do-jar:                  JAR building
+      run:                      execution of project 
+      -javadoc-build:           Javadoc generation
+      test-report:              JUnit report generation
+    An example of overriding the target for project execution could look like this:
+        <target name="run" depends="AlgTestJClient-impl.jar">
+            <exec dir="bin" executable="launcher.exe">
+                <arg file="${dist.jar}"/>
+            </exec>
+        </target>
+    Notice that the overridden target depends on the jar target and not only on 
+    the compile target as the regular run target does. Again, for a list of available 
+    properties which you can use, check the target you are overriding in the
+    nbproject/build-impl.xml file. 
+    -->
 
+          <target name="-post-jar">
+	     <!-- Copy newly build jar into test directory for simulator of smart cards-->
+             <copy file="${basedir}/dist/AlgTestJClient.jar" tofile="${basedir}/test/AlgTestJClient.jar"/>
+             <copy file="${basedir}/dist/lib/jcardsim-2.2.2-all.jar" tofile="${basedir}/test/jcardsim-2.2.2-all.jar"/>
 
-    <property name="dist" value="dist"/>
-    <property name="classes" value="build/classes"/>
-    <property name="test_classes" value="build/test_classes"/>
-
-	
-    <path id="compile_classpath">
-        <pathelement location="${classes}"/>
-        <fileset dir="../libs">
-            <include name="*.jar"/>
-        </fileset>
-		<!-- JavaCard-specific directories -->
-		<pathelement path="${basedir}/libs"/>
-		<pathelement path="${basedir}/libs/api.jar"/>
-		<pathelement path="${basedir}/libs/installer.jar"/>
-        <pathelement path="${basedir}/libs/javacardframework.jar"/>
-        <pathelement path="${basedir}/libs/converter.jar"/>
-        <pathelement path="${basedir}/libs/offcardverifier.jar"/>
-        <pathelement path="${basedir}/libs/scriptgen.jar"/>
-        <pathelement path="${basedir}/libs/apdutool.jar"/>
-        <pathelement path="${basedir}/libs/apduio.jar"/>
-        <pathelement path="."/>
-        <pathelement path="${classes}"/>
-        <pathelement path="${basedir}"/>				
-    </path>
-
-    <path id="build_classpath">
-        <path refid="compile_classpath"/>
-        <fileset dir="build_time_libs">
-            <include name="*.jar"/>
-        </fileset>
-    </path>
-
-    <path id="test_classpath">
-        <path refid="compile_classpath"/>
-        <fileset dir="build_time_libs">
-            <include name="*.jar"/>
-        </fileset>
-        <pathelement  location="${test_classes}"/>
-    </path>
-
-    <path id="run_classpath">
-        <fileset dir="../libs">
-            <include name="*.jar"/>
-        </fileset>
-        <fileset dir="dist">
-            <include name="*.jar"/>
-        </fileset>
-    </path>
-
-    <target name="clean">
-        <delete dir="${classes}" failonerror="true"/>
-        <mkdir dir="${classes}"/>
-        <delete dir="${test_classes}" failonerror="true"/>
-        <mkdir dir="${test_classes}"/>
-        <delete dir="${dist}" failonerror="true"/>
-        <mkdir dir="${dist}"/>
-    </target>
-
-    <target name="compile" depends="clean">
-        <javac srcdir="src" destdir="${classes}" debug="on" optimize="off" deprecation="off" includeantruntime="false">
-            <classpath refid="compile_classpath"/>
-            <!-- <compilerarg line="-target 1.8 -source 1.8 -Xlint:all -Xlint:-serial"/> -->			
-        </javac>
-    </target>
-	
-
-    <target name="compile_tests" depends="compile">
-        <javac srcdir="test" destdir="${test_classes}" debug="on" optimize="off" deprecation="off" includeantruntime="false">
-            <classpath refid="build_classpath"/>
-        </javac>
-    </target>
-
-    <target name="instrument" depends="compile_tests">
-        <java classname="org.javalite.instrumentation.Main">
-            <sysproperty key="outputDirectory" value="${classes}"/>
-            <classpath refid="build_classpath"/>
-        </java>
-    </target>
-    
-    <target name="jar" depends="compile"/>
-    
-    <target name="test" depends="compile">
-       <!-- Copy files necessary for compilation of JC applet-->
-       <copy file="${basedir}/src/algtest/AlgTestSinglePerApdu.java" tofile="../AlgTest_JavaCard/src/AlgTest/AlgTestSinglePerApdu.java"/>
-       <copy file="${basedir}/src/algtest/Consts.java" tofile="../AlgTest_JavaCard/src/AlgTest/Consts.java"/>
-       <copy file="${basedir}/src/algtest/JCConsts.java" tofile="../AlgTest_JavaCard/src/AlgTest/JCConsts.java"/>
-       <copy file="${basedir}/src/algtest/TestSettings.java" tofile="../AlgTest_JavaCard/src/AlgTest/TestSettings.java"/>
-
-       <!-- Copy newly build jar into test directory for simulator of smart cards -->
-       <copy file="${basedir}/dist/AlgTestJClient.jar" tofile="${basedir}/test/AlgTestJClient.jar"/>
-       <copy file="${basedir}/dist/lib/jcardsim-2.2.2-all.jar" tofile="${basedir}/test/jcardsim-2.2.2-all.jar"/>
-
-    </target>    
+             <!-- Copy files necessary for compilation of JC applet-->
+             <copy file="${basedir}/src/algtest/AlgTestSinglePerApdu.java" tofile="../AlgTest_JavaCard/src/AlgTest/AlgTestSinglePerApdu.java"/>
+             <copy file="${basedir}/src/algtest/Consts.java" tofile="../AlgTest_JavaCard/src/AlgTest/Consts.java"/>
+             <copy file="${basedir}/src/algtest/JCConsts.java" tofile="../AlgTest_JavaCard/src/AlgTest/JCConsts.java"/>
+             <copy file="${basedir}/src/algtest/TestSettings.java" tofile="../AlgTest_JavaCard/src/AlgTest/TestSettings.java"/>
+          </target>
 </project>

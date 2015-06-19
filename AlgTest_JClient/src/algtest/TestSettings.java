@@ -16,7 +16,8 @@ public class TestSettings {
     public final static short OFFSET_ALGORITHM_TESTED_OPS      = (short) (OFFSET_ALGORITHM_PARAM3 + 2);
     public final static short OFFSET_DATA_LENGTH1              = (short) (OFFSET_ALGORITHM_TESTED_OPS + 2);
     public final static short OFFSET_DATA_LENGTH2              = (short) (OFFSET_DATA_LENGTH1 + 2);
-    public final static short OFFSET_NUM_REPEAT_WHOLE_OP       = (short) (OFFSET_DATA_LENGTH2 + 2);
+    public final static short OFFSET_DATA_INITMODE             = (short) (OFFSET_DATA_LENGTH2 + 2);
+    public final static short OFFSET_NUM_REPEAT_WHOLE_OP       = (short) (OFFSET_DATA_INITMODE + 2);
     public final static short OFFSET_NUM_REPEAT_SUB_OP         = (short) (OFFSET_NUM_REPEAT_WHOLE_OP + 2);
     public final static short TEST_SETTINGS_LENGTH             = (short) (OFFSET_NUM_REPEAT_SUB_OP + 2 - OFFSET_ALGORITHM_CLASS);
     
@@ -29,6 +30,7 @@ public class TestSettings {
     public short       algorithmMethod = -1;               // e.g., AESKey.setKey() - our custom constant
     public short       dataLength1 = -1;                   // e.g., length of data used during measurement (e.g., for update())
     public short       dataLength2 = -1;                   // e.g., length of data used during measurement (e.g., for doFinal())
+    public short       initMode = -1;                      // initialization mode for init(key, mode), e.g., Cipher.ENCRYPT 
     public short       numRepeatWholeOperation = 1;        // whole operation might be setKey, update, doFinal - numRepeatWholeOperation repeats this whole operation
     public short       numRepeatSubOperation = 1;          // relevant suboperation that should be iterated multiple times - e.g., update()
     public short       numRepeatWholeMeasurement = 1;      // whole measurement including apdu in/out repeated
@@ -81,6 +83,9 @@ public class TestSettings {
         if (len >= (short) (OFFSET_DATA_LENGTH2 - ISO7816.OFFSET_CDATA + 2)) { 
             dataLength2 = Util.getShort(apdubuf, (short) (OFFSET_DATA_LENGTH2 + offset));                          
         }
+        if (len >= (short) (OFFSET_DATA_INITMODE - ISO7816.OFFSET_CDATA + 2)) { 
+            initMode = Util.getShort(apdubuf, (short) (OFFSET_DATA_INITMODE + offset));                          
+        }
         if (len >= (short) (OFFSET_NUM_REPEAT_WHOLE_OP - ISO7816.OFFSET_CDATA + 2)) { 
             numRepeatWholeOperation = Util.getShort(apdubuf, (short) (OFFSET_NUM_REPEAT_WHOLE_OP + offset));  
         }
@@ -98,6 +103,7 @@ public class TestSettings {
         Util.setShort(apdubuf, (short) (offset + OFFSET_ALGORITHM_TESTED_OPS), algorithmMethod);                   
         Util.setShort(apdubuf, (short) (offset + OFFSET_DATA_LENGTH1), dataLength1);                   
         Util.setShort(apdubuf, (short) (offset + OFFSET_DATA_LENGTH2), dataLength2);                   
+        Util.setShort(apdubuf, (short) (offset + OFFSET_DATA_INITMODE), initMode);                   
         Util.setShort(apdubuf, (short) (offset + OFFSET_NUM_REPEAT_WHOLE_OP), numRepeatWholeOperation);                
         Util.setShort(apdubuf, (short) (offset + OFFSET_NUM_REPEAT_SUB_OP), numRepeatSubOperation);                   
         

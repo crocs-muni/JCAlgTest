@@ -76,6 +76,7 @@ public class Consts {
     public static final byte UNUSED    = (byte) -1;     
     
     public static final short TEST_DATA_LENGTH    = (short) 256;     
+    //public static final short TEST_DATA_LENGTH    = (short) 64;     
     
 	// TODO: refactor - do we need this?
     public static final byte CLASS_KEYPAIR_RSA_P2          = 11;

@@ -40,6 +40,7 @@ import javax.smartcardio.ResponseAPDU;
 import AlgTest.Consts;
 import AlgTest.JCConsts;
 import AlgTest.TestSettings;
+import static algtestjclient.PerformanceTesting.file;
 /**
  *
  * @author lukas.srom
@@ -62,6 +63,7 @@ public class PerformanceTesting {
     //public static final byte mask = 0b01111111;
     public static FileOutputStream file;
     
+    private static boolean bExcludeAsymmetricAlgs = true;
     
     /**
      * Calls methods testing card performance.
@@ -480,24 +482,25 @@ public class PerformanceTesting {
     
         
 
-    public static TestSettings prepareTestSettings(short classType, short algorithmSpecification, short keyType, short keyLength, short algorithmMethod, short dataLength1, short dataLength2, short numRepeatWholeOperation, short numRepeatSubOperation, short numRepeatWholeMeasurement) {
+    public static TestSettings prepareTestSettings(short classType, short algorithmSpecification, short keyType, short keyLength, short algorithmMethod, short dataLength1, short dataLength2, short initMode, short numRepeatWholeOperation, short numRepeatSubOperation, short numRepeatWholeMeasurement) {
         TestSettings    testSet = new TestSettings();
         
         testSet.classType = classType;                              // custom constant signalizing javacard class - e.g., custom constant for javacardx.crypto.Cipher
         testSet.algorithmSpecification = algorithmSpecification;    // e.g., Cipher.ALG_AES_BLOCK_128_CBC_NOPAD
-        testSet.keyType = keyType;                            // e.g., KeyBuilder.TYPE_AES
-        testSet.keyLength = keyLength;                     // e.g., KeyBuilder.LENGTH_AES_128
+        testSet.keyType = keyType;                                  // e.g., KeyBuilder.TYPE_AES
+        testSet.keyLength = keyLength;                              // e.g., KeyBuilder.LENGTH_AES_128
         testSet.algorithmMethod = algorithmMethod;                  // custom constant signalizing target javacard method e.g., 
         testSet.dataLength1 = dataLength1;                          // e.g., length of data used during measurement (e.g., for update())
         testSet.dataLength2 = dataLength2;                          // e.g., length of data used during measurement (e.g., for doFinal())
+        testSet.initMode = initMode;                                // initialization mode for init(key, mode), e.g., Cipher.ENCRYPT
         testSet.numRepeatWholeOperation = numRepeatWholeOperation;  // whole operation might be setKey, update, doFinal - numRepeatWholeOperation repeats this whole operation
         testSet.numRepeatSubOperation = numRepeatSubOperation;      // relevant suboperation that should be iterated multiple times - e.g., update()
         testSet.numRepeatWholeMeasurement = numRepeatWholeMeasurement;  // whole operation might be setKey, update, doFinal - numRepeatWholeOperation repeats this whole operation
-        
+                
         return testSet;
     }
-    public static void perftest_prepareClass(byte appletCLA, byte appletINS, short classType, short algorithmSpecification, short keyType, short keyLength, short algorithmMethod, short dataLength1, short dataLength2, short numRepeatWholeOperation, short numRepeatSubOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
-        TestSettings testSet = prepareTestSettings(classType, algorithmSpecification, keyType, keyLength, algorithmMethod, dataLength1, dataLength2, numRepeatWholeOperation, numRepeatSubOperation, numRepeatWholeMeasurement);
+    public static void perftest_prepareClass(byte appletCLA, byte appletINS, short classType, short algorithmSpecification, short keyType, short keyLength, short algorithmMethod, short dataLength1, short dataLength2, short initMode, short numRepeatWholeOperation, short numRepeatSubOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
+        TestSettings testSet = prepareTestSettings(classType, algorithmSpecification, keyType, keyLength, algorithmMethod, dataLength1, dataLength2, initMode, numRepeatWholeOperation, numRepeatSubOperation, numRepeatWholeMeasurement);
         perftest_prepareClass(appletCLA, appletINS, testSet);
     }
     public static void perftest_prepareClass(byte appletCLA, byte appletINS, TestSettings testSet) throws IOException, Exception {
@@ -507,8 +510,8 @@ public class PerformanceTesting {
         cardManager.PerfTestCommand(appletCLA, appletINS, testSet, Consts.INS_CARD_RESET);
     }
     
-    public static double perftest_measure(byte appletCLA, byte appletPrepareINS, byte appletMeasureINS, short classType, short algorithmSpecification, short keyType, short keyLength, short algorithmMethod, short dataLength1, short dataLength2, short numRepeatWholeOperation, short numRepeatSubOperation, short numRepeatWholeMeasurement, String info) throws IOException, Exception {
-        TestSettings testSet = prepareTestSettings(classType, algorithmSpecification, keyType, keyLength, algorithmMethod, dataLength1, dataLength2, numRepeatWholeOperation, numRepeatSubOperation, numRepeatWholeMeasurement);
+    public static double perftest_measure(byte appletCLA, byte appletPrepareINS, byte appletMeasureINS, short classType, short algorithmSpecification, short keyType, short keyLength, short algorithmMethod, short dataLength1, short dataLength2, short initMode, short numRepeatWholeOperation, short numRepeatSubOperation, short numRepeatWholeMeasurement, String info) throws IOException, Exception {
+        TestSettings testSet = prepareTestSettings(classType, algorithmSpecification, keyType, keyLength, algorithmMethod, dataLength1, dataLength2, initMode, numRepeatWholeOperation, numRepeatSubOperation, numRepeatWholeMeasurement);
         return perftest_measure(appletCLA, appletPrepareINS, appletMeasureINS, testSet, info);
     }
     
@@ -574,7 +577,7 @@ public class PerformanceTesting {
             double time = 0;
             sumTimes = 0;
             message += "operations raw:;";
-            for(int i = 0; i < testSet.numRepeatWholeMeasurement;i++) {
+            for (int i = 0; i < testSet.numRepeatWholeMeasurement; i++) {
                 cardManager.resetApplet(appletCLA, Consts.INS_CARD_RESET);
                 time = cardManager.PerfTestCommand(appletCLA, appletMeasureINS, testSet, Consts.INS_CARD_RESET);
                 time -= avgOverhead;
@@ -630,7 +633,7 @@ public class PerformanceTesting {
 
     public static void testKeyPair(byte alg, short length, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
         TestSettings testSet = prepareTestSettings(Consts.CLASS_KEYPAIR, Consts.UNUSED, Consts.UNUSED, length, JCConsts.KeyPair_genKeyPair, 
-                Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);      
+                Consts.UNUSED, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);      
 
         testSet.keyClass = alg;
         testSet.algorithmMethod = JCConsts.KeyPair_genKeyPair;
@@ -643,50 +646,56 @@ public class PerformanceTesting {
     public static void testAllKeyPairs(short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
         String tableName = "\n\nKEY PAIR\n";
         file.write(tableName.getBytes());
-        testKeyPair(JCConsts.KeyPair_ALG_RSA,JCConsts.KeyBuilder_LENGTH_RSA_512,"ALG_RSA LENGTH_RSA_512", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testKeyPair(JCConsts.KeyPair_ALG_RSA,JCConsts.KeyBuilder_LENGTH_RSA_736,"ALG_RSA LENGTH_RSA_736", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testKeyPair(JCConsts.KeyPair_ALG_RSA,JCConsts.KeyBuilder_LENGTH_RSA_768,"ALG_RSA LENGTH_RSA_768", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testKeyPair(JCConsts.KeyPair_ALG_RSA,JCConsts.KeyBuilder_LENGTH_RSA_896,"ALG_RSA LENGTH_RSA_896", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testKeyPair(JCConsts.KeyPair_ALG_RSA,JCConsts.KeyBuilder_LENGTH_RSA_1024,"ALG_RSA LENGTH_RSA_1024", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testKeyPair(JCConsts.KeyPair_ALG_RSA,JCConsts.KeyBuilder_LENGTH_RSA_1280,"ALG_RSA LENGTH_RSA_1280", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testKeyPair(JCConsts.KeyPair_ALG_RSA,JCConsts.KeyBuilder_LENGTH_RSA_1536,"ALG_RSA LENGTH_RSA_1536", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testKeyPair(JCConsts.KeyPair_ALG_RSA,JCConsts.KeyBuilder_LENGTH_RSA_1984,"ALG_RSA LENGTH_RSA_1984", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testKeyPair(JCConsts.KeyPair_ALG_RSA,JCConsts.KeyBuilder_LENGTH_RSA_2048,"ALG_RSA LENGTH_RSA_2048", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testKeyPair(JCConsts.KeyPair_ALG_RSA,JCConsts.KeyBuilder_LENGTH_RSA_3072,"ALG_RSA LENGTH_RSA_3072", numRepeatWholeOperation, numRepeatWholeMeasurement);        
-        testKeyPair(JCConsts.KeyPair_ALG_RSA,JCConsts.KeyBuilder_LENGTH_RSA_4096,"ALG_RSA LENGTH_RSA_4096", numRepeatWholeOperation, numRepeatWholeMeasurement);        
-        testKeyPair(JCConsts.KeyPair_ALG_RSA_CRT,JCConsts.KeyBuilder_LENGTH_RSA_512,"ALG_RSA_CRT LENGTH_RSA_512", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testKeyPair(JCConsts.KeyPair_ALG_RSA_CRT,JCConsts.KeyBuilder_LENGTH_RSA_736,"ALG_RSA_CRT LENGTH_RSA_736", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testKeyPair(JCConsts.KeyPair_ALG_RSA_CRT,JCConsts.KeyBuilder_LENGTH_RSA_768,"ALG_RSA_CRT LENGTH_RSA_768", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testKeyPair(JCConsts.KeyPair_ALG_RSA_CRT,JCConsts.KeyBuilder_LENGTH_RSA_896,"ALG_RSA_CRT LENGTH_RSA_896", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testKeyPair(JCConsts.KeyPair_ALG_RSA_CRT,JCConsts.KeyBuilder_LENGTH_RSA_1024,"ALG_RSA_CRT LENGTH_RSA_1024", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testKeyPair(JCConsts.KeyPair_ALG_RSA_CRT,JCConsts.KeyBuilder_LENGTH_RSA_1280,"ALG_RSA_CRT LENGTH_RSA_1280", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testKeyPair(JCConsts.KeyPair_ALG_RSA_CRT,JCConsts.KeyBuilder_LENGTH_RSA_1536,"ALG_RSA_CRT LENGTH_RSA_1536", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testKeyPair(JCConsts.KeyPair_ALG_RSA_CRT,JCConsts.KeyBuilder_LENGTH_RSA_1984,"ALG_RSA_CRT LENGTH_RSA_1984", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testKeyPair(JCConsts.KeyPair_ALG_RSA_CRT,JCConsts.KeyBuilder_LENGTH_RSA_2048,"ALG_RSA_CRT LENGTH_RSA_2048", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testKeyPair(JCConsts.KeyPair_ALG_RSA_CRT,JCConsts.KeyBuilder_LENGTH_RSA_3072,"ALG_RSA_CRT LENGTH_RSA_3072", numRepeatWholeOperation, numRepeatWholeMeasurement);        
-        testKeyPair(JCConsts.KeyPair_ALG_RSA_CRT,JCConsts.KeyBuilder_LENGTH_RSA_4096,"ALG_RSA_CRT LENGTH_RSA_4096", numRepeatWholeOperation, numRepeatWholeMeasurement);        
-        testKeyPair(JCConsts.KeyPair_ALG_DSA,JCConsts.KeyBuilder_LENGTH_DSA_512,"ALG_DSA LENGTH_DSA_512", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testKeyPair(JCConsts.KeyPair_ALG_DSA,JCConsts.KeyBuilder_LENGTH_DSA_768,"ALG_DSA LENGTH_DSA_768", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testKeyPair(JCConsts.KeyPair_ALG_DSA,JCConsts.KeyBuilder_LENGTH_DSA_1024,"ALG_DSA LENGTH_DSA_1024", numRepeatWholeOperation, numRepeatWholeMeasurement);        
-        testKeyPair(JCConsts.KeyPair_ALG_EC_F2M,JCConsts.KeyBuilder_LENGTH_EC_F2M_113,"ALG_EC_F2M LENGTH_EC_F2M_113", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testKeyPair(JCConsts.KeyPair_ALG_EC_F2M,JCConsts.KeyBuilder_LENGTH_EC_F2M_131,"ALG_EC_F2M LENGTH_EC_F2M_131", numRepeatWholeOperation, numRepeatWholeMeasurement);    
-        testKeyPair(JCConsts.KeyPair_ALG_EC_F2M,JCConsts.KeyBuilder_LENGTH_EC_F2M_163,"ALG_EC_F2M LENGTH_EC_F2M_163", numRepeatWholeOperation, numRepeatWholeMeasurement);    
-        testKeyPair(JCConsts.KeyPair_ALG_EC_F2M,JCConsts.KeyBuilder_LENGTH_EC_F2M_193,"ALG_EC_F2M LENGTH_EC_F2M_193", numRepeatWholeOperation, numRepeatWholeMeasurement);    
-        testKeyPair(JCConsts.KeyPair_ALG_EC_FP,JCConsts.KeyBuilder_LENGTH_EC_FP_112,"ALG_EC_FP LENGTH_EC_FP_112", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testKeyPair(JCConsts.KeyPair_ALG_EC_FP,JCConsts.KeyBuilder_LENGTH_EC_FP_128,"ALG_EC_FP LENGTH_EC_FP_128", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testKeyPair(JCConsts.KeyPair_ALG_EC_FP,JCConsts.KeyBuilder_LENGTH_EC_FP_160,"ALG_EC_FP LENGTH_EC_FP_160", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testKeyPair(JCConsts.KeyPair_ALG_EC_FP,JCConsts.KeyBuilder_LENGTH_EC_FP_192,"ALG_EC_FP LENGTH_EC_FP_192", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testKeyPair(JCConsts.KeyPair_ALG_EC_FP,JCConsts.KeyBuilder_LENGTH_EC_FP_224,"ALG_EC_FP LENGTH_EC_FP_224", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testKeyPair(JCConsts.KeyPair_ALG_EC_FP,JCConsts.KeyBuilder_LENGTH_EC_FP_256,"ALG_EC_FP LENGTH_EC_FP_256", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testKeyPair(JCConsts.KeyPair_ALG_EC_FP,JCConsts.KeyBuilder_LENGTH_EC_FP_384,"ALG_EC_FP LENGTH_EC_FP_384", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testKeyPair(JCConsts.KeyPair_ALG_EC_FP,JCConsts.KeyBuilder_LENGTH_EC_FP_521,"ALG_EC_FP LENGTH_EC_FP_521", numRepeatWholeOperation, numRepeatWholeMeasurement); 
+        if (!bExcludeAsymmetricAlgs) {
+            testKeyPair(JCConsts.KeyPair_ALG_RSA,JCConsts.KeyBuilder_LENGTH_RSA_512,"ALG_RSA LENGTH_RSA_512", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyPair(JCConsts.KeyPair_ALG_RSA,JCConsts.KeyBuilder_LENGTH_RSA_736,"ALG_RSA LENGTH_RSA_736", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyPair(JCConsts.KeyPair_ALG_RSA,JCConsts.KeyBuilder_LENGTH_RSA_768,"ALG_RSA LENGTH_RSA_768", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyPair(JCConsts.KeyPair_ALG_RSA,JCConsts.KeyBuilder_LENGTH_RSA_896,"ALG_RSA LENGTH_RSA_896", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyPair(JCConsts.KeyPair_ALG_RSA,JCConsts.KeyBuilder_LENGTH_RSA_1024,"ALG_RSA LENGTH_RSA_1024", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyPair(JCConsts.KeyPair_ALG_RSA,JCConsts.KeyBuilder_LENGTH_RSA_1280,"ALG_RSA LENGTH_RSA_1280", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyPair(JCConsts.KeyPair_ALG_RSA,JCConsts.KeyBuilder_LENGTH_RSA_1536,"ALG_RSA LENGTH_RSA_1536", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyPair(JCConsts.KeyPair_ALG_RSA,JCConsts.KeyBuilder_LENGTH_RSA_1984,"ALG_RSA LENGTH_RSA_1984", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyPair(JCConsts.KeyPair_ALG_RSA,JCConsts.KeyBuilder_LENGTH_RSA_2048,"ALG_RSA LENGTH_RSA_2048", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyPair(JCConsts.KeyPair_ALG_RSA,JCConsts.KeyBuilder_LENGTH_RSA_3072,"ALG_RSA LENGTH_RSA_3072", numRepeatWholeOperation, numRepeatWholeMeasurement);        
+            testKeyPair(JCConsts.KeyPair_ALG_RSA,JCConsts.KeyBuilder_LENGTH_RSA_4096,"ALG_RSA LENGTH_RSA_4096", numRepeatWholeOperation, numRepeatWholeMeasurement);        
+            testKeyPair(JCConsts.KeyPair_ALG_RSA_CRT,JCConsts.KeyBuilder_LENGTH_RSA_512,"ALG_RSA_CRT LENGTH_RSA_512", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyPair(JCConsts.KeyPair_ALG_RSA_CRT,JCConsts.KeyBuilder_LENGTH_RSA_736,"ALG_RSA_CRT LENGTH_RSA_736", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyPair(JCConsts.KeyPair_ALG_RSA_CRT,JCConsts.KeyBuilder_LENGTH_RSA_768,"ALG_RSA_CRT LENGTH_RSA_768", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyPair(JCConsts.KeyPair_ALG_RSA_CRT,JCConsts.KeyBuilder_LENGTH_RSA_896,"ALG_RSA_CRT LENGTH_RSA_896", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyPair(JCConsts.KeyPair_ALG_RSA_CRT,JCConsts.KeyBuilder_LENGTH_RSA_1024,"ALG_RSA_CRT LENGTH_RSA_1024", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyPair(JCConsts.KeyPair_ALG_RSA_CRT,JCConsts.KeyBuilder_LENGTH_RSA_1280,"ALG_RSA_CRT LENGTH_RSA_1280", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyPair(JCConsts.KeyPair_ALG_RSA_CRT,JCConsts.KeyBuilder_LENGTH_RSA_1536,"ALG_RSA_CRT LENGTH_RSA_1536", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyPair(JCConsts.KeyPair_ALG_RSA_CRT,JCConsts.KeyBuilder_LENGTH_RSA_1984,"ALG_RSA_CRT LENGTH_RSA_1984", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyPair(JCConsts.KeyPair_ALG_RSA_CRT,JCConsts.KeyBuilder_LENGTH_RSA_2048,"ALG_RSA_CRT LENGTH_RSA_2048", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyPair(JCConsts.KeyPair_ALG_RSA_CRT,JCConsts.KeyBuilder_LENGTH_RSA_3072,"ALG_RSA_CRT LENGTH_RSA_3072", numRepeatWholeOperation, numRepeatWholeMeasurement);        
+            testKeyPair(JCConsts.KeyPair_ALG_RSA_CRT,JCConsts.KeyBuilder_LENGTH_RSA_4096,"ALG_RSA_CRT LENGTH_RSA_4096", numRepeatWholeOperation, numRepeatWholeMeasurement);        
+            testKeyPair(JCConsts.KeyPair_ALG_DSA,JCConsts.KeyBuilder_LENGTH_DSA_512,"ALG_DSA LENGTH_DSA_512", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyPair(JCConsts.KeyPair_ALG_DSA,JCConsts.KeyBuilder_LENGTH_DSA_768,"ALG_DSA LENGTH_DSA_768", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyPair(JCConsts.KeyPair_ALG_DSA,JCConsts.KeyBuilder_LENGTH_DSA_1024,"ALG_DSA LENGTH_DSA_1024", numRepeatWholeOperation, numRepeatWholeMeasurement);        
+            testKeyPair(JCConsts.KeyPair_ALG_EC_F2M,JCConsts.KeyBuilder_LENGTH_EC_F2M_113,"ALG_EC_F2M LENGTH_EC_F2M_113", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyPair(JCConsts.KeyPair_ALG_EC_F2M,JCConsts.KeyBuilder_LENGTH_EC_F2M_131,"ALG_EC_F2M LENGTH_EC_F2M_131", numRepeatWholeOperation, numRepeatWholeMeasurement);    
+            testKeyPair(JCConsts.KeyPair_ALG_EC_F2M,JCConsts.KeyBuilder_LENGTH_EC_F2M_163,"ALG_EC_F2M LENGTH_EC_F2M_163", numRepeatWholeOperation, numRepeatWholeMeasurement);    
+            testKeyPair(JCConsts.KeyPair_ALG_EC_F2M,JCConsts.KeyBuilder_LENGTH_EC_F2M_193,"ALG_EC_F2M LENGTH_EC_F2M_193", numRepeatWholeOperation, numRepeatWholeMeasurement);    
+            testKeyPair(JCConsts.KeyPair_ALG_EC_FP,JCConsts.KeyBuilder_LENGTH_EC_FP_112,"ALG_EC_FP LENGTH_EC_FP_112", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyPair(JCConsts.KeyPair_ALG_EC_FP,JCConsts.KeyBuilder_LENGTH_EC_FP_128,"ALG_EC_FP LENGTH_EC_FP_128", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyPair(JCConsts.KeyPair_ALG_EC_FP,JCConsts.KeyBuilder_LENGTH_EC_FP_160,"ALG_EC_FP LENGTH_EC_FP_160", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyPair(JCConsts.KeyPair_ALG_EC_FP,JCConsts.KeyBuilder_LENGTH_EC_FP_192,"ALG_EC_FP LENGTH_EC_FP_192", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyPair(JCConsts.KeyPair_ALG_EC_FP,JCConsts.KeyBuilder_LENGTH_EC_FP_224,"ALG_EC_FP LENGTH_EC_FP_224", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyPair(JCConsts.KeyPair_ALG_EC_FP,JCConsts.KeyBuilder_LENGTH_EC_FP_256,"ALG_EC_FP LENGTH_EC_FP_256", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyPair(JCConsts.KeyPair_ALG_EC_FP,JCConsts.KeyBuilder_LENGTH_EC_FP_384,"ALG_EC_FP LENGTH_EC_FP_384", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyPair(JCConsts.KeyPair_ALG_EC_FP,JCConsts.KeyBuilder_LENGTH_EC_FP_521,"ALG_EC_FP LENGTH_EC_FP_521", numRepeatWholeOperation, numRepeatWholeMeasurement); 
+        }
+        else {
+            String message = "Measurements excluded for asymmetric algorithms\n";
+            file.write(message.getBytes());
+        }
         tableName = "KEY PAIR - END\n";
         file.write(tableName.getBytes());
     }
     
     public static void testMessageDigest(byte alg, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
         TestSettings testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_MESSAGEDIGEST, alg, Consts.UNUSED, Consts.UNUSED, 
-                JCConsts.MessageDigest_update, Consts.TEST_DATA_LENGTH, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);       
+                JCConsts.MessageDigest_update, Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);       
 
         testSet.algorithmMethod = JCConsts.MessageDigest_update;
         PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_MESSAGEDIGEST, Consts.INS_PERF_TEST_CLASS_MESSAGEDIGEST, testSet, info + " MessageDigest_update()");
@@ -716,7 +725,7 @@ public class PerformanceTesting {
 
     public static void testRandomGenerator(byte alg, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
         TestSettings testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_RANDOMDATA, alg, Consts.UNUSED, Consts.UNUSED, JCConsts.RandomData_generateData, 
-                Consts.TEST_DATA_LENGTH, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);      
+                Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);      
 
         testSet.algorithmMethod = JCConsts.RandomData_generateData;
         PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_RANDOMDATA, Consts.INS_PERF_TEST_CLASS_RANDOMDATA, testSet, info + " RandomData_generateData()");
@@ -735,9 +744,19 @@ public class PerformanceTesting {
         file.write(tableName.getBytes());
     }    
 
-    public static void testCipher(byte key, short keyLength, byte alg, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
+    public static void testCipher(byte key, short keyLength, byte alg, String info, short initMode, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
+        short testDataLength = Consts.TEST_DATA_LENGTH; // default test length
+        switch (key) {
+            case JCConsts.KeyBuilder_TYPE_RSA_PRIVATE:
+            case JCConsts.KeyBuilder_TYPE_RSA_PUBLIC:
+            case JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE:
+                // For RSA, we need test length equal to modulus size
+                testDataLength = (short) (keyLength / 8);
+                break;
+        }    
+        
         TestSettings testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_CIPHER, alg, key, keyLength, JCConsts.Cipher_update, 
-                Consts.TEST_DATA_LENGTH, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);      
+                testDataLength, Consts.UNUSED, initMode, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);      
 
         testSet.algorithmMethod = JCConsts.Cipher_update;
         PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_update()");
@@ -754,182 +773,242 @@ public class PerformanceTesting {
     public static void testAllCiphers(short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
         String tableName = "\n\nCIPHER\n";
         file.write(tableName.getBytes());
-        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES,JCConsts.Cipher_ALG_DES_CBC_NOPAD,"TYPE_DES LENGTH_DES ALG_DES_CBC_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES,JCConsts.Cipher_ALG_DES_CBC_ISO9797_M1,"TYPE_DES LENGTH_DES ALG_DES_CBC_ISO9797_M1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES,JCConsts.Cipher_ALG_DES_CBC_ISO9797_M2,"TYPE_DES LENGTH_DES ALG_DES_CBC_ISO9797_M2", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES,JCConsts.Cipher_ALG_DES_CBC_PKCS5,"TYPE_DES LENGTH_DES ALG_DES_CBC_PKCS5", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES,JCConsts.Cipher_ALG_DES_ECB_NOPAD,"TYPE_DES LENGTH_DES ALG_DES_ECB_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES,JCConsts.Cipher_ALG_DES_ECB_ISO9797_M1,"TYPE_DES LENGTH_DES ALG_DES_ECB_ISO9797_M1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES,JCConsts.Cipher_ALG_DES_ECB_ISO9797_M2,"TYPE_DES LENGTH_DES ALG_DES_ECB_ISO9797_M2", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES,JCConsts.Cipher_ALG_DES_ECB_PKCS5,"TYPE_DES LENGTH_DES ALG_DES_ECB_PKCS5", numRepeatWholeOperation, numRepeatWholeMeasurement); 
-        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_2KEY,JCConsts.Cipher_ALG_DES_CBC_NOPAD,"TYPE_DES LENGTH_DES3_2KEY ALG_DES_CBC_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_2KEY,JCConsts.Cipher_ALG_DES_CBC_ISO9797_M1,"TYPE_DES LENGTH_DES3_2KEY ALG_DES_CBC_ISO9797_M1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_2KEY,JCConsts.Cipher_ALG_DES_CBC_ISO9797_M2,"TYPE_DES LENGTH_DES3_2KEY ALG_DES_CBC_ISO9797_M2", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_2KEY,JCConsts.Cipher_ALG_DES_CBC_PKCS5,"TYPE_DES LENGTH_DES3_2KEY ALG_DES_CBC_PKCS5", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_2KEY,JCConsts.Cipher_ALG_DES_ECB_NOPAD,"TYPE_DES LENGTH_DES3_2KEY ALG_DES_ECB_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_2KEY,JCConsts.Cipher_ALG_DES_ECB_ISO9797_M1,"TYPE_DES LENGTH_DES3_2KEY ALG_DES_ECB_ISO9797_M1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_2KEY,JCConsts.Cipher_ALG_DES_ECB_ISO9797_M2,"TYPE_DES LENGTH_DES3_2KEY ALG_DES_ECB_ISO9797_M2", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_2KEY,JCConsts.Cipher_ALG_DES_ECB_PKCS5,"TYPE_DES LENGTH_DES3_2KEY ALG_DES_ECB_PKCS5", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_3KEY,JCConsts.Cipher_ALG_DES_CBC_NOPAD,"TYPE_DES LENGTH_DES3_3KEY ALG_DES_CBC_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_3KEY,JCConsts.Cipher_ALG_DES_CBC_ISO9797_M1,"TYPE_DES LENGTH_DES3_3KEY ALG_DES_CBC_ISO9797_M1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_3KEY,JCConsts.Cipher_ALG_DES_CBC_ISO9797_M2,"TYPE_DES LENGTH_DES3_3KEY ALG_DES_CBC_ISO9797_M2", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_3KEY,JCConsts.Cipher_ALG_DES_CBC_PKCS5,"TYPE_DES LENGTH_DES3_3KEY ALG_DES_CBC_PKCS5", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_3KEY,JCConsts.Cipher_ALG_DES_ECB_NOPAD,"TYPE_DES LENGTH_DES3_3KEY ALG_DES_ECB_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_3KEY,JCConsts.Cipher_ALG_DES_ECB_ISO9797_M1,"TYPE_DES LENGTH_DES3_3KEY ALG_DES_ECB_ISO9797_M1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_3KEY,JCConsts.Cipher_ALG_DES_ECB_ISO9797_M2,"TYPE_DES LENGTH_DES3_3KEY ALG_DES_ECB_ISO9797_M2", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_3KEY,JCConsts.Cipher_ALG_DES_ECB_PKCS5,"TYPE_DES LENGTH_DES3_3KEY ALG_DES_ECB_PKCS5", numRepeatWholeOperation, numRepeatWholeMeasurement); 
+        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES,JCConsts.Cipher_ALG_DES_CBC_NOPAD,"TYPE_DES LENGTH_DES ALG_DES_CBC_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES,JCConsts.Cipher_ALG_DES_CBC_ISO9797_M1,"TYPE_DES LENGTH_DES ALG_DES_CBC_ISO9797_M1", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES,JCConsts.Cipher_ALG_DES_CBC_ISO9797_M2,"TYPE_DES LENGTH_DES ALG_DES_CBC_ISO9797_M2", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES,JCConsts.Cipher_ALG_DES_CBC_PKCS5,"TYPE_DES LENGTH_DES ALG_DES_CBC_PKCS5", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES,JCConsts.Cipher_ALG_DES_ECB_NOPAD,"TYPE_DES LENGTH_DES ALG_DES_ECB_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES,JCConsts.Cipher_ALG_DES_ECB_ISO9797_M1,"TYPE_DES LENGTH_DES ALG_DES_ECB_ISO9797_M1", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES,JCConsts.Cipher_ALG_DES_ECB_ISO9797_M2,"TYPE_DES LENGTH_DES ALG_DES_ECB_ISO9797_M2", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES,JCConsts.Cipher_ALG_DES_ECB_PKCS5,"TYPE_DES LENGTH_DES ALG_DES_ECB_PKCS5", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement); 
+        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_2KEY,JCConsts.Cipher_ALG_DES_CBC_NOPAD,"TYPE_DES LENGTH_DES3_2KEY ALG_DES_CBC_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_2KEY,JCConsts.Cipher_ALG_DES_CBC_ISO9797_M1,"TYPE_DES LENGTH_DES3_2KEY ALG_DES_CBC_ISO9797_M1", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_2KEY,JCConsts.Cipher_ALG_DES_CBC_ISO9797_M2,"TYPE_DES LENGTH_DES3_2KEY ALG_DES_CBC_ISO9797_M2", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_2KEY,JCConsts.Cipher_ALG_DES_CBC_PKCS5,"TYPE_DES LENGTH_DES3_2KEY ALG_DES_CBC_PKCS5", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_2KEY,JCConsts.Cipher_ALG_DES_ECB_NOPAD,"TYPE_DES LENGTH_DES3_2KEY ALG_DES_ECB_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_2KEY,JCConsts.Cipher_ALG_DES_ECB_ISO9797_M1,"TYPE_DES LENGTH_DES3_2KEY ALG_DES_ECB_ISO9797_M1", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_2KEY,JCConsts.Cipher_ALG_DES_ECB_ISO9797_M2,"TYPE_DES LENGTH_DES3_2KEY ALG_DES_ECB_ISO9797_M2", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_2KEY,JCConsts.Cipher_ALG_DES_ECB_PKCS5,"TYPE_DES LENGTH_DES3_2KEY ALG_DES_ECB_PKCS5", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_3KEY,JCConsts.Cipher_ALG_DES_CBC_NOPAD,"TYPE_DES LENGTH_DES3_3KEY ALG_DES_CBC_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_3KEY,JCConsts.Cipher_ALG_DES_CBC_ISO9797_M1,"TYPE_DES LENGTH_DES3_3KEY ALG_DES_CBC_ISO9797_M1", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_3KEY,JCConsts.Cipher_ALG_DES_CBC_ISO9797_M2,"TYPE_DES LENGTH_DES3_3KEY ALG_DES_CBC_ISO9797_M2", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_3KEY,JCConsts.Cipher_ALG_DES_CBC_PKCS5,"TYPE_DES LENGTH_DES3_3KEY ALG_DES_CBC_PKCS5", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_3KEY,JCConsts.Cipher_ALG_DES_ECB_NOPAD,"TYPE_DES LENGTH_DES3_3KEY ALG_DES_ECB_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_3KEY,JCConsts.Cipher_ALG_DES_ECB_ISO9797_M1,"TYPE_DES LENGTH_DES3_3KEY ALG_DES_ECB_ISO9797_M1", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_3KEY,JCConsts.Cipher_ALG_DES_ECB_ISO9797_M2,"TYPE_DES LENGTH_DES3_3KEY ALG_DES_ECB_ISO9797_M2", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_3KEY,JCConsts.Cipher_ALG_DES_ECB_PKCS5,"TYPE_DES LENGTH_DES3_3KEY ALG_DES_ECB_PKCS5", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement); 
         
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Cipher_ALG_AES_BLOCK_128_CBC_NOPAD,"TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_128_CBC_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Cipher_ALG_AES_BLOCK_128_ECB_NOPAD,"TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_128_ECB_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Cipher_ALG_AES_BLOCK_192_CBC_NOPAD,"TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_192_CBC_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Cipher_ALG_AES_BLOCK_192_ECB_NOPAD,"TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_192_ECB_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Cipher_ALG_AES_BLOCK_256_CBC_NOPAD,"TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_256_CBC_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Cipher_ALG_AES_BLOCK_256_ECB_NOPAD,"TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_256_ECB_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Cipher_ALG_AES_CBC_ISO9797_M1,"TYPE_AES LENGTH_AES_128 ALG_AES_CBC_ISO9797_M1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Cipher_ALG_AES_CBC_ISO9797_M2,"TYPE_AES LENGTH_AES_128 ALG_AES_CBC_ISO9797_M2", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Cipher_ALG_AES_CBC_PKCS5,"TYPE_AES LENGTH_AES_128 ALG_AES_CBC_PKCS5", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Cipher_ALG_AES_ECB_ISO9797_M1,"TYPE_AES LENGTH_AES_128 ALG_AES_ECB_ISO9797_M1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Cipher_ALG_AES_ECB_ISO9797_M2,"TYPE_AES LENGTH_AES_128 ALG_AES_ECB_ISO9797_M2", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Cipher_ALG_AES_ECB_PKCS5,"TYPE_AES LENGTH_AES_128 ALG_AES_ECB_PKCS5", numRepeatWholeOperation, numRepeatWholeMeasurement); 
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_192,JCConsts.Cipher_ALG_AES_BLOCK_128_CBC_NOPAD,"TYPE_AES LENGTH_AES_192 ALG_AES_BLOCK_128_CBC_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_192,JCConsts.Cipher_ALG_AES_BLOCK_128_ECB_NOPAD,"TYPE_AES LENGTH_AES_192 ALG_AES_BLOCK_128_ECB_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_192,JCConsts.Cipher_ALG_AES_BLOCK_192_CBC_NOPAD,"TYPE_AES LENGTH_AES_192 ALG_AES_BLOCK_192_CBC_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_192,JCConsts.Cipher_ALG_AES_BLOCK_192_ECB_NOPAD,"TYPE_AES LENGTH_AES_192 ALG_AES_BLOCK_192_ECB_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_192,JCConsts.Cipher_ALG_AES_BLOCK_256_CBC_NOPAD,"TYPE_AES LENGTH_AES_192 ALG_AES_BLOCK_256_CBC_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_192,JCConsts.Cipher_ALG_AES_BLOCK_256_ECB_NOPAD,"TYPE_AES LENGTH_AES_192 ALG_AES_BLOCK_256_ECB_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_192,JCConsts.Cipher_ALG_AES_CBC_ISO9797_M1,"TYPE_AES LENGTH_AES_192 ALG_AES_CBC_ISO9797_M1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_192,JCConsts.Cipher_ALG_AES_CBC_ISO9797_M2,"TYPE_AES LENGTH_AES_192 ALG_AES_CBC_ISO9797_M2", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_192,JCConsts.Cipher_ALG_AES_CBC_PKCS5,"TYPE_AES LENGTH_AES_192 ALG_AES_CBC_PKCS5", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_192,JCConsts.Cipher_ALG_AES_ECB_ISO9797_M1,"TYPE_AES LENGTH_AES_192 ALG_AES_ECB_ISO9797_M1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_192,JCConsts.Cipher_ALG_AES_ECB_ISO9797_M2,"TYPE_AES LENGTH_AES_192 ALG_AES_ECB_ISO9797_M2", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_192,JCConsts.Cipher_ALG_AES_ECB_PKCS5,"TYPE_AES LENGTH_AES_192 ALG_AES_ECB_PKCS5", numRepeatWholeOperation, numRepeatWholeMeasurement); 
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_256,JCConsts.Cipher_ALG_AES_BLOCK_128_CBC_NOPAD,"TYPE_AES LENGTH_AES_256 ALG_AES_BLOCK_128_CBC_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_256,JCConsts.Cipher_ALG_AES_BLOCK_128_ECB_NOPAD,"TYPE_AES LENGTH_AES_256 ALG_AES_BLOCK_128_ECB_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_256,JCConsts.Cipher_ALG_AES_BLOCK_192_CBC_NOPAD,"TYPE_AES LENGTH_AES_256 ALG_AES_BLOCK_192_CBC_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_256,JCConsts.Cipher_ALG_AES_BLOCK_192_ECB_NOPAD,"TYPE_AES LENGTH_AES_256 ALG_AES_BLOCK_192_ECB_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_256,JCConsts.Cipher_ALG_AES_BLOCK_256_CBC_NOPAD,"TYPE_AES LENGTH_AES_256 ALG_AES_BLOCK_256_CBC_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_256,JCConsts.Cipher_ALG_AES_BLOCK_256_ECB_NOPAD,"TYPE_AES LENGTH_AES_256 ALG_AES_BLOCK_256_ECB_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_256,JCConsts.Cipher_ALG_AES_CBC_ISO9797_M1,"TYPE_AES LENGTH_AES_256 ALG_AES_CBC_ISO9797_M1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_256,JCConsts.Cipher_ALG_AES_CBC_ISO9797_M2,"TYPE_AES LENGTH_AES_256 ALG_AES_CBC_ISO9797_M2", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_256,JCConsts.Cipher_ALG_AES_CBC_PKCS5,"TYPE_AES LENGTH_AES_256 ALG_AES_CBC_PKCS5", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_256,JCConsts.Cipher_ALG_AES_ECB_ISO9797_M1,"TYPE_AES LENGTH_AES_256 ALG_AES_ECB_ISO9797_M1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_256,JCConsts.Cipher_ALG_AES_ECB_ISO9797_M2,"TYPE_AES LENGTH_AES_256 ALG_AES_ECB_ISO9797_M2", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_256,JCConsts.Cipher_ALG_AES_ECB_PKCS5,"TYPE_AES LENGTH_AES_256 ALG_AES_ECB_PKCS5", numRepeatWholeOperation, numRepeatWholeMeasurement); 
-        // ALG_RSA
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Cipher_ALG_RSA_ISO14888,"ALG_RSA LENGTH_RSA_512 ALG_RSA_ISO14888", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Cipher_ALG_RSA_ISO9796,"ALG_RSA LENGTH_RSA_512 ALG_RSA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Cipher_ALG_RSA_NOPAD,"ALG_RSA LENGTH_RSA_512 ALG_RSA_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Cipher_ALG_RSA_PKCS1,"ALG_RSA LENGTH_RSA_512 ALG_RSA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"ALG_RSA LENGTH_RSA_512 ALG_RSA_PKCS1_OAEP", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Cipher_ALG_RSA_ISO14888,"ALG_RSA LENGTH_RSA_736 ALG_RSA_ISO14888", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Cipher_ALG_RSA_ISO9796,"ALG_RSA LENGTH_RSA_736 ALG_RSA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Cipher_ALG_RSA_NOPAD,"ALG_RSA LENGTH_RSA_736 ALG_RSA_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Cipher_ALG_RSA_PKCS1,"ALG_RSA LENGTH_RSA_736 ALG_RSA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"ALG_RSA LENGTH_RSA_736 ALG_RSA_PKCS1_OAEP", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Cipher_ALG_RSA_ISO14888,"ALG_RSA LENGTH_RSA_768 ALG_RSA_ISO14888", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Cipher_ALG_RSA_ISO9796,"ALG_RSA LENGTH_RSA_768 ALG_RSA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Cipher_ALG_RSA_NOPAD,"ALG_RSA LENGTH_RSA_768 ALG_RSA_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Cipher_ALG_RSA_PKCS1,"ALG_RSA LENGTH_RSA_768 ALG_RSA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"ALG_RSA LENGTH_RSA_768 ALG_RSA_PKCS1_OAEP", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Cipher_ALG_RSA_ISO14888,"ALG_RSA LENGTH_RSA_896 ALG_RSA_ISO14888", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Cipher_ALG_RSA_ISO9796,"ALG_RSA LENGTH_RSA_896 ALG_RSA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Cipher_ALG_RSA_NOPAD,"ALG_RSA LENGTH_RSA_896 ALG_RSA_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Cipher_ALG_RSA_PKCS1,"ALG_RSA LENGTH_RSA_896 ALG_RSA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"ALG_RSA LENGTH_RSA_896 ALG_RSA_PKCS1_OAEP", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Cipher_ALG_RSA_ISO14888,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_ISO14888", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Cipher_ALG_RSA_ISO9796,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Cipher_ALG_RSA_NOPAD,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Cipher_ALG_RSA_PKCS1,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_PKCS1_OAEP", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Cipher_ALG_RSA_ISO14888,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_ISO14888", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Cipher_ALG_RSA_ISO9796,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Cipher_ALG_RSA_NOPAD,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Cipher_ALG_RSA_PKCS1,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_PKCS1_OAEP", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Cipher_ALG_RSA_ISO14888,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_ISO14888", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Cipher_ALG_RSA_ISO9796,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Cipher_ALG_RSA_NOPAD,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Cipher_ALG_RSA_PKCS1,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_PKCS1_OAEP", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Cipher_ALG_RSA_ISO14888,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_ISO14888", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Cipher_ALG_RSA_ISO9796,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Cipher_ALG_RSA_NOPAD,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Cipher_ALG_RSA_PKCS1,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_PKCS1_OAEP", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_ISO14888,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_ISO14888", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_ISO9796,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_NOPAD,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_PKCS1,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_PKCS1_OAEP", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Cipher_ALG_RSA_ISO14888,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_ISO14888", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Cipher_ALG_RSA_ISO9796,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Cipher_ALG_RSA_NOPAD,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Cipher_ALG_RSA_PKCS1,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_PKCS1_OAEP", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Cipher_ALG_RSA_ISO14888,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_ISO14888", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Cipher_ALG_RSA_ISO9796,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Cipher_ALG_RSA_NOPAD,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Cipher_ALG_RSA_PKCS1,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_PKCS1_OAEP", numRepeatWholeOperation, numRepeatWholeMeasurement); 
-        // ALG_RSA_CRT
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Cipher_ALG_RSA_ISO14888,"ALG_RSA_CRT LENGTH_RSA_512 ALG_RSA_ISO14888", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Cipher_ALG_RSA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_512 ALG_RSA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Cipher_ALG_RSA_NOPAD,"ALG_RSA_CRT LENGTH_RSA_512 ALG_RSA_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Cipher_ALG_RSA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_512 ALG_RSA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"ALG_RSA_CRT LENGTH_RSA_512 ALG_RSA_PKCS1_OAEP", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Cipher_ALG_RSA_ISO14888,"ALG_RSA_CRT LENGTH_RSA_736 ALG_RSA_ISO14888", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Cipher_ALG_RSA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_736 ALG_RSA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Cipher_ALG_RSA_NOPAD,"ALG_RSA_CRT LENGTH_RSA_736 ALG_RSA_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Cipher_ALG_RSA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_736 ALG_RSA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"ALG_RSA_CRT LENGTH_RSA_736 ALG_RSA_PKCS1_OAEP", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Cipher_ALG_RSA_ISO14888,"ALG_RSA_CRT LENGTH_RSA_768 ALG_RSA_ISO14888", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Cipher_ALG_RSA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_768 ALG_RSA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Cipher_ALG_RSA_NOPAD,"ALG_RSA_CRT LENGTH_RSA_768 ALG_RSA_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Cipher_ALG_RSA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_768 ALG_RSA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"ALG_RSA_CRT LENGTH_RSA_768 ALG_RSA_PKCS1_OAEP", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Cipher_ALG_RSA_ISO14888,"ALG_RSA_CRT LENGTH_RSA_896 ALG_RSA_ISO14888", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Cipher_ALG_RSA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_896 ALG_RSA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Cipher_ALG_RSA_NOPAD,"ALG_RSA_CRT LENGTH_RSA_896 ALG_RSA_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Cipher_ALG_RSA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_896 ALG_RSA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"ALG_RSA_CRT LENGTH_RSA_896 ALG_RSA_PKCS1_OAEP", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Cipher_ALG_RSA_ISO14888,"ALG_RSA_CRT LENGTH_RSA_1024 ALG_RSA_ISO14888", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Cipher_ALG_RSA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_1024 ALG_RSA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Cipher_ALG_RSA_NOPAD,"ALG_RSA_CRT LENGTH_RSA_1024 ALG_RSA_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Cipher_ALG_RSA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_1024 ALG_RSA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"ALG_RSA_CRT LENGTH_RSA_1024 ALG_RSA_PKCS1_OAEP", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Cipher_ALG_RSA_ISO14888,"ALG_RSA_CRT LENGTH_RSA_1280 ALG_RSA_ISO14888", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Cipher_ALG_RSA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_1280 ALG_RSA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Cipher_ALG_RSA_NOPAD,"ALG_RSA_CRT LENGTH_RSA_1280 ALG_RSA_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Cipher_ALG_RSA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_1280 ALG_RSA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"ALG_RSA_CRT LENGTH_RSA_1280 ALG_RSA_PKCS1_OAEP", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Cipher_ALG_RSA_ISO14888,"ALG_RSA_CRT LENGTH_RSA_1536 ALG_RSA_ISO14888", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Cipher_ALG_RSA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_1536 ALG_RSA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Cipher_ALG_RSA_NOPAD,"ALG_RSA_CRT LENGTH_RSA_1536 ALG_RSA_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Cipher_ALG_RSA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_1536 ALG_RSA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"ALG_RSA_CRT LENGTH_RSA_1536 ALG_RSA_PKCS1_OAEP", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Cipher_ALG_RSA_ISO14888,"ALG_RSA_CRT LENGTH_RSA_1984 ALG_RSA_ISO14888", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Cipher_ALG_RSA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_1984 ALG_RSA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Cipher_ALG_RSA_NOPAD,"ALG_RSA_CRT LENGTH_RSA_1984 ALG_RSA_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Cipher_ALG_RSA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_1984 ALG_RSA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"ALG_RSA_CRT LENGTH_RSA_1984 ALG_RSA_PKCS1_OAEP", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_ISO14888,"ALG_RSA_CRT LENGTH_RSA_2048 ALG_RSA_ISO14888", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_2048 ALG_RSA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_NOPAD,"ALG_RSA_CRT LENGTH_RSA_2048 ALG_RSA_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_2048 ALG_RSA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"ALG_RSA_CRT LENGTH_RSA_2048 ALG_RSA_PKCS1_OAEP", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Cipher_ALG_RSA_ISO14888,"ALG_RSA_CRT LENGTH_RSA_3072 ALG_RSA_ISO14888", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Cipher_ALG_RSA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_3072 ALG_RSA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Cipher_ALG_RSA_NOPAD,"ALG_RSA_CRT LENGTH_RSA_3072 ALG_RSA_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Cipher_ALG_RSA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_3072 ALG_RSA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"ALG_RSA_CRT LENGTH_RSA_3072 ALG_RSA_PKCS1_OAEP", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Cipher_ALG_RSA_ISO14888,"ALG_RSA_CRT LENGTH_RSA_4096 ALG_RSA_ISO14888", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Cipher_ALG_RSA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_4096 ALG_RSA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Cipher_ALG_RSA_NOPAD,"ALG_RSA_CRT LENGTH_RSA_4096 ALG_RSA_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Cipher_ALG_RSA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_4096 ALG_RSA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testCipher(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"ALG_RSA_CRT LENGTH_RSA_4096 ALG_RSA_PKCS1_OAEP", numRepeatWholeOperation, numRepeatWholeMeasurement); 
-        
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Cipher_ALG_AES_BLOCK_128_CBC_NOPAD,"TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_128_CBC_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Cipher_ALG_AES_BLOCK_128_ECB_NOPAD,"TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_128_ECB_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Cipher_ALG_AES_BLOCK_192_CBC_NOPAD,"TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_192_CBC_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Cipher_ALG_AES_BLOCK_192_ECB_NOPAD,"TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_192_ECB_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Cipher_ALG_AES_BLOCK_256_CBC_NOPAD,"TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_256_CBC_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Cipher_ALG_AES_BLOCK_256_ECB_NOPAD,"TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_256_ECB_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Cipher_ALG_AES_CBC_ISO9797_M1,"TYPE_AES LENGTH_AES_128 ALG_AES_CBC_ISO9797_M1", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Cipher_ALG_AES_CBC_ISO9797_M2,"TYPE_AES LENGTH_AES_128 ALG_AES_CBC_ISO9797_M2", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Cipher_ALG_AES_CBC_PKCS5,"TYPE_AES LENGTH_AES_128 ALG_AES_CBC_PKCS5", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Cipher_ALG_AES_ECB_ISO9797_M1,"TYPE_AES LENGTH_AES_128 ALG_AES_ECB_ISO9797_M1", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Cipher_ALG_AES_ECB_ISO9797_M2,"TYPE_AES LENGTH_AES_128 ALG_AES_ECB_ISO9797_M2", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Cipher_ALG_AES_ECB_PKCS5,"TYPE_AES LENGTH_AES_128 ALG_AES_ECB_PKCS5", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement); 
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_192,JCConsts.Cipher_ALG_AES_BLOCK_128_CBC_NOPAD,"TYPE_AES LENGTH_AES_192 ALG_AES_BLOCK_128_CBC_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_192,JCConsts.Cipher_ALG_AES_BLOCK_128_ECB_NOPAD,"TYPE_AES LENGTH_AES_192 ALG_AES_BLOCK_128_ECB_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_192,JCConsts.Cipher_ALG_AES_BLOCK_192_CBC_NOPAD,"TYPE_AES LENGTH_AES_192 ALG_AES_BLOCK_192_CBC_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_192,JCConsts.Cipher_ALG_AES_BLOCK_192_ECB_NOPAD,"TYPE_AES LENGTH_AES_192 ALG_AES_BLOCK_192_ECB_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_192,JCConsts.Cipher_ALG_AES_BLOCK_256_CBC_NOPAD,"TYPE_AES LENGTH_AES_192 ALG_AES_BLOCK_256_CBC_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_192,JCConsts.Cipher_ALG_AES_BLOCK_256_ECB_NOPAD,"TYPE_AES LENGTH_AES_192 ALG_AES_BLOCK_256_ECB_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_192,JCConsts.Cipher_ALG_AES_CBC_ISO9797_M1,"TYPE_AES LENGTH_AES_192 ALG_AES_CBC_ISO9797_M1", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_192,JCConsts.Cipher_ALG_AES_CBC_ISO9797_M2,"TYPE_AES LENGTH_AES_192 ALG_AES_CBC_ISO9797_M2", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_192,JCConsts.Cipher_ALG_AES_CBC_PKCS5,"TYPE_AES LENGTH_AES_192 ALG_AES_CBC_PKCS5", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_192,JCConsts.Cipher_ALG_AES_ECB_ISO9797_M1,"TYPE_AES LENGTH_AES_192 ALG_AES_ECB_ISO9797_M1", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_192,JCConsts.Cipher_ALG_AES_ECB_ISO9797_M2,"TYPE_AES LENGTH_AES_192 ALG_AES_ECB_ISO9797_M2", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_192,JCConsts.Cipher_ALG_AES_ECB_PKCS5,"TYPE_AES LENGTH_AES_192 ALG_AES_ECB_PKCS5", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement); 
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_256,JCConsts.Cipher_ALG_AES_BLOCK_128_CBC_NOPAD,"TYPE_AES LENGTH_AES_256 ALG_AES_BLOCK_128_CBC_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_256,JCConsts.Cipher_ALG_AES_BLOCK_128_ECB_NOPAD,"TYPE_AES LENGTH_AES_256 ALG_AES_BLOCK_128_ECB_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_256,JCConsts.Cipher_ALG_AES_BLOCK_192_CBC_NOPAD,"TYPE_AES LENGTH_AES_256 ALG_AES_BLOCK_192_CBC_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_256,JCConsts.Cipher_ALG_AES_BLOCK_192_ECB_NOPAD,"TYPE_AES LENGTH_AES_256 ALG_AES_BLOCK_192_ECB_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_256,JCConsts.Cipher_ALG_AES_BLOCK_256_CBC_NOPAD,"TYPE_AES LENGTH_AES_256 ALG_AES_BLOCK_256_CBC_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_256,JCConsts.Cipher_ALG_AES_BLOCK_256_ECB_NOPAD,"TYPE_AES LENGTH_AES_256 ALG_AES_BLOCK_256_ECB_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_256,JCConsts.Cipher_ALG_AES_CBC_ISO9797_M1,"TYPE_AES LENGTH_AES_256 ALG_AES_CBC_ISO9797_M1", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_256,JCConsts.Cipher_ALG_AES_CBC_ISO9797_M2,"TYPE_AES LENGTH_AES_256 ALG_AES_CBC_ISO9797_M2", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_256,JCConsts.Cipher_ALG_AES_CBC_PKCS5,"TYPE_AES LENGTH_AES_256 ALG_AES_CBC_PKCS5", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_256,JCConsts.Cipher_ALG_AES_ECB_ISO9797_M1,"TYPE_AES LENGTH_AES_256 ALG_AES_ECB_ISO9797_M1", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_256,JCConsts.Cipher_ALG_AES_ECB_ISO9797_M2,"TYPE_AES LENGTH_AES_256 ALG_AES_ECB_ISO9797_M2", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_256,JCConsts.Cipher_ALG_AES_ECB_PKCS5,"TYPE_AES LENGTH_AES_256 ALG_AES_ECB_PKCS5", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement); 
+
+        if (!bExcludeAsymmetricAlgs) {
+            // ALG_RSA TYPE_RSA_PRIVATE
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Cipher_ALG_RSA_ISO14888,"TYPE_RSA_PRIVATE LENGTH_RSA_512 ALG_RSA_ISO14888", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Cipher_ALG_RSA_ISO9796,"TYPE_RSA_PRIVATE LENGTH_RSA_512 ALG_RSA_ISO9796", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_PRIVATE LENGTH_RSA_512 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_PRIVATE LENGTH_RSA_512 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"TYPE_RSA_PRIVATE LENGTH_RSA_512 ALG_RSA_PKCS1_OAEP", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Cipher_ALG_RSA_ISO14888,"TYPE_RSA_PRIVATE LENGTH_RSA_736 ALG_RSA_ISO14888", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Cipher_ALG_RSA_ISO9796,"TYPE_RSA_PRIVATE LENGTH_RSA_736 ALG_RSA_ISO9796", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_PRIVATE LENGTH_RSA_736 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_PRIVATE LENGTH_RSA_736 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"TYPE_RSA_PRIVATE LENGTH_RSA_736 ALG_RSA_PKCS1_OAEP", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Cipher_ALG_RSA_ISO14888,"TYPE_RSA_PRIVATE LENGTH_RSA_768 ALG_RSA_ISO14888", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Cipher_ALG_RSA_ISO9796,"TYPE_RSA_PRIVATE LENGTH_RSA_768 ALG_RSA_ISO9796", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_PRIVATE LENGTH_RSA_768 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_PRIVATE LENGTH_RSA_768 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"TYPE_RSA_PRIVATE LENGTH_RSA_768 ALG_RSA_PKCS1_OAEP", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Cipher_ALG_RSA_ISO14888,"TYPE_RSA_PRIVATE LENGTH_RSA_896 ALG_RSA_ISO14888", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Cipher_ALG_RSA_ISO9796,"TYPE_RSA_PRIVATE LENGTH_RSA_896 ALG_RSA_ISO9796", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_PRIVATE LENGTH_RSA_896 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_PRIVATE LENGTH_RSA_896 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"TYPE_RSA_PRIVATE LENGTH_RSA_896 ALG_RSA_PKCS1_OAEP", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Cipher_ALG_RSA_ISO14888,"TYPE_RSA_PRIVATE LENGTH_RSA_1024 ALG_RSA_ISO14888", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Cipher_ALG_RSA_ISO9796,"TYPE_RSA_PRIVATE LENGTH_RSA_1024 ALG_RSA_ISO9796", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_PRIVATE LENGTH_RSA_1024 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_PRIVATE LENGTH_RSA_1024 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"TYPE_RSA_PRIVATE LENGTH_RSA_1024 ALG_RSA_PKCS1_OAEP", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Cipher_ALG_RSA_ISO14888,"TYPE_RSA_PRIVATE LENGTH_RSA_1280 ALG_RSA_ISO14888", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Cipher_ALG_RSA_ISO9796,"TYPE_RSA_PRIVATE LENGTH_RSA_1280 ALG_RSA_ISO9796", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_PRIVATE LENGTH_RSA_1280 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_PRIVATE LENGTH_RSA_1280 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"TYPE_RSA_PRIVATE LENGTH_RSA_1280 ALG_RSA_PKCS1_OAEP", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Cipher_ALG_RSA_ISO14888,"TYPE_RSA_PRIVATE LENGTH_RSA_1536 ALG_RSA_ISO14888", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Cipher_ALG_RSA_ISO9796,"TYPE_RSA_PRIVATE LENGTH_RSA_1536 ALG_RSA_ISO9796", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_PRIVATE LENGTH_RSA_1536 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_PRIVATE LENGTH_RSA_1536 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"TYPE_RSA_PRIVATE LENGTH_RSA_1536 ALG_RSA_PKCS1_OAEP", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Cipher_ALG_RSA_ISO14888,"TYPE_RSA_PRIVATE LENGTH_RSA_1984 ALG_RSA_ISO14888", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Cipher_ALG_RSA_ISO9796,"TYPE_RSA_PRIVATE LENGTH_RSA_1984 ALG_RSA_ISO9796", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_PRIVATE LENGTH_RSA_1984 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_PRIVATE LENGTH_RSA_1984 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"TYPE_RSA_PRIVATE LENGTH_RSA_1984 ALG_RSA_PKCS1_OAEP", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_ISO14888,"TYPE_RSA_PRIVATE LENGTH_RSA_2048 ALG_RSA_ISO14888", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_ISO9796,"TYPE_RSA_PRIVATE LENGTH_RSA_2048 ALG_RSA_ISO9796", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_PRIVATE LENGTH_RSA_2048 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_PRIVATE LENGTH_RSA_2048 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"TYPE_RSA_PRIVATE LENGTH_RSA_2048 ALG_RSA_PKCS1_OAEP", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Cipher_ALG_RSA_ISO14888,"TYPE_RSA_PRIVATE LENGTH_RSA_3072 ALG_RSA_ISO14888", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Cipher_ALG_RSA_ISO9796,"TYPE_RSA_PRIVATE LENGTH_RSA_3072 ALG_RSA_ISO9796", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_PRIVATE LENGTH_RSA_3072 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_PRIVATE LENGTH_RSA_3072 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"TYPE_RSA_PRIVATE LENGTH_RSA_3072 ALG_RSA_PKCS1_OAEP", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Cipher_ALG_RSA_ISO14888,"TYPE_RSA_PRIVATE LENGTH_RSA_4096 ALG_RSA_ISO14888", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Cipher_ALG_RSA_ISO9796,"TYPE_RSA_PRIVATE LENGTH_RSA_4096 ALG_RSA_ISO9796", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_PRIVATE LENGTH_RSA_4096 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_PRIVATE LENGTH_RSA_4096 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"TYPE_RSA_PRIVATE LENGTH_RSA_4096 ALG_RSA_PKCS1_OAEP", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement); 
+            // ALG_RSA TYPE_RSA_PUBLIC
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Cipher_ALG_RSA_ISO14888,"TYPE_RSA_PUBLIC LENGTH_RSA_512 ALG_RSA_ISO14888", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Cipher_ALG_RSA_ISO9796,"TYPE_RSA_PUBLIC LENGTH_RSA_512 ALG_RSA_ISO9796", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_PUBLIC LENGTH_RSA_512 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_PUBLIC LENGTH_RSA_512 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"TYPE_RSA_PUBLIC LENGTH_RSA_512 ALG_RSA_PKCS1_OAEP", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Cipher_ALG_RSA_ISO14888,"TYPE_RSA_PUBLIC LENGTH_RSA_736 ALG_RSA_ISO14888", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Cipher_ALG_RSA_ISO9796,"TYPE_RSA_PUBLIC LENGTH_RSA_736 ALG_RSA_ISO9796", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_PUBLIC LENGTH_RSA_736 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_PUBLIC LENGTH_RSA_736 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"TYPE_RSA_PUBLIC LENGTH_RSA_736 ALG_RSA_PKCS1_OAEP", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Cipher_ALG_RSA_ISO14888,"TYPE_RSA_PUBLIC LENGTH_RSA_768 ALG_RSA_ISO14888", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Cipher_ALG_RSA_ISO9796,"TYPE_RSA_PUBLIC LENGTH_RSA_768 ALG_RSA_ISO9796", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_PUBLIC LENGTH_RSA_768 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_PUBLIC LENGTH_RSA_768 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"TYPE_RSA_PUBLIC LENGTH_RSA_768 ALG_RSA_PKCS1_OAEP", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Cipher_ALG_RSA_ISO14888,"TYPE_RSA_PUBLIC LENGTH_RSA_896 ALG_RSA_ISO14888", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Cipher_ALG_RSA_ISO9796,"TYPE_RSA_PUBLIC LENGTH_RSA_896 ALG_RSA_ISO9796", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_PUBLIC LENGTH_RSA_896 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_PUBLIC LENGTH_RSA_896 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"TYPE_RSA_PUBLIC LENGTH_RSA_896 ALG_RSA_PKCS1_OAEP", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Cipher_ALG_RSA_ISO14888,"TYPE_RSA_PUBLIC LENGTH_RSA_1024 ALG_RSA_ISO14888", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Cipher_ALG_RSA_ISO9796,"TYPE_RSA_PUBLIC LENGTH_RSA_1024 ALG_RSA_ISO9796", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_PUBLIC LENGTH_RSA_1024 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_PUBLIC LENGTH_RSA_1024 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"TYPE_RSA_PUBLIC LENGTH_RSA_1024 ALG_RSA_PKCS1_OAEP", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Cipher_ALG_RSA_ISO14888,"TYPE_RSA_PUBLIC LENGTH_RSA_1280 ALG_RSA_ISO14888", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Cipher_ALG_RSA_ISO9796,"TYPE_RSA_PUBLIC LENGTH_RSA_1280 ALG_RSA_ISO9796", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_PUBLIC LENGTH_RSA_1280 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_PUBLIC LENGTH_RSA_1280 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"TYPE_RSA_PUBLIC LENGTH_RSA_1280 ALG_RSA_PKCS1_OAEP", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Cipher_ALG_RSA_ISO14888,"TYPE_RSA_PUBLIC LENGTH_RSA_1536 ALG_RSA_ISO14888", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Cipher_ALG_RSA_ISO9796,"TYPE_RSA_PUBLIC LENGTH_RSA_1536 ALG_RSA_ISO9796", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_PUBLIC LENGTH_RSA_1536 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_PUBLIC LENGTH_RSA_1536 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"TYPE_RSA_PUBLIC LENGTH_RSA_1536 ALG_RSA_PKCS1_OAEP", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Cipher_ALG_RSA_ISO14888,"TYPE_RSA_PUBLIC LENGTH_RSA_1984 ALG_RSA_ISO14888", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Cipher_ALG_RSA_ISO9796,"TYPE_RSA_PUBLIC LENGTH_RSA_1984 ALG_RSA_ISO9796", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_PUBLIC LENGTH_RSA_1984 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_PUBLIC LENGTH_RSA_1984 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"TYPE_RSA_PUBLIC LENGTH_RSA_1984 ALG_RSA_PKCS1_OAEP", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_ISO14888,"TYPE_RSA_PUBLIC LENGTH_RSA_2048 ALG_RSA_ISO14888", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_ISO9796,"TYPE_RSA_PUBLIC LENGTH_RSA_2048 ALG_RSA_ISO9796", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_PUBLIC LENGTH_RSA_2048 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_PUBLIC LENGTH_RSA_2048 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"TYPE_RSA_PUBLIC LENGTH_RSA_2048 ALG_RSA_PKCS1_OAEP", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Cipher_ALG_RSA_ISO14888,"TYPE_RSA_PUBLIC LENGTH_RSA_3072 ALG_RSA_ISO14888", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Cipher_ALG_RSA_ISO9796,"TYPE_RSA_PUBLIC LENGTH_RSA_3072 ALG_RSA_ISO9796", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_PUBLIC LENGTH_RSA_3072 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_PUBLIC LENGTH_RSA_3072 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"TYPE_RSA_PUBLIC LENGTH_RSA_3072 ALG_RSA_PKCS1_OAEP", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Cipher_ALG_RSA_ISO14888,"TYPE_RSA_PUBLIC LENGTH_RSA_4096 ALG_RSA_ISO14888", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Cipher_ALG_RSA_ISO9796,"TYPE_RSA_PUBLIC LENGTH_RSA_4096 ALG_RSA_ISO9796", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_PUBLIC LENGTH_RSA_4096 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_PUBLIC LENGTH_RSA_4096 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"TYPE_RSA_PUBLIC LENGTH_RSA_4096 ALG_RSA_PKCS1_OAEP", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement); 
+            // ALG_RSA_CRT
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Cipher_ALG_RSA_ISO14888,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_512 ALG_RSA_ISO14888", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Cipher_ALG_RSA_ISO9796,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_512 ALG_RSA_ISO9796", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_512 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_512 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_512 ALG_RSA_PKCS1_OAEP", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Cipher_ALG_RSA_ISO14888,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_736 ALG_RSA_ISO14888", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Cipher_ALG_RSA_ISO9796,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_736 ALG_RSA_ISO9796", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_736 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_736 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_736 ALG_RSA_PKCS1_OAEP", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Cipher_ALG_RSA_ISO14888,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_768 ALG_RSA_ISO14888", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Cipher_ALG_RSA_ISO9796,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_768 ALG_RSA_ISO9796", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_768 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_768 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_768 ALG_RSA_PKCS1_OAEP", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Cipher_ALG_RSA_ISO14888,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_896 ALG_RSA_ISO14888", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Cipher_ALG_RSA_ISO9796,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_896 ALG_RSA_ISO9796", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_896 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_896 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_896 ALG_RSA_PKCS1_OAEP", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Cipher_ALG_RSA_ISO14888,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1024 ALG_RSA_ISO14888", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Cipher_ALG_RSA_ISO9796,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1024 ALG_RSA_ISO9796", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1024 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1024 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1024 ALG_RSA_PKCS1_OAEP", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Cipher_ALG_RSA_ISO14888,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1280 ALG_RSA_ISO14888", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Cipher_ALG_RSA_ISO9796,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1280 ALG_RSA_ISO9796", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1280 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1280 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1280 ALG_RSA_PKCS1_OAEP", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Cipher_ALG_RSA_ISO14888,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1536 ALG_RSA_ISO14888", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Cipher_ALG_RSA_ISO9796,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1536 ALG_RSA_ISO9796", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1536 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1536 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1536 ALG_RSA_PKCS1_OAEP", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Cipher_ALG_RSA_ISO14888,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1984 ALG_RSA_ISO14888", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Cipher_ALG_RSA_ISO9796,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1984 ALG_RSA_ISO9796", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1984 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1984 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1984 ALG_RSA_PKCS1_OAEP", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_ISO14888,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_2048 ALG_RSA_ISO14888", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_ISO9796,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_2048 ALG_RSA_ISO9796", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_2048 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_2048 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_2048 ALG_RSA_PKCS1_OAEP", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Cipher_ALG_RSA_ISO14888,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_3072 ALG_RSA_ISO14888", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Cipher_ALG_RSA_ISO9796,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_3072 ALG_RSA_ISO9796", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_3072 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_3072 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_3072 ALG_RSA_PKCS1_OAEP", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Cipher_ALG_RSA_ISO14888,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_4096 ALG_RSA_ISO14888", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Cipher_ALG_RSA_ISO9796,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_4096 ALG_RSA_ISO9796", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_4096 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_4096 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_4096 ALG_RSA_PKCS1_OAEP", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement); 
+        }
+        else {
+            String message = "Measurements excluded for asymmetric algorithms\n";
+            file.write(message.getBytes());
+        }        
         tableName = "CIPHER - END\n";
         file.write(tableName.getBytes());
     }
@@ -939,17 +1018,17 @@ public class PerformanceTesting {
     }   
     public static void testSignatureWithKeyClass(byte keyClass, byte keyType, short keyLength, byte alg, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
         TestSettings testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_SIGNATURE, alg, keyType, keyLength, JCConsts.Signature_update, 
-            Consts.TEST_DATA_LENGTH, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);      
+            Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);      
         testSet.keyClass = keyClass;
         
         testSet.algorithmMethod = JCConsts.Signature_update;
         PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_update()");
         testSet.algorithmMethod = JCConsts.Signature_sign;
         PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_sign()");
-        testSet.algorithmMethod = JCConsts.Signature_init;
-        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_init()");
         testSet.algorithmMethod = JCConsts.Signature_verify;
         PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_verify()");
+        testSet.algorithmMethod = JCConsts.Signature_init;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_init()");
     }
     public static void testAllSignatures(int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception {
         testAllSignatures((short) numRepeatWholeOperation, (short) numRepeatWholeMeasurement);
@@ -987,271 +1066,274 @@ public class PerformanceTesting {
         testSignature(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_2KEY,JCConsts.Signature_ALG_DES_MAC8_PKCS5,"TYPE_DES LENGTH_DES3_2KEY ALG_DES_MAC8_PKCS5", numRepeatWholeOperation, numRepeatWholeMeasurement);
         testSignature(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_3KEY,JCConsts.Signature_ALG_DES_MAC8_PKCS5,"TYPE_DES LENGTH_DES3_3KEY ALG_DES_MAC8_PKCS5", numRepeatWholeOperation, numRepeatWholeMeasurement);
         
-        // ALG_EC_F2M
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_F2M, JCConsts.KeyBuilder_ALG_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_113,JCConsts.Signature_ALG_ECDSA_SHA,"KeyPair_ALG_EC_F2M KeyBuilder_LENGTH_EC_F2M_113 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_F2M, JCConsts.KeyBuilder_ALG_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_131,JCConsts.Signature_ALG_ECDSA_SHA,"KeyPair_ALG_EC_F2M KeyBuilder_LENGTH_EC_F2M_131 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_F2M, JCConsts.KeyBuilder_ALG_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_163,JCConsts.Signature_ALG_ECDSA_SHA,"KeyPair_ALG_EC_F2M KeyBuilder_LENGTH_EC_F2M_163 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_F2M, JCConsts.KeyBuilder_ALG_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_193,JCConsts.Signature_ALG_ECDSA_SHA,"KeyPair_ALG_EC_F2M KeyBuilder_LENGTH_EC_F2M_193 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        if (!bExcludeAsymmetricAlgs) {
+            // ALG_EC_F2M
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_F2M, JCConsts.KeyBuilder_ALG_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_113,JCConsts.Signature_ALG_ECDSA_SHA,"KeyPair_ALG_EC_F2M KeyBuilder_LENGTH_EC_F2M_113 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_F2M, JCConsts.KeyBuilder_ALG_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_131,JCConsts.Signature_ALG_ECDSA_SHA,"KeyPair_ALG_EC_F2M KeyBuilder_LENGTH_EC_F2M_131 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_F2M, JCConsts.KeyBuilder_ALG_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_163,JCConsts.Signature_ALG_ECDSA_SHA,"KeyPair_ALG_EC_F2M KeyBuilder_LENGTH_EC_F2M_163 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_F2M, JCConsts.KeyBuilder_ALG_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_193,JCConsts.Signature_ALG_ECDSA_SHA,"KeyPair_ALG_EC_F2M KeyBuilder_LENGTH_EC_F2M_193 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
 
-        // ALG_EC_FP
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_ALG_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_112,JCConsts.Signature_ALG_ECDSA_SHA,"KeyPair_ALG_EC_FP KeyBuilder_LENGTH_EC_FP_112 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_ALG_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_128,JCConsts.Signature_ALG_ECDSA_SHA,"KeyPair_ALG_EC_FP KeyBuilder_LENGTH_EC_FP_128 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_ALG_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_160,JCConsts.Signature_ALG_ECDSA_SHA,"KeyPair_ALG_EC_FP KeyBuilder_LENGTH_EC_FP_160 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_ALG_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_192,JCConsts.Signature_ALG_ECDSA_SHA,"KeyPair_ALG_EC_FP KeyBuilder_LENGTH_EC_FP_192 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_ALG_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_224,JCConsts.Signature_ALG_ECDSA_SHA,"KeyPair_ALG_EC_FP KeyBuilder_LENGTH_EC_FP_224 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_ALG_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_256,JCConsts.Signature_ALG_ECDSA_SHA,"KeyPair_ALG_EC_FP KeyBuilder_LENGTH_EC_FP_256 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_ALG_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_384,JCConsts.Signature_ALG_ECDSA_SHA,"KeyPair_ALG_EC_FP KeyBuilder_LENGTH_EC_FP_384 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_ALG_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_521,JCConsts.Signature_ALG_ECDSA_SHA,"KeyPair_ALG_EC_FP KeyBuilder_LENGTH_EC_FP_521 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        
-        // DSA
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_DSA, JCConsts.KeyBuilder_ALG_TYPE_DSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_DSA_512,JCConsts.Signature_ALG_DSA_SHA,"ALG_DSA LENGTH_DSA_512 ALG_DSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_DSA, JCConsts.KeyBuilder_ALG_TYPE_DSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_DSA_768,JCConsts.Signature_ALG_DSA_SHA,"ALG_DSA LENGTH_DSA_768 ALG_DSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_DSA, JCConsts.KeyBuilder_ALG_TYPE_DSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_DSA_1024,JCConsts.Signature_ALG_DSA_SHA,"ALG_DSA LENGTH_DSA_1024 ALG_DSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        
-        // ALG_RSA
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_512 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_736 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_768 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_896 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);  
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_512 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_736 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_768 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_896 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);  
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_512 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_736 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_768 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_896 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);  
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_512 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_736 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_768 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_896 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);  
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_512 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_736 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_768 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_896 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);  
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_512 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_736 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_768 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_896 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);  
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_512 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_736 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_768 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_896 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);  
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_512 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_736 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_768 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_896 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);  
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_512 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_736 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_768 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_896 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);  
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_512 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_736 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_768 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_896 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);  
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            // ALG_EC_FP
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_ALG_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_112,JCConsts.Signature_ALG_ECDSA_SHA,"KeyPair_ALG_EC_FP KeyBuilder_LENGTH_EC_FP_112 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_ALG_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_128,JCConsts.Signature_ALG_ECDSA_SHA,"KeyPair_ALG_EC_FP KeyBuilder_LENGTH_EC_FP_128 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_ALG_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_160,JCConsts.Signature_ALG_ECDSA_SHA,"KeyPair_ALG_EC_FP KeyBuilder_LENGTH_EC_FP_160 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_ALG_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_192,JCConsts.Signature_ALG_ECDSA_SHA,"KeyPair_ALG_EC_FP KeyBuilder_LENGTH_EC_FP_192 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_ALG_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_224,JCConsts.Signature_ALG_ECDSA_SHA,"KeyPair_ALG_EC_FP KeyBuilder_LENGTH_EC_FP_224 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_ALG_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_256,JCConsts.Signature_ALG_ECDSA_SHA,"KeyPair_ALG_EC_FP KeyBuilder_LENGTH_EC_FP_256 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_ALG_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_384,JCConsts.Signature_ALG_ECDSA_SHA,"KeyPair_ALG_EC_FP KeyBuilder_LENGTH_EC_FP_384 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_ALG_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_521,JCConsts.Signature_ALG_ECDSA_SHA,"KeyPair_ALG_EC_FP KeyBuilder_LENGTH_EC_FP_521 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
 
-        // ALG_RSA_CRT
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA_CRT LENGTH_RSA_512 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA_CRT LENGTH_RSA_736 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA_CRT LENGTH_RSA_768 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA_CRT LENGTH_RSA_896 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA_CRT LENGTH_RSA_1024 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA_CRT LENGTH_RSA_1280 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA_CRT LENGTH_RSA_1536 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA_CRT LENGTH_RSA_1984 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);  
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA_CRT LENGTH_RSA_2048 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA_CRT LENGTH_RSA_3072 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA_CRT LENGTH_RSA_4096 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_512 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_736 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_768 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_896 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_1024 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_1280 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_1536 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_1984 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);  
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_2048 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_3072 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_4096 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA_CRT LENGTH_RSA_512 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA_CRT LENGTH_RSA_736 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA_CRT LENGTH_RSA_768 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA_CRT LENGTH_RSA_896 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA_CRT LENGTH_RSA_1024 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA_CRT LENGTH_RSA_1280 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA_CRT LENGTH_RSA_1536 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA_CRT LENGTH_RSA_1984 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);  
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA_CRT LENGTH_RSA_2048 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA_CRT LENGTH_RSA_3072 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA_CRT LENGTH_RSA_4096 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA_CRT LENGTH_RSA_512 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA_CRT LENGTH_RSA_736 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA_CRT LENGTH_RSA_768 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA_CRT LENGTH_RSA_896 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA_CRT LENGTH_RSA_1024 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA_CRT LENGTH_RSA_1280 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA_CRT LENGTH_RSA_1536 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA_CRT LENGTH_RSA_1984 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);  
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA_CRT LENGTH_RSA_2048 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA_CRT LENGTH_RSA_3072 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA_CRT LENGTH_RSA_4096 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA_CRT LENGTH_RSA_512 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA_CRT LENGTH_RSA_736 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA_CRT LENGTH_RSA_768 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA_CRT LENGTH_RSA_896 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA_CRT LENGTH_RSA_1024 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA_CRT LENGTH_RSA_1280 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA_CRT LENGTH_RSA_1536 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA_CRT LENGTH_RSA_1984 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);  
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA_CRT LENGTH_RSA_2048 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA_CRT LENGTH_RSA_3072 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA_CRT LENGTH_RSA_4096 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_512 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_736 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_768 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_896 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_1024 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_1280 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_1536 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_1984 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);  
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_2048 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_3072 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_4096 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_512 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_736 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_768 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_896 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_1024 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_1280 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_1536 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_1984 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);  
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_2048 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_3072 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_4096 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_512 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_736 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_768 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_896 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_1024 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_1280 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_1536 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_1984 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);  
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_2048 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_3072 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_4096 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_512 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_736 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_768 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_896 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_1024 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_1280 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_1536 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_1984 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);  
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_2048 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_3072 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_4096 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA_CRT LENGTH_RSA_512 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA_CRT LENGTH_RSA_736 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA_CRT LENGTH_RSA_768 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA_CRT LENGTH_RSA_896 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA_CRT LENGTH_RSA_1024 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA_CRT LENGTH_RSA_1280 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA_CRT LENGTH_RSA_1536 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA_CRT LENGTH_RSA_1984 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);  
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA_CRT LENGTH_RSA_2048 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA_CRT LENGTH_RSA_3072 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA_CRT LENGTH_RSA_4096 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        
-        // test signatures for JCConsts.KeyPair_ALG_RSA and CRT keys, ECC keys
-        
+            // DSA
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_DSA, JCConsts.KeyBuilder_ALG_TYPE_DSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_DSA_512,JCConsts.Signature_ALG_DSA_SHA,"ALG_DSA LENGTH_DSA_512 ALG_DSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_DSA, JCConsts.KeyBuilder_ALG_TYPE_DSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_DSA_768,JCConsts.Signature_ALG_DSA_SHA,"ALG_DSA LENGTH_DSA_768 ALG_DSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_DSA, JCConsts.KeyBuilder_ALG_TYPE_DSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_DSA_1024,JCConsts.Signature_ALG_DSA_SHA,"ALG_DSA LENGTH_DSA_1024 ALG_DSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
+
+            // ALG_RSA
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_512 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_736 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_768 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_896 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);  
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_512 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_736 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_768 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_896 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);  
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_512 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_736 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_768 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_896 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);  
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_512 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_736 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_768 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_896 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);  
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_512 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_736 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_768 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_896 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);  
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_512 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_736 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_768 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_896 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);  
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_512 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_736 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_768 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_896 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);  
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_512 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_736 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_768 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_896 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);  
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_512 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_736 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_768 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_896 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);  
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_512 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_736 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_768 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_896 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_1024 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_1280 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_1536 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_1984 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);  
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_2048 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_3072 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA LENGTH_RSA_4096 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+
+            // ALG_RSA_CRT
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA_CRT LENGTH_RSA_512 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA_CRT LENGTH_RSA_736 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA_CRT LENGTH_RSA_768 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA_CRT LENGTH_RSA_896 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA_CRT LENGTH_RSA_1024 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA_CRT LENGTH_RSA_1280 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA_CRT LENGTH_RSA_1536 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA_CRT LENGTH_RSA_1984 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);  
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA_CRT LENGTH_RSA_2048 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA_CRT LENGTH_RSA_3072 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_MD5_PKCS1,"ALG_RSA_CRT LENGTH_RSA_4096 ALG_RSA_MD5_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_512 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_736 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_768 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_896 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_1024 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_1280 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_1536 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_1984 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);  
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_2048 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_3072 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_MD5_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_4096 ALG_RSA_MD5_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA_CRT LENGTH_RSA_512 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA_CRT LENGTH_RSA_736 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA_CRT LENGTH_RSA_768 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA_CRT LENGTH_RSA_896 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA_CRT LENGTH_RSA_1024 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA_CRT LENGTH_RSA_1280 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA_CRT LENGTH_RSA_1536 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA_CRT LENGTH_RSA_1984 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);  
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA_CRT LENGTH_RSA_2048 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA_CRT LENGTH_RSA_3072 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_MD5_RFC2409,"ALG_RSA_CRT LENGTH_RSA_4096 ALG_RSA_MD5_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA_CRT LENGTH_RSA_512 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA_CRT LENGTH_RSA_736 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA_CRT LENGTH_RSA_768 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA_CRT LENGTH_RSA_896 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA_CRT LENGTH_RSA_1024 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA_CRT LENGTH_RSA_1280 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA_CRT LENGTH_RSA_1536 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA_CRT LENGTH_RSA_1984 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);  
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA_CRT LENGTH_RSA_2048 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA_CRT LENGTH_RSA_3072 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_RIPEMD160_ISO9796,"ALG_RSA_CRT LENGTH_RSA_4096 ALG_RSA_RIPEMD160_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA_CRT LENGTH_RSA_512 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA_CRT LENGTH_RSA_736 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA_CRT LENGTH_RSA_768 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA_CRT LENGTH_RSA_896 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA_CRT LENGTH_RSA_1024 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA_CRT LENGTH_RSA_1280 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA_CRT LENGTH_RSA_1536 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA_CRT LENGTH_RSA_1984 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);  
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA_CRT LENGTH_RSA_2048 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA_CRT LENGTH_RSA_3072 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1,"ALG_RSA_CRT LENGTH_RSA_4096 ALG_RSA_RIPEMD160_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_512 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_736 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_768 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_896 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_1024 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_1280 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_1536 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_1984 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);  
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_2048 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_3072 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_RIPEMD160_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_4096 ALG_RSA_RIPEMD160_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_512 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_736 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_768 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_896 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_1024 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_1280 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_1536 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_1984 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);  
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_2048 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_3072 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA_CRT LENGTH_RSA_4096 ALG_RSA_SHA_ISO9796", numRepeatWholeOperation, numRepeatWholeMeasurement);
+
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_512 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_736 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_768 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_896 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_1024 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_1280 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_1536 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_1984 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);  
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_2048 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_3072 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_4096 ALG_RSA_SHA_PKCS1", numRepeatWholeOperation, numRepeatWholeMeasurement);
+
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_512 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_736 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_768 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_896 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_1024 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_1280 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_1536 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_1984 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);  
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_2048 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_3072 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_SHA_PKCS1_PSS,"ALG_RSA_CRT LENGTH_RSA_4096 ALG_RSA_SHA_PKCS1_PSS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA_CRT LENGTH_RSA_512 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA_CRT LENGTH_RSA_736 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA_CRT LENGTH_RSA_768 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA_CRT LENGTH_RSA_896 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA_CRT LENGTH_RSA_1024 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA_CRT LENGTH_RSA_1280 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA_CRT LENGTH_RSA_1536 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA_CRT LENGTH_RSA_1984 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);  
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA_CRT LENGTH_RSA_2048 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA_CRT LENGTH_RSA_3072 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA_CRT LENGTH_RSA_4096 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        }
+        else {
+            String message = "Measurements excluded for asymmetric algorithms\n";
+            file.write(message.getBytes());
+        }          
         
         tableName = "SIGNATURE - END\n";
         file.write(tableName.getBytes());        
@@ -1259,7 +1341,7 @@ public class PerformanceTesting {
     
     public static void testChecksum(byte alg, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
         TestSettings testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_CHECKSUM, alg, Consts.UNUSED, Consts.UNUSED, JCConsts.Signature_update, 
-            Consts.TEST_DATA_LENGTH, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);      
+            Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);      
         
         testSet.algorithmMethod = JCConsts.Checksum_update;
         PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CHECKSUM, Consts.INS_PERF_TEST_CLASS_CHECKSUM, testSet, info + " Checksum_update()");
@@ -1284,7 +1366,7 @@ public class PerformanceTesting {
     public static void testAESKey(byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
         TestSettings testSet = null;
         testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.AESKey_setKey, 
-                Consts.TEST_DATA_LENGTH, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);      
+                Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);      
         
         testSet.algorithmMethod = JCConsts.AESKey_setKey;
         PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setKey()");
@@ -1312,7 +1394,7 @@ public class PerformanceTesting {
     public static void testDESKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
         TestSettings testSet = null;
         testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.DESKey_setKey,
-                Consts.TEST_DATA_LENGTH, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
+                Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
         testSet.algorithmMethod = JCConsts.DESKey_setKey;
         PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setKey()");
         testSet.algorithmMethod = JCConsts.DESKey_getKey;
@@ -1340,7 +1422,7 @@ public class PerformanceTesting {
     public static void testKoreanSEEDKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
         TestSettings testSet = null;
         testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.KoreanSEEDKey_setKey,
-                Consts.TEST_DATA_LENGTH, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
+                Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
         
         testSet.algorithmMethod = JCConsts.KoreanSEEDKey_setKey;
         PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setKey()");
@@ -1365,7 +1447,7 @@ public class PerformanceTesting {
     public static void testDSAPrivateKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
         TestSettings testSet = null;
         testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.DSAPrivateKey_getX,
-                Consts.TEST_DATA_LENGTH, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
+                Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
         
         testSet.algorithmMethod = JCConsts.DSAPrivateKey_getX;
         PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setX()");
@@ -1380,11 +1462,15 @@ public class PerformanceTesting {
     public static void testAllDSAPrivateKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
         String tableName = "\n\nDSAPrivateKey";
         file.write(tableName.getBytes());
-        
-        testDSAPrivateKey(JCConsts.KeyBuilder_TYPE_DSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_DSA_512, "TYPE DSA PRIVATE LENGTH DSA 512", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testDSAPrivateKey(JCConsts.KeyBuilder_TYPE_DSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_DSA_768, "TYPE DSA PRIVATE LENGTH DSA 768", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testDSAPrivateKey(JCConsts.KeyBuilder_TYPE_DSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_DSA_1024, "TYPE DSA PRIVATE LENGTH DSA 1024", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        
+        if (!bExcludeAsymmetricAlgs) {
+            testDSAPrivateKey(JCConsts.KeyBuilder_TYPE_DSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_DSA_512, "TYPE DSA PRIVATE LENGTH DSA 512", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testDSAPrivateKey(JCConsts.KeyBuilder_TYPE_DSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_DSA_768, "TYPE DSA PRIVATE LENGTH DSA 768", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testDSAPrivateKey(JCConsts.KeyBuilder_TYPE_DSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_DSA_1024, "TYPE DSA PRIVATE LENGTH DSA 1024", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        }
+        else {
+            String message = "Measurements excluded for asymmetric algorithms\n";
+            file.write(message.getBytes());
+        }           
         tableName = "DSAPrivateKey - END\n";
         file.write(tableName.getBytes());
     }
@@ -1392,7 +1478,7 @@ public class PerformanceTesting {
     public static void testDSAPublicKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
         TestSettings testSet = null;
         testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.DSAPublicKey_getY,
-                Consts.TEST_DATA_LENGTH, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
+                Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
         
         testSet.algorithmMethod = JCConsts.DSAPublicKey_getY;
         PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setY()");
@@ -1407,11 +1493,15 @@ public class PerformanceTesting {
     public static void testAllDSAPublicKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
         String tableName = "\n\nDSAPublicKey";
         file.write(tableName.getBytes());
-        
-        testDSAPublicKey(JCConsts.KeyBuilder_TYPE_DSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_DSA_512, "TYPE DSA PUBLIC LENGTH DSA 512", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testDSAPublicKey(JCConsts.KeyBuilder_TYPE_DSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_DSA_768, "TYPE DSA PUBLIC LENGTH DSA 768", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testDSAPublicKey(JCConsts.KeyBuilder_TYPE_DSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_DSA_1024, "TYPE DSA PUBLIC LENGTH DSA 1024", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        
+        if (!bExcludeAsymmetricAlgs) {
+            testDSAPublicKey(JCConsts.KeyBuilder_TYPE_DSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_DSA_512, "TYPE DSA PUBLIC LENGTH DSA 512", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testDSAPublicKey(JCConsts.KeyBuilder_TYPE_DSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_DSA_768, "TYPE DSA PUBLIC LENGTH DSA 768", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testDSAPublicKey(JCConsts.KeyBuilder_TYPE_DSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_DSA_1024, "TYPE DSA PUBLIC LENGTH DSA 1024", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        }
+        else {
+            String message = "Measurements excluded for asymmetric algorithms\n";
+            file.write(message.getBytes());
+        }           
         tableName = "DSAPublicKey - END\n";
         file.write(tableName.getBytes());
     }
@@ -1419,7 +1509,7 @@ public class PerformanceTesting {
     public static void testECF2MPublicKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
         TestSettings testSet = null;
         testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.ECPublicKey_setW,
-                Consts.TEST_DATA_LENGTH, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
+                Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
         
         testSet.algorithmMethod = JCConsts.ECPublicKey_setW;
         PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setW()");
@@ -1434,12 +1524,16 @@ public class PerformanceTesting {
     public static void testAllECF2MPublicKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
         String tableName = "\n\nECF2MPublicKey";
         file.write(tableName.getBytes());
-        
-        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_F2M_113, "TYPE EC F2M PUBLIC LENGTH EC F2M 113", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_F2M_131, "TYPE EC F2M PUBLIC LENGTH EC F2M 131", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_F2M_163, "TYPE EC F2M PUBLIC LENGTH EC F2M 163", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_F2M_193, "TYPE EC F2M PUBLIC LENGTH EC F2M 193", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        
+        if (!bExcludeAsymmetricAlgs) {
+            testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_F2M_113, "TYPE EC F2M PUBLIC LENGTH EC F2M 113", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_F2M_131, "TYPE EC F2M PUBLIC LENGTH EC F2M 131", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_F2M_163, "TYPE EC F2M PUBLIC LENGTH EC F2M 163", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_F2M_193, "TYPE EC F2M PUBLIC LENGTH EC F2M 193", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        }
+        else {
+            String message = "Measurements excluded for asymmetric algorithms\n";
+            file.write(message.getBytes());
+        }           
         tableName = "ECF2MPublicKey - END\n";
         file.write(tableName.getBytes());
     }
@@ -1447,7 +1541,7 @@ public class PerformanceTesting {
     public static void testECF2mPrivateKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
         TestSettings testSet = null;
         testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.ECPrivateKey_setS,
-                Consts.TEST_DATA_LENGTH, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
+                Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
         
         testSet.algorithmMethod = JCConsts.ECPrivateKey_setS;
         PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setS()");
@@ -1462,12 +1556,16 @@ public class PerformanceTesting {
     public static void testAllECF2MPrivateKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
         String tableName = "\n\nECF2MPrivateKey";
         file.write(tableName.getBytes());
-        
-        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_113, "TYPE EC F2M PRIVATE LENGTH EC F2M 113", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_131, "TYPE EC F2M PRIVATE LENGTH EC F2M 131", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_163, "TYPE EC F2M PRIVATE LENGTH EC F2M 163", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_193, "TYPE EC F2M PRIVATE LENGTH EC F2M 193", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        
+        if (!bExcludeAsymmetricAlgs) {
+            testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_113, "TYPE EC F2M PRIVATE LENGTH EC F2M 113", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_131, "TYPE EC F2M PRIVATE LENGTH EC F2M 131", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_163, "TYPE EC F2M PRIVATE LENGTH EC F2M 163", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_193, "TYPE EC F2M PRIVATE LENGTH EC F2M 193", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        }
+        else {
+            String message = "Measurements excluded for asymmetric algorithms\n";
+            file.write(message.getBytes());
+        }           
         tableName = "ECF2MPrivateKey - END\n";
         file.write(tableName.getBytes());
     }
@@ -1475,7 +1573,7 @@ public class PerformanceTesting {
     public static void testECFPPublicKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
         TestSettings testSet = null;
         testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.ECPublicKey_setW,
-                Consts.TEST_DATA_LENGTH, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
+                Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
         
         testSet.algorithmMethod = JCConsts.ECPublicKey_setW;
         PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setW()");
@@ -1490,16 +1588,20 @@ public class PerformanceTesting {
     public static void testAllECFPPublicKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
         String tableName = "\n\nECFPPublicKey";
         file.write(tableName.getBytes());
-        
-        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_112, "TYPE EC FP PUBLIC LENGTH EC FP 112", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_128, "TYPE EC FP PUBLIC LENGTH EC FP 128", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_160, "TYPE EC FP PUBLIC LENGTH EC FP 160", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_192, "TYPE EC FP PUBLIC LENGTH EC FP 192", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_224, "TYPE EC FP PUBLIC LENGTH EC FP 224", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_256, "TYPE EC FP PUBLIC LENGTH EC FP 256", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_384, "TYPE EC FP PUBLIC LENGTH EC FP 384", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_521, "TYPE EC FP PUBLIC LENGTH EC FP 521", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        
+        if (!bExcludeAsymmetricAlgs) {
+            testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_112, "TYPE EC FP PUBLIC LENGTH EC FP 112", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_128, "TYPE EC FP PUBLIC LENGTH EC FP 128", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_160, "TYPE EC FP PUBLIC LENGTH EC FP 160", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_192, "TYPE EC FP PUBLIC LENGTH EC FP 192", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_224, "TYPE EC FP PUBLIC LENGTH EC FP 224", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_256, "TYPE EC FP PUBLIC LENGTH EC FP 256", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_384, "TYPE EC FP PUBLIC LENGTH EC FP 384", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_521, "TYPE EC FP PUBLIC LENGTH EC FP 521", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        }
+        else {
+            String message = "Measurements excluded for asymmetric algorithms\n";
+            file.write(message.getBytes());
+        }           
         tableName = "ECFPPublicKey - END\n";
         file.write(tableName.getBytes());
     }
@@ -1507,7 +1609,7 @@ public class PerformanceTesting {
     public static void testECFPPrivateKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
         TestSettings testSet = null;
         testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.ECPrivateKey_setS,
-                Consts.TEST_DATA_LENGTH, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
+                Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
         
         testSet.algorithmMethod = JCConsts.ECPrivateKey_setS;
         PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setS()");
@@ -1522,16 +1624,20 @@ public class PerformanceTesting {
     public static void testAllECFPPrivateKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
         String tableName = "\n\nECFPPublicKey";
         file.write(tableName.getBytes());
-        
-        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_112, "TYPE EC FP PRIVATE LENGTH EC FP 112", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_128, "TYPE EC FP PRIVATE LENGTH EC FP 128", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_160, "TYPE EC FP PRIVATE LENGTH EC FP 160", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_192, "TYPE EC FP PRIVATE LENGTH EC FP 192", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_224, "TYPE EC FP PRIVATE LENGTH EC FP 224", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_256, "TYPE EC FP PRIVATE LENGTH EC FP 256", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_384, "TYPE EC FP PRIVATE LENGTH EC FP 384", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_521, "TYPE EC FP PRIVATE LENGTH EC FP 521", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        
+        if (!bExcludeAsymmetricAlgs) {
+            testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_112, "TYPE EC FP PRIVATE LENGTH EC FP 112", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_128, "TYPE EC FP PRIVATE LENGTH EC FP 128", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_160, "TYPE EC FP PRIVATE LENGTH EC FP 160", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_192, "TYPE EC FP PRIVATE LENGTH EC FP 192", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_224, "TYPE EC FP PRIVATE LENGTH EC FP 224", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_256, "TYPE EC FP PRIVATE LENGTH EC FP 256", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_384, "TYPE EC FP PRIVATE LENGTH EC FP 384", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_521, "TYPE EC FP PRIVATE LENGTH EC FP 521", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        }
+        else {
+            String message = "Measurements excluded for asymmetric algorithms\n";
+            file.write(message.getBytes());
+        }           
         tableName = "ECFPPublicKey - END\n";
         file.write(tableName.getBytes());
     }
@@ -1539,7 +1645,7 @@ public class PerformanceTesting {
     public static void testHMACKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
         TestSettings testSet = null;
         testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.HMACKey_getKey,
-                Consts.TEST_DATA_LENGTH, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
+                Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
         
         testSet.algorithmMethod = JCConsts.HMACKey_setKey;
         PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setKey()");
@@ -1567,7 +1673,7 @@ public class PerformanceTesting {
     public static void testRSAPrivateCrtKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
         TestSettings testSet = null;
         testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.RSAPrivateCrtKey_setDP1,
-                Consts.TEST_DATA_LENGTH, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
+                Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
         
         testSet.algorithmMethod = JCConsts.RSAPrivateCrtKey_setDP1;
         PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setDP1()");
@@ -1600,19 +1706,23 @@ public class PerformanceTesting {
     public static void testAllRSAPrivateCrtKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
         String tableName = "\n\nRSAPrivateCRTKey";
         file.write(tableName.getBytes());
-        
-        testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512, "TYPE RSA PRIVATE CRT LENGTH RSA 512", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736, "TYPE RSA PRIVATE CRT LENGTH RSA 736", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768, "TYPE RSA PRIVATE CRT LENGTH RSA 768", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896, "TYPE RSA PRIVATE CRT LENGTH RSA 896", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024, "TYPE RSA PRIVATE CRT LENGTH RSA 1024", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280, "TYPE RSA PRIVATE CRT LENGTH RSA 1280", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536, "TYPE RSA PRIVATE CRT LENGTH RSA 1536", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984, "TYPE RSA PRIVATE CRT LENGTH RSA 1984", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048, "TYPE RSA PRIVATE CRT LENGTH RSA 2048", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072, "TYPE RSA PRIVATE CRT LENGTH RSA 3072", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096, "TYPE RSA PRIVATE CRT LENGTH RSA 4096", numRepeatWholeOperation, numRepeatWholeMeasurement);
-
+        if (!bExcludeAsymmetricAlgs) {
+            testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512, "TYPE RSA PRIVATE CRT LENGTH RSA 512", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736, "TYPE RSA PRIVATE CRT LENGTH RSA 736", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768, "TYPE RSA PRIVATE CRT LENGTH RSA 768", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896, "TYPE RSA PRIVATE CRT LENGTH RSA 896", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024, "TYPE RSA PRIVATE CRT LENGTH RSA 1024", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280, "TYPE RSA PRIVATE CRT LENGTH RSA 1280", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536, "TYPE RSA PRIVATE CRT LENGTH RSA 1536", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984, "TYPE RSA PRIVATE CRT LENGTH RSA 1984", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048, "TYPE RSA PRIVATE CRT LENGTH RSA 2048", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072, "TYPE RSA PRIVATE CRT LENGTH RSA 3072", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096, "TYPE RSA PRIVATE CRT LENGTH RSA 4096", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        }
+        else {
+            String message = "Measurements excluded for asymmetric algorithms\n";
+            file.write(message.getBytes());
+        }   
         tableName = "RSAPrivateCRTKey - END\n";
         file.write(tableName.getBytes());
     }
@@ -1620,7 +1730,7 @@ public class PerformanceTesting {
     public static void testRSAPrivateKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
         TestSettings testSet = null;
         testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.RSAPrivateKey_setExponent,
-                Consts.TEST_DATA_LENGTH, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
+                Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
         
         testSet.algorithmMethod = JCConsts.RSAPrivateKey_setExponent;
         PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setExponent()");
@@ -1641,19 +1751,23 @@ public class PerformanceTesting {
     public static void testAllRSAPrivateKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
         String tableName = "\n\nRSAPrivateKey";
         file.write(tableName.getBytes());
-        
-        testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512, "TYPE RSA PRIVATE LENGTH RSA 512", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736, "TYPE RSA PRIVATE LENGTH RSA 736", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768, "TYPE RSA PRIVATE LENGTH RSA 768", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896, "TYPE RSA PRIVATE LENGTH RSA 896", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024, "TYPE RSA PRIVATE LENGTH RSA 1024", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280, "TYPE RSA PRIVATE LENGTH RSA 1280", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536, "TYPE RSA PRIVATE LENGTH RSA 1536", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984, "TYPE RSA PRIVATE LENGTH RSA 1984", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048, "TYPE RSA PRIVATE LENGTH RSA 2048", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072, "TYPE RSA PRIVATE LENGTH RSA 3072", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096, "TYPE RSA PRIVATE LENGTH RSA 4096", numRepeatWholeOperation, numRepeatWholeMeasurement);
-
+        if (!bExcludeAsymmetricAlgs) {
+            testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512, "TYPE RSA PRIVATE LENGTH RSA 512", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736, "TYPE RSA PRIVATE LENGTH RSA 736", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768, "TYPE RSA PRIVATE LENGTH RSA 768", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_896, "TYPE RSA PRIVATE LENGTH RSA 896", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024, "TYPE RSA PRIVATE LENGTH RSA 1024", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280, "TYPE RSA PRIVATE LENGTH RSA 1280", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1536, "TYPE RSA PRIVATE LENGTH RSA 1536", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984, "TYPE RSA PRIVATE LENGTH RSA 1984", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048, "TYPE RSA PRIVATE LENGTH RSA 2048", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_3072, "TYPE RSA PRIVATE LENGTH RSA 3072", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096, "TYPE RSA PRIVATE LENGTH RSA 4096", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        }
+        else {
+            String message = "Measurements excluded for asymmetric algorithms\n";
+            file.write(message.getBytes());
+        }   
         tableName = "RSAPrivateKey - END\n";
         file.write(tableName.getBytes());
     }
@@ -1661,7 +1775,7 @@ public class PerformanceTesting {
     public static void testRSAPublicKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
         TestSettings testSet = null;
         testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.RSAPublicKey_setExponent,
-                Consts.TEST_DATA_LENGTH, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
+                Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
         
         testSet.algorithmMethod = JCConsts.RSAPublicKey_setExponent;
         PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setExponent()");
@@ -1683,18 +1797,23 @@ public class PerformanceTesting {
         String tableName = "\n\nRSAPublicKey";
         file.write(tableName.getBytes());
         
-        testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_512, "TYPE RSA PUBLIC LENGTH RSA 512", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_736, "TYPE RSA PUBLIC LENGTH RSA 736", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_768, "TYPE RSA PUBLIC LENGTH RSA 768", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_896, "TYPE RSA PUBLIC LENGTH RSA 896", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1024, "TYPE RSA PUBLIC LENGTH RSA 1024", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1280, "TYPE RSA PUBLIC LENGTH RSA 1280", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1536, "TYPE RSA PUBLIC LENGTH RSA 1536", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1984, "TYPE RSA PUBLIC LENGTH RSA 1984", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_2048, "TYPE RSA PUBLIC LENGTH RSA 2048", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_3072, "TYPE RSA PUBLIC LENGTH RSA 3072", numRepeatWholeOperation, numRepeatWholeMeasurement);
-        testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_4096, "TYPE RSA PUBLIC LENGTH RSA 4096", numRepeatWholeOperation, numRepeatWholeMeasurement);
-
+        if (!bExcludeAsymmetricAlgs) {
+            testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_512, "TYPE RSA PUBLIC LENGTH RSA 512", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_736, "TYPE RSA PUBLIC LENGTH RSA 736", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_768, "TYPE RSA PUBLIC LENGTH RSA 768", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_896, "TYPE RSA PUBLIC LENGTH RSA 896", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1024, "TYPE RSA PUBLIC LENGTH RSA 1024", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1280, "TYPE RSA PUBLIC LENGTH RSA 1280", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1536, "TYPE RSA PUBLIC LENGTH RSA 1536", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1984, "TYPE RSA PUBLIC LENGTH RSA 1984", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_2048, "TYPE RSA PUBLIC LENGTH RSA 2048", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_3072, "TYPE RSA PUBLIC LENGTH RSA 3072", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_4096, "TYPE RSA PUBLIC LENGTH RSA 4096", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        }
+        else {
+            String message = "Measurements excluded for asymmetric algorithms\n";
+            file.write(message.getBytes());
+        }   
         tableName = "RSAPublicKey - END\n";
         file.write(tableName.getBytes());
     }
@@ -1716,7 +1835,6 @@ public class PerformanceTesting {
         testAllRSAPrivateCrtKeys(numRepeatWholeOperation, numRepeatWholeMeasurement);
         testAllRSAPrivateKeys(numRepeatWholeOperation, numRepeatWholeMeasurement);
         testAllRSAPublicKeys(numRepeatWholeOperation, numRepeatWholeMeasurement);
-        
     }
     
     
