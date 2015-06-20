@@ -59,8 +59,10 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
     /**
      * Version 1.5 (30.6.2015)
      * + added external setting of init mode for Cipher
+     * + added improved clerKey testing
+     * + added key alteration for init() methods
      * + added valid signature before verification 
-     * - fixed minor bugs in tests (i = 10 instead of i % 10), improper breaks, 
+     * - fixed bugs in tests (i = 10 instead of i % 10), improper breaks...
      */
     final static byte ALGTEST_JAVACARD_VERSION_1_5[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x35};
     /**
@@ -176,13 +178,28 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
     RSAPrivateCrtKey    m_rsaprivatecrt_key = null;
     RSAPrivateKey       m_rsaprivate_key = null;
     RSAPublicKey        m_rsapublic_key = null;
-    Key             m_key = null;
-    PrivateKey      m_privateKey = null;
-    PublicKey       m_publicKey = null;
+    AESKey              m_aes_key2 = null;
+    DESKey              m_des_key2 = null;
+    KoreanSEEDKey       m_koreanseed_key2 = null;
+    DSAKey              m_dsa_key2 = null;
+    DSAPrivateKey       m_dsaprivate_key2 = null;
+    DSAPublicKey        m_dsapublic_key2 = null;
+    ECKey               m_ex_key2 = null;
+    ECPrivateKey        m_ecprivate_key2 = null;
+    ECPublicKey         m_ecpublic_key2 = null;
+    HMACKey             m_hmac_key2 = null;
+    RSAPrivateCrtKey    m_rsaprivatecrt_key2 = null;
+    RSAPrivateKey       m_rsaprivate_key2 = null;
+    RSAPublicKey        m_rsapublic_key2 = null;
+    Key                 m_key1 = null;
+    Key                 m_key2 = null;
+    PrivateKey          m_privateKey = null;
+    PublicKey           m_publicKey = null;
     
-    Cipher          m_cipher = null;
-    Signature       m_signature = null;
-    byte[]          m_ram1 = null;
+    Cipher              m_cipher = null;
+    Signature           m_signatureSign = null;
+    Signature           m_signatureVerify = null;
+    byte[]              m_ram1 = null;
     
     
 
@@ -363,7 +380,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
              break;
            }
            case (byte) 0x20: {
-             try {offset++;m_key = KeyBuilder.buildKey(algorithmClass, algorithmParam1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+             try {offset++;m_key1 = KeyBuilder.buildKey(algorithmClass, algorithmParam1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
              catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
              break;
            }
@@ -648,43 +665,55 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                 case JCConsts.KeyBuilder_TYPE_AES_TRANSIENT_RESET:
                 case JCConsts.KeyBuilder_TYPE_AES_TRANSIENT_DESELECT:
                     m_aes_key = (AESKey) KeyBuilder.buildKey((byte) m_testSettings.keyType, m_testSettings.keyLength, false);
+                    m_aes_key2 = (AESKey) KeyBuilder.buildKey((byte) m_testSettings.keyType, m_testSettings.keyLength, false);
                     if (bSetKeyValue == Consts.TRUE) {  
-                        m_aes_key.setKey(m_ram1, (byte)0); 
-                        m_key = m_aes_key;
+                        m_aes_key.setKey(m_ram1, (byte) 0); 
+                        m_key1 = m_aes_key;
+                        m_aes_key2.setKey(m_ram1, (byte) 1); 
+                        m_key2 = m_aes_key2;
                     }
                     break;
                 case JCConsts.KeyBuilder_TYPE_DES:
                 case JCConsts.KeyBuilder_TYPE_DES_TRANSIENT_RESET: 
                 case JCConsts.KeyBuilder_TYPE_DES_TRANSIENT_DESELECT: 
                     m_des_key = (DESKey) KeyBuilder.buildKey((byte) m_testSettings.keyType, m_testSettings.keyLength, false);
+                    m_des_key2 = (DESKey) KeyBuilder.buildKey((byte) m_testSettings.keyType, m_testSettings.keyLength, false);
                     if (bSetKeyValue == Consts.TRUE) {  
-                        m_des_key.setKey(m_ram1, (byte)0); 
-                        m_key = m_des_key;
+                        m_des_key.setKey(m_ram1, (byte) 0); 
+                        m_key1 = m_des_key;
+                        m_des_key2.setKey(m_ram1, (byte) 1); 
+                        m_key2 = m_des_key2;
                     }                    
                     break;
                 case JCConsts.KeyBuilder_TYPE_KOREAN_SEED: 
                 case JCConsts.KeyBuilder_TYPE_KOREAN_SEED_TRANSIENT_RESET: 
                 case JCConsts.KeyBuilder_TYPE_KOREAN_SEED_TRANSIENT_DESELECT: 
                     m_koreanseed_key = (KoreanSEEDKey) KeyBuilder.buildKey((byte) m_testSettings.keyType, m_testSettings.keyLength, false);
+                    m_koreanseed_key2 = (KoreanSEEDKey) KeyBuilder.buildKey((byte) m_testSettings.keyType, m_testSettings.keyLength, false);
                     if (bSetKeyValue == Consts.TRUE) {  
-                        m_koreanseed_key.setKey(m_ram1, (byte)0); 
-                        m_key = m_koreanseed_key;
+                        m_koreanseed_key.setKey(m_ram1, (byte) 0); 
+                        m_key1 = m_koreanseed_key;
+                        m_koreanseed_key2.setKey(m_ram1, (byte) 1); 
+                        m_key2 = m_koreanseed_key2;
                     } 
                     break;
                 case JCConsts.KeyBuilder_TYPE_HMAC:
                 case JCConsts.KeyBuilder_TYPE_HMAC_TRANSIENT_RESET:
                 case JCConsts.KeyBuilder_TYPE_HMAC_TRANSIENT_DESELECT:
                     m_hmac_key = (HMACKey) KeyBuilder.buildKey((byte) m_testSettings.keyType, m_testSettings.keyLength, false);
+                    m_hmac_key2 = (HMACKey) KeyBuilder.buildKey((byte) m_testSettings.keyType, m_testSettings.keyLength, false);
                     if (bSetKeyValue == Consts.TRUE){
                         m_hmac_key.setKey(m_ram1, (byte) 0, m_testSettings.keyLength);
-                        m_key = m_hmac_key;
+                        m_key1 = m_hmac_key;
+                        m_hmac_key2.setKey(m_ram1, (byte) 1, m_testSettings.keyLength);
+                        m_key2 = m_hmac_key2;
                     }
                     break;
                 case JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE:
                     if (bSetKeyValue == Consts.TRUE) {
                         m_keyPair = new KeyPair(KeyPair.ALG_RSA_CRT, m_testSettings.keyLength);
                         m_keyPair.genKeyPair();
-                        m_key = m_keyPair.getPrivate();
+                        m_key1 = m_keyPair.getPrivate();
                         m_rsaprivatecrt_key = (RSAPrivateCrtKey) m_keyPair.getPrivate();
                     }
                     break;
@@ -692,7 +721,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                     if (bSetKeyValue == Consts.TRUE) {
                         m_keyPair = new KeyPair(KeyPair.ALG_RSA, m_testSettings.keyLength);
                         m_keyPair.genKeyPair();
-                        m_key = m_keyPair.getPrivate();
+                        m_key1 = m_keyPair.getPrivate();
                         m_rsaprivate_key = (RSAPrivateKey) m_keyPair.getPrivate();
                     }
                     break;                
@@ -700,7 +729,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                     if (bSetKeyValue == Consts.TRUE){
                         m_keyPair = new KeyPair(KeyPair.ALG_RSA, m_testSettings.keyLength);
                         m_keyPair.genKeyPair(); // TODO: use fixed key value to shorten time required for key generation?
-                        m_key = m_keyPair.getPublic();                
+                        m_key1 = m_keyPair.getPublic();                
                         m_rsapublic_key = (RSAPublicKey) m_keyPair.getPublic();
                     }
                     break;
@@ -708,7 +737,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                     if (bSetKeyValue == Consts.TRUE) {
                         m_keyPair = new KeyPair(KeyPair.ALG_EC_F2M, m_testSettings.keyLength);
                         m_keyPair.genKeyPair();
-                        m_key = m_keyPair.getPrivate();
+                        m_key1 = m_keyPair.getPrivate();
                         m_ecprivate_key = (ECPrivateKey) m_keyPair.getPrivate();
                     }
                     break;
@@ -716,7 +745,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                     if (bSetKeyValue == Consts.TRUE) {
                         m_keyPair = new KeyPair(KeyPair.ALG_EC_FP, m_testSettings.keyLength);
                         m_keyPair.genKeyPair(); // TODO: use fixed key value to shorten time required for key generation?
-                        m_key = m_keyPair.getPrivate();                
+                        m_key1 = m_keyPair.getPrivate();                
                         m_ecprivate_key= (ECPrivateKey) m_keyPair.getPrivate();
                     }
                     break;
@@ -724,7 +753,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                     if (bSetKeyValue == Consts.TRUE){
                         m_keyPair = new KeyPair(KeyPair.ALG_DSA, m_testSettings.keyLength);
                         m_keyPair.genKeyPair();
-                        m_key = m_keyPair.getPrivate();
+                        m_key1 = m_keyPair.getPrivate();
                         m_dsaprivate_key = (DSAPrivateKey) m_keyPair.getPrivate();
                     }
                     break;
@@ -739,7 +768,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                     if (bSetKeyValue == Consts.TRUE){
                         m_keyPair = new KeyPair(KeyPair.ALG_EC_F2M, m_testSettings.keyLength);
                         m_keyPair.genKeyPair();
-                        m_key = m_keyPair.getPublic();
+                        m_key1 = m_keyPair.getPublic();
                         m_ecpublic_key = (ECPublicKey) m_keyPair.getPublic();
                     }
                     break;
@@ -777,11 +806,11 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_aes_key.setKey(m_ram1, (short) (i % 10)); } // i % 10 => different offset to ensure slightly different key every time
                         break;
                     case JCConsts.AESKey_clearKey:
+                        m_aes_key.setKey(m_ram1, (short) 0); // always initialize so it can be cleared later
+                        
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
-                            if (m_aes_key.isInitialized()){m_aes_key.clearKey();}
-                            else{
-                                m_aes_key.setKey(m_ram1, (short) (i % 10));
-                                m_aes_key.clearKey();}
+                            m_aes_key.setKey(m_ram1, (short) (i % 10));
+                            m_aes_key.clearKey();
                         } 
                         break;
                     case JCConsts.AESKey_getKey:
@@ -798,10 +827,9 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                         break;
                     case JCConsts.DESKey_clearKey:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
-                            if (m_des_key.isInitialized()){m_des_key.clearKey();}
-                            else{
-                                m_des_key.setKey(m_ram1, (short) (i % 10));
-                                m_des_key.clearKey();}}
+                            m_des_key.setKey(m_ram1, (short) (i % 10));
+                            m_des_key.clearKey();
+                        }
                         break;
                     case JCConsts.DESKey_getKey:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_des_key.getKey(m_ram1, (short) 0); }
@@ -817,15 +845,14 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                     case JCConsts.KoreanSEEDKey_setKey: 
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_koreanseed_key.setKey(m_ram1, (short) (i % 10)); } // i % 10 => different offset to ensure slightly different key every time
                         break;                    
-                    case JCConsts.KoreanSEEDKey_getKey:
-                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_koreanseed_key.getKey(m_ram1, (short) 0); }
-                        break;
                     case JCConsts.KoreanSEEDKey_clearKey:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
-                        if (m_koreanseed_key.isInitialized()){m_koreanseed_key.clearKey();}
-                            else{
-                                m_koreanseed_key.setKey(m_ram1, (short) (i % 10));
-                                m_koreanseed_key.clearKey();}} 
+                            m_koreanseed_key.setKey(m_ram1, (short) (i % 10));
+                            m_koreanseed_key.clearKey();
+                        } 
+                        break;
+                    case JCConsts.KoreanSEEDKey_getKey:
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_koreanseed_key.getKey(m_ram1, (short) 0); }
                         break;
                     default:
                         ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
@@ -836,18 +863,18 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
             case JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE:
                 switch (m_testSettings.algorithmMethod){
                     case JCConsts.ECPrivateKey_setS:
-                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_ecprivate_key.setS(m_ram1, (short) (i %10), m_testSettings.keyLength);}
-                    break;
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_ecprivate_key.setS(m_ram1, (short) (i % 10), m_testSettings.keyLength);}
+                        break;
                     case JCConsts.ECPrivateKey_getS:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_ecprivate_key.getS(m_ram1, (short) 0);}
-                    break;
+                        break;
                     case JCConsts.ECPrivateKey_clearKey:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
-                        if (m_ecprivate_key.isInitialized()){m_ecprivate_key.clearKey();}
-                            else{
-                                m_ecprivate_key.setS(m_ram1, (short) (i % 10), m_testSettings.keyLength);
-                                m_ecprivate_key.clearKey();}}
-                    break;
+                            // Bugbug: we are settings only S
+                            m_ecprivate_key.setS(m_ram1, (short) (i % 10), m_testSettings.keyLength);
+                            m_ecprivate_key.clearKey();
+                        }
+                        break;
                     default:
                         ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
                     break;
@@ -856,18 +883,17 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
             case JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC:
                 switch (m_testSettings.algorithmMethod){
                     case JCConsts.ECPublicKey_setW:
-                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_ecpublic_key.setW(m_ram1, (short) (i %10), m_testSettings.keyLength);}
-                    break;
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_ecpublic_key.setW(m_ram1, (short) (i % 10), m_testSettings.keyLength);}
+                        break;
                     case JCConsts.ECPublicKey_getW:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_ecpublic_key.getW(m_ram1, (short) 0);}
-                    break;
+                        break;
                     case JCConsts.ECPublicKey_clearKey:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
-                        if (m_ecpublic_key.isInitialized()){m_ecpublic_key.clearKey();}
-                            else{
-                                m_ecpublic_key.setW(m_ram1, (short) (i % 10), m_testSettings.keyLength);
-                                m_ecpublic_key.clearKey();}}
-                    break;
+                            m_ecpublic_key.setW(m_ram1, (short) (i % 10), m_testSettings.keyLength);
+                            m_ecpublic_key.clearKey();
+                        }
+                        break;
                     default:
                         ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
                     break;
@@ -877,17 +903,16 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                 switch (m_testSettings.algorithmMethod){
                     case JCConsts.ECPrivateKey_setS:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_ecprivate_key.setS(m_ram1, (short) (i %10), m_testSettings.keyLength);}
-                    break;
+                        break;
                     case JCConsts.ECPrivateKey_getS:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_ecprivate_key.getS(m_ram1, (short) 0);}
-                    break;
+                        break;
                     case JCConsts.ECPrivateKey_clearKey:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
-                        if (m_ecprivate_key.isInitialized()){m_ecprivate_key.clearKey();}
-                            else{
-                                m_ecprivate_key.setS(m_ram1, (short) (i % 10), m_testSettings.keyLength);
-                                m_ecprivate_key.clearKey();}}
-                    break;
+                            m_ecprivate_key.setS(m_ram1, (short) (i % 10), m_testSettings.keyLength);
+                            m_ecprivate_key.clearKey();
+                        }
+                        break;
                     default:
                         ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
                     break;
@@ -897,22 +922,21 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                 switch (m_testSettings.algorithmMethod){
                     case JCConsts.ECPublicKey_setW:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_ecpublic_key.setW(m_ram1, (short) (i %10), m_testSettings.keyLength);}
-                    break;
+                        break;
                     case JCConsts.ECPublicKey_getW:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_ecpublic_key.getW(m_ram1, (short) 0);}
-                    break;
+                        break;
                     case JCConsts.ECPublicKey_clearKey:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
-                        if (m_ecpublic_key.isInitialized()){m_ecpublic_key.clearKey();}
-                            else{
-                                m_ecpublic_key.setW(m_ram1, (short) (i % 10), m_testSettings.keyLength);
-                                m_ecpublic_key.clearKey();}}
+                            m_ecpublic_key.setW(m_ram1, (short) (i % 10), m_testSettings.keyLength);
+                            m_ecpublic_key.clearKey();
+                        }
                     break;
                     default:
                         ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
                     break;
                 }
-            break;
+                break;
                 
             case JCConsts.KeyBuilder_TYPE_HMAC:
                 switch (m_testSettings.algorithmMethod){
@@ -924,16 +948,15 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                         break;
                     case JCConsts.HMACKey_clearKey:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
-                        if (m_hmac_key.isInitialized()){m_hmac_key.clearKey();}
-                            else{
-                                m_hmac_key.setKey(m_ram1, (short) (i % 10), m_testSettings.keyLength);
-                                m_hmac_key.clearKey();}}
+                            m_hmac_key.setKey(m_ram1, (short) (i % 10), m_testSettings.keyLength);
+                            m_hmac_key.clearKey();
+                        }
                         break;
                     default:
                         ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
                     break;
                 }
-            break;
+                break;
                 
             case JCConsts.KeyBuilder_TYPE_DSA_PRIVATE:
                 switch (m_testSettings.algorithmMethod){
@@ -945,16 +968,15 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                         break;
                     case JCConsts.DSAPrivateKey_clearX:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
-                        if (m_dsaprivate_key.isInitialized()){m_dsaprivate_key.clearKey();}
-                            else{
-                                m_dsaprivate_key.setX(m_ram1, (short) (i % 10), m_testSettings.keyLength);
-                                m_dsaprivate_key.clearKey();}}
+                            m_dsaprivate_key.setX(m_ram1, (short) (i % 10), m_testSettings.keyLength);
+                            m_dsaprivate_key.clearKey();
+                        }
                         break;
                     default:
                         ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
-                    break;
+                        break;
                 }
-            break;
+                break;
                 
             case JCConsts.KeyBuilder_TYPE_DSA_PUBLIC:
                 switch (m_testSettings.algorithmMethod){
@@ -966,22 +988,20 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                         break;
                     case JCConsts.DSAPublicKey_clearY:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
-                        if (m_dsapublic_key.isInitialized()){m_dsapublic_key.clearKey();}
-                            else{
-                                m_dsapublic_key.setY(m_ram1, (short) (i % 10), m_testSettings.keyLength);
-                                m_dsapublic_key.clearKey();}}
+                            m_dsapublic_key.setY(m_ram1, (short) (i % 10), m_testSettings.keyLength);
+                            m_dsapublic_key.clearKey();
+                        }
                         break;
                     default:
                         ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
-                    break;
+                        break;
                 }
-            break;
+                break;
                 
             case JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE:                
                 switch (m_testSettings.algorithmMethod){
                     case JCConsts.RSAPrivateCrtKey_setDP1: 
-                        byte[] m = new byte[m_testSettings.keyLength];
-                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_rsaprivatecrt_key.setDP1(m, (short) (i % 10), m_testSettings.keyLength); } // i % 10 => different offset to ensure slightly different key every time
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_rsaprivatecrt_key.setDP1(m_ram1, (short) (i % 10), m_testSettings.keyLength); } // i % 10 => different offset to ensure slightly different key every time
                         break;
                     case JCConsts.RSAPrivateCrtKey_setDQ1: 
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_rsaprivatecrt_key.setDQ1(m_ram1, (short) (i % 10), m_testSettings.keyLength); } // i % 10 => different offset to ensure slightly different key every time
@@ -996,8 +1016,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_rsaprivatecrt_key.setQ(m_ram1, (short) (i % 10), m_testSettings.keyLength); } // i % 10 => different offset to ensure slightly different key every time
                         break;  
                     case JCConsts.RSAPrivateCrtKey_getDP1:
-                        m = new byte[m_testSettings.keyLength];
-                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_rsaprivatecrt_key.getDP1(m, (short) 0); }
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_rsaprivatecrt_key.getDP1(m_ram1, (short) 0); }
                         break;
                     case JCConsts.RSAPrivateCrtKey_getDQ1:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_rsaprivatecrt_key.getDQ1(m_ram1, (short) 0); }
@@ -1013,12 +1032,10 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                         break;
                     case JCConsts.RSAPrivateCrtKey_clearKey:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
-                        if (m_rsaprivatecrt_key.isInitialized()){m_rsaprivatecrt_key.clearKey();}
-                            else{
-                            m_keyPair = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
-                            m_keyPair.genKeyPair();
-                            m_rsaprivatecrt_key = (RSAPrivateCrtKey) m_keyPair.getPrivate();
-                            m_rsaprivatecrt_key.clearKey();}}
+                            // BUGBUG: is setting only DP1 enough?
+                            m_rsaprivatecrt_key.setDP1(m_ram1, (short) (i % 10), m_testSettings.keyLength);
+                            m_rsaprivatecrt_key.clearKey();
+                        }
                     break;
                     default:
                         ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
@@ -1028,26 +1045,22 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
             case JCConsts.KeyBuilder_TYPE_RSA_PRIVATE:
                 switch (m_testSettings.algorithmMethod){
                     case JCConsts.RSAPrivateKey_setExponent:
-                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){
-                            m_rsaprivate_key.setExponent(m_ram1, (short) (i % 10), m_testSettings.keyLength);}
-                    break;
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_rsaprivate_key.setExponent(m_ram1, (short) (i % 10), m_testSettings.keyLength);}
+                        break;
                     case JCConsts.RSAPrivateKey_setModulus:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_rsaprivate_key.setModulus(m_ram1, (short) (i % 10), m_testSettings.keyLength);}
-                    break;
+                        break;
                     case JCConsts.RSAPrivateKey_getExponent:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_rsaprivate_key.getExponent(m_ram1, (short) 0);}
-                    break;
+                        break;
                     case JCConsts.RSAPrivateKey_getModulus:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_rsaprivate_key.getModulus(m_ram1, (short) 0);}
+                        break;
                     case JCConsts.RSAPrivateKey_clearKey:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
-                        if (m_rsaprivate_key.isInitialized()){m_rsaprivate_key.clearKey();}
-                            else{
-                            m_keyPair = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
-                            m_keyPair.genKeyPair();
-                            m_rsaprivate_key = (RSAPrivateKey) m_keyPair.getPrivate();
-                            m_rsaprivate_key.clearKey();}}
-                    break;
+                            m_rsaprivate_key.setModulus(m_ram1, (short) (i % 10), m_testSettings.keyLength);
+                            m_rsaprivate_key.clearKey();}
+                        break;
                     default:
                         ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
                     break;
@@ -1057,28 +1070,25 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                 switch (m_testSettings.algorithmMethod){
                     case JCConsts.RSAPublicKey_setExponent:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_rsapublic_key.setExponent(m_ram1, (short) (i % 10), m_testSettings.keyLength);}
-                    break;
+                        break;
                     case JCConsts.RSAPublicKey_setModulus:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_rsapublic_key.setModulus(m_ram1, (short) (i % 10), m_testSettings.keyLength);}
-                    break;
+                        break;
                     case JCConsts.RSAPublicKey_getExponent:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_rsapublic_key.getExponent(m_ram1, (short) 0);}
-                    break;
+                        break;
                     case JCConsts.RSAPublicKey_getModulus:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_rsapublic_key.getModulus(m_ram1, (short) 0);}
                         break;
                     case JCConsts.RSAPublicKey_clearKey:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
-                        if (m_rsapublic_key.isInitialized()){m_rsapublic_key.clearKey();}
-                            else{
-                            m_keyPair = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
-                            m_keyPair.genKeyPair();
-                            m_rsapublic_key = (RSAPublicKey) m_keyPair.getPublic();
-                            m_rsapublic_key.clearKey();}}
-                    break;
+                            m_rsapublic_key.setExponent(m_ram1, (short) (i % 10), m_testSettings.keyLength);
+                            m_rsapublic_key.clearKey();
+                        }
+                        break;
                     default:
                         ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
-                    break;
+                        break;
                 }
                 break;
             default:
@@ -1099,7 +1109,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         
         try {
             m_cipher = Cipher.getInstance((byte) m_testSettings.algorithmSpecification, false);
-            m_cipher.init(m_key, (byte) m_testSettings.initMode);
+            m_cipher.init(m_key1, (byte) m_testSettings.initMode);
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA,(byte)1);
         }
@@ -1116,14 +1126,17 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         //   or multiple times (numRepeatSubOperation) on smaller chunks 
         short repeats = (short) (m_testSettings.numRepeatWholeOperation * m_testSettings.numRepeatSubOperation);
         short chunkDataLen = (short) (m_testSettings.dataLength1 / m_testSettings.numRepeatSubOperation);
-        //m_cipher.init(m_key, (byte) m_testSettings.initMode);
         m_trng.generateData(m_ram1, (short) 0, chunkDataLen); // fill input with random data
         m_ram1[(short) 0] = (byte) 0x00; //Note: for raw RSA, most significant bit must be != 1
         
         switch (m_testSettings.algorithmMethod) {
             case JCConsts.Cipher_update:  for (short i = 0; i < repeats; i++) { m_cipher.update(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) 0); } break;
             case JCConsts.Cipher_doFinal: for (short i = 0; i < repeats; i++) { m_cipher.doFinal(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) 0); } break;
-            case JCConsts.Cipher_init:    for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_cipher.init(m_key, Cipher.MODE_ENCRYPT); } break;
+            case JCConsts.Cipher_init:    
+                for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 
+                    m_cipher.init((i % 2 == 0) ? m_key1 : m_key2, Cipher.MODE_ENCRYPT); // (i % 2 == 0) ? m_key1 : m_key2 alteration between keys for forcing to init with new key
+                } 
+                break;
             default: ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
         }
         
@@ -1141,9 +1154,10 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         short len = prepare_Key(apdu, m_testSettings, Consts.TRUE);
         
         try {
-            m_signature = Signature.getInstance((byte) m_testSettings.algorithmSpecification, false);
-            if (m_testSettings.algorithmMethod == JCConsts.Signature_verify) { m_signature.init(m_key, Signature.MODE_VERIFY); }  
-            else { m_signature.init(m_key, Signature.MODE_SIGN); }
+            m_signatureSign = Signature.getInstance((byte) m_testSettings.algorithmSpecification, false);
+            m_signatureVerify = Signature.getInstance((byte) m_testSettings.algorithmSpecification, false);
+            m_signatureSign.init(m_key1, Signature.MODE_SIGN);
+            m_signatureVerify.init(m_key1, Signature.MODE_VERIFY);
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
         }
@@ -1156,15 +1170,25 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
     void perftest_class_Signature(APDU apdu) {  
         byte[] apdubuf = apdu.getBuffer();
         m_testSettings.parse(apdu); 
+        
+        // Compute correct cryptogram for later verification
         // Operation is performed either in single call with (dataLength1)
         //   or multiple times (numRepeatSubOperation) on smaller chunks 
         short repeats = (short) (m_testSettings.numRepeatWholeOperation * m_testSettings.numRepeatSubOperation);
         short chunkDataLen = (short) (m_testSettings.dataLength1 / m_testSettings.numRepeatSubOperation);
         switch (m_testSettings.algorithmMethod) {
-            case JCConsts.Signature_update:   for (short i = 0; i < repeats; i++) { m_signature.update(m_ram1, (short) 0, chunkDataLen); } break;
-            case JCConsts.Signature_sign:     for (short i = 0; i < repeats; i++) { m_signature.sign(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) 0); } break;
-            case JCConsts.Signature_verify:   for (short i = 0; i < repeats; i++) { m_signature.verify(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) chunkDataLen, m_signature.getLength()); } break;
-            case JCConsts.Signature_init:     for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_signature.init(m_key, Signature.MODE_SIGN); } break;
+            case JCConsts.Signature_update:   for (short i = 0; i < repeats; i++) { m_signatureSign.update(m_ram1, (short) 0, chunkDataLen); } break;
+            case JCConsts.Signature_sign:     for (short i = 0; i < repeats; i++) { m_signatureSign.sign(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) 0); } break;
+            case JCConsts.Signature_verify:   
+                // Compute valid signature once (used later for verification)
+                m_signatureSign.sign(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) chunkDataLen);                 
+                for (short i = 0; i < repeats; i++) { m_signatureVerify.verify(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) chunkDataLen, m_signatureSign.getLength()); } 
+                break;
+            case JCConsts.Signature_init:     
+                for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 
+                    m_signatureSign.init((i % 2 == 0) ? m_key1 : m_key2, Signature.MODE_SIGN); // (i % 2 == 0) ? m_key1 : m_key2 alteration between keys for forcing to init with new key
+                } 
+                break;
 /* JC 3.0.1                        
             case Consts.Signature_signPreComputedHash: for (short i = 0; i < repeats; i++) { m_signature.signPreComputedHash(m_ram1, (short) 0, chunkDataLen); } break;
             case Consts.Signature_setInitialDigest: for (short i = 0; i < repeats; i++) { m_signature.setInitialDigest(m_ram1, (short) 0, chunkDataLen); } break;
@@ -1232,7 +1256,12 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         switch (m_testSettings.algorithmMethod) {
             case JCConsts.MessageDigest_update:   for (short i = 0; i < repeats; i++) { m_digest.update(m_ram1, (short) 0, chunkDataLen); } break;
             case JCConsts.MessageDigest_doFinal:  for (short i = 0; i < repeats; i++) { m_digest.doFinal(m_ram1, (short) 0, chunkDataLen, m_ram1, chunkDataLen); } break;
-            case JCConsts.MessageDigest_reset:  for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_digest.reset(); } break; // BUGBUG: second reset may be very fast
+            case JCConsts.MessageDigest_reset:  
+                for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 
+                    m_digest.doFinal(m_ram1, (short) 0, chunkDataLen, m_ram1, chunkDataLen);    // NOTE: time substraction needed
+                    m_digest.reset(); 
+                } 
+                break; 
     
             default: ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
         }
@@ -1322,7 +1351,12 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         m_testSettings.parse(apdu); 
 
         switch (m_testSettings.algorithmMethod) {
-            case JCConsts.KeyAgreement_init:   for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_keyAgreement.init(m_privateKey);} break;
+            case JCConsts.KeyAgreement_init:   
+                for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 
+                    // BUGBUG: add key alteration (m_privateKey1 and m_privateKey2)
+                    m_keyAgreement.init(m_privateKey);
+                } 
+                break;
             case JCConsts.KeyAgreement_generateSecret:   for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_keyAgreement.generateSecret(m_ram1, (short) 0, m_testSettings.dataLength1, m_ram1, m_testSettings.dataLength1); } break;
     
             default: ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
@@ -1331,6 +1365,4 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         apdubuf[ISO7816.OFFSET_CDATA] = SUCCESS;
         apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);            
     }  
-    
-    //test
 }
