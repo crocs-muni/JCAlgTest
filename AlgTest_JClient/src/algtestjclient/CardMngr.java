@@ -1060,7 +1060,7 @@ public class CardMngr {
         apdu[OFFSET_INS] = ins;
         apdu[OFFSET_LC] = TestSettings.TEST_SETTINGS_LENGTH;
 
-        testSet.serializeToApduBuff(apdu, (short) 0);
+        testSet.serializeToApduBuff(apdu, ISO7816.OFFSET_CDATA);
 
         elapsedCard = -System.currentTimeMillis();
         ResponseAPDU resp = sendAPDU(apdu);

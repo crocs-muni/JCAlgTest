@@ -8,7 +8,7 @@ import javacard.framework.Util;
  * @author Petr Svenda <petr@svenda.com>
  */
 public class TestSettings {
-    public final static short OFFSET_ALGORITHM_CLASS           = ISO7816.OFFSET_CDATA;
+    public final static short OFFSET_ALGORITHM_CLASS           = (short) 0;
     public final static short OFFSET_ALGORITHM_SPECIFICATION   = (short) (OFFSET_ALGORITHM_CLASS + 2);
     public final static short OFFSET_ALGORITHM_PARAM1          = (short) (OFFSET_ALGORITHM_SPECIFICATION + 2);
     public final static short OFFSET_ALGORITHM_PARAM2          = (short) (OFFSET_ALGORITHM_PARAM1 + 2);
@@ -56,40 +56,39 @@ public class TestSettings {
         parse(apdubuf, ISO7816.OFFSET_CDATA, len);
     }
     public void parse(byte[] apdubuf, short offset, short len) {
-        offset -= ISO7816.OFFSET_CDATA;
         this.clear();
 
-        if (len >= (short) (OFFSET_ALGORITHM_CLASS - ISO7816.OFFSET_CDATA + 2)) { 
+        if (len >= (short) (OFFSET_ALGORITHM_CLASS + 2)) { 
             classType = Util.getShort(apdubuf, (short) (OFFSET_ALGORITHM_CLASS + offset));                    
         }
-        if (len >= (short) (OFFSET_ALGORITHM_SPECIFICATION - ISO7816.OFFSET_CDATA + 2)) { 
+        if (len >= (short) (OFFSET_ALGORITHM_SPECIFICATION + 2)) { 
             algorithmSpecification = Util.getShort(apdubuf, (short) (OFFSET_ALGORITHM_SPECIFICATION + offset));    
         }
-        if (len >= (short) (OFFSET_ALGORITHM_PARAM1 - ISO7816.OFFSET_CDATA + 2)) { 
+        if (len >= (short) (OFFSET_ALGORITHM_PARAM1 + 2)) { 
             keyClass = Util.getShort(apdubuf, (short) (OFFSET_ALGORITHM_PARAM1 + offset));                    
         }
-        if (len >= (short) (OFFSET_ALGORITHM_PARAM2 - ISO7816.OFFSET_CDATA + 2)) { 
+        if (len >= (short) (OFFSET_ALGORITHM_PARAM2 + 2)) { 
             keyType = Util.getShort(apdubuf, (short) (OFFSET_ALGORITHM_PARAM2 + offset));                    
         }
-        if (len >= (short) (OFFSET_ALGORITHM_PARAM3 - ISO7816.OFFSET_CDATA + 2)) { 
+        if (len >= (short) (OFFSET_ALGORITHM_PARAM3 + 2)) { 
             keyLength = Util.getShort(apdubuf, (short) (OFFSET_ALGORITHM_PARAM3 + offset));               
         }
-        if (len >= (short) (OFFSET_ALGORITHM_TESTED_OPS - ISO7816.OFFSET_CDATA + 2)) { 
+        if (len >= (short) (OFFSET_ALGORITHM_TESTED_OPS + 2)) { 
             algorithmMethod = Util.getShort(apdubuf, (short) (OFFSET_ALGORITHM_TESTED_OPS + offset));           
         }
-        if (len >= (short) (OFFSET_DATA_LENGTH1 - ISO7816.OFFSET_CDATA + 2)) { 
+        if (len >= (short) (OFFSET_DATA_LENGTH1 + 2)) { 
             dataLength1 = Util.getShort(apdubuf, (short) (OFFSET_DATA_LENGTH1 + offset));                         
         }
-        if (len >= (short) (OFFSET_DATA_LENGTH2 - ISO7816.OFFSET_CDATA + 2)) { 
+        if (len >= (short) (OFFSET_DATA_LENGTH2 + 2)) { 
             dataLength2 = Util.getShort(apdubuf, (short) (OFFSET_DATA_LENGTH2 + offset));                          
         }
-        if (len >= (short) (OFFSET_DATA_INITMODE - ISO7816.OFFSET_CDATA + 2)) { 
+        if (len >= (short) (OFFSET_DATA_INITMODE + 2)) { 
             initMode = Util.getShort(apdubuf, (short) (OFFSET_DATA_INITMODE + offset));                          
         }
-        if (len >= (short) (OFFSET_NUM_REPEAT_WHOLE_OP - ISO7816.OFFSET_CDATA + 2)) { 
+        if (len >= (short) (OFFSET_NUM_REPEAT_WHOLE_OP + 2)) { 
             numRepeatWholeOperation = Util.getShort(apdubuf, (short) (OFFSET_NUM_REPEAT_WHOLE_OP + offset));  
         }
-        if (len >= (short) (OFFSET_NUM_REPEAT_SUB_OP - ISO7816.OFFSET_CDATA + 2)) { 
+        if (len >= (short) (OFFSET_NUM_REPEAT_SUB_OP + 2)) { 
             numRepeatSubOperation = Util.getShort(apdubuf, (short) (OFFSET_NUM_REPEAT_SUB_OP + offset));  
         }
     }
