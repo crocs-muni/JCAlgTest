@@ -806,8 +806,6 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_aes_key.setKey(m_ram1, (short) (i % 10)); } // i % 10 => different offset to ensure slightly different key every time
                         break;
                     case JCConsts.AESKey_clearKey:
-                        m_aes_key.setKey(m_ram1, (short) 0); // always initialize so it can be cleared later
-                        
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
                             m_aes_key.setKey(m_ram1, (short) (i % 10));
                             m_aes_key.clearKey();
