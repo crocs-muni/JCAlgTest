@@ -135,9 +135,9 @@ public class CardMngr {
     public static final byte CLASS_KEYPAIR_EC_FP   = 0x1C;
 
    
-    public CardTerminal m_terminal = null;
-    CardChannel m_channel = null;
-    Card m_card = null;
+    public static CardTerminal m_terminal = null;
+    static CardChannel m_channel = null;
+    static Card m_card = null;
     
     public static final byte selectApplet[] = {
         (byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00, (byte) 0x09, 
@@ -219,7 +219,7 @@ public class CardMngr {
         return "No terminal found";
     }
     public String getATR() {
-        if (m_card != null) { return m_card.getATR().toString(); }
+        if (m_card != null) { return bytesToHex(m_card.getATR().getBytes()); }
         if (m_simulator != null) { return SIMULATOR_ATR; }
         return "No card available";
     }    
@@ -279,7 +279,13 @@ public class CardMngr {
         return null;    // returns 'null' in case of error
     }
     
-    public boolean ConnectToCard(Class ClassToTest, StringBuilder selectedReader, StringBuilder selectedATR, StringBuilder usedProtocol) throws Exception {
+    public static boolean ConnectToCard() throws Exception {
+        StringBuilder selectedReader = new StringBuilder();
+        StringBuilder selectedATR = new StringBuilder();
+        StringBuilder usedProtocol = new StringBuilder();
+        return ConnectToCard(null, selectedReader, selectedATR, usedProtocol);
+    }
+    public static boolean ConnectToCard(Class ClassToTest, StringBuilder selectedReader, StringBuilder selectedATR, StringBuilder usedProtocol) throws Exception {
         boolean cardFound = false;        
         
         if (ClassToTest != null) {
@@ -358,7 +364,7 @@ public class CardMngr {
         }
     }
 
-    public List<CardTerminal> GetReaderList() {
+    public static List<CardTerminal> GetReaderList() {
         try {
             TerminalFactory factory = TerminalFactory.getDefault();
             List<CardTerminal> readersList = factory.terminals().list();
@@ -375,7 +381,7 @@ public class CardMngr {
      * @return Returns card response as ResponseAPDU.
      * @throws Exception
      */
-    public ResponseAPDU sendAPDU(byte apdu[]) throws Exception {
+    public static ResponseAPDU sendAPDU(byte apdu[]) throws Exception {
         CommandAPDU commandAPDU = new CommandAPDU(apdu);
         ResponseAPDU responseAPDU = null;
         System.out.println(">>>>");
@@ -408,14 +414,14 @@ public class CardMngr {
         return (responseAPDU);
     }
 
-    public String byteToHex(byte data) {
+    public static String byteToHex(byte data) {
         StringBuilder  buf = new StringBuilder ();
         buf.append(toHexChar((data >>> 4) & 0x0F));
         buf.append(toHexChar(data & 0x0F));
         return buf.toString();
     }
 
-    public char toHexChar(int i) {
+    public static char toHexChar(int i) {
         if ((0 <= i) && (i <= 9)) {
             return (char) ('0' + i);
         } else {
@@ -423,11 +429,11 @@ public class CardMngr {
         }
     }
 
-    public String bytesToHex(byte[] data) {
+    public static String bytesToHex(byte[] data) {
         StringBuilder  buf = new StringBuilder ();
         for (int i = 0; i < data.length; i++) {
             buf.append(byteToHex(data[i]));
-            buf.append(" ");
+            if (i != data.length - 1) { buf.append(" "); }
         }
         return (buf.toString());
     }
@@ -1144,7 +1150,7 @@ public class CardMngr {
      * Sets up simulator using jCardSim API.
      * @param m_applet Class of on-card AlgTest to be installed in simulator.
      */
-    public void MakeSim(Class applet){
+    public static void MakeSim(Class applet){
     ///* BUGBUG: we need to figure out how to support JCardSim in nice way (copy of class files, directory structure...)
         System.setProperty("com.licel.jcardsim.terminal.type", "2");
         CAD cad = new CAD(System.getProperties());
@@ -1213,12 +1219,16 @@ public class CardMngr {
         return seriousProblemCounter;
     }
         
-    public void UploadApplet(int readerIndex) throws Exception {
-        System.out.println(getTerminalName() + " : Uploading applet...");
+    public static void UploadApplet(int readerIndex) throws Exception {
+        UploadApplet(readerIndex, "");
+    }
+    public static void UploadApplet(int readerIndex, String atr) throws Exception {
+        System.out.println("Uploading applet...");
 
         //String batFileName = "d:\\Documents\\Develop\\AlgTest\\AlgTest_JavaCard\\!card_uploaders\\keyHarvest\\run" + readerIndex + "_GXPE64" + ".bat";
         //String batFileName = "d:\\Documents\\Develop\\AlgTest\\AlgTest_JavaCard\\!card_uploaders\\keyHarvest\\run" + readerIndex + "_TwinGCX4" + ".bat";
-        String batFileName = "d:\\Documents\\Develop\\AlgTest\\AlgTest_JavaCard\\!card_uploaders\\run.bat";
+        atr = atr.replace(" ", "_");
+        String batFileName = "d:\\Documents\\Develop\\AlgTest\\AlgTest_JavaCard\\!card_uploaders\\upload_" + atr + ".bat";
         
         ProcessBuilder pb = new ProcessBuilder(batFileName);
         pb.directory(new File("d:\\Documents\\Develop\\AlgTest\\AlgTest_JavaCard\\!card_uploaders\\"));
@@ -1230,8 +1240,7 @@ public class CardMngr {
         Process p = pb.start();
 
         p.waitFor();        
-        System.out.println(getTerminalName() + ": Done");                
-        
+        System.out.println(": Done");                
     }    
     public int GenerateAndGetKeys(String fileName, int numRepeats, int resetFrequency, int readerIndex) throws Exception { 
         byte apdu[] = new byte[HEADER_LENGTH]; 
