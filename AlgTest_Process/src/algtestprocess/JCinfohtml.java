@@ -32,8 +32,12 @@ public class JCinfohtml {
         BufferedReader reader = new BufferedReader(new FileReader(input));
         List<String> lines = new ArrayList<>();
         String line;
-        while ((line = reader.readLine()) != null) {
-            lines.add(line);
+        while ((line = reader.readLine()) != null) {               
+               lines.add(line);
+               if (lines.get(lines.size()-1).startsWith("#"))
+                   lines.remove(lines.size()-1);
+               if (lines.get(lines.size()-1).equals(""))
+                   lines.remove(lines.size()-1);
         }
         reader.close();
         return lines;
@@ -139,12 +143,12 @@ public class JCinfohtml {
         while(lp < lines.size()-2) {
             lp++;            
             for (String cat : category) {
-                if (lines.get(lp).equals(cat)) {                    
+                if (lines.get(lp).equals(cat) && !((lines.get(lp+1)).contains("END") || (lines.get(lp+2)).contains("END"))) {                    
                     toFile += "<h3 id=\""+cat.replaceAll(" ", "_")+"\">"+cat+"</h3>\n";     //test category name
                     lp++;
                     if (lines.get(lp).contains("data")){
-                    toFile += "<p>" +lines.get(lp)+ "</p>\n";               // info about length of data
-                    lp++;
+                        toFile += "<p>" +lines.get(lp)+ "</p>\n";           // info about length of data
+                        lp++;
                     }
                     
                     toFile += TABLE_HEAD;                                   // head of table 

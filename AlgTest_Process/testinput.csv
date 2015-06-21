@@ -16,7 +16,7 @@ JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT;1024B;
 
 
 MESSAGE DIGEST
-// info about length of test data
+
 ALG_SHA MessageDigest_update()
 debug overhead:;125,00;110,00;109,00;109,00;109,00;
 avg:;112,40;min:;109,00;max:;125,00;;CHECK
@@ -149,7 +149,7 @@ RANDOM GENERATOR - END
 
 
 CIPHER
-// info about length of test data
+
 TYPE_DES LENGTH_DES ALG_DES_CBC_NOPAD Cipher_update()
 debug overhead:;151,00;148,00;148,00;149,00;149,00;
 avg:;149,00;min:;148,00;max:;151,00
