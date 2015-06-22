@@ -88,6 +88,7 @@ public class Consts {
         
     
     public static final short NUM_REPEAT_WHOLE_OPERATION        = (short) 50;
+    public static final short NUM_REPEAT_WHOLE_OPERATION_VARIABLE_DATA = (short) 5;
     public static final short NUM_REPEAT_WHOLE_MEASUREMENT      = (short) 5;
 
     
