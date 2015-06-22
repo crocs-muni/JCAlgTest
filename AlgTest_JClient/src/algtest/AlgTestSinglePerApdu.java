@@ -145,7 +145,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
     final static short SW_ALG_OPS_NOT_SUPPORTED     = (short) 0x6002;
     final static short SW_ALG_TYPE_UNKNOWN          = (short) 0x6003;
     
-    final static short RAM1_ARRAY_LENGTH = (short) 500;
+    final static short RAM1_ARRAY_LENGTH = (short) 600;
     
     
     /* Auxiliary variables to choose class - used in APDU as P1 byte. */

@@ -96,7 +96,7 @@ public class AlgTestJClient {
                                                     // possibly change for constant?
                                                     // or maybe change for 1 and test all algs at once?
             else if (args[0].equals(ALGTEST_SINGLEPERAPDU)){singleTest.TestSingleAlg(args);}
-            else if (args[0].equals(ALGTEST_PERFORMANCE)){testingPerformance.testPerformance(args);}
+            else if (args[0].equals(ALGTEST_PERFORMANCE)){testingPerformance.testPerformance(args, false);}
             /* In case of incorect parameter, program will report error and shut down. */
             else {
                 System.err.println("Incorect parameter!");
@@ -107,7 +107,7 @@ public class AlgTestJClient {
         else{            
             System.out.println("Choose which type of AlgTest you want to use.");
             System.out.println("NOTE that you need to have installed coresponding applet on your card! (Not true if you are using simulator.)");
-            System.out.append("1 -> Classic AlgTest MultiPerApdu\n2 -> SinglePerApdu\n3 -> Performance Testing\n");
+            System.out.append("1 -> Classic AlgTest MultiPerApdu\n2 -> SinglePerApdu\n3 -> Performance Testing\n4 -> Performance Testing variable data length\n5 -> Harvest RSA keys\n");
             
             Scanner sc = new Scanner(System.in);
             int answ = sc.nextInt();
@@ -123,18 +123,21 @@ public class AlgTestJClient {
                     System.out.println("Type \"y\" for test all algorithms, \"n\" for asking for every class separately: ");	
                     answ = sc.nextInt();
                     cardManager.testClassic(args, answ);
-                break;
+                    break;
                 /* In this case, SinglePerApdu version of AlgTest is used. */
                 case 2:
                     singleTest.TestSingleAlg(args);
-                break;
+                    break;
                 /* In this case Performance tests are used. */
                 case 3:
-                    testingPerformance.testPerformance(args);
-                break;
+                    testingPerformance.testPerformance(args, false);
+                    break;
                 case 4:
+                    testingPerformance.testPerformance(args, true);
+                    break;
+                case 5:
                     keyHarvest.gatherRSAKeys();
-                break;
+                    break;
                 /* In this case, user pressed wrong key */
                 default:
                     System.err.println("Incorrect parameter!");

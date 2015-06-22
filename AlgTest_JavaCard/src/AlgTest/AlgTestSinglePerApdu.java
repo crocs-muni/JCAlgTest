@@ -145,7 +145,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
     final static short SW_ALG_OPS_NOT_SUPPORTED     = (short) 0x6002;
     final static short SW_ALG_TYPE_UNKNOWN          = (short) 0x6003;
     
-    final static short RAM1_ARRAY_LENGTH = (short) 500;
+    final static short RAM1_ARRAY_LENGTH = (short) 600;
     
     
     /* Auxiliary variables to choose class - used in APDU as P1 byte. */
@@ -806,8 +806,6 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_aes_key.setKey(m_ram1, (short) (i % 10)); } // i % 10 => different offset to ensure slightly different key every time
                         break;
                     case JCConsts.AESKey_clearKey:
-                        m_aes_key.setKey(m_ram1, (short) 0); // always initialize so it can be cleared later
-                        
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
                             m_aes_key.setKey(m_ram1, (short) (i % 10));
                             m_aes_key.clearKey();

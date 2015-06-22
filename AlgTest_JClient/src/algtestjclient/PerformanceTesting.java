@@ -41,6 +41,8 @@ import AlgTest.Consts;
 import AlgTest.JCConsts;
 import AlgTest.TestSettings;
 import static algtestjclient.PerformanceTesting.file;
+import java.util.ArrayList;
+import java.util.List;
 import javax.smartcardio.ATR;
 /**
  *
@@ -71,18 +73,25 @@ public class PerformanceTesting {
     
     private static boolean bTestSymmetricAlgs = true;
     private static boolean bTestAsymmetricAlgs = true;
+    public static boolean bTestVariableData = false;
+    
+    public static List<Integer> m_testDataLengths = new ArrayList<>();
+    
+    
     
     /**
      * Calls methods testing card performance.
      * @throws IOException
      * @throws Exception
      */        
-    public void testPerformance(String[] args) throws IOException, Exception{
+    public void testPerformance(String[] args, boolean bTestVariableDataLengths) throws IOException, Exception{
         /* BUGBUG: we need to figure out how to support JCardSim in nice way (copy of class files, directory structure...)
         Class testClassPerformance = AlgTestPerformance.class;
         */
         Class testClassPerformance = null;
         Scanner sc = new Scanner(System.in);
+        
+        bTestVariableData = bTestVariableDataLengths;
                 
         StringBuilder value = new StringBuilder();
         String message = "";
@@ -202,6 +211,14 @@ public class PerformanceTesting {
                 break;
             }
         
+            // data lengths to be tested (only for variable data length test)
+            m_testDataLengths.add(16);
+            m_testDataLengths.add(32);
+            m_testDataLengths.add(64);
+            m_testDataLengths.add(128);
+            m_testDataLengths.add(256);
+            m_testDataLengths.add(512);
+            
             testAllMessageDigests(Consts.NUM_REPEAT_WHOLE_OPERATION, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
             testAllRandomGenerators(Consts.NUM_REPEAT_WHOLE_OPERATION, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
             testAllCiphers(Consts.NUM_REPEAT_WHOLE_OPERATION, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
@@ -589,17 +606,24 @@ public class PerformanceTesting {
                 // Unexpected exception
                 System.out.println(ex.toString()); 
                 numFailedRepeats++;
+                
+                if (numFailedRepeats == MAX_FAILED_REPEATS) {
+                    String message = "ERROR: unable to measure operation properly even after applet upload\n";
+                    message += "Try to physically remove card and insert it again. Press any key and enter to to continue\n";
+                    System.out.print(message);
+                    Scanner sc = new Scanner(System.in);
+                    sc.next();
+                    // Card was physically removed, reset retries counter
+                    numFailedRepeats = 0;
+                }
+                
                 // Upload applet again and run measurement again
                 CardMngr.UploadApplet(0, m_cardATR);
                 CardMngr.ConnectToCard();
             }
         }
         
-        String message = "#ERROR: unable to measure operation properly even after applet upload\n";
-        message += "#Stopping whole performance measurement\n";
-        file.write(message.getBytes());
-        System.out.print(message);
-        throw new Exception(message);
+        return -1;
     }
     
     public static double perftest_measure(byte appletCLA, byte appletPrepareINS, byte appletMeasureINS, TestSettings testSet, String info, StringBuilder result) throws IOException, Exception {
@@ -797,12 +821,27 @@ public class PerformanceTesting {
         TestSettings testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_MESSAGEDIGEST, alg, Consts.UNUSED, Consts.UNUSED, 
                 JCConsts.MessageDigest_update, Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);       
 
-        testSet.algorithmMethod = JCConsts.MessageDigest_update;
-        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_MESSAGEDIGEST, Consts.INS_PERF_TEST_CLASS_MESSAGEDIGEST, testSet, info + " MessageDigest_update()");
-        testSet.algorithmMethod = JCConsts.MessageDigest_doFinal;
-        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_MESSAGEDIGEST, Consts.INS_PERF_TEST_CLASS_MESSAGEDIGEST, testSet, info + " MessageDigest_doFinal()");
-        testSet.algorithmMethod = JCConsts.MessageDigest_reset;
-        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_MESSAGEDIGEST, Consts.INS_PERF_TEST_CLASS_MESSAGEDIGEST, testSet, info + " MessageDigest_reset()");
+        if (!bTestVariableData) {
+            // Ordinary test of all available methods
+            testSet.algorithmMethod = JCConsts.MessageDigest_update;
+            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_MESSAGEDIGEST, Consts.INS_PERF_TEST_CLASS_MESSAGEDIGEST, testSet, info + " MessageDigest_update()");
+            testSet.algorithmMethod = JCConsts.MessageDigest_doFinal;
+            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_MESSAGEDIGEST, Consts.INS_PERF_TEST_CLASS_MESSAGEDIGEST, testSet, info + " MessageDigest_doFinal()");
+            testSet.algorithmMethod = JCConsts.MessageDigest_reset;
+            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_MESSAGEDIGEST, Consts.INS_PERF_TEST_CLASS_MESSAGEDIGEST, testSet, info + " MessageDigest_reset()");
+        }
+        else {
+            // Test of speed dependant on data length
+            String tableName = "\n\nMESSAGE DIGEST - "  + info + " - variable data - BEGIN\n";
+            file.write(tableName.getBytes());
+            testSet.algorithmMethod = JCConsts.MessageDigest_doFinal;
+            for (Integer length : m_testDataLengths) {
+                testSet.dataLength1 = length.shortValue();
+                PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_MESSAGEDIGEST, Consts.INS_PERF_TEST_CLASS_MESSAGEDIGEST, testSet, info + " MessageDigest_doFinal()");
+            }
+            tableName = "\n\nMESSAGE DIGEST - "  + info + " - variable data - END\n";
+            file.write(tableName.getBytes());
+        }
     }   
     
 
@@ -833,10 +872,25 @@ public class PerformanceTesting {
         TestSettings testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_RANDOMDATA, alg, Consts.UNUSED, Consts.UNUSED, JCConsts.RandomData_generateData, 
                 Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);      
 
-        testSet.algorithmMethod = JCConsts.RandomData_generateData;
-        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_RANDOMDATA, Consts.INS_PERF_TEST_CLASS_RANDOMDATA, testSet, info + " RandomData_generateData()");
-        testSet.algorithmMethod = JCConsts.RandomData_setSeed;
-        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_RANDOMDATA, Consts.INS_PERF_TEST_CLASS_RANDOMDATA, testSet, info + " RandomData_setSeed()");        
+        if (!bTestVariableData) {
+            // Ordinary test of all available methods
+            testSet.algorithmMethod = JCConsts.RandomData_generateData;
+            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_RANDOMDATA, Consts.INS_PERF_TEST_CLASS_RANDOMDATA, testSet, info + " RandomData_generateData()");
+            testSet.algorithmMethod = JCConsts.RandomData_setSeed;
+            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_RANDOMDATA, Consts.INS_PERF_TEST_CLASS_RANDOMDATA, testSet, info + " RandomData_setSeed()");        
+        }
+        else {
+            // Test of speed dependant on data length
+            String tableName = "\n\nRANDOM GENERATOR - "  + info + " - variable data - BEGIN\n";
+            file.write(tableName.getBytes());
+            testSet.algorithmMethod = JCConsts.RandomData_generateData;
+            for (Integer length : m_testDataLengths) {
+                testSet.dataLength1 = length.shortValue();
+                PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_RANDOMDATA, Consts.INS_PERF_TEST_CLASS_RANDOMDATA, testSet, info + " RandomData_generateData();" + length + ";");
+            }
+            tableName = "\n\nRANDOM GENERATOR - "  + info + " - variable data - END\n";
+            file.write(tableName.getBytes());
+        }
     }    
     public static void testAllRandomGenerators(int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception {
         testAllRandomGenerators((short) numRepeatWholeOperation, (short) numRepeatWholeMeasurement);
@@ -870,12 +924,39 @@ public class PerformanceTesting {
         TestSettings testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_CIPHER, alg, key, keyLength, JCConsts.Cipher_update, 
                 testDataLength, Consts.UNUSED, initMode, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);      
 
-        testSet.algorithmMethod = JCConsts.Cipher_update;
-        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_update()");
-        testSet.algorithmMethod = JCConsts.Cipher_doFinal;
-        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_doFinal()");
-        testSet.algorithmMethod = JCConsts.Cipher_init;
-        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_init()");
+        
+        if (!bTestVariableData) {
+            // Ordinary test of all available methods
+            testSet.algorithmMethod = JCConsts.Cipher_update;
+            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_update()");
+            testSet.algorithmMethod = JCConsts.Cipher_doFinal;
+            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_doFinal()");
+            testSet.algorithmMethod = JCConsts.Cipher_init;
+            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_init()");
+        }
+        else {
+            // Test of speed dependant on data length
+            String tableName = "\n\nCIPHER - " + info + " - variable data - BEGIN\n";
+            file.write(tableName.getBytes());
+            switch (key) {
+                case JCConsts.KeyBuilder_TYPE_RSA_PRIVATE:
+                case JCConsts.KeyBuilder_TYPE_RSA_PUBLIC:
+                case JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE:
+                    // For RSA, variable length perf test is not supported
+                    tableName = "For RSA, variable length perf test is not supported\n";
+                    file.write(tableName.getBytes());
+                    System.out.print(tableName);
+                    return;
+            }    
+            
+            testSet.algorithmMethod = JCConsts.Cipher_doFinal;
+            for (Integer length : m_testDataLengths) {
+                testSet.dataLength1 = length.shortValue();
+                PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_doFinal()");
+            }
+            tableName = "\n\nCIPHER - " + info + " - variable data - END\n";
+            file.write(tableName.getBytes());
+        }
         
     }
     
@@ -1138,14 +1219,28 @@ public class PerformanceTesting {
             Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);      
         testSet.keyClass = keyClass;
         
-        testSet.algorithmMethod = JCConsts.Signature_update;
-        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_update()");
-        testSet.algorithmMethod = JCConsts.Signature_sign;
-        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_sign()");
-        testSet.algorithmMethod = JCConsts.Signature_verify;
-        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_verify()");
-        testSet.algorithmMethod = JCConsts.Signature_init;
-        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_init()");
+        if (!bTestVariableData) {
+            testSet.algorithmMethod = JCConsts.Signature_update;
+            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_update()");
+            testSet.algorithmMethod = JCConsts.Signature_sign;
+            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_sign()");
+            testSet.algorithmMethod = JCConsts.Signature_verify;
+            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_verify()");
+            testSet.algorithmMethod = JCConsts.Signature_init;
+            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_init()");
+        }
+        else {
+            // Test of speed dependant on data length
+            String tableName = "\n\nSIGNATURE - "  + info + " - variable data - BEGIN\n";
+            file.write(tableName.getBytes());
+            testSet.algorithmMethod = JCConsts.Signature_sign;
+            for (Integer length : m_testDataLengths) {
+                testSet.dataLength1 = length.shortValue();
+                PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_sign()");
+            }
+            tableName = "\n\nSIGNATURE - "  + info + " - variable data - END\n";
+            file.write(tableName.getBytes());
+        }
     }
     public static void testAllSignatures(int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception {
         testAllSignatures((short) numRepeatWholeOperation, (short) numRepeatWholeMeasurement);
@@ -1466,11 +1561,24 @@ public class PerformanceTesting {
         TestSettings testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_CHECKSUM, alg, Consts.UNUSED, Consts.UNUSED, JCConsts.Signature_update, 
             Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);      
         
-        testSet.algorithmMethod = JCConsts.Checksum_update;
-        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CHECKSUM, Consts.INS_PERF_TEST_CLASS_CHECKSUM, testSet, info + " Checksum_update()");
-        testSet.algorithmMethod = JCConsts.Checksum_doFinal;
-        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CHECKSUM, Consts.INS_PERF_TEST_CLASS_CHECKSUM, testSet, info + " Checksum_doFinal()");
-
+        if (!bTestVariableData) {
+            testSet.algorithmMethod = JCConsts.Checksum_update;
+            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CHECKSUM, Consts.INS_PERF_TEST_CLASS_CHECKSUM, testSet, info + " Checksum_update()");
+            testSet.algorithmMethod = JCConsts.Checksum_doFinal;
+            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CHECKSUM, Consts.INS_PERF_TEST_CLASS_CHECKSUM, testSet, info + " Checksum_doFinal()");
+        }
+        else {
+            // Test of speed dependant on data length
+            String tableName = "\n\nCHECKSUM - "  + info + " - variable data - BEGIN\n";
+            file.write(tableName.getBytes());
+            testSet.algorithmMethod = JCConsts.Checksum_doFinal;
+            for (Integer length : m_testDataLengths) {
+                testSet.dataLength1 = length.shortValue();
+                PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CHECKSUM, Consts.INS_PERF_TEST_CLASS_CHECKSUM, testSet, info + " Checksum_doFinal()");
+            }
+            tableName = "\n\nCHECKSUM - "  + info + " - variable data - END\n";
+            file.write(tableName.getBytes());
+        }
     }   
     public static void testAllChecksums(int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception {
         testAllChecksums((short) numRepeatWholeOperation, (short) numRepeatWholeMeasurement);
