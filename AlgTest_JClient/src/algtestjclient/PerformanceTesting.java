@@ -43,6 +43,8 @@ import AlgTest.TestSettings;
 import static algtestjclient.PerformanceTesting.file;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import javax.smartcardio.ATR;
 /**
  *
@@ -99,6 +101,8 @@ public class PerformanceTesting {
         /* Variable 'file' for output data. */
         PerformanceTesting.file = cardManager.establishConnection(testClassPerformance);
         m_cardATR = cardManager.getATR();
+        //testCipher_dataDependency(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Cipher_ALG_AES_BLOCK_128_CBC_NOPAD,"TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_128_CBC_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, Consts.NUM_REPEAT_WHOLE_OPERATION, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
+        
 /*        
         if(args.length > 1){    // in case there are arguments present
             if(Arrays.asList(args).contains(TEST_ALL_ALGORITHMS)){testAllAtOnce(file);}
@@ -959,6 +963,31 @@ public class PerformanceTesting {
         }
         
     }
+    
+    public static double testCipher(byte key, short keyLength, byte alg, String info, short initMode, short numRepeatWholeOperation, short numRepeatWholeMeasurement, short dataLength) throws IOException, Exception {
+        double result;
+        short testDataLength = dataLength;
+        switch (key) {
+            case JCConsts.KeyBuilder_TYPE_RSA_PRIVATE:
+            case JCConsts.KeyBuilder_TYPE_RSA_PUBLIC:
+            case JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE:
+                // For RSA, we need test length equal to modulus size
+                testDataLength = (short) (keyLength / 8);
+                break;
+        }    
+        
+        TestSettings testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_CIPHER, alg, key, keyLength, JCConsts.Cipher_update, 
+                testDataLength, Consts.UNUSED, initMode, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);     
+
+        testSet.algorithmMethod = JCConsts.Cipher_update;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_update()");
+        testSet.algorithmMethod = JCConsts.Cipher_doFinal;
+        result = PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_doFinal()");
+        testSet.algorithmMethod = JCConsts.Cipher_init;
+        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_init()");
+
+        return result;
+    }   
     
     public static void testAllCiphers(int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception {
         testAllCiphers((short) numRepeatWholeOperation, (short) numRepeatWholeMeasurement);
@@ -2097,4 +2126,25 @@ public class PerformanceTesting {
         testAllRSAPrivateKeys(numRepeatWholeOperation, numRepeatWholeMeasurement);
         testAllRSAPublicKeys(numRepeatWholeOperation, numRepeatWholeMeasurement);
     }
+    
+    public static Map<Short, Double> testCipher_dataDependency(byte key, short keyLength, byte alg, String info, short initMode, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception {
+        Map<Short, Double> results = new TreeMap<>();        
+        
+      /*  for(short i = 1; i<33; i++)       // length 1-32 - 1 step
+            results.put(i,testCipher(key, keyLength, alg,info+" - "+i, numRepeatWholeOperation, numRepeatWholeMeasurement, i));    
+        for(short i = 5; i<16; i++)         // length 33-128 - 8 step
+            results.put(i,testCipher(key, keyLength, alg,info+" - "+(short)(i*8), numRepeatWholeOperation, numRepeatWholeMeasurement, (short)(i*8)));
+      */
+        
+        for(short i = 1; i<8; i++)          // length 16-112 - 16 step
+            results.put((short)(i*16),testCipher(key, keyLength, alg, info+" - "+(short)(i*16), initMode, numRepeatWholeOperation, numRepeatWholeMeasurement, (short)(i*16)));
+        
+        for(short i = 1; i<5; i++)          // length 128-512 - 128 step
+            results.put((short)(i*128),testCipher(key, keyLength, alg,info+" - "+(short)(i*128), initMode, numRepeatWholeOperation, numRepeatWholeMeasurement, (short)(i*128)));
+       
+        for(Map.Entry<Short, Double> entry : results.entrySet())        //temporary output for graph
+            System.out.println("[\"" + entry.getKey() + "\", " + entry.getValue() + "],");
+        
+        return results;
+    } 
 }
