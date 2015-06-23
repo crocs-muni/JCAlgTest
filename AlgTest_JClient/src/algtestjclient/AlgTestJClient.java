@@ -103,8 +103,11 @@ public class AlgTestJClient {
                 cardManager.PrintHelp();
             }
         }
-        /* If there are no arguments present. */
-        else{            
+        // If there are no arguments present
+        else {   
+            // Test available card - if more present, let user to select
+            
+            
             System.out.println("Choose which type of AlgTest you want to use.");
             System.out.println("NOTE that you need to have installed coresponding applet on your card! (Not true if you are using simulator.)");
             System.out.append("1 -> Classic AlgTest MultiPerApdu\n2 -> SinglePerApdu\n3 -> Performance Testing\n4 -> Performance Testing variable data length\n5 -> Harvest RSA keys\n");

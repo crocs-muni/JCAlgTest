@@ -34,7 +34,6 @@ package algtestjclient;
 import static algtestjclient.AlgTestJClient.testingPerformance;
 import java.io.*;
 import java.io.FileOutputStream;
-import java.util.Arrays;
 import java.util.Scanner;
 import javax.smartcardio.ResponseAPDU;
 import AlgTest.Consts;
@@ -45,7 +44,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import javax.smartcardio.ATR;
 /**
  *
  * @author lukas.srom
@@ -98,9 +96,6 @@ public class PerformanceTesting {
         StringBuilder value = new StringBuilder();
         String message = "";
         
-        /* Variable 'file' for output data. */
-        PerformanceTesting.file = cardManager.establishConnection(testClassPerformance);
-        m_cardATR = cardManager.getATR();
         //testCipher_dataDependency(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Cipher_ALG_AES_BLOCK_128_CBC_NOPAD,"TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_128_CBC_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, Consts.NUM_REPEAT_WHOLE_OPERATION, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
         
 /*        
@@ -228,6 +223,19 @@ public class PerformanceTesting {
             if (bTestVariableData) {
                 numRepeatWholeOperation = Consts.NUM_REPEAT_WHOLE_OPERATION_VARIABLE_DATA;                
             }
+            
+            String testInfo = "PERFORMACE_";
+            
+            if (bTestSymmetricAlgs) { testInfo += "SYMMETRIC_"; }
+            if (bTestAsymmetricAlgs) { testInfo += "ASYMMETRIC_"; }
+            if (bTestVariableData) { testInfo += "DATADEPEND_"; }
+            else { testInfo += "DATAFIXED_"; }
+            
+
+            // Connect to card
+            PerformanceTesting.file = cardManager.establishConnection(testClassPerformance, testInfo);
+            m_cardATR = cardManager.getATR();
+            
             
             testAllMessageDigests(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
             testAllRandomGenerators(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);

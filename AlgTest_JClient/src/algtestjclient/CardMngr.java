@@ -224,11 +224,14 @@ public class CardMngr {
         return "No card available";
     }    
     public FileOutputStream establishConnection(Class ClassToTest) throws Exception{
+        return establishConnection(ClassToTest, "");
+    }
+    public FileOutputStream establishConnection(Class ClassToTest, String testInfo) throws Exception{
         if (ConnectToCard(ClassToTest, reader, atr, protocol)) {
             String message = "";
             if (atr.toString().equals("")){atr.append(SIMULATOR_ATR + " (provided by jCardSimulator)");} // if atr == "" it means that simulator is running and thus simulator atr must be used
             System.out.println("ATR: " + atr);
-            String fileName = "AlgTest_" + atr + ".csv";
+            String fileName = "AlgTest_" + testInfo + "_" + atr + ".csv";
             fileName = fileName.replace(":", "");
             fileName = fileName.replace(" ", "_");
             
