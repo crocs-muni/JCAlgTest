@@ -167,27 +167,29 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
     // class Key 
     AESKey              m_aes_key = null;
     DESKey              m_des_key = null;
-    KoreanSEEDKey       m_koreanseed_key = null;
+///*  // comment out for JC2.2.1 convert  
+    KoreanSEEDKey       m_koreanseed_key = null; 
+    KoreanSEEDKey       m_koreanseed_key2 = null;
+    HMACKey             m_hmac_key = null; 
+    HMACKey             m_hmac_key2 = null; 
+/**/    
     DSAKey              m_dsa_key = null;
     DSAPrivateKey       m_dsaprivate_key = null;
     DSAPublicKey        m_dsapublic_key = null;
     ECKey               m_ex_key = null;
     ECPrivateKey        m_ecprivate_key = null;
     ECPublicKey         m_ecpublic_key = null;
-    HMACKey             m_hmac_key = null;
     RSAPrivateCrtKey    m_rsaprivatecrt_key = null;
     RSAPrivateKey       m_rsaprivate_key = null;
     RSAPublicKey        m_rsapublic_key = null;
     AESKey              m_aes_key2 = null;
     DESKey              m_des_key2 = null;
-    KoreanSEEDKey       m_koreanseed_key2 = null;
     DSAKey              m_dsa_key2 = null;
     DSAPrivateKey       m_dsaprivate_key2 = null;
     DSAPublicKey        m_dsapublic_key2 = null;
     ECKey               m_ex_key2 = null;
     ECPrivateKey        m_ecprivate_key2 = null;
     ECPublicKey         m_ecpublic_key2 = null;
-    HMACKey             m_hmac_key2 = null;
     RSAPrivateCrtKey    m_rsaprivatecrt_key2 = null;
     RSAPrivateKey       m_rsaprivate_key2 = null;
     RSAPublicKey        m_rsapublic_key2 = null;
@@ -673,6 +675,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                         m_key2 = m_aes_key2;
                     }
                     break;
+                    
                 case JCConsts.KeyBuilder_TYPE_DES:
                 case JCConsts.KeyBuilder_TYPE_DES_TRANSIENT_RESET: 
                 case JCConsts.KeyBuilder_TYPE_DES_TRANSIENT_DESELECT: 
@@ -688,6 +691,8 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                 case JCConsts.KeyBuilder_TYPE_KOREAN_SEED: 
                 case JCConsts.KeyBuilder_TYPE_KOREAN_SEED_TRANSIENT_RESET: 
                 case JCConsts.KeyBuilder_TYPE_KOREAN_SEED_TRANSIENT_DESELECT: 
+//                    throw new CryptoException(CryptoException.NO_SUCH_ALGORITHM);   // enable for JC 2.2.1
+///*                    
                     m_koreanseed_key = (KoreanSEEDKey) KeyBuilder.buildKey((byte) m_testSettings.keyType, m_testSettings.keyLength, false);
                     m_koreanseed_key2 = (KoreanSEEDKey) KeyBuilder.buildKey((byte) m_testSettings.keyType, m_testSettings.keyLength, false);
                     if (bSetKeyValue == Consts.TRUE) {  
@@ -697,9 +702,12 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                         m_key2 = m_koreanseed_key2;
                     } 
                     break;
+/**/                    
                 case JCConsts.KeyBuilder_TYPE_HMAC:
                 case JCConsts.KeyBuilder_TYPE_HMAC_TRANSIENT_RESET:
                 case JCConsts.KeyBuilder_TYPE_HMAC_TRANSIENT_DESELECT:
+//                    throw new CryptoException(CryptoException.NO_SUCH_ALGORITHM);   // enable for JC 2.2.1
+///*                    
                     m_hmac_key = (HMACKey) KeyBuilder.buildKey((byte) m_testSettings.keyType, m_testSettings.keyLength, false);
                     m_hmac_key2 = (HMACKey) KeyBuilder.buildKey((byte) m_testSettings.keyType, m_testSettings.keyLength, false);
                     if (bSetKeyValue == Consts.TRUE){
@@ -709,6 +717,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                         m_key2 = m_hmac_key2;
                     }
                     break;
+/**/                    
                 case JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE:
                     if (bSetKeyValue == Consts.TRUE) {
                         m_keyPair = new KeyPair(KeyPair.ALG_RSA_CRT, m_testSettings.keyLength);
@@ -839,6 +848,8 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
             break;
             
             case JCConsts.KeyBuilder_TYPE_KOREAN_SEED:
+//                throw new CryptoException(CryptoException.NO_SUCH_ALGORITHM);   // enable for JC 2.2.1
+///*                    
                 switch (m_testSettings.algorithmMethod){
                     case JCConsts.KoreanSEEDKey_setKey: 
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_koreanseed_key.setKey(m_ram1, (short) (i % 10)); } // i % 10 => different offset to ensure slightly different key every time
@@ -857,6 +868,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                     break;
                 }
             break;
+/**/                    
                 
             case JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE:
                 switch (m_testSettings.algorithmMethod){
@@ -937,6 +949,8 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                 break;
                 
             case JCConsts.KeyBuilder_TYPE_HMAC:
+//                throw new CryptoException(CryptoException.NO_SUCH_ALGORITHM);   // enable for JC 2.2.1
+///*                    
                 switch (m_testSettings.algorithmMethod){
                     case JCConsts.HMACKey_setKey: 
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {m_hmac_key.setKey(m_ram1, (short) (i % 10), m_testSettings.keyLength); } // i % 10 => different offset to ensure slightly different key every time
@@ -955,6 +969,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                     break;
                 }
                 break;
+/**/                
                 
             case JCConsts.KeyBuilder_TYPE_DSA_PRIVATE:
                 switch (m_testSettings.algorithmMethod){
