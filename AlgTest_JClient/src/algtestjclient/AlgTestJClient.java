@@ -32,7 +32,14 @@
 package algtestjclient;
 
 import java.io.*;
+import java.util.List;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.smartcardio.ATR;
+import javax.smartcardio.Card;
+import javax.smartcardio.CardException;
+import javax.smartcardio.CardTerminal;
 
 /**
  *
@@ -95,8 +102,8 @@ public class AlgTestJClient {
                 cardManager.testClassic(args, 0);}  // 0 means ask for every alg to test
                                                     // possibly change for constant?
                                                     // or maybe change for 1 and test all algs at once?
-            else if (args[0].equals(ALGTEST_SINGLEPERAPDU)){singleTest.TestSingleAlg(args);}
-            else if (args[0].equals(ALGTEST_PERFORMANCE)){testingPerformance.testPerformance(args, false);}
+            else if (args[0].equals(ALGTEST_SINGLEPERAPDU)){singleTest.TestSingleAlg(args, null);}
+            else if (args[0].equals(ALGTEST_PERFORMANCE)){testingPerformance.testPerformance(args, false, null);}
             /* In case of incorect parameter, program will report error and shut down. */
             else {
                 System.err.println("Incorect parameter!");
@@ -105,8 +112,7 @@ public class AlgTestJClient {
         }
         // If there are no arguments present
         else {   
-            // Test available card - if more present, let user to select
-            
+            CardTerminal selectedTerminal = null;
             
             System.out.println("Choose which type of AlgTest you want to use.");
             System.out.println("NOTE that you need to have installed coresponding applet on your card! (Not true if you are using simulator.)");
@@ -129,14 +135,17 @@ public class AlgTestJClient {
                     break;
                 /* In this case, SinglePerApdu version of AlgTest is used. */
                 case 2:
-                    singleTest.TestSingleAlg(args);
+                    selectedTerminal = selectTargetReader();
+                    singleTest.TestSingleAlg(args, selectedTerminal);
                     break;
                 /* In this case Performance tests are used. */
                 case 3:
-                    testingPerformance.testPerformance(args, false);
+                    selectedTerminal = selectTargetReader();
+                    testingPerformance.testPerformance(args, false, selectedTerminal);
                     break;
                 case 4:
-                    testingPerformance.testPerformance(args, true);
+                    selectedTerminal = selectTargetReader();
+                    testingPerformance.testPerformance(args, true, selectedTerminal);
                     break;
                 case 5:
                     keyHarvest.gatherRSAKeys();
@@ -148,5 +157,41 @@ public class AlgTestJClient {
             }
         
         }
+    }
+    
+    static CardTerminal selectTargetReader() {
+        // Test available card - if more present, let user to select one
+        List<CardTerminal> terminalList = CardMngr.GetReaderList(true);
+        CardTerminal selectedTerminal = null;
+        if (terminalList.isEmpty()) {
+            System.out.println("ERROR: No reader detected. Please check your reader connection");
+            return null;
+        }
+        else {
+            if (terminalList.size() == 1) {
+                selectedTerminal = terminalList.get(0); // return first and only reader
+            }
+            else {
+                int terminalIndex = 0;
+                // Let user select target terminal
+                for (CardTerminal terminal : terminalList) {
+                    Card card;
+                    try {
+                        card = terminal.connect("*");
+                        ATR atr = card.getATR();
+                        System.out.println(terminalIndex + " : " + terminal.getName() + " - " + CardMngr.bytesToHex(atr.getBytes()));    
+                        terminalIndex++;
+                    } catch (CardException ex) {
+                        Logger.getLogger(AlgTestJClient.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }   
+                System.out.println("Select index of target reader you like to use 0.." + (terminalIndex - 1));
+                Scanner sc = new Scanner(System.in);
+                int answ = sc.nextInt();
+                selectedTerminal = terminalList.get(answ); 
+            }
+        }
+        
+        return selectedTerminal;
     }
 }

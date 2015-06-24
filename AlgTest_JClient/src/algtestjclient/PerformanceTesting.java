@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import javax.smartcardio.CardTerminal;
 /**
  *
  * @author lukas.srom
@@ -81,10 +82,13 @@ public class PerformanceTesting {
     
     /**
      * Calls methods testing card performance.
+     * @param args
+     * @param bTestVariableDataLengths
+     * @param selectedTerminal
      * @throws IOException
      * @throws Exception
      */        
-    public void testPerformance(String[] args, boolean bTestVariableDataLengths) throws IOException, Exception{
+    public void testPerformance(String[] args, boolean bTestVariableDataLengths, CardTerminal selectedTerminal) throws IOException, Exception{
         /* BUGBUG: we need to figure out how to support JCardSim in nice way (copy of class files, directory structure...)
         Class testClassPerformance = AlgTestPerformance.class;
         */
@@ -224,7 +228,10 @@ public class PerformanceTesting {
                 numRepeatWholeOperation = Consts.NUM_REPEAT_WHOLE_OPERATION_VARIABLE_DATA;                
             }
             
-            String testInfo = "PERFORMACE_";
+            System.out.println("Specify type of your card (e.g., NXP JCOP CJ2A081):");
+            String testInfo = sc.next();
+            
+            testInfo += "_PERFORMACE_";
             
             if (bTestSymmetricAlgs) { testInfo += "SYMMETRIC_"; }
             if (bTestAsymmetricAlgs) { testInfo += "ASYMMETRIC_"; }
@@ -233,7 +240,7 @@ public class PerformanceTesting {
             
 
             // Connect to card
-            PerformanceTesting.file = cardManager.establishConnection(testClassPerformance, testInfo);
+            PerformanceTesting.file = cardManager.establishConnection(testClassPerformance, testInfo, selectedTerminal);
             m_cardATR = cardManager.getATR();
             
             

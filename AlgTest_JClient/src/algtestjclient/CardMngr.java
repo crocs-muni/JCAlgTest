@@ -56,6 +56,9 @@ import com.licel.jcardsim.io.CAD;
 import com.licel.jcardsim.io.JavaxSmartCardInterface;
 import java.io.File;
 import java.lang.ProcessBuilder.Redirect;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javacard.framework.AID;
 import javacard.framework.ISO7816;
 
@@ -224,10 +227,17 @@ public class CardMngr {
         return "No card available";
     }    
     public FileOutputStream establishConnection(Class ClassToTest) throws Exception{
-        return establishConnection(ClassToTest, "");
+        return establishConnection(ClassToTest, "", null);
     }
-    public FileOutputStream establishConnection(Class ClassToTest, String testInfo) throws Exception{
-        if (ConnectToCard(ClassToTest, reader, atr, protocol)) {
+    public FileOutputStream establishConnection(Class ClassToTest, String testInfo, CardTerminal selectedTerminal) throws Exception{
+        boolean bConnected = false;
+        if (selectedTerminal != null) {
+            bConnected = ConnectToCard(ClassToTest, selectedTerminal, reader, atr, protocol);            
+        } 
+        else {
+            bConnected = ConnectToFirstCard(ClassToTest, reader, atr, protocol);            
+        }
+        if (bConnected) {
             String message = "";
             if (atr.toString().equals("")){atr.append(SIMULATOR_ATR + " (provided by jCardSimulator)");} // if atr == "" it means that simulator is running and thus simulator atr must be used
             System.out.println("ATR: " + atr);
@@ -282,13 +292,14 @@ public class CardMngr {
         return null;    // returns 'null' in case of error
     }
     
-    public static boolean ConnectToCard() throws Exception {
+    public static boolean ConnectToFirstCard() throws Exception {
         StringBuilder selectedReader = new StringBuilder();
         StringBuilder selectedATR = new StringBuilder();
         StringBuilder usedProtocol = new StringBuilder();
-        return ConnectToCard(null, selectedReader, selectedATR, usedProtocol);
+        return ConnectToFirstCard(null, selectedReader, selectedATR, usedProtocol);
     }
-    public static boolean ConnectToCard(Class ClassToTest, StringBuilder selectedReader, StringBuilder selectedATR, StringBuilder usedProtocol) throws Exception {
+    
+    public static boolean ConnectToFirstCard(Class ClassToTest, StringBuilder selectedReader, StringBuilder selectedATR, StringBuilder usedProtocol) throws Exception {
         boolean cardFound = false;        
         
         if (ClassToTest != null) {
@@ -337,6 +348,53 @@ public class CardMngr {
         return cardFound;        
     }
     
+    public static boolean ConnectToCard() throws Exception {
+        StringBuilder selectedReader = new StringBuilder();
+        StringBuilder selectedATR = new StringBuilder();
+        StringBuilder usedProtocol = new StringBuilder();
+        return ConnectToCard(null, m_terminal, selectedReader, selectedATR, usedProtocol);
+    }
+    
+    public static boolean ConnectToCard(Class ClassToTest, CardTerminal targetReader, StringBuilder selectedReader, StringBuilder selectedATR, StringBuilder usedProtocol) throws Exception {
+        boolean cardFound = false;        
+        
+        if (ClassToTest != null) {
+            System.out.println("No terminals found");
+            System.out.println("Creating simulator...");
+            MakeSim(ClassToTest);
+
+            System.out.println("Simulator created.");
+            cardFound = true;
+        }
+        else {
+            m_terminal = targetReader;
+            if (m_terminal.isCardPresent()) {
+                m_card = m_terminal.connect("*");
+                System.out.println("card: " + m_card);
+                m_channel = m_card.getBasicChannel();
+                    System.out.println("Card Channel: " + m_channel.getChannelNumber());
+
+                //reset the card
+                ATR atr = m_card.getATR();
+                System.out.println(bytesToHex(atr.getBytes()));
+
+                // SELECT APPLET
+                ResponseAPDU resp = sendAPDU(selectApplet);
+                if (resp.getSW() != 0x9000) {
+                    System.out.println("No JCAlgTest applet found.");
+                } else {
+                    // CARD FOUND
+                    cardFound = true;
+
+                    selectedATR.append(bytesToHex(m_card.getATR().getBytes()));
+                    selectedReader.append(m_terminal.toString());
+                    usedProtocol.append(m_card.getProtocol());
+                }
+            }
+        }
+        return cardFound;        
+    }    
+    
     public String ConnectToCard(CardTerminal cardTerminal, StringBuilder selectedATR, StringBuilder usedProtocol) throws Exception {
         m_terminal = cardTerminal;
         m_card = m_terminal.connect("*");
@@ -374,9 +432,29 @@ public class CardMngr {
             return readersList;
         } catch (CardException ex) {
             System.out.println("Exception : " + ex);
-            return null;
+            return new ArrayList<>();
         }
     }
+    
+    public static List<CardTerminal> GetReaderList(boolean bTerminalWithCardsOnly) {
+        List<CardTerminal> readersList = new ArrayList<>();
+        List<CardTerminal> readersListAll = GetReaderList();
+        if (bTerminalWithCardsOnly) {
+            try {
+                for (CardTerminal terminal : readersListAll) {
+                    if (terminal.isCardPresent()) {
+                        readersList.add(terminal);
+                    }
+                }
+                
+                return readersList;
+            } catch (CardException ex) {
+                System.out.println("Exception : " + ex);
+                return null;
+            }
+        }
+        else { return readersListAll; }
+    }    
 
     /**
      * Method which will send bytes to on-card application using smartcardio interface.

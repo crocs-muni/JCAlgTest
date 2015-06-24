@@ -39,6 +39,7 @@ import java.util.Arrays;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.smartcardio.CardTerminal;
 import javax.smartcardio.ResponseAPDU;
 
 /**
@@ -388,7 +389,7 @@ public class SingleModeTest {
      * @throws IOException
      * @throws Exception
      */
-    public void TestSingleAlg (String[] args) throws IOException, Exception{
+    public void TestSingleAlg (String[] args, CardTerminal selectedReader) throws IOException, Exception{
         /* BUGBUG: we need to figure out how to support JCardSim in nice way (copy of class files, directory structure...)
         Class testClassSingleApdu = AlgTestSinglePerApdu.class;
         */
@@ -398,7 +399,7 @@ public class SingleModeTest {
         Scanner br = new Scanner(System.in);  
         String answ = "";   // When set to 0, program will ask for each algorithm to test.
                 
-        FileOutputStream file = cardManager.establishConnection(testClassSingleApdu);
+        FileOutputStream file = cardManager.establishConnection(testClassSingleApdu, "", selectedReader);
         
         /* Checking for arguments. */
         if (args.length > 1){       // in case there are arguments from command line present
