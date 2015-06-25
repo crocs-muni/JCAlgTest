@@ -36,13 +36,13 @@ public class PerformanceTestingNGTest {
 
     @AfterMethod
     public void tearDownMethod() throws Exception {
-        if (PerformanceTesting.file != null) PerformanceTesting.file.close();
+        if (PerformanceTesting.m_perfResultsFile != null) PerformanceTesting.m_perfResultsFile.close();
     }
     
     @Test
     void perftest_testAll() throws Exception {    
-        PerformanceTesting.file = (bTestRealCards) ? cardManager.establishConnection(null) : cardManager.establishConnection(AlgTestSinglePerApdu.class);   
-        assertNotEquals(PerformanceTesting.file, null);
+        PerformanceTesting.m_perfResultsFile = (bTestRealCards) ? cardManager.establishConnection(null) : cardManager.establishConnection(AlgTestSinglePerApdu.class);   
+        assertNotEquals(PerformanceTesting.m_perfResultsFile, null);
 
         short numRepeatWholeOperation = 10;
         short numRepeatWholeMeasurement = 3;
@@ -67,8 +67,8 @@ public class PerformanceTestingNGTest {
 
     @Test
     void perftest_testClass_AESKey() throws Exception {
-        PerformanceTesting.file = (bTestRealCards) ? cardManager.establishConnection(null) : cardManager.establishConnection(AlgTestSinglePerApdu.class);   
-        assertNotEquals(PerformanceTesting.file, null);
+        PerformanceTesting.m_perfResultsFile = (bTestRealCards) ? cardManager.establishConnection(null) : cardManager.establishConnection(AlgTestSinglePerApdu.class);   
+        assertNotEquals(PerformanceTesting.m_perfResultsFile, null);
 
         // Prepare test
         TestSettings testSet = null;
@@ -101,8 +101,8 @@ public class PerformanceTestingNGTest {
     
     @Test
     void perftest_testClass_Cipher() throws Exception {
-        PerformanceTesting.file = (bTestRealCards) ? cardManager.establishConnection(null) : cardManager.establishConnection(AlgTestSinglePerApdu.class);   
-        assertNotEquals(PerformanceTesting.file, null);
+        PerformanceTesting.m_perfResultsFile = (bTestRealCards) ? cardManager.establishConnection(null) : cardManager.establishConnection(AlgTestSinglePerApdu.class);   
+        assertNotEquals(PerformanceTesting.m_perfResultsFile, null);
 
         // Prepare test
         TestSettings testSet = null;
@@ -145,16 +145,16 @@ public class PerformanceTestingNGTest {
     @Test
     void perftest_testClass_Cipher_RSA() throws Exception {
         bTestRealCards = true;
-        PerformanceTesting.file = (bTestRealCards) ? cardManager.establishConnection(null) : cardManager.establishConnection(AlgTestSinglePerApdu.class);   
-        assertNotEquals(PerformanceTesting.file, null);
+        PerformanceTesting.m_perfResultsFile = (bTestRealCards) ? cardManager.establishConnection(null) : cardManager.establishConnection(AlgTestSinglePerApdu.class);   
+        assertNotEquals(PerformanceTesting.m_perfResultsFile, null);
 
         PerformanceTesting.testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512, JCConsts.Cipher_ALG_RSA_NOPAD, "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_512 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, (short) 1, (short) 3);
     }    
     
     @Test
     void perftest_testClass_Signature() throws Exception {
-        PerformanceTesting.file = (bTestRealCards) ? cardManager.establishConnection(null) : cardManager.establishConnection(AlgTestSinglePerApdu.class);   
-        assertNotEquals(PerformanceTesting.file, null);
+        PerformanceTesting.m_perfResultsFile = (bTestRealCards) ? cardManager.establishConnection(null) : cardManager.establishConnection(AlgTestSinglePerApdu.class);   
+        assertNotEquals(PerformanceTesting.m_perfResultsFile, null);
 
 
         // Prepare test
@@ -191,8 +191,8 @@ public class PerformanceTestingNGTest {
     
     @Test
     void perftest_testClass_RandomData() throws Exception {
-        PerformanceTesting.file = (bTestRealCards) ? cardManager.establishConnection(null) : cardManager.establishConnection(AlgTestSinglePerApdu.class);   
-        assertNotEquals(PerformanceTesting.file, null);
+        PerformanceTesting.m_perfResultsFile = (bTestRealCards) ? cardManager.establishConnection(null) : cardManager.establishConnection(AlgTestSinglePerApdu.class);   
+        assertNotEquals(PerformanceTesting.m_perfResultsFile, null);
 
 
         // Prepare test
@@ -218,8 +218,8 @@ public class PerformanceTestingNGTest {
     
    @Test
     void perftest_testClass_MessageDigest() throws Exception {
-        PerformanceTesting.file = (bTestRealCards) ? cardManager.establishConnection(null) : cardManager.establishConnection(AlgTestSinglePerApdu.class);   
-        assertNotEquals(PerformanceTesting.file, null);
+        PerformanceTesting.m_perfResultsFile = (bTestRealCards) ? cardManager.establishConnection(null) : cardManager.establishConnection(AlgTestSinglePerApdu.class);   
+        assertNotEquals(PerformanceTesting.m_perfResultsFile, null);
 
 
         // BUGBUG: other types from MessageDigest
@@ -244,8 +244,8 @@ public class PerformanceTestingNGTest {
     
    @Test
     void perftest_testClass_Checksum() throws Exception {
-        PerformanceTesting.file = (bTestRealCards) ? cardManager.establishConnection(null) : cardManager.establishConnection(AlgTestSinglePerApdu.class);   
-        assertNotEquals(PerformanceTesting.file, null);
+        PerformanceTesting.m_perfResultsFile = (bTestRealCards) ? cardManager.establishConnection(null) : cardManager.establishConnection(AlgTestSinglePerApdu.class);   
+        assertNotEquals(PerformanceTesting.m_perfResultsFile, null);
 
 
         // BUGBUG: other types from MessageDigest
@@ -276,8 +276,8 @@ public class PerformanceTestingNGTest {
     
    @Test
     void perftest_testClass_KeyPair() throws Exception {
-        PerformanceTesting.file = (bTestRealCards) ? cardManager.establishConnection(null) : cardManager.establishConnection(AlgTestSinglePerApdu.class);   
-        assertNotEquals(PerformanceTesting.file, null);
+        PerformanceTesting.m_perfResultsFile = (bTestRealCards) ? cardManager.establishConnection(null) : cardManager.establishConnection(AlgTestSinglePerApdu.class);   
+        assertNotEquals(PerformanceTesting.m_perfResultsFile, null);
 
 
         // BUGBUG: other types from KeyPair
@@ -297,8 +297,8 @@ public class PerformanceTestingNGTest {
     
    @Test
     void perftest_testClass_KeyAgreement() throws Exception {
-        PerformanceTesting.file = (bTestRealCards) ? cardManager.establishConnection(null) : cardManager.establishConnection(AlgTestSinglePerApdu.class);   
-        assertNotEquals(PerformanceTesting.file, null);
+        PerformanceTesting.m_perfResultsFile = (bTestRealCards) ? cardManager.establishConnection(null) : cardManager.establishConnection(AlgTestSinglePerApdu.class);   
+        assertNotEquals(PerformanceTesting.m_perfResultsFile, null);
 
 
         // BUGBUG: other types from KeyAgreement
@@ -319,7 +319,7 @@ public class PerformanceTestingNGTest {
 
     @Test
     void debug() throws Exception { 
-        PerformanceTesting.file = (bTestRealCards) ? cardManager.establishConnection(null) : cardManager.establishConnection(AlgTestSinglePerApdu.class);   
+        PerformanceTesting.m_perfResultsFile = (bTestRealCards) ? cardManager.establishConnection(null) : cardManager.establishConnection(AlgTestSinglePerApdu.class);   
         PerformanceTesting.testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_512 ALG_RSA_SHA_ISO9796", (short) 1, (short) 1);
     }
 }

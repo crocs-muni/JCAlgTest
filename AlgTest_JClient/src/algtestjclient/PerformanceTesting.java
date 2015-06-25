@@ -39,7 +39,9 @@ import javax.smartcardio.ResponseAPDU;
 import AlgTest.Consts;
 import AlgTest.JCConsts;
 import AlgTest.TestSettings;
-import static algtestjclient.PerformanceTesting.file;
+import static algtestjclient.PerformanceTesting.m_perfResultsFile;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -70,7 +72,10 @@ public class PerformanceTesting {
     public String message = "";
     
     //public static final byte mask = 0b01111111;
-    public static FileOutputStream file;
+    public static FileOutputStream m_perfResultsFile;
+    public static FileOutputStream m_algsMeasuredFile;
+    public static List<String> m_algsMeasuredList = new ArrayList<>();
+    public static boolean m_bAlgsMeasuredSomeNew = false;
     
     private static boolean bTestSymmetricAlgs = true;
     private static boolean bTestAsymmetricAlgs = true;
@@ -229,18 +234,24 @@ public class PerformanceTesting {
             }
             
             System.out.println("Specify type of your card (e.g., NXP JCOP CJ2A081):");
-            String testInfo = sc.next();
+            String cardName = sc.next();
             
-            testInfo += "_PERFORMACE_";
+            // Try to open and load list of already measured algorithms (if provided)
+            LoadAlreadyMeasuredAlgs(cardName);
+                
+            String testInfo = cardName;
+            testInfo += "_PERFORMANCE_";
             
             if (bTestSymmetricAlgs) { testInfo += "SYMMETRIC_"; }
             if (bTestAsymmetricAlgs) { testInfo += "ASYMMETRIC_"; }
             if (bTestVariableData) { testInfo += "DATADEPEND_"; }
             else { testInfo += "DATAFIXED_"; }
             
+            testInfo += System.currentTimeMillis() + "_";   // add unique time counter
+            
 
             // Connect to card
-            PerformanceTesting.file = cardManager.establishConnection(testClassPerformance, testInfo, selectedTerminal);
+            PerformanceTesting.m_perfResultsFile = cardManager.establishConnection(testClassPerformance, testInfo, selectedTerminal);
             m_cardATR = cardManager.getATR();
             
             
@@ -314,6 +325,48 @@ public class PerformanceTesting {
             }
 */
         }
+    
+    void LoadAlreadyMeasuredAlgs(String cardName) {
+        String filePath = cardName + "_already_measured.list";
+        String filePathOld = filePath + ".old";
+        File f = new File(filePath);
+        File fOld = new File(filePathOld);
+        
+        try {
+            if (f.exists() && !f.isDirectory()) {
+                // Ask user for continuation
+                String message = "File '" + filePath + "' with already measured algorithms found. Do you like to use it and measure only missing algorithms? (1==yes/0==no)\n";
+                System.out.print(message);
+                Scanner sc = new Scanner(System.in);
+                int answ = sc.nextInt();
+                if (answ == 1) {
+                    System.out.println("\tContinue was selected. Only algorithms NOT present " + filePath + " in will be measured");
+                    // Read all measured algorithms earlier
+                    System.out.println("Following algorithms will NOT be measured again (listed in " + filePath + " file):");
+                    BufferedReader br = new BufferedReader(new FileReader(filePath));
+                    String strLine;
+                    while ((strLine = br.readLine()) != null) {
+                        if (!strLine.isEmpty()) {
+                            m_algsMeasuredList.add(strLine);
+                            System.out.println(strLine);
+                        }
+                    }
+                    br.close();
+                }
+                else {
+                    System.out.println("\tContinue was NOT selected. All algorithms will be measured");
+                    m_algsMeasuredList.clear();
+                }
+                // Create backup of file with measured algorithms
+                f.renameTo(fOld);
+            }
+
+            // Create new file with list of measured algorithms (already measured and newly measured will be included)
+            m_algsMeasuredFile = new FileOutputStream(filePath);
+        } catch (IOException ex) {
+            System.out.println("No read of file with already measured algs: " + filePath);
+        }
+    }
     
     /**
      * Method that will test all algorithms in PerformanceTesting class
@@ -586,7 +639,7 @@ public class PerformanceTesting {
     }
     public static void perftest_prepareClass(byte appletCLA, byte appletINS, TestSettings testSet) throws IOException, Exception {
         // Free previously allocated objects
-        boolean succes = cardManager.resetApplet(appletCLA, Consts.INS_CARD_RESET);
+        boolean success = cardManager.resetApplet(appletCLA, Consts.INS_CARD_RESET);
         // Prepare new set
         cardManager.PerfTestCommand(appletCLA, appletINS, testSet, Consts.INS_CARD_RESET);
     }
@@ -604,50 +657,71 @@ public class PerformanceTesting {
         StringBuilder result = new StringBuilder();
         int numFailedRepeats = 0;
         
-        while (numFailedRepeats < MAX_FAILED_REPEATS) {
-            try {
-                result.setLength(0);
-                measureTime = perftest_measure(appletCLA, appletPrepareINS, appletMeasureINS, testSet, info, result, substractTime);
-                // Measurement success, reset failed attempts counter
-                numFailedRepeats = 0;
-                // Write result string into file
-                file.write(result.toString().getBytes());
-                
-                // end loop 
-                return measureTime;
-            }
-            catch (CardCommunicationException ex) {
-                // Normal exception like NO_SUCH_ALGORITHM  - just print it 
-                String message = ex.toString();
-                System.out.println(ex.toString()); 
-                // Write result string into file
-                file.write(result.toString().getBytes());
-                // Write execption into file
-                file.write(message.getBytes());
-                
-                return -1;
-            }
-            catch (Exception ex) {
-                // Unexpected exception
-                System.out.println(ex.toString()); 
-                numFailedRepeats++;
-                
-                if (numFailedRepeats == MAX_FAILED_REPEATS) {
-                    String message = "ERROR: unable to measure operation properly even after applet upload\n";
-                    message += "Try to physically remove card and insert it again. Press any key and enter to to continue\n";
+        // Check if this measurement should be performed or was already measured before
+        if (m_algsMeasuredList.contains(info)) {
+            // we already measured this algorithm before, just log it into new measurementsDone file
+            String message = info + "\n";
+            m_algsMeasuredFile.write(message.getBytes());        
+            
+            message = "\nmethod name:; " + info + "\n";    
+            message += "ALREADY_MEASURED\n";
+            m_perfResultsFile.write(message.getBytes());
+            
+        }
+        else {
+            while (numFailedRepeats < MAX_FAILED_REPEATS) {
+                try {
+                    result.setLength(0);
+                    measureTime = perftest_measure(appletCLA, appletPrepareINS, appletMeasureINS, testSet, info, result, substractTime);
+                    // Measurement success, reset failed attempts counter
+                    numFailedRepeats = 0;
+                    // Write result string into file
+                    m_perfResultsFile.write(result.toString().getBytes());
+
+                    // log succesfull measurement of current algorithm 
+                    m_bAlgsMeasuredSomeNew = true;
+                    String message = info + "\n";
+                    m_algsMeasuredFile.write(message.getBytes());        
+
+                    // end loop 
+                    return measureTime;
+                }
+                catch (CardCommunicationException ex) {
+                    // Normal exception like NO_SUCH_ALGORITHM  - just print it 
+                    String message = ex.toString();
+                    System.out.println(ex.toString()); 
+                    // Write result string into file
+                    m_perfResultsFile.write(result.toString().getBytes());
+                    // Write execption into file
+                    m_perfResultsFile.write(message.getBytes());
+
+                    // log succesfull measurement of current algorithm - although exception ocurred, it is expected value like NO_SUCH_ALGORITHM
+                    m_bAlgsMeasuredSomeNew = true;
+                    message = info + "\n";
+                    m_algsMeasuredFile.write(message.getBytes());        
+
+                    return -1;
+                }
+                catch (Exception ex) {
+                    // Unexpected exception
+                    System.out.println(ex.toString()); 
+                    numFailedRepeats++;
+
+                    String message = "ERROR: unable to measure operation '" + info + "' properly because of exception (" + ex.toString() + ")\n";
+                    message += "Try to physically remove card and/or upload applet manually and insert it again. Press any key and enter to to continue\n";
                     System.out.print(message);
                     Scanner sc = new Scanner(System.in);
                     sc.next();
                     // Card was physically removed, reset retries counter
                     numFailedRepeats = 0;
+
+                    CardMngr.ConnectToCard();
                 }
-                
-                // Upload applet again and run measurement again
-                CardMngr.UploadApplet(0, m_cardATR);
-                CardMngr.ConnectToCard();
             }
         }
         
+        System.out.print("ERROR: unable to measure operation '" + info + "'");
+                
         return -1;
     }
     
@@ -792,10 +866,10 @@ public class PerformanceTesting {
     }
     public static void testAllKeyPairs(short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
         String tableName = "\n\nKEY PAIR";
-        file.write(tableName.getBytes());
+        m_perfResultsFile.write(tableName.getBytes());
         if (bTestAsymmetricAlgs) {
             String message = "\n";
-            file.write(message.getBytes());
+            m_perfResultsFile.write(message.getBytes());
             testKeyPair(JCConsts.KeyPair_ALG_RSA,JCConsts.KeyBuilder_LENGTH_RSA_512,"ALG_RSA LENGTH_RSA_512", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testKeyPair(JCConsts.KeyPair_ALG_RSA,JCConsts.KeyBuilder_LENGTH_RSA_736,"ALG_RSA LENGTH_RSA_736", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testKeyPair(JCConsts.KeyPair_ALG_RSA,JCConsts.KeyBuilder_LENGTH_RSA_768,"ALG_RSA LENGTH_RSA_768", numRepeatWholeOperation, numRepeatWholeMeasurement);
@@ -835,11 +909,11 @@ public class PerformanceTesting {
             testKeyPair(JCConsts.KeyPair_ALG_EC_FP,JCConsts.KeyBuilder_LENGTH_EC_FP_521,"ALG_EC_FP LENGTH_EC_FP_521", numRepeatWholeOperation, numRepeatWholeMeasurement); 
         }
         else {
-            String message = "# Measurements excluded for asymmetric algorithms\n";
-            file.write(message.getBytes());
+            String message = "\n# Measurements excluded for asymmetric algorithms\n";
+            m_perfResultsFile.write(message.getBytes());
         }
-        tableName = "KEY PAIR - END\n";
-        file.write(tableName.getBytes());
+        tableName = "\n\nKEY PAIR - END\n";
+        m_perfResultsFile.write(tableName.getBytes());
     }
     
     public static void testMessageDigest(byte alg, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
@@ -858,14 +932,14 @@ public class PerformanceTesting {
         else {
             // Test of speed dependant on data length
             String tableName = "\n\nMESSAGE DIGEST - "  + info + " - variable data - BEGIN\n";
-            file.write(tableName.getBytes());
+            m_perfResultsFile.write(tableName.getBytes());
             testSet.algorithmMethod = JCConsts.MessageDigest_doFinal;
             for (Integer length : m_testDataLengths) {
                 testSet.dataLength1 = length.shortValue();
                 PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_MESSAGEDIGEST, Consts.INS_PERF_TEST_CLASS_MESSAGEDIGEST, testSet, info + " MessageDigest_doFinal()");
             }
             tableName = "\n\nMESSAGE DIGEST - "  + info + " - variable data - END\n";
-            file.write(tableName.getBytes());
+            m_perfResultsFile.write(tableName.getBytes());
         }
     }   
     
@@ -875,7 +949,7 @@ public class PerformanceTesting {
     }
     public static void testAllMessageDigests(short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
         String tableName = "\n\nMESSAGE DIGEST\n";
-        file.write(tableName.getBytes());
+        m_perfResultsFile.write(tableName.getBytes());
         if (bTestSymmetricAlgs) {
             testMessageDigest(JCConsts.MessageDigest_ALG_SHA,"ALG_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testMessageDigest(JCConsts.MessageDigest_ALG_MD5,"ALG_MD5", numRepeatWholeOperation, numRepeatWholeMeasurement);
@@ -886,11 +960,11 @@ public class PerformanceTesting {
             testMessageDigest(JCConsts.MessageDigest_ALG_SHA_224,"ALG_SHA_224", numRepeatWholeOperation, numRepeatWholeMeasurement);
         }
         else {
-            String message = "# Measurements excluded for symmetric algorithms\n";
-            file.write(message.getBytes());
+            String message = "\n# Measurements excluded for symmetric algorithms\n";
+            m_perfResultsFile.write(message.getBytes());
         }
-        tableName = "MESSAGE DIGEST - END\n";
-        file.write(tableName.getBytes());
+        tableName = "\n\nMESSAGE DIGEST - END\n";
+        m_perfResultsFile.write(tableName.getBytes());
     }
 
     public static void testRandomGenerator(byte alg, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
@@ -907,14 +981,14 @@ public class PerformanceTesting {
         else {
             // Test of speed dependant on data length
             String tableName = "\n\nRANDOM GENERATOR - "  + info + " - variable data - BEGIN\n";
-            file.write(tableName.getBytes());
+            m_perfResultsFile.write(tableName.getBytes());
             testSet.algorithmMethod = JCConsts.RandomData_generateData;
             for (Integer length : m_testDataLengths) {
                 testSet.dataLength1 = length.shortValue();
                 PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_RANDOMDATA, Consts.INS_PERF_TEST_CLASS_RANDOMDATA, testSet, info + " RandomData_generateData();" + length + ";");
             }
             tableName = "\n\nRANDOM GENERATOR - "  + info + " - variable data - END\n";
-            file.write(tableName.getBytes());
+            m_perfResultsFile.write(tableName.getBytes());
         }
     }    
     public static void testAllRandomGenerators(int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception {
@@ -922,17 +996,17 @@ public class PerformanceTesting {
     }
     public static void testAllRandomGenerators(short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
         String tableName = "\n\nRANDOM GENERATOR\n";
-        file.write(tableName.getBytes());
+        m_perfResultsFile.write(tableName.getBytes());
         if (bTestSymmetricAlgs) {
             testRandomGenerator(JCConsts.RandomData_ALG_PSEUDO_RANDOM,"ALG_PSEUDO_RANDOM", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testRandomGenerator(JCConsts.RandomData_ALG_SECURE_RANDOM,"ALG_SECURE_RANDOM", numRepeatWholeOperation, numRepeatWholeMeasurement);     
         }
         else {
-            String message = "# Measurements excluded for symmetric algorithms\n";
-            file.write(message.getBytes());
+            String message = "\n# Measurements excluded for symmetric algorithms\n";
+            m_perfResultsFile.write(message.getBytes());
         }
-        tableName = "RANDOM GENERATOR - END\n";
-        file.write(tableName.getBytes());
+        tableName = "\n\nRANDOM GENERATOR - END\n";
+        m_perfResultsFile.write(tableName.getBytes());
     }    
 
     public static void testCipher(byte key, short keyLength, byte alg, String info, short initMode, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
@@ -962,14 +1036,14 @@ public class PerformanceTesting {
         else {
             // Test of speed dependant on data length
             String tableName = "\n\nCIPHER - " + info + " - variable data - BEGIN\n";
-            file.write(tableName.getBytes());
+            m_perfResultsFile.write(tableName.getBytes());
             switch (key) {
                 case JCConsts.KeyBuilder_TYPE_RSA_PRIVATE:
                 case JCConsts.KeyBuilder_TYPE_RSA_PUBLIC:
                 case JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE:
                     // For RSA, variable length perf test is not supported
                     tableName = "For RSA, variable length perf test is not supported\n";
-                    file.write(tableName.getBytes());
+                    m_perfResultsFile.write(tableName.getBytes());
                     System.out.print(tableName);
                     return;
             }    
@@ -980,7 +1054,7 @@ public class PerformanceTesting {
                 PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_doFinal()");
             }
             tableName = "\n\nCIPHER - " + info + " - variable data - END\n";
-            file.write(tableName.getBytes());
+            m_perfResultsFile.write(tableName.getBytes());
         }
         
     }
@@ -1015,7 +1089,7 @@ public class PerformanceTesting {
     }
     public static void testAllCiphers(short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
         String tableName = "\n\nCIPHER\n";
-        file.write(tableName.getBytes());
+        m_perfResultsFile.write(tableName.getBytes());
         if (bTestSymmetricAlgs) {
             testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES,JCConsts.Cipher_ALG_DES_CBC_NOPAD,"TYPE_DES LENGTH_DES ALG_DES_CBC_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
             testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES,JCConsts.Cipher_ALG_DES_CBC_ISO9797_M1,"TYPE_DES LENGTH_DES ALG_DES_CBC_ISO9797_M1", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
@@ -1080,8 +1154,8 @@ public class PerformanceTesting {
             testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_256,JCConsts.Cipher_ALG_AES_ECB_PKCS5,"TYPE_AES LENGTH_AES_256 ALG_AES_ECB_PKCS5", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement); 
         }
         else {
-            String message = "# Measurements excluded for symmetric algorithms\n";
-            file.write(message.getBytes());
+            String message = "\n# Measurements excluded for symmetric algorithms\n";
+            m_perfResultsFile.write(message.getBytes());
         }
         if (bTestAsymmetricAlgs) {
             // ALG_RSA TYPE_RSA_PRIVATE
@@ -1254,11 +1328,11 @@ public class PerformanceTesting {
             testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Cipher_ALG_RSA_PKCS1_OAEP,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_4096 ALG_RSA_PKCS1_OAEP", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement); 
         }
         else {
-            String message = "# Measurements excluded for asymmetric algorithms\n";
-            file.write(message.getBytes());
+            String message = "\n# Measurements excluded for asymmetric algorithms\n";
+            m_perfResultsFile.write(message.getBytes());
         }        
-        tableName = "CIPHER - END\n";
-        file.write(tableName.getBytes());
+        tableName = "\n\nCIPHER - END\n";
+        m_perfResultsFile.write(tableName.getBytes());
     }
     
     public static void testSignature(byte keyType, short keyLength, byte alg, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
@@ -1282,14 +1356,14 @@ public class PerformanceTesting {
         else {
             // Test of speed dependant on data length
             String tableName = "\n\nSIGNATURE - "  + info + " - variable data - BEGIN\n";
-            file.write(tableName.getBytes());
+            m_perfResultsFile.write(tableName.getBytes());
             testSet.algorithmMethod = JCConsts.Signature_sign;
             for (Integer length : m_testDataLengths) {
                 testSet.dataLength1 = length.shortValue();
                 PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_sign()");
             }
             tableName = "\n\nSIGNATURE - "  + info + " - variable data - END\n";
-            file.write(tableName.getBytes());
+            m_perfResultsFile.write(tableName.getBytes());
         }
     }
     public static void testAllSignatures(int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception {
@@ -1297,7 +1371,7 @@ public class PerformanceTesting {
     }
     public static void testAllSignatures(short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
         String tableName = "\n\nSIGNATURE\n";
-        file.write(tableName.getBytes());
+        m_perfResultsFile.write(tableName.getBytes());
         if (bTestSymmetricAlgs) {
             testSignature(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Signature_ALG_AES_MAC_128_NOPAD,"TYPE_AES LENGTH_AES_128 ALG_AES_MAC_128_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testSignature(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_192,JCConsts.Signature_ALG_AES_MAC_128_NOPAD,"TYPE_AES LENGTH_AES_192 ALG_AES_MAC_128_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
@@ -1330,8 +1404,8 @@ public class PerformanceTesting {
             testSignature(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_3KEY,JCConsts.Signature_ALG_DES_MAC8_PKCS5,"TYPE_DES LENGTH_DES3_3KEY ALG_DES_MAC8_PKCS5", numRepeatWholeOperation, numRepeatWholeMeasurement);
         }
         else {
-            String message = "# Measurements excluded for symmetric algorithms\n";
-            file.write(message.getBytes());
+            String message = "\n# Measurements excluded for symmetric algorithms\n";
+            m_perfResultsFile.write(message.getBytes());
         }
         
         if (bTestAsymmetricAlgs) {
@@ -1599,12 +1673,12 @@ public class PerformanceTesting {
             testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096,JCConsts.Signature_ALG_RSA_SHA_RFC2409,"ALG_RSA_CRT LENGTH_RSA_4096 ALG_RSA_SHA_RFC2409", numRepeatWholeOperation, numRepeatWholeMeasurement);
         }
         else {
-            String message = "# Measurements excluded for asymmetric algorithms\n";
-            file.write(message.getBytes());
+            String message = "\n# Measurements excluded for asymmetric algorithms\n";
+            m_perfResultsFile.write(message.getBytes());
         }          
         
-        tableName = "SIGNATURE - END\n";
-        file.write(tableName.getBytes());        
+        tableName = "\n\nSIGNATURE - END\n";
+        m_perfResultsFile.write(tableName.getBytes());        
     }    
     
     public static void testChecksum(byte alg, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
@@ -1620,14 +1694,14 @@ public class PerformanceTesting {
         else {
             // Test of speed dependant on data length
             String tableName = "\n\nCHECKSUM - "  + info + " - variable data - BEGIN\n";
-            file.write(tableName.getBytes());
+            m_perfResultsFile.write(tableName.getBytes());
             testSet.algorithmMethod = JCConsts.Checksum_doFinal;
             for (Integer length : m_testDataLengths) {
                 testSet.dataLength1 = length.shortValue();
                 PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CHECKSUM, Consts.INS_PERF_TEST_CLASS_CHECKSUM, testSet, info + " Checksum_doFinal()");
             }
             tableName = "\n\nCHECKSUM - "  + info + " - variable data - END\n";
-            file.write(tableName.getBytes());
+            m_perfResultsFile.write(tableName.getBytes());
         }
     }   
     public static void testAllChecksums(int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception {
@@ -1635,17 +1709,17 @@ public class PerformanceTesting {
     }
     public static void testAllChecksums(short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
         String tableName = "\n\nCHECKSUM\n";
-        file.write(tableName.getBytes());
+        m_perfResultsFile.write(tableName.getBytes());
         if (bTestSymmetricAlgs) {
             testChecksum(JCConsts.Checksum_ALG_ISO3309_CRC16,"ALG_ISO3309_CRC16", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testChecksum(JCConsts.Checksum_ALG_ISO3309_CRC32,"ALG_ISO3309_CRC32", numRepeatWholeOperation, numRepeatWholeMeasurement);
         }
         else {
-            String message = "# Measurements excluded for symmetric algorithms\n";
-            file.write(message.getBytes());
+            String message = "\n# Measurements excluded for symmetric algorithms\n";
+            m_perfResultsFile.write(message.getBytes());
         }
-        tableName = "CHECKSUM - END\n";
-        file.write(tableName.getBytes());
+        tableName = "\n\nCHECKSUM - END\n";
+        m_perfResultsFile.write(tableName.getBytes());
     }    
     
     // TODO: KeyAgreement tests
@@ -1666,7 +1740,7 @@ public class PerformanceTesting {
         }
         else {
             String message = "No variable data test for " + info + "\n";
-            file.write(message.getBytes());
+            m_perfResultsFile.write(message.getBytes());
             System.out.print(message);
         }
     }
@@ -1676,19 +1750,19 @@ public class PerformanceTesting {
     }
     public static void testAllAESKeys(short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
         String tableName = "\n\nAESKey\n";
-        file.write(tableName.getBytes());
+        m_perfResultsFile.write(tableName.getBytes());
         if (bTestSymmetricAlgs) {
             testAESKey(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,"TYPE_AES LENGTH_AES_128", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testAESKey(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_192,"TYPE_AES LENGTH_AES_192", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testAESKey(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_256,"TYPE_AES LENGTH_AES_256", numRepeatWholeOperation, numRepeatWholeMeasurement);
         }
         else {
-            String message = "# Measurements excluded for symmetric algorithms\n";
-            file.write(message.getBytes());
+            String message = "\n# Measurements excluded for symmetric algorithms\n";
+            m_perfResultsFile.write(message.getBytes());
         }
         
-        tableName = "AESKey - END\n";
-        file.write(tableName.getBytes());
+        tableName = "\n\nAESKey - END\n";
+        m_perfResultsFile.write(tableName.getBytes());
     }
     
     public static void testDESKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
@@ -1705,7 +1779,7 @@ public class PerformanceTesting {
         }
         else {
             String message = "No variable data test for " + info + "\n";
-            file.write(message.getBytes());
+            m_perfResultsFile.write(message.getBytes());
             System.out.print(message);
         }
     }
@@ -1716,7 +1790,7 @@ public class PerformanceTesting {
     
     public static void testAllDESKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
         String tableName = "\n\nDESKey";
-        file.write(tableName.getBytes());
+        m_perfResultsFile.write(tableName.getBytes());
         
         if (bTestSymmetricAlgs) {
             testDESKey(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES, "TYPE_DES LENGTH_DES_64", numRepeatWholeOperation, numRepeatWholeMeasurement);
@@ -1724,12 +1798,12 @@ public class PerformanceTesting {
             testDESKey(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_3KEY, "TYPE_DES LENGTH_DES_192", numRepeatWholeOperation, numRepeatWholeMeasurement);
         }
         else {
-            String message = "# Measurements excluded for symmetric algorithms\n";
-            file.write(message.getBytes());
+            String message = "\n# Measurements excluded for symmetric algorithms\n";
+            m_perfResultsFile.write(message.getBytes());
         }
         
-        tableName = "DESKey - END\n";
-        file.write(tableName.getBytes());
+        tableName = "\n\nDESKey - END\n";
+        m_perfResultsFile.write(tableName.getBytes());
     }
     
     public static void testKoreanSEEDKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
@@ -1747,7 +1821,7 @@ public class PerformanceTesting {
         }
         else {
             String message = "No variable data test for " + info + "\n";
-            file.write(message.getBytes());
+            m_perfResultsFile.write(message.getBytes());
             System.out.print(message);
         }
     }
@@ -1756,18 +1830,18 @@ public class PerformanceTesting {
     }
     public static void testAllKoreanSEEDKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
         String tableName = "\n\nKoreanSEEDKey";
-        file.write(tableName.getBytes());
+        m_perfResultsFile.write(tableName.getBytes());
         
         if (bTestSymmetricAlgs) {
             testKoreanSEEDKey(JCConsts.KeyBuilder_TYPE_KOREAN_SEED, JCConsts.KeyBuilder_LENGTH_KOREAN_SEED_128, "TYPE KOREAN SEED LENGTH KOREAN SEED 128", numRepeatWholeOperation, numRepeatWholeMeasurement);
         }
         else {
-            String message = "# Measurements excluded for symmetric algorithms\n";
-            file.write(message.getBytes());
+            String message = "\n# Measurements excluded for symmetric algorithms\n";
+            m_perfResultsFile.write(message.getBytes());
         }
         
-        tableName = "KoreanSEEDKey - END\n";
-        file.write(tableName.getBytes());
+        tableName = "\n\nKoreanSEEDKey - END\n";
+        m_perfResultsFile.write(tableName.getBytes());
     }
     
     public static void testDSAPrivateKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
@@ -1785,7 +1859,7 @@ public class PerformanceTesting {
         }
         else {
             String message = "No variable data test for " + info + "\n";
-            file.write(message.getBytes());
+            m_perfResultsFile.write(message.getBytes());
             System.out.print(message);
         }
     }
@@ -1794,18 +1868,18 @@ public class PerformanceTesting {
     }
     public static void testAllDSAPrivateKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
         String tableName = "\n\nDSAPrivateKey";
-        file.write(tableName.getBytes());
+        m_perfResultsFile.write(tableName.getBytes());
         if (bTestAsymmetricAlgs) {
             testDSAPrivateKey(JCConsts.KeyBuilder_TYPE_DSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_DSA_512, "TYPE DSA PRIVATE LENGTH DSA 512", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testDSAPrivateKey(JCConsts.KeyBuilder_TYPE_DSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_DSA_768, "TYPE DSA PRIVATE LENGTH DSA 768", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testDSAPrivateKey(JCConsts.KeyBuilder_TYPE_DSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_DSA_1024, "TYPE DSA PRIVATE LENGTH DSA 1024", numRepeatWholeOperation, numRepeatWholeMeasurement);
         }
         else {
-            String message = "# Measurements excluded for asymmetric algorithms\n";
-            file.write(message.getBytes());
+            String message = "\n# Measurements excluded for asymmetric algorithms\n";
+            m_perfResultsFile.write(message.getBytes());
         }           
-        tableName = "DSAPrivateKey - END\n";
-        file.write(tableName.getBytes());
+        tableName = "\n\nDSAPrivateKey - END\n";
+        m_perfResultsFile.write(tableName.getBytes());
     }
     
     public static void testDSAPublicKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
@@ -1823,7 +1897,7 @@ public class PerformanceTesting {
         }
         else {
             String message = "No variable data test for " + info + "\n";
-            file.write(message.getBytes());
+            m_perfResultsFile.write(message.getBytes());
             System.out.print(message);
         }
     }
@@ -1832,18 +1906,18 @@ public class PerformanceTesting {
     }
     public static void testAllDSAPublicKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
         String tableName = "\n\nDSAPublicKey";
-        file.write(tableName.getBytes());
+        m_perfResultsFile.write(tableName.getBytes());
         if (bTestAsymmetricAlgs) {
             testDSAPublicKey(JCConsts.KeyBuilder_TYPE_DSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_DSA_512, "TYPE DSA PUBLIC LENGTH DSA 512", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testDSAPublicKey(JCConsts.KeyBuilder_TYPE_DSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_DSA_768, "TYPE DSA PUBLIC LENGTH DSA 768", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testDSAPublicKey(JCConsts.KeyBuilder_TYPE_DSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_DSA_1024, "TYPE DSA PUBLIC LENGTH DSA 1024", numRepeatWholeOperation, numRepeatWholeMeasurement);
         }
         else {
-            String message = "# Measurements excluded for asymmetric algorithms\n";
-            file.write(message.getBytes());
+            String message = "\n# Measurements excluded for asymmetric algorithms\n";
+            m_perfResultsFile.write(message.getBytes());
         }           
-        tableName = "DSAPublicKey - END\n";
-        file.write(tableName.getBytes());
+        tableName = "\n\nDSAPublicKey - END\n";
+        m_perfResultsFile.write(tableName.getBytes());
     }
     
     public static void testECF2MPublicKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
@@ -1861,7 +1935,7 @@ public class PerformanceTesting {
         }
         else {
             String message = "No variable data test for " + info + "\n";
-            file.write(message.getBytes());
+            m_perfResultsFile.write(message.getBytes());
             System.out.print(message);
         }
     }
@@ -1870,7 +1944,7 @@ public class PerformanceTesting {
     }
     public static void testAllECF2MPublicKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
         String tableName = "\n\nECF2MPublicKey";
-        file.write(tableName.getBytes());
+        m_perfResultsFile.write(tableName.getBytes());
         if (bTestAsymmetricAlgs) {
             testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_F2M_113, "TYPE EC F2M PUBLIC LENGTH EC F2M 113", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_F2M_131, "TYPE EC F2M PUBLIC LENGTH EC F2M 131", numRepeatWholeOperation, numRepeatWholeMeasurement);
@@ -1878,11 +1952,11 @@ public class PerformanceTesting {
             testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_F2M_193, "TYPE EC F2M PUBLIC LENGTH EC F2M 193", numRepeatWholeOperation, numRepeatWholeMeasurement);
         }
         else {
-            String message = "# Measurements excluded for asymmetric algorithms\n";
-            file.write(message.getBytes());
+            String message = "\n# Measurements excluded for asymmetric algorithms\n";
+            m_perfResultsFile.write(message.getBytes());
         }           
-        tableName = "ECF2MPublicKey - END\n";
-        file.write(tableName.getBytes());
+        tableName = "\n\nECF2MPublicKey - END\n";
+        m_perfResultsFile.write(tableName.getBytes());
     }
     
     public static void testECF2mPrivateKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
@@ -1900,7 +1974,7 @@ public class PerformanceTesting {
         }
         else {
             String message = "No variable data test for " + info + "\n";
-            file.write(message.getBytes());
+            m_perfResultsFile.write(message.getBytes());
             System.out.print(message);
         }
     }
@@ -1909,7 +1983,7 @@ public class PerformanceTesting {
     }
     public static void testAllECF2MPrivateKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
         String tableName = "\n\nECF2MPrivateKey";
-        file.write(tableName.getBytes());
+        m_perfResultsFile.write(tableName.getBytes());
         if (bTestAsymmetricAlgs) {
             testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_113, "TYPE EC F2M PRIVATE LENGTH EC F2M 113", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_131, "TYPE EC F2M PRIVATE LENGTH EC F2M 131", numRepeatWholeOperation, numRepeatWholeMeasurement);
@@ -1917,11 +1991,11 @@ public class PerformanceTesting {
             testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_193, "TYPE EC F2M PRIVATE LENGTH EC F2M 193", numRepeatWholeOperation, numRepeatWholeMeasurement);
         }
         else {
-            String message = "# Measurements excluded for asymmetric algorithms\n";
-            file.write(message.getBytes());
+            String message = "\n# Measurements excluded for asymmetric algorithms\n";
+            m_perfResultsFile.write(message.getBytes());
         }           
-        tableName = "ECF2MPrivateKey - END\n";
-        file.write(tableName.getBytes());
+        tableName = "\n\nECF2MPrivateKey - END\n";
+        m_perfResultsFile.write(tableName.getBytes());
     }
     
     public static void testECFPPublicKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
@@ -1939,7 +2013,7 @@ public class PerformanceTesting {
         }
         else {
             String message = "No variable data test for " + info + "\n";
-            file.write(message.getBytes());
+            m_perfResultsFile.write(message.getBytes());
             System.out.print(message);
         }
     }
@@ -1948,7 +2022,7 @@ public class PerformanceTesting {
     }
     public static void testAllECFPPublicKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
         String tableName = "\n\nECFPPublicKey";
-        file.write(tableName.getBytes());
+        m_perfResultsFile.write(tableName.getBytes());
         if (bTestAsymmetricAlgs) {
             testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_112, "TYPE EC FP PUBLIC LENGTH EC FP 112", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_128, "TYPE EC FP PUBLIC LENGTH EC FP 128", numRepeatWholeOperation, numRepeatWholeMeasurement);
@@ -1960,11 +2034,11 @@ public class PerformanceTesting {
             testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_521, "TYPE EC FP PUBLIC LENGTH EC FP 521", numRepeatWholeOperation, numRepeatWholeMeasurement);
         }
         else {
-            String message = "# Measurements excluded for asymmetric algorithms\n";
-            file.write(message.getBytes());
+            String message = "\n# Measurements excluded for asymmetric algorithms\n";
+            m_perfResultsFile.write(message.getBytes());
         }           
-        tableName = "ECFPPublicKey - END\n";
-        file.write(tableName.getBytes());
+        tableName = "\n\nECFPPublicKey - END\n";
+        m_perfResultsFile.write(tableName.getBytes());
     }
     
     public static void testECFPPrivateKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
@@ -1982,7 +2056,7 @@ public class PerformanceTesting {
         }
         else {
             String message = "No variable data test for " + info + "\n";
-            file.write(message.getBytes());
+            m_perfResultsFile.write(message.getBytes());
             System.out.print(message);
         }
     }
@@ -1991,7 +2065,7 @@ public class PerformanceTesting {
     }
     public static void testAllECFPPrivateKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
         String tableName = "\n\nECFPPublicKey";
-        file.write(tableName.getBytes());
+        m_perfResultsFile.write(tableName.getBytes());
         if (bTestAsymmetricAlgs) {
             testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_112, "TYPE EC FP PRIVATE LENGTH EC FP 112", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_128, "TYPE EC FP PRIVATE LENGTH EC FP 128", numRepeatWholeOperation, numRepeatWholeMeasurement);
@@ -2003,11 +2077,11 @@ public class PerformanceTesting {
             testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_521, "TYPE EC FP PRIVATE LENGTH EC FP 521", numRepeatWholeOperation, numRepeatWholeMeasurement);
         }
         else {
-            String message = "# Measurements excluded for asymmetric algorithms\n";
-            file.write(message.getBytes());
+            String message = "\n# Measurements excluded for asymmetric algorithms\n";
+            m_perfResultsFile.write(message.getBytes());
         }           
-        tableName = "ECFPPublicKey - END\n";
-        file.write(tableName.getBytes());
+        tableName = "\n\nECFPPublicKey - END\n";
+        m_perfResultsFile.write(tableName.getBytes());
     }
     
     public static void testHMACKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
@@ -2025,7 +2099,7 @@ public class PerformanceTesting {
         }
         else {
             String message = "No variable data test for " + info + "\n";
-            file.write(message.getBytes());
+            m_perfResultsFile.write(message.getBytes());
             System.out.print(message);
         }
     }
@@ -2034,7 +2108,7 @@ public class PerformanceTesting {
     }
     public static void testAllHMACKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
         String tableName = "\n\nHMACKey";
-        file.write(tableName.getBytes());
+        m_perfResultsFile.write(tableName.getBytes());
 
         if (bTestSymmetricAlgs) {
             testHMACKey(JCConsts.KeyBuilder_TYPE_HMAC, JCConsts.KeyBuilder_LENGTH_HMAC_SHA_1_BLOCK_64, "TYPE HMAC SHA-1 LENGTH HMAC 64", numRepeatWholeOperation, numRepeatWholeMeasurement);
@@ -2043,12 +2117,12 @@ public class PerformanceTesting {
             testHMACKey(JCConsts.KeyBuilder_TYPE_HMAC, JCConsts.KeyBuilder_LENGTH_HMAC_SHA_512_BLOCK_128, "TYPE HMAC SHA-512 LENGTH HMAC 128", numRepeatWholeOperation, numRepeatWholeMeasurement);
         }
         else {
-            String message = "# Measurements excluded for symmetric algorithms\n";
-            file.write(message.getBytes());
+            String message = "\n# Measurements excluded for symmetric algorithms\n";
+            m_perfResultsFile.write(message.getBytes());
         }
         
-        tableName = "HMACKey - END\n";
-        file.write(tableName.getBytes());
+        tableName = "\n\nHMACKey - END\n";
+        m_perfResultsFile.write(tableName.getBytes());
     }
     
     public static void testRSAPrivateCrtKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
@@ -2084,7 +2158,7 @@ public class PerformanceTesting {
         }
         else {
             String message = "No variable data test for " + info + "\n";
-            file.write(message.getBytes());
+            m_perfResultsFile.write(message.getBytes());
             System.out.print(message);
         }
     }
@@ -2093,7 +2167,7 @@ public class PerformanceTesting {
     }
     public static void testAllRSAPrivateCrtKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
         String tableName = "\n\nRSAPrivateCRTKey";
-        file.write(tableName.getBytes());
+        m_perfResultsFile.write(tableName.getBytes());
         if (bTestAsymmetricAlgs) {
             testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512, "TYPE RSA PRIVATE CRT LENGTH RSA 512", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736, "TYPE RSA PRIVATE CRT LENGTH RSA 736", numRepeatWholeOperation, numRepeatWholeMeasurement);
@@ -2108,11 +2182,11 @@ public class PerformanceTesting {
             testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096, "TYPE RSA PRIVATE CRT LENGTH RSA 4096", numRepeatWholeOperation, numRepeatWholeMeasurement);
         }
         else {
-            String message = "# Measurements excluded for asymmetric algorithms\n";
-            file.write(message.getBytes());
+            String message = "\n# Measurements excluded for asymmetric algorithms\n";
+            m_perfResultsFile.write(message.getBytes());
         }   
-        tableName = "RSAPrivateCRTKey - END\n";
-        file.write(tableName.getBytes());
+        tableName = "\n\nRSAPrivateCRTKey - END\n";
+        m_perfResultsFile.write(tableName.getBytes());
     }
     
     public static void testRSAPrivateKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
@@ -2136,7 +2210,7 @@ public class PerformanceTesting {
         }
         else {
             String message = "No variable data test for " + info + "\n";
-            file.write(message.getBytes());
+            m_perfResultsFile.write(message.getBytes());
             System.out.print(message);
         }
     }
@@ -2145,7 +2219,7 @@ public class PerformanceTesting {
     }
     public static void testAllRSAPrivateKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
         String tableName = "\n\nRSAPrivateKey";
-        file.write(tableName.getBytes());
+        m_perfResultsFile.write(tableName.getBytes());
         if (bTestAsymmetricAlgs) {
             testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512, "TYPE RSA PRIVATE LENGTH RSA 512", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736, "TYPE RSA PRIVATE LENGTH RSA 736", numRepeatWholeOperation, numRepeatWholeMeasurement);
@@ -2160,11 +2234,11 @@ public class PerformanceTesting {
             testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096, "TYPE RSA PRIVATE LENGTH RSA 4096", numRepeatWholeOperation, numRepeatWholeMeasurement);
         }
         else {
-            String message = "# Measurements excluded for asymmetric algorithms\n";
-            file.write(message.getBytes());
+            String message = "\n# Measurements excluded for asymmetric algorithms\n";
+            m_perfResultsFile.write(message.getBytes());
         }   
-        tableName = "RSAPrivateKey - END\n";
-        file.write(tableName.getBytes());
+        tableName = "\n\nRSAPrivateKey - END\n";
+        m_perfResultsFile.write(tableName.getBytes());
     }
     
     public static void testRSAPublicKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
@@ -2188,7 +2262,7 @@ public class PerformanceTesting {
         }
         else {
             String message = "No variable data test for " + info + "\n";
-            file.write(message.getBytes());
+            m_perfResultsFile.write(message.getBytes());
             System.out.print(message);
         }
     }
@@ -2197,7 +2271,7 @@ public class PerformanceTesting {
     }
     public static void testAllRSAPublicKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
         String tableName = "\n\nRSAPublicKey";
-        file.write(tableName.getBytes());
+        m_perfResultsFile.write(tableName.getBytes());
         
         if (bTestAsymmetricAlgs) {
             testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_512, "TYPE RSA PUBLIC LENGTH RSA 512", numRepeatWholeOperation, numRepeatWholeMeasurement);
@@ -2213,11 +2287,11 @@ public class PerformanceTesting {
             testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_4096, "TYPE RSA PUBLIC LENGTH RSA 4096", numRepeatWholeOperation, numRepeatWholeMeasurement);
         }
         else {
-            String message = "# Measurements excluded for asymmetric algorithms\n";
-            file.write(message.getBytes());
+            String message = "\n# Measurements excluded for asymmetric algorithms\n";
+            m_perfResultsFile.write(message.getBytes());
         }   
-        tableName = "RSAPublicKey - END\n";
-        file.write(tableName.getBytes());
+        tableName = "\n\nRSAPublicKey - END\n";
+        m_perfResultsFile.write(tableName.getBytes());
     }
     
     public static void testAllKeys(int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception {
