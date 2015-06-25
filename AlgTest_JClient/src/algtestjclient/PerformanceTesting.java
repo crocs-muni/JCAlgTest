@@ -67,6 +67,7 @@ public class PerformanceTesting {
     
     public static CardMngr cardManager = new CardMngr();
     static String m_cardATR = "";
+    static String m_cardName = "";
     
     public StringBuilder value = new StringBuilder();
     public String message = "";
@@ -234,12 +235,12 @@ public class PerformanceTesting {
             }
             
             System.out.println("Specify type of your card (e.g., NXP JCOP CJ2A081):");
-            String cardName = sc.next();
+            m_cardName = sc.next();
             
             // Try to open and load list of already measured algorithms (if provided)
-            LoadAlreadyMeasuredAlgs(cardName);
+            LoadAlreadyMeasuredAlgs(m_cardName);
                 
-            String testInfo = cardName;
+            String testInfo = m_cardName;
             testInfo += "_PERFORMANCE_";
             
             if (bTestSymmetricAlgs) { testInfo += "SYMMETRIC_"; }
@@ -707,9 +708,10 @@ public class PerformanceTesting {
                     System.out.println(ex.toString()); 
                     numFailedRepeats++;
 
-                    String message = "ERROR: unable to measure operation '" + info + "' properly because of exception (" + ex.toString() + ")\n";
-                    message += "Try to physically remove card and/or upload applet manually and insert it again. Press any key and enter to to continue\n";
-                    System.out.print(message);
+                    System.out.print("ERROR: unable to measure operation '" + info + "' properly because of exception (" + ex.toString() + ")\n");
+                    System.out.print("Current reader is: " + cardManager.getTerminalName());
+                    System.out.print("Current card is: " + m_cardName + " - " + cardManager.getATR());
+                    System.out.print("Try to physically remove card and/or upload applet manually and insert it again. Press any key and enter to to continue\n");
                     Scanner sc = new Scanner(System.in);
                     sc.next();
                     // Card was physically removed, reset retries counter
