@@ -21,7 +21,7 @@ import java.util.List;
  */
 public class JCinfohtml {
     
-    public static final String TABLE_HEAD = "<table cellspacing='0'> <!-- cellspacing='0' is important, must stay -->\n\t<tr><th>Name of function</th><th><b>Operation average (ms/op)</b></th><th>Operation minimum (ms/op)</th><th>Operation maximum (ms/op)</th><th>Prepare average (ms/op)</th><th>Prepare minimum (ms/op)</th><th>Prepare maximum (ms/op)</th><th>Iterations & Invocations</th></tr><!-- Table Header -->\n";
+    public static final String TABLE_HEAD = "<table cellspacing='0'> <!-- cellspacing='0' is important, must stay -->\n\t<tr><th>Name of function</th><th><b>Operation average (ms/op)</b></th><th>Operation minimum (ms/op)</th><th>Operation maximum (ms/op)</th><th>Prepare average (ms/op)</th><th>Prepare minimum (ms/op)</th><th>Prepare maximum (ms/op)</th><th>Data length</th><th>Iterations & Invocations</th></tr><!-- Table Header -->\n";
     public static final List<String> category = Arrays.asList("MESSAGE DIGEST", "RANDOM GENERATOR", "CIPHER", "SIGNATURE", "CHECKSUM", "AESKey", "DESKey", "KoreanSEEDKey", "DSAPrivateKey", "DSAPublicKey", "ECF2MPublicKey", "ECF2MPrivateKey", "ECFPPublicKey", "HMACKey", "RSAPrivateKey", "RSAPublicKey", "RSAPrivateCRTKey", "KEY PAIR");
     public static final String topFunctionsFile = "top.txt";  
     public static int lp = 0; //parse file line position
@@ -46,10 +46,7 @@ public class JCinfohtml {
     public static void parse(List<String> lines, FileOutputStream file) throws IOException{           
             tp = 0;
             
-            while(lp<lines.size()){             
-                while ("".equals(lines.get(lp)))
-                   lp++;
-                
+            while(lp<lines.size()){
                for (String cat : category)
                    if((cat.equals(lines.get(lp))) || (lines.get(lp).contains("END"))){
                            lp--;                           
@@ -203,29 +200,42 @@ public class JCinfohtml {
         String [] prepare;
         String [] operation;
          
+        if (lines.get(lp+1).equals("ALREADY_MEASURED")){
+            lp+=2;
+            return;
+        } else {
         toFile += ((tp % 2)==0) ? "\t<tr>" : "\t<tr class='even'>";
-        toFile += "<td><b>"+lines.get(lp)+"</b></td>";
-        lp++;
+        prepare = lines.get(lp).trim().split(";");
+        toFile += "<td><b>"+prepare[1]+"</b></td>";
+        lp+=2;
+        }
                
-         if ((lines.get(lp).contains("debug overhead:")) && (lines.get(lp+3).contains("avg op:"))){
+         if ((lines.get(lp).contains("baseline")) && (lines.get(lp+3).contains("avg op:"))){
               lp++;           
               prepare = lines.get(lp).trim().split(";");           
               lp +=2;
-              operation = lines.get(lp).trim().split(";");   
-              toFile += "<td style=\"font-size: 110%;\">"+Float.valueOf(operation[1].replace(",","."))+"</td>";
-              toFile += "<td>"+Float.valueOf(operation[3].replace(",","."))+"</td>";
-              toFile += "<td>"+Float.valueOf(operation[5].replace(",","."))+"</td>";
-              toFile += "<td>"+Float.valueOf(prepare[1].replace(",","."))+"</td>";
-              toFile += "<td>"+Float.valueOf(prepare[3].replace(",","."))+"</td>";
-              toFile += "<td>"+Float.valueOf(prepare[5].replace(",","."))+"</td>"; 
+              operation = lines.get(lp).trim().split(";");
+              
+              toFile += "<td style=\"font-size: 110%;\">"+Float.valueOf(operation[2].replace(",","."))+"</td>";
+              toFile += "<td>"+Float.valueOf(operation[4].replace(",","."))+"</td>";
+              toFile += "<td>"+Float.valueOf(operation[6].replace(",","."))+"</td>";
+              toFile += "<td>"+Float.valueOf(prepare[2].replace(",","."))+"</td>";
+              toFile += "<td>"+Float.valueOf(prepare[4].replace(",","."))+"</td>";
+              toFile += "<td>"+Float.valueOf(prepare[6].replace(",","."))+"</td>"; 
               lp++;
               prepare = lines.get(lp).trim().split(";");
-              toFile += "<td>"+ Integer.parseInt(prepare[0]) + "/" + Integer.parseInt(prepare[1])+"</td>";
+              toFile += "<td>"+ Integer.parseInt(prepare[2]) +"</td>";
+              toFile += "<td>"+ Integer.parseInt(prepare[4]) + "/" + Integer.parseInt(prepare[6])+"</td>";
          } else {             
-             if(lines.get(lp).contains("debug") && !(lines.get(lp).contains("error"))){
-                 lp+=2;
+             if(lines.get(lp).contains("baseline") && !(lines.get(lp).contains("error"))){
+                 lp++;
                  prepare = lines.get(lp).trim().split(";");
-                 toFile += "<td>"+prepare[1]+"</td>";
+                 lp++;
+                 toFile += "<td colspan=\"3\">"+lines.get(lp)+"</td>";
+                 toFile += "<td>"+Float.valueOf(prepare[2].replace(",","."))+"</td>";
+                 toFile += "<td>"+Float.valueOf(prepare[4].replace(",","."))+"</td>";
+                 toFile += "<td>"+Float.valueOf(prepare[6].replace(",","."))+"</td>"; 
+                 
              } else 
              if (lines.get(lp).contains("error")){
                  prepare = lines.get(lp).trim().split(";"); 

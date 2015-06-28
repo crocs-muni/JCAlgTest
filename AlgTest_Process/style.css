@@ -32,14 +32,14 @@ body{
 	font-family:Arial, Helvetica, sans-serif;
 }
 a:link {
-	color: #666;
+	color: #444;
 	font-weight: bold;
 	text-decoration:none;
 	font-size:14px;
 	margin-bottom: 5px;
 }
 a:visited {
-	color: #666;
+	color: #444;
 	font-weight:bold;
 	text-decoration:none;
 }
@@ -156,7 +156,7 @@ p{
 Table Style - This is what you want
 ------------------------------------------------------------------ */
 table a:link {
-	color: #666;
+	color: #444;
 	font-weight: bold;
 	text-decoration:none;
 }
@@ -172,7 +172,7 @@ table a:hover {
 }
 table {
 	font-family:Arial, Helvetica, sans-serif;
-	color:#666;
+	color:#444;
 	font-size:12px;
 	text-shadow: 1px 1px 0px #fff;
 	background:#eaebec;
