@@ -141,6 +141,7 @@ public class CardMngr {
     public static CardTerminal m_terminal = null;
     static CardChannel m_channel = null;
     static Card m_card = null;
+    public static String cardUploadersFolder = System.getProperty("user.dir")+File.separator+"!card_uploaders";
     
     public static final byte selectApplet[] = {
         (byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00, (byte) 0x09, 
@@ -1305,14 +1306,21 @@ public class CardMngr {
     }
     public static void UploadApplet(int readerIndex, String atr) throws Exception {
         System.out.println("Uploading applet...");
+        /*Check if folder !card_uploaders is correctly set*/
+        File fileCardUploadersFolder = new File(CardMngr.cardUploadersFolder);
+        if(!fileCardUploadersFolder.exists()) {
+            System.err.println("Cannot find !card_uploaders folder. Folder "+CardMngr.cardUploadersFolder+" does not exist.");
+            return;
+        }
 
-        //String batFileName = "d:\\Documents\\Develop\\AlgTest\\AlgTest_JavaCard\\!card_uploaders\\keyHarvest\\run" + readerIndex + "_GXPE64" + ".bat";
-        //String batFileName = "d:\\Documents\\Develop\\AlgTest\\AlgTest_JavaCard\\!card_uploaders\\keyHarvest\\run" + readerIndex + "_TwinGCX4" + ".bat";
-        atr = atr.replace(" ", "_");
-        String batFileName = "d:\\Documents\\Develop\\AlgTest\\AlgTest_JavaCard\\!card_uploaders\\upload_" + atr + ".bat";
+        //atr = atr.replace(" ", "_");
+        /*Set path to run bat file*/
+        String batFileName;
+        if(CardMngr.cardUploadersFolder.endsWith(File.separator)) batFileName = CardMngr.cardUploadersFolder + "keyHarvest" + File.separator + "run" + readerIndex + ".bat";
+        else batFileName = CardMngr.cardUploadersFolder + File.separator + "keyHarvest" + File.separator + "run" + readerIndex + ".bat";
         
         ProcessBuilder pb = new ProcessBuilder(batFileName);
-        pb.directory(new File("d:\\Documents\\Develop\\AlgTest\\AlgTest_JavaCard\\!card_uploaders\\"));
+        pb.directory(fileCardUploadersFolder);
 
         File log = new File("upload_log_" + readerIndex + ".txt");
         pb.redirectErrorStream(true);
@@ -1320,8 +1328,13 @@ public class CardMngr {
 
         Process p = pb.start();
 
-        p.waitFor();        
-        System.out.println(": Done");                
+        p.waitFor();   
+        /*Check if process ended successful*/
+        if(p.exitValue()!=0) {
+            System.out.println(": Error");
+            throw new Exception("Cannot upload applet. Process of file "+batFileName+" ended with "+p.exitValue());
+        } 
+        else System.out.println(": Done");                
     }    
     public int GenerateAndGetKeys(String fileName, int numRepeats, int resetFrequency, int readerIndex) throws Exception { 
         byte apdu[] = new byte[HEADER_LENGTH]; 
@@ -1336,7 +1349,7 @@ public class CardMngr {
         FileOutputStream file = new FileOutputStream(fileName);                   
         StringBuilder key = new StringBuilder();
         boolean bResetCard = false;
-        if (numRepeats == -1) numRepeats = 3000000;
+        if (numRepeats == -1) numRepeats = 300000;
         
         int seriousProblemCounter = 0;
         
