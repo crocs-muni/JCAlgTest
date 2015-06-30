@@ -46,10 +46,10 @@ import javax.smartcardio.CardTerminal;
  * @author petr
  */
 public class AlgTestJClient {
-    static CardMngr cardManager = new CardMngr();
-    static SingleModeTest singleTest = new SingleModeTest();
-    static PerformanceTesting testingPerformance = new PerformanceTesting();
-    static KeyHarvest keyHarvest = new KeyHarvest();
+    //static CardMngr cardManager = new CardMngr();
+    //static SingleModeTest singleTest = new SingleModeTest();
+    //static PerformanceTesting testingPerformance = new PerformanceTesting();
+    //static KeyHarvest keyHarvest = new KeyHarvest();
     
     
     /* Arguments for choosing which AlgTest version to run. */
@@ -96,23 +96,32 @@ public class AlgTestJClient {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws IOException, Exception {
-        /* If arguments are present. */
+        // If arguments are present. 
         if(args.length > 0){
             if (args[0].equals(ALGTEST_MULTIPERAPDU)){
-                cardManager.testClassic(args, 0);}  // 0 means ask for every alg to test
+                CardMngr cardManager = new CardMngr();
+                cardManager.testClassic(args, 0);
+            }  // 0 means ask for every alg to test
                                                     // possibly change for constant?
                                                     // or maybe change for 1 and test all algs at once?
-            else if (args[0].equals(ALGTEST_SINGLEPERAPDU)){singleTest.TestSingleAlg(args, null);}
-            else if (args[0].equals(ALGTEST_PERFORMANCE)){testingPerformance.testPerformance(args, false, null);}
-            /* In case of incorect parameter, program will report error and shut down. */
+            else if (args[0].equals(ALGTEST_SINGLEPERAPDU)){
+                SingleModeTest singleTest = new SingleModeTest();
+                singleTest.TestSingleAlg(args, null);
+            }
+            else if (args[0].equals(ALGTEST_PERFORMANCE)){
+                PerformanceTesting testingPerformance = new PerformanceTesting();
+                testingPerformance.testPerformance(args, false, null);
+            }
+            // In case of incorect parameter, program will report error and shut down.
             else {
                 System.err.println("Incorect parameter!");
-                cardManager.PrintHelp();
+                CardMngr.PrintHelp();
             }
         }
         // If there are no arguments present
         else {   
             CardTerminal selectedTerminal = null;
+            PerformanceTesting testingPerformance = new PerformanceTesting();
             
             System.out.println("Choose which type of AlgTest you want to use.");
             System.out.println("NOTE that you need to have installed coresponding applet on your card! (Not true if you are using simulator.)");
@@ -121,24 +130,22 @@ public class AlgTestJClient {
             Scanner sc = new Scanner(System.in);
             int answ = sc.nextInt();
             switch (answ){
-                /* In this case, classic version of AlgTest is used. */
+                // In this case, classic version of AlgTest is used
                 case 1:
-                    /* BUGBUG: we need to figure out how to support JCardSim in nice way (copy of class files, directory structure...)
-                    Class testClassClassic = AlgTest.class;
-                    */
-                    FileOutputStream file = cardManager.establishConnection(null);
                     System.out.println("\n\n#########################");
                     System.out.println("\n\nQ: Do you like to test all supported algorithms or be asked separately for every class? Separate questions help when testing all algorithms at once will provide incorrect answers due too many internal allocation of cryptographic objects (e.g., KeyBuilder class).");
                     System.out.println("Type \"y\" for test all algorithms, \"n\" for asking for every class separately: ");	
                     answ = sc.nextInt();
+                    CardMngr cardManager = new CardMngr();
                     cardManager.testClassic(args, answ);
                     break;
-                /* In this case, SinglePerApdu version of AlgTest is used. */
+                // In this case, SinglePerApdu version of AlgTest is used.
                 case 2:
                     selectedTerminal = selectTargetReader();
+                    SingleModeTest singleTest = new SingleModeTest();
                     singleTest.TestSingleAlg(args, selectedTerminal);
                     break;
-                /* In this case Performance tests are used. */
+                // In this case Performance tests are used. 
                 case 3:
                     selectedTerminal = selectTargetReader();
                     testingPerformance.testPerformance(args, false, selectedTerminal);
@@ -148,26 +155,28 @@ public class AlgTestJClient {
                     testingPerformance.testPerformance(args, true, selectedTerminal);
                     break;
                 case 5:
-                    /*Check if folder !card_uploaders is correctly set*/
+                    KeyHarvest keyHarvest = new KeyHarvest();            
+                    
+                    // Check if folder !card_uploaders is correctly set
                     File fileCardUploadersFolder = new File(CardMngr.cardUploadersFolder);
                     if(!fileCardUploadersFolder.exists()) {
-                        /*Remove new line character from stream after load integer as type of test*/
+                        // Remove new line character from stream after load integer as type of test
                         sc.nextLine();
-                        System.out.println("Cannot find folder with card uploaders. Default folder: "+CardMngr.cardUploadersFolder);
+                        System.out.println("Cannot find folder with card uploaders. Default folder: " + CardMngr.cardUploadersFolder);
                         System.out.print("Card uploaders folder path: ");
                         String newPath = sc.nextLine();
                         fileCardUploadersFolder = new File(CardMngr.cardUploadersFolder);
-                        /*If new path is also incorrect*/
+                        // If new path is also incorrect
                         if(!fileCardUploadersFolder.exists()) {
-                            System.err.println("Folder "+newPath+" does not exist. Cannot start gathering RSA keys.");
+                            System.err.println("Folder " + newPath + " does not exist. Cannot start gathering RSA keys.");
                             return;
                         }
-                        /*Set new path to !card_uploaders folder*/
+                        // Set new path to !card_uploaders folder
                         CardMngr.cardUploadersFolder = newPath;
                     } 
                     keyHarvest.gatherRSAKeys();
                     break;
-                /* In this case, user pressed wrong key */
+                // In this case, user pressed wrong key 
                 default:
                     System.err.println("Incorrect parameter!");
                 break;
@@ -211,4 +220,5 @@ public class AlgTestJClient {
         
         return selectedTerminal;
     }
+  
 }

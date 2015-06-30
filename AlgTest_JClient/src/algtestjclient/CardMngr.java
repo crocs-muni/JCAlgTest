@@ -57,8 +57,6 @@ import com.licel.jcardsim.io.JavaxSmartCardInterface;
 import java.io.File;
 import java.lang.ProcessBuilder.Redirect;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javacard.framework.AID;
 import javacard.framework.ISO7816;
 
@@ -68,8 +66,8 @@ import javacard.framework.ISO7816;
  * @author petrs
  */
 public class CardMngr {
-    public static CAD m_cad = null;
-    public static JavaxSmartCardInterface m_simulator = null;
+    public CAD m_cad = null;
+    public JavaxSmartCardInterface m_simulator = null;
     
     final static byte SUCCESS =                    (byte) 0xAA;
     
@@ -138,9 +136,9 @@ public class CardMngr {
     public static final byte CLASS_KEYPAIR_EC_FP   = 0x1C;
 
    
-    public static CardTerminal m_terminal = null;
-    static CardChannel m_channel = null;
-    static Card m_card = null;
+    public CardTerminal m_terminal = null;
+    CardChannel m_channel = null;
+    Card m_card = null;
     public static String cardUploadersFolder = System.getProperty("user.dir")+File.separator+"!card_uploaders";
     
     public static final byte selectApplet[] = {
@@ -216,6 +214,21 @@ public class CardMngr {
     
     /* CLOCKS_PER_SEC also used in 'PerformanceTesting.java' */
     public static final int CLOCKS_PER_SEC = 1000;
+    
+    
+    
+    public static void PrintHelp () throws FileNotFoundException, IOException{
+        System.out.println(CardMngr.helpString);
+        
+        System.out.println("Do you want to print supported parameters for AlgTest to separate file? 1 = YES, 0 = NO/r/n");
+        Scanner sc = new Scanner(System.in);
+        int answ = sc.nextInt();
+        if (answ == 1){
+            FileOutputStream file = new FileOutputStream("AlgTest_supported_parameters.txt");
+            file.write(CardMngr.paramList.getBytes());
+            System.out.println("List of supported parameters for AlgTest created in project folder.");
+        }
+    }  
     
     public String getTerminalName() {
         if (m_terminal != null) { return m_terminal.getName(); }
@@ -293,14 +306,14 @@ public class CardMngr {
         return null;    // returns 'null' in case of error
     }
     
-    public static boolean ConnectToFirstCard() throws Exception {
+    public boolean ConnectToFirstCard() throws Exception {
         StringBuilder selectedReader = new StringBuilder();
         StringBuilder selectedATR = new StringBuilder();
         StringBuilder usedProtocol = new StringBuilder();
         return ConnectToFirstCard(null, selectedReader, selectedATR, usedProtocol);
     }
     
-    public static boolean ConnectToFirstCard(Class ClassToTest, StringBuilder selectedReader, StringBuilder selectedATR, StringBuilder usedProtocol) throws Exception {
+    public boolean ConnectToFirstCard(Class ClassToTest, StringBuilder selectedReader, StringBuilder selectedATR, StringBuilder usedProtocol) throws Exception {
         boolean cardFound = false;        
         
         if (ClassToTest != null) {
@@ -349,14 +362,14 @@ public class CardMngr {
         return cardFound;        
     }
     
-    public static boolean ConnectToCard() throws Exception {
+    public boolean ConnectToCard() throws Exception {
         StringBuilder selectedReader = new StringBuilder();
         StringBuilder selectedATR = new StringBuilder();
         StringBuilder usedProtocol = new StringBuilder();
         return ConnectToCard(null, m_terminal, selectedReader, selectedATR, usedProtocol);
     }
     
-    public static boolean ConnectToCard(Class ClassToTest, CardTerminal targetReader, StringBuilder selectedReader, StringBuilder selectedATR, StringBuilder usedProtocol) throws Exception {
+    public boolean ConnectToCard(Class ClassToTest, CardTerminal targetReader, StringBuilder selectedReader, StringBuilder selectedATR, StringBuilder usedProtocol) throws Exception {
         boolean cardFound = false;        
         
         if (ClassToTest != null) {
@@ -463,7 +476,7 @@ public class CardMngr {
      * @return Returns card response as ResponseAPDU.
      * @throws Exception
      */
-    public static ResponseAPDU sendAPDU(byte apdu[]) throws Exception {
+    public ResponseAPDU sendAPDU(byte apdu[]) throws Exception {
         CommandAPDU commandAPDU = new CommandAPDU(apdu);
         ResponseAPDU responseAPDU = null;
         System.out.println(">>>>");
@@ -808,7 +821,7 @@ public class CardMngr {
             file.flush();
         }
         else {
-            PrintHelp();
+            CardMngr.PrintHelp();
         }
     }
     
@@ -1232,7 +1245,7 @@ public class CardMngr {
      * Sets up simulator using jCardSim API.
      * @param m_applet Class of on-card AlgTest to be installed in simulator.
      */
-    public static void MakeSim(Class applet){
+    public void MakeSim(Class applet){
     ///* BUGBUG: we need to figure out how to support JCardSim in nice way (copy of class files, directory structure...)
         System.setProperty("com.licel.jcardsim.terminal.type", "2");
         CAD cad = new CAD(System.getProperties());
@@ -1243,18 +1256,7 @@ public class CardMngr {
         // selects applet
         m_simulator.selectApplet(appletAID);
     }
-    public void PrintHelp () throws FileNotFoundException, IOException{
-        System.out.println(helpString);
-        
-        System.out.println("Do you want to print supported parameters for AlgTest to separate file? 1 = YES, 0 = NO/r/n");
-        Scanner sc = new Scanner(System.in);
-        int answ = sc.nextInt();
-        if (answ == 1){
-            FileOutputStream file = new FileOutputStream("AlgTest_supported_parameters.txt");
-            file.write(paramList.getBytes());
-            System.out.println("List of supported parameters for AlgTest created in project folder.");
-        }
-    }
+
     
     public static byte[] hexStringToByteArray(String s) {
         String sanitized = s.replace(" ", "");
@@ -1301,23 +1303,23 @@ public class CardMngr {
         return seriousProblemCounter;
     }
         
-    public static void UploadApplet(int readerIndex) throws Exception {
+    public void UploadApplet(int readerIndex) throws Exception {
         UploadApplet(readerIndex, "");
     }
-    public static void UploadApplet(int readerIndex, String atr) throws Exception {
+    public void UploadApplet(int readerIndex, String atr) throws Exception {
         System.out.println("Uploading applet...");
         /*Check if folder !card_uploaders is correctly set*/
-        File fileCardUploadersFolder = new File(CardMngr.cardUploadersFolder);
-        if(!fileCardUploadersFolder.exists()) {
-            System.err.println("Cannot find !card_uploaders folder. Folder "+CardMngr.cardUploadersFolder+" does not exist.");
+        File fileCardUploadersFolder = new File(this.cardUploadersFolder);
+        if (!fileCardUploadersFolder.exists()) {
+            System.err.println("Cannot find !card_uploaders folder. Folder " + this.cardUploadersFolder + " does not exist.");
             return;
         }
 
         //atr = atr.replace(" ", "_");
         /*Set path to run bat file*/
         String batFileName;
-        if(CardMngr.cardUploadersFolder.endsWith(File.separator)) batFileName = CardMngr.cardUploadersFolder + "keyHarvest" + File.separator + "run" + readerIndex + ".bat";
-        else batFileName = CardMngr.cardUploadersFolder + File.separator + "keyHarvest" + File.separator + "run" + readerIndex + ".bat";
+        if (this.cardUploadersFolder.endsWith(File.separator)) { batFileName = this.cardUploadersFolder + "keyHarvest" + File.separator + "run" + readerIndex + ".bat"; } 
+        else { batFileName = this.cardUploadersFolder + File.separator + "keyHarvest" + File.separator + "run" + readerIndex + ".bat"; }
         
         ProcessBuilder pb = new ProcessBuilder(batFileName);
         pb.directory(fileCardUploadersFolder);

@@ -422,7 +422,7 @@ public class SingleModeTest {
                 cardManager.TestVariableRSAPublicExponentSupport(value, file, OFFSET_P2);}
             else{
                 System.err.println("Incorect parameter!");
-                cardManager.PrintHelp();
+                CardMngr.PrintHelp();
             }
         }
         else{       // in case there are no arguments from command line present

@@ -31,7 +31,6 @@
 
 package algtestjclient;
 
-import static algtestjclient.AlgTestJClient.testingPerformance;
 import java.io.*;
 import java.io.FileOutputStream;
 import java.util.Scanner;
@@ -39,18 +38,12 @@ import javax.smartcardio.ResponseAPDU;
 import AlgTest.Consts;
 import AlgTest.JCConsts;
 import AlgTest.TestSettings;
-import static algtestjclient.PerformanceTesting.m_perfResultsFile;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.smartcardio.CardTerminal;
-/**
- *
- * @author lukas.srom
- */
+
 public class PerformanceTesting {
     
     // Argument constants for choosing algorithm to test. 
@@ -61,30 +54,36 @@ public class PerformanceTesting {
     public static final String TEST_EXTENDEDAPDU = "EXTENDEDAPDU";
     public static final String TEST_RSAEXPONENT = "RSAEXPONENT";
     
+    // Generic test constants
     public static final int MAX_FAILED_REPEATS = 2;
     public static final int NUM_BASELINE_CALIBRATION_RUNS = 5;
     
-    
-    public static CardMngr cardManager = new CardMngr();
-    static String m_cardATR = "";
-    static String m_cardName = "";
-    
-    public StringBuilder value = new StringBuilder();
-    public String message = "";
+    // 
+    public CardMngr m_cardManager = new CardMngr();
+    String m_cardATR = "";
+    String m_cardName = "";
     
     //public static final byte mask = 0b01111111;
-    public static FileOutputStream m_perfResultsFile;
-    public static FileOutputStream m_algsMeasuredFile;
-    public static List<String> m_algsMeasuredList = new ArrayList<>();
-    public static boolean m_bAlgsMeasuredSomeNew = false;
+    public FileOutputStream m_perfResultsFile;
+    public FileOutputStream m_algsMeasuredFile;
+    public List<String> m_algsMeasuredList = new ArrayList<>();
+    public boolean m_bAlgsMeasuredSomeNew = false;
     
-    private static boolean bTestSymmetricAlgs = true;
-    private static boolean bTestAsymmetricAlgs = true;
-    public static boolean bTestVariableData = false;
+    private boolean m_bTestSymmetricAlgs = true;
+    private boolean m_bTestAsymmetricAlgs = true;
+    public boolean m_bTestVariableData = false;
     
-    public static List<Integer> m_testDataLengths = new ArrayList<>();
+    public List<Integer> m_testDataLengths = new ArrayList<>();
     
-    
+    public PerformanceTesting() {
+        // data lengths to be tested (only for variable data length test)
+        m_testDataLengths.add(16);
+        m_testDataLengths.add(32);
+        m_testDataLengths.add(64);
+        m_testDataLengths.add(128);
+        m_testDataLengths.add(256);
+        m_testDataLengths.add(512);        
+    }
     
     /**
      * Calls methods testing card performance.
@@ -101,231 +100,66 @@ public class PerformanceTesting {
         Class testClassPerformance = null;
         Scanner sc = new Scanner(System.in);
         
-        bTestVariableData = bTestVariableDataLengths;
+        m_bTestVariableData = bTestVariableDataLengths;
                 
-        StringBuilder value = new StringBuilder();
-        String message = "";
-        
-        //testCipher_dataDependency(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Cipher_ALG_AES_BLOCK_128_CBC_NOPAD,"TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_128_CBC_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, Consts.NUM_REPEAT_WHOLE_OPERATION, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
-        
-/*        
-        if(args.length > 1){    // in case there are arguments present
-            if(Arrays.asList(args).contains(TEST_ALL_ALGORITHMS)){testAllAtOnce(file);}
-            else if (Arrays.asList(args).contains(TEST_RSAEXPONENT)){
-                value.setLength(0);            
-                if (testingPerformance.TestVariableRSAPublicExponentSupport(value, file, (byte) 0) == CardMngr.STAT_OK) {}
-                else { 
-                    message = "\nERROR: Test variable public exponent support fail\n"; 
-                    System.out.println(message); file.write(message.getBytes());
-                }
-                file.flush();
-            }
-            else if (Arrays.asList(args).contains(TEST_RAM)){
-                value.setLength(0);
-                if (testingPerformance.TestAvailableRAMMemory(value, file, (byte) 0) == CardMngr.STAT_OK) {}
-                else { 
-                    message = "\nERROR: Get available RAM memory fail\n"; 
-                    System.out.println(message); file.write(message.getBytes());
-                }
-                file.flush();
-            }
-            else if (Arrays.asList(args).contains(TEST_EEPROM)){
-                value.setLength(0);
-                if (testingPerformance.TestAvailableEEPROMMemory(value, file, (byte) 0) == CardMngr.STAT_OK) {}
-                else { 
-                    message = "\nERROR: Get available EEPROM memory fail\n"; 
-                    System.out.println(message); file.write(message.getBytes());
-                }
-                file.flush();
-            }
-            else{
-                System.err.println("Incorect parameter!");
-                cardManager.PrintHelp();
-            }
+
+        System.out.println("Choose which type of performance tests you like to execute:");
+        System.out.append("1 -> Only algorithms WITHOUT asymmetric cryptography (estimated time 1-2 hours)\n2 -> Only algorithms WITH asymmetric crypto (estimated time 4-6 hours)\n3 -> All algorithms (estimated time 5-8 hours)\n");
+
+        int answ = sc.nextInt();
+        switch (answ){
+            case 1:
+                m_bTestSymmetricAlgs = true;
+                m_bTestAsymmetricAlgs = false;
+            break;
+            case 2:
+                m_bTestSymmetricAlgs = false;
+                m_bTestAsymmetricAlgs = true;
+            break;
+            case 3:
+                m_bTestSymmetricAlgs = true;
+                m_bTestAsymmetricAlgs = true;
+            break;
+            default:
+                System.err.println("Incorrect parameter, running all tests!");
+            break;
         }
-        else{   
-            System.out.println("\n\n#########################");
-            System.out.println("\n\nQ: Do you like to test support for variable RSA public exponent?");
-            System.out.println("Type \"y\" for yes, \"n\" for no: ");	
-            String rsa_answ = sc.nextLine();
 
-            if (rsa_answ.equals("y")) {
-                // Variable public exponent
-                value.setLength(0);
 
-                if (testingPerformance.TestVariableRSAPublicExponentSupport(value, file, (byte) 0) == CardMngr.STAT_OK) {}
-                else { 
-                    message = "\nERROR: Test variable public exponent support fail\n"; 
-                    System.out.println(message); file.write(message.getBytes());
-                }
-                file.flush();
-            }
-
-            System.out.println("\n\n#########################");
-            System.out.println("\n\nQ: Do you like to test RAM memory available for allocation?");
-            System.out.println("\n\nSTRONG WARNING: There is possibility that your card become unresponsive after this test. All cards I tested required just to delete AlgTest applet to reclaim allocated memory. But it might be possible that your card will be unusuable after this test.");
-            System.out.println("\n\nWARNING: Your card should be free from other applets - otherwise memory already claimed by existing applets will not be included in measurement. Value is approximate +- 100B");
-            System.out.println("Type \"y\" for yes, \"n\" for no: ");	
-            String ram_answ = sc.nextLine();
-
-            if (ram_answ.equals("y")){
-
-                // Available memory
-                value.setLength(0);
-                if (testingPerformance.TestAvailableRAMMemory(value, file, (byte) 0) == CardMngr.STAT_OK) {}
-                else { 
-                    message = "\nERROR: Get available RAM memory fail\n"; 
-                    System.out.println(message); file.write(message.getBytes());
-                }
-                file.flush();
-            }
-
-            System.out.println("\n\n#########################");
-            System.out.println("\n\nQ: Do you like to test EEPROM memory available for allocation?");
-            System.out.println("\n\nSTRONG WARNING: There is possibility that your card become unresponsive after this test. All cards I tested required just to delete AlgTest applet to reclaim allocated memory. But it might be possible that your card will be unusuable after this test.");
-            System.out.println("\n\nWARNING: Your card should be free from other applets - otherwise memory already claimed by existing applets will not be included in measurement. Value is approximate +- 5KB");
-            System.out.println("Type y for yes, n for no: ");	
-            String eeprom_answ = sc.nextLine();
-
-            if (eeprom_answ.equals("y")){
-                // Available memory
-                value.setLength(0);
-                if (testingPerformance.TestAvailableEEPROMMemory(value, file, (byte) 0) == CardMngr.STAT_OK) {}
-                else { 
-                    message = "\nERROR: Get available EEPROM memory fail\n"; 
-                    System.out.println(message); file.write(message.getBytes());
-                }
-                file.flush();
-            }
-*/        
-            System.out.println("Choose which type of performance tests you like to execute:");
-            System.out.append("1 -> Only algorithms WITHOUT asymmetric cryptography (estimated time 1-2 hours)\n2 -> Only algorithms WITH asymmetric crypto (estimated time 4-6 hours)\n3 -> All algorithms (estimated time 5-8 hours)\n");
-            
-            int answ = sc.nextInt();
-            switch (answ){
-                case 1:
-                    bTestSymmetricAlgs = true;
-                    bTestAsymmetricAlgs = false;
-                break;
-                case 2:
-                    bTestSymmetricAlgs = false;
-                    bTestAsymmetricAlgs = true;
-                break;
-                case 3:
-                    bTestSymmetricAlgs = true;
-                    bTestAsymmetricAlgs = true;
-                break;
-                default:
-                    System.err.println("Incorrect parameter, running all tests!");
-                break;
-            }
-        
-            // data lengths to be tested (only for variable data length test)
-            m_testDataLengths.add(16);
-            m_testDataLengths.add(32);
-            m_testDataLengths.add(64);
-            m_testDataLengths.add(128);
-            m_testDataLengths.add(256);
-            m_testDataLengths.add(512);
-            
-            
-            int numRepeatWholeOperation = Consts.NUM_REPEAT_WHOLE_OPERATION;
-            if (bTestVariableData) {
-                numRepeatWholeOperation = Consts.NUM_REPEAT_WHOLE_OPERATION_VARIABLE_DATA;                
-            }
-            
-            System.out.println("Specify type of your card (e.g., NXP JCOP CJ2A081):");
-            m_cardName = sc.next();
-            
-            // Try to open and load list of already measured algorithms (if provided)
-            LoadAlreadyMeasuredAlgs(m_cardName);
-                
-            String testInfo = m_cardName;
-            testInfo += "_PERFORMANCE_";
-            
-            if (bTestSymmetricAlgs) { testInfo += "SYMMETRIC_"; }
-            if (bTestAsymmetricAlgs) { testInfo += "ASYMMETRIC_"; }
-            if (bTestVariableData) { testInfo += "DATADEPEND_"; }
-            else { testInfo += "DATAFIXED_"; }
-            
-            testInfo += System.currentTimeMillis() + "_";   // add unique time counter
-            
-
-            // Connect to card
-            PerformanceTesting.m_perfResultsFile = cardManager.establishConnection(testClassPerformance, testInfo, selectedTerminal);
-            m_cardATR = cardManager.getATR();
-            
-            
-            testAllMessageDigests(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
-            testAllRandomGenerators(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
-            testAllCiphers(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
-            testAllSignatures(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
-            testAllChecksums(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);     
-            testAllKeys(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);     
-
-            
-/*        
-        
-            
-            boolean fast = false; 
-            String res = "";
-            System.out.println("Do you want to test every class? WARNING: It could take quite a long time (type 'y' for yes or 'n' for no)");
-            res = sc.nextLine();
-            if(res.equals("y"))
-            {
-                System.out.println("Do you want to past the long key pair test? WARNING: It can take few hours! (type 'l' for long or type 'f' for fast)");
-                res = sc.nextLine();
-                if(res.equals("f")) fast = true;
-                testAllMessageDigests(Consts.NUM_REPEAT_WHOLE_OPERATION, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
-                testAllRandomGenerators(Consts.NUM_REPEAT_WHOLE_OPERATION, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
-                testAllCiphers(Consts.NUM_REPEAT_WHOLE_OPERATION, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
-                testAllSignatures(Consts.NUM_REPEAT_WHOLE_OPERATION, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
-                testAllChecksums(Consts.NUM_REPEAT_WHOLE_OPERATION, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);     
-                testAllKeys(Consts.NUM_REPEAT_WHOLE_OPERATION, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);     
-
-                if (fast) {
-                    testAllKeyPairs(1, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);    // repeat on-card only once (long operation), but perform 5x                                   
-                }
-                else {
-                    testAllKeyPairs(1, 100);
-                }
-            }
-            else
-            {
-                System.out.println("Do you want to test class messageDigest? (y/n)");
-                res = sc.nextLine();
-                if(res.equals("y")) { testAllMessageDigests(Consts.NUM_REPEAT_WHOLE_OPERATION, Consts.NUM_REPEAT_WHOLE_MEASUREMENT); }
-                System.out.println("Do you want to test class randomData? (y/n)");
-                res = sc.nextLine();
-                if(res.equals("y")) { testAllRandomGenerators(Consts.NUM_REPEAT_WHOLE_OPERATION, Consts.NUM_REPEAT_WHOLE_MEASUREMENT); }
-                System.out.println("Do you want to test class cipher? (y/n)");
-                res = sc.nextLine();
-                if(res.equals("y")) { testAllCiphers(Consts.NUM_REPEAT_WHOLE_OPERATION, Consts.NUM_REPEAT_WHOLE_MEASUREMENT); }
-                System.out.println("Do you want to test class signature? (y/n)");
-                res = sc.nextLine();
-                if(res.equals("y")) { testAllSignatures(Consts.NUM_REPEAT_WHOLE_OPERATION, Consts.NUM_REPEAT_WHOLE_MEASUREMENT); }
-                System.out.println("Do you want to test class checksum? (y/n)");
-                res = sc.nextLine();
-                if(res.equals("y")) { testAllChecksums(Consts.NUM_REPEAT_WHOLE_OPERATION, Consts.NUM_REPEAT_WHOLE_MEASUREMENT); }
-                System.out.println("Do you want to test class Key? (y/n)");
-                res = sc.nextLine();
-                if(res.equals("y")) { testAllKeys(Consts.NUM_REPEAT_WHOLE_OPERATION, Consts.NUM_REPEAT_WHOLE_MEASUREMENT); }
-                System.out.println("Do you want to test class keyPair? (y/n)");
-                res = sc.nextLine();
-                if(res.equals("y")) 
-                {
-                    System.out.println("Do you want to past the long key pair test? WARNING: It can take few hours! (type 'l' for long or type 'f' for fast)");
-                    res = sc.nextLine();
-                    if(res.equals("f")) {
-                        testAllKeyPairs(1, 5);                    
-                    }
-                    else {
-                        testAllKeyPairs(1, 100);
-                    }
-                }
-            }
-*/
+        int numRepeatWholeOperation = Consts.NUM_REPEAT_WHOLE_OPERATION;
+        if (m_bTestVariableData) {
+            numRepeatWholeOperation = Consts.NUM_REPEAT_WHOLE_OPERATION_VARIABLE_DATA;                
         }
+
+        System.out.println("Specify type of your card (e.g., NXP JCOP CJ2A081):");
+        m_cardName = sc.next();
+
+        // Try to open and load list of already measured algorithms (if provided)
+        LoadAlreadyMeasuredAlgs(m_cardName);
+
+        String testInfo = m_cardName;
+        testInfo += "_PERFORMANCE_";
+
+        if (m_bTestSymmetricAlgs) { testInfo += "SYMMETRIC_"; }
+        if (m_bTestAsymmetricAlgs) { testInfo += "ASYMMETRIC_"; }
+        if (m_bTestVariableData) { testInfo += "DATADEPEND_"; }
+        else { testInfo += "DATAFIXED_"; }
+
+        testInfo += System.currentTimeMillis() + "_";   // add unique time counter
+
+
+        // Connect to card
+        this.m_perfResultsFile = m_cardManager.establishConnection(testClassPerformance, testInfo, selectedTerminal);
+        m_cardATR = m_cardManager.getATR();
+
+        // Run all required tests
+        testAllMessageDigests(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
+        testAllRandomGenerators(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
+        testAllCiphers(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
+        testAllSignatures(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
+        testAllChecksums(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);     
+        testAllKeys(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
+    }
     
     void LoadAlreadyMeasuredAlgs(String cardName) {
         String filePath = cardName + "_already_measured.list";
@@ -336,11 +170,11 @@ public class PerformanceTesting {
         try {
             if (f.exists() && !f.isDirectory()) {
                 // Ask user for continuation
-                String message = "File '" + filePath + "' with already measured algorithms found. Do you like to use it and measure only missing algorithms? (1==yes/0==no)\n";
+                String message = "File '" + filePath + "' with already measured algorithms found. Do you like to use it and measure only missing algorithms? (y/n)\n";
                 System.out.print(message);
                 Scanner sc = new Scanner(System.in);
-                int answ = sc.nextInt();
-                if (answ == 1) {
+                String answ = sc.next();
+                if (answ.equals("y")) {
                     System.out.println("\tContinue was selected. Only algorithms NOT present " + filePath + " in will be measured");
                     // Read all measured algorithms earlier
                     System.out.println("Following algorithms will NOT be measured again (listed in " + filePath + " file):");
@@ -376,8 +210,11 @@ public class PerformanceTesting {
      */
     public void testAllAtOnce (FileOutputStream file) throws Exception{
         /* Variable RSA public exponent support */
+        StringBuilder value = new StringBuilder();
+        String message;
+        
         value.setLength(0);            
-        if (testingPerformance.TestVariableRSAPublicExponentSupport(value, file, (byte) 0) == CardMngr.STAT_OK) {}
+        if (this.TestVariableRSAPublicExponentSupport(value, file, (byte) 0) == CardMngr.STAT_OK) {}
         else { 
             message = "\nERROR: Test variable public exponent support fail\n"; 
             System.out.println(message); file.write(message.getBytes());
@@ -386,7 +223,7 @@ public class PerformanceTesting {
         
         /* Available RAM memory. */
         value.setLength(0);
-        if (testingPerformance.TestAvailableRAMMemory(value, file, (byte) 0) == CardMngr.STAT_OK) {}
+        if (this.TestAvailableRAMMemory(value, file, (byte) 0) == CardMngr.STAT_OK) {}
         else { 
             message = "\nERROR: Get available RAM memory fail\n"; 
             System.out.println(message); file.write(message.getBytes());
@@ -395,7 +232,7 @@ public class PerformanceTesting {
         
         /* Available EEPROM memory. */
         value.setLength(0);
-        if (testingPerformance.TestAvailableEEPROMMemory(value, file, (byte) 0) == CardMngr.STAT_OK) {}
+        if (this.TestAvailableEEPROMMemory(value, file, (byte) 0) == CardMngr.STAT_OK) {}
         else { 
             message = "\nERROR: Get available EEPROM memory fail\n"; 
             System.out.println(message); file.write(message.getBytes());
@@ -417,7 +254,7 @@ public class PerformanceTesting {
             
         elapsedCard = -System.currentTimeMillis();
 
-        ResponseAPDU resp = cardManager.sendAPDU(apdu);
+        ResponseAPDU resp = m_cardManager.sendAPDU(apdu);
         if (resp.getSW() != 0x9000) {
             System.out.println("Fail to obtain response for TestAvailableRAMMemory");
         } else {
@@ -462,7 +299,7 @@ public class PerformanceTesting {
             
         elapsedCard = -System.currentTimeMillis();
 
-        ResponseAPDU resp = cardManager.sendAPDU(apdu);
+        ResponseAPDU resp = m_cardManager.sendAPDU(apdu);
         if (resp.getSW() != 0x9000) {
             System.out.println("Fail to obtain response for TestAvailableEEPROMMemory");
         } else {
@@ -514,7 +351,7 @@ public class PerformanceTesting {
         pFile.write(message.getBytes());
         pValue.append(message);
             
-        ResponseAPDU resp = cardManager.sendAPDU(apdu);
+        ResponseAPDU resp = m_cardManager.sendAPDU(apdu);
         if (resp.getSW() != 0x9000) {
             message = String.format("no;"); 
             System.out.println(message);
@@ -571,7 +408,7 @@ public class PerformanceTesting {
         return status;
     }
     
-    public static int TestExtendedAPDUSupportSupport(StringBuilder pValue, FileOutputStream pFile, byte algPartP2) throws Exception {
+    public int TestExtendedAPDUSupportSupport(StringBuilder pValue, FileOutputStream pFile, byte algPartP2) throws Exception {
         int         status = CardMngr.STAT_OK;
         
         byte apdu[] = new byte[CardMngr.HEADER_LENGTH + 2 + CardMngr.EXTENDED_APDU_TEST_LENGTH]; // + 2 is because of encoding of LC length into three bytes total
@@ -589,7 +426,7 @@ public class PerformanceTesting {
         pFile.write(message.getBytes());
         pValue.append(message);
         
-        ResponseAPDU resp = cardManager.sendAPDU(apdu);
+        ResponseAPDU resp = m_cardManager.sendAPDU(apdu);
         if (resp.getSW() != 0x9000) {
             message = String.format("no;"); 
         }
@@ -617,7 +454,7 @@ public class PerformanceTesting {
     
         
 
-    public static TestSettings prepareTestSettings(short classType, short algorithmSpecification, short keyType, short keyLength, short algorithmMethod, short dataLength1, short dataLength2, short initMode, short numRepeatWholeOperation, short numRepeatSubOperation, short numRepeatWholeMeasurement) {
+    public TestSettings prepareTestSettings(short classType, short algorithmSpecification, short keyType, short keyLength, short algorithmMethod, short dataLength1, short dataLength2, short initMode, short numRepeatWholeOperation, short numRepeatSubOperation, short numRepeatWholeMeasurement) {
         TestSettings    testSet = new TestSettings();
         
         testSet.classType = classType;                              // custom constant signalizing javacard class - e.g., custom constant for javacardx.crypto.Cipher
@@ -634,26 +471,26 @@ public class PerformanceTesting {
                 
         return testSet;
     }
-    public static void perftest_prepareClass(byte appletCLA, byte appletINS, short classType, short algorithmSpecification, short keyType, short keyLength, short algorithmMethod, short dataLength1, short dataLength2, short initMode, short numRepeatWholeOperation, short numRepeatSubOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
+    public void perftest_prepareClass(byte appletCLA, byte appletINS, short classType, short algorithmSpecification, short keyType, short keyLength, short algorithmMethod, short dataLength1, short dataLength2, short initMode, short numRepeatWholeOperation, short numRepeatSubOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
         TestSettings testSet = prepareTestSettings(classType, algorithmSpecification, keyType, keyLength, algorithmMethod, dataLength1, dataLength2, initMode, numRepeatWholeOperation, numRepeatSubOperation, numRepeatWholeMeasurement);
         perftest_prepareClass(appletCLA, appletINS, testSet);
     }
-    public static void perftest_prepareClass(byte appletCLA, byte appletINS, TestSettings testSet) throws IOException, Exception {
+    public void perftest_prepareClass(byte appletCLA, byte appletINS, TestSettings testSet) throws IOException, Exception {
         // Free previously allocated objects
-        boolean success = cardManager.resetApplet(appletCLA, Consts.INS_CARD_RESET);
+        boolean success = m_cardManager.resetApplet(appletCLA, Consts.INS_CARD_RESET);
         // Prepare new set
-        cardManager.PerfTestCommand(appletCLA, appletINS, testSet, Consts.INS_CARD_RESET);
+        m_cardManager.PerfTestCommand(appletCLA, appletINS, testSet, Consts.INS_CARD_RESET);
     }
 /*    
-    public static double perftest_measure(byte appletCLA, byte appletPrepareINS, byte appletMeasureINS, short classType, short algorithmSpecification, short keyType, short keyLength, short algorithmMethod, short dataLength1, short dataLength2, short initMode, short numRepeatWholeOperation, short numRepeatSubOperation, short numRepeatWholeMeasurement, String info) throws IOException, Exception {
+    public double perftest_measure(byte appletCLA, byte appletPrepareINS, byte appletMeasureINS, short classType, short algorithmSpecification, short keyType, short keyLength, short algorithmMethod, short dataLength1, short dataLength2, short initMode, short numRepeatWholeOperation, short numRepeatSubOperation, short numRepeatWholeMeasurement, String info) throws IOException, Exception {
         TestSettings testSet = prepareTestSettings(classType, algorithmSpecification, keyType, keyLength, algorithmMethod, dataLength1, dataLength2, initMode, numRepeatWholeOperation, numRepeatSubOperation, numRepeatWholeMeasurement);
         return perftest_measure(appletCLA, appletPrepareINS, appletMeasureINS, testSet, info);
     }
 */    
-    public static double perftest_measure(byte appletCLA, byte appletPrepareINS, byte appletMeasureINS, TestSettings testSet, String info) throws IOException, Exception {
+    public double perftest_measure(byte appletCLA, byte appletPrepareINS, byte appletMeasureINS, TestSettings testSet, String info) throws IOException, Exception {
         return perftest_measure(appletCLA, appletPrepareINS, appletMeasureINS, testSet, info, 0); 
     }
-    public static double perftest_measure(byte appletCLA, byte appletPrepareINS, byte appletMeasureINS, TestSettings testSet, String info, double substractTime) throws IOException, Exception {
+    public double perftest_measure(byte appletCLA, byte appletPrepareINS, byte appletMeasureINS, TestSettings testSet, String info, double substractTime) throws IOException, Exception {
         double measureTime = -1;
         StringBuilder result = new StringBuilder();
         int numFailedRepeats = 0;
@@ -693,7 +530,7 @@ public class PerformanceTesting {
                     System.out.println(ex.toString()); 
                     // Write result string into file
                     m_perfResultsFile.write(result.toString().getBytes());
-                    // Write execption into file
+                    // Write exception into file
                     m_perfResultsFile.write(message.getBytes());
 
                     // log succesfull measurement of current algorithm - although exception ocurred, it is expected value like NO_SUCH_ALGORITHM
@@ -708,16 +545,25 @@ public class PerformanceTesting {
                     System.out.println(ex.toString()); 
                     numFailedRepeats++;
 
-                    System.out.print("ERROR: unable to measure operation '" + info + "' properly because of exception (" + ex.toString() + ")\n");
-                    System.out.print("Current reader is: " + cardManager.getTerminalName());
-                    System.out.print("Current card is: " + m_cardName + " - " + cardManager.getATR());
-                    System.out.print("Try to physically remove card and/or upload applet manually and insert it again. Press any key and enter to to continue\n");
+                    System.out.println("ERROR: unable to measure operation '" + info + "' properly because of exception (" + ex.toString() + ")");
+                    System.out.println("Current reader is: " + m_cardManager.getTerminalName());
+                    System.out.println("Current card is: " + m_cardName + " - " + m_cardManager.getATR());
+                    System.out.println("Try to physically remove card and/or upload applet manually and insert it again. Press 'r' to retry or 's' to skip this algorithm (if retry fails)\n");
                     Scanner sc = new Scanner(System.in);
-                    sc.next();
-                    // Card was physically removed, reset retries counter
-                    numFailedRepeats = 0;
+                    String answ = sc.next();
+                    if (answ.equals("r")) {
+                        // Card was physically removed, reset retries counter
+                        numFailedRepeats = 0;
 
-                    CardMngr.ConnectToCard();
+                        m_cardManager.ConnectToCard();
+                    }
+                    else {
+                        // Skip this algorithm 
+                        System.out.println("Skipping algorithm " + info); 
+                        m_perfResultsFile.write(ex.toString().getBytes());
+
+                        return -1;
+                    }
                 }
             }
         }
@@ -727,10 +573,10 @@ public class PerformanceTesting {
         return -1;
     }
     
-    public static double perftest_measure(byte appletCLA, byte appletPrepareINS, byte appletMeasureINS, TestSettings testSet, String info, StringBuilder result) throws IOException, Exception {
+    public double perftest_measure(byte appletCLA, byte appletPrepareINS, byte appletMeasureINS, TestSettings testSet, String info, StringBuilder result) throws IOException, Exception {
         return perftest_measure(appletCLA, appletPrepareINS, appletMeasureINS, testSet, info, result, 0);
     }
-    public static double perftest_measure(byte appletCLA, byte appletPrepareINS, byte appletMeasureINS, TestSettings testSet, String info, StringBuilder result, double substractTime) throws IOException, Exception {
+    public double perftest_measure(byte appletCLA, byte appletPrepareINS, byte appletMeasureINS, TestSettings testSet, String info, StringBuilder result, double substractTime) throws IOException, Exception {
         double check = 0.05; // Maximum percentage difference in which should be all times of individual operations, 0.1 = 10%
         double avgOpTime = -1;
         String message = "";
@@ -769,8 +615,8 @@ public class PerformanceTesting {
         testSet.numRepeatWholeOperation = 0;
         message +=  "baseline measurements (ms):;";
         for(int i = 0; i < NUM_BASELINE_CALIBRATION_RUNS;i++) {
-            cardManager.resetApplet(appletCLA, Consts.INS_CARD_RESET);
-            double overheadTime = cardManager.PerfTestCommand(appletCLA, appletMeasureINS, testSet, Consts.INS_CARD_RESET);
+            m_cardManager.resetApplet(appletCLA, Consts.INS_CARD_RESET);
+            double overheadTime = m_cardManager.PerfTestCommand(appletCLA, appletMeasureINS, testSet, Consts.INS_CARD_RESET);
             sumTimes += overheadTime;
             timeStr = String.format("%.2f", overheadTime);
             message +=  timeStr + ";" ;
@@ -804,8 +650,8 @@ public class PerformanceTesting {
         sumTimes = 0;
         message += "operation raw measurements (ms):;";
         for (int i = 0; i < testSet.numRepeatWholeMeasurement; i++) {
-            cardManager.resetApplet(appletCLA, Consts.INS_CARD_RESET);
-            time = cardManager.PerfTestCommand(appletCLA, appletMeasureINS, testSet, Consts.INS_CARD_RESET);
+            m_cardManager.resetApplet(appletCLA, Consts.INS_CARD_RESET);
+            time = m_cardManager.PerfTestCommand(appletCLA, appletMeasureINS, testSet, Consts.INS_CARD_RESET);
             time -= avgOverhead;
             if (Math.abs(substractTime) > 0.0005) { // comparing double to 0
                 // Substract given time (if measured operation requires to perform another unrelated operation, e.g., setKey before clearKey)
@@ -854,22 +700,22 @@ public class PerformanceTesting {
     
         
 
-    public static void testKeyPair(byte alg, short length, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
+    public void testKeyPair(byte alg, short length, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
         TestSettings testSet = prepareTestSettings(Consts.CLASS_KEYPAIR, Consts.UNUSED, Consts.UNUSED, length, JCConsts.KeyPair_genKeyPair, 
                 Consts.UNUSED, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);      
 
         testSet.keyClass = alg;
         testSet.algorithmMethod = JCConsts.KeyPair_genKeyPair;
-        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEYPAIR, Consts.INS_PERF_TEST_CLASS_KEYPAIR, testSet, info + " KeyPair_genKeyPair()");
+        this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEYPAIR, Consts.INS_PERF_TEST_CLASS_KEYPAIR, testSet, info + " KeyPair_genKeyPair()");
     }
     
-    public static void testAllKeyPairs(int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception {
+    public void testAllKeyPairs(int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception {
         testAllKeyPairs((short) numRepeatWholeOperation, (short) numRepeatWholeMeasurement);
     }
-    public static void testAllKeyPairs(short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
+    public void testAllKeyPairs(short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
         String tableName = "\n\nKEY PAIR";
         m_perfResultsFile.write(tableName.getBytes());
-        if (bTestAsymmetricAlgs) {
+        if (m_bTestAsymmetricAlgs) {
             String message = "\n";
             m_perfResultsFile.write(message.getBytes());
             testKeyPair(JCConsts.KeyPair_ALG_RSA,JCConsts.KeyBuilder_LENGTH_RSA_512,"ALG_RSA LENGTH_RSA_512", numRepeatWholeOperation, numRepeatWholeMeasurement);
@@ -918,18 +764,18 @@ public class PerformanceTesting {
         m_perfResultsFile.write(tableName.getBytes());
     }
     
-    public static void testMessageDigest(byte alg, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
-        TestSettings testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_MESSAGEDIGEST, alg, Consts.UNUSED, Consts.UNUSED, 
+    public void testMessageDigest(byte alg, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
+        TestSettings testSet = this.prepareTestSettings(Consts.CLASS_MESSAGEDIGEST, alg, Consts.UNUSED, Consts.UNUSED, 
                 JCConsts.MessageDigest_update, Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);       
 
-        if (!bTestVariableData) {
+        if (!m_bTestVariableData) {
             // Ordinary test of all available methods
             testSet.algorithmMethod = JCConsts.MessageDigest_update;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_MESSAGEDIGEST, Consts.INS_PERF_TEST_CLASS_MESSAGEDIGEST, testSet, info + " MessageDigest_update()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_MESSAGEDIGEST, Consts.INS_PERF_TEST_CLASS_MESSAGEDIGEST, testSet, info + " MessageDigest_update()");
             testSet.algorithmMethod = JCConsts.MessageDigest_doFinal;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_MESSAGEDIGEST, Consts.INS_PERF_TEST_CLASS_MESSAGEDIGEST, testSet, info + " MessageDigest_doFinal()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_MESSAGEDIGEST, Consts.INS_PERF_TEST_CLASS_MESSAGEDIGEST, testSet, info + " MessageDigest_doFinal()");
             testSet.algorithmMethod = JCConsts.MessageDigest_reset;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_MESSAGEDIGEST, Consts.INS_PERF_TEST_CLASS_MESSAGEDIGEST, testSet, info + " MessageDigest_reset()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_MESSAGEDIGEST, Consts.INS_PERF_TEST_CLASS_MESSAGEDIGEST, testSet, info + " MessageDigest_reset()");
         }
         else {
             // Test of speed dependant on data length
@@ -938,7 +784,7 @@ public class PerformanceTesting {
             testSet.algorithmMethod = JCConsts.MessageDigest_doFinal;
             for (Integer length : m_testDataLengths) {
                 testSet.dataLength1 = length.shortValue();
-                PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_MESSAGEDIGEST, Consts.INS_PERF_TEST_CLASS_MESSAGEDIGEST, testSet, info + " MessageDigest_doFinal()");
+                this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_MESSAGEDIGEST, Consts.INS_PERF_TEST_CLASS_MESSAGEDIGEST, testSet, info + " MessageDigest_doFinal()");
             }
             tableName = "\n\nMESSAGE DIGEST - "  + info + " - variable data - END\n";
             m_perfResultsFile.write(tableName.getBytes());
@@ -946,13 +792,13 @@ public class PerformanceTesting {
     }   
     
 
-    public static void testAllMessageDigests(int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception {
+    public void testAllMessageDigests(int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception {
         testAllMessageDigests((short) numRepeatWholeOperation, (short) numRepeatWholeMeasurement);
     }
-    public static void testAllMessageDigests(short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
+    public void testAllMessageDigests(short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
         String tableName = "\n\nMESSAGE DIGEST\n";
         m_perfResultsFile.write(tableName.getBytes());
-        if (bTestSymmetricAlgs) {
+        if (m_bTestSymmetricAlgs) {
             testMessageDigest(JCConsts.MessageDigest_ALG_SHA,"ALG_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testMessageDigest(JCConsts.MessageDigest_ALG_MD5,"ALG_MD5", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testMessageDigest(JCConsts.MessageDigest_ALG_RIPEMD160,"ALG_RIPEMD160", numRepeatWholeOperation, numRepeatWholeMeasurement);
@@ -969,16 +815,16 @@ public class PerformanceTesting {
         m_perfResultsFile.write(tableName.getBytes());
     }
 
-    public static void testRandomGenerator(byte alg, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
-        TestSettings testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_RANDOMDATA, alg, Consts.UNUSED, Consts.UNUSED, JCConsts.RandomData_generateData, 
+    public void testRandomGenerator(byte alg, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
+        TestSettings testSet = this.prepareTestSettings(Consts.CLASS_RANDOMDATA, alg, Consts.UNUSED, Consts.UNUSED, JCConsts.RandomData_generateData, 
                 Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);      
 
-        if (!bTestVariableData) {
+        if (!m_bTestVariableData) {
             // Ordinary test of all available methods
             testSet.algorithmMethod = JCConsts.RandomData_generateData;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_RANDOMDATA, Consts.INS_PERF_TEST_CLASS_RANDOMDATA, testSet, info + " RandomData_generateData()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_RANDOMDATA, Consts.INS_PERF_TEST_CLASS_RANDOMDATA, testSet, info + " RandomData_generateData()");
             testSet.algorithmMethod = JCConsts.RandomData_setSeed;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_RANDOMDATA, Consts.INS_PERF_TEST_CLASS_RANDOMDATA, testSet, info + " RandomData_setSeed()");        
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_RANDOMDATA, Consts.INS_PERF_TEST_CLASS_RANDOMDATA, testSet, info + " RandomData_setSeed()");        
         }
         else {
             // Test of speed dependant on data length
@@ -987,19 +833,19 @@ public class PerformanceTesting {
             testSet.algorithmMethod = JCConsts.RandomData_generateData;
             for (Integer length : m_testDataLengths) {
                 testSet.dataLength1 = length.shortValue();
-                PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_RANDOMDATA, Consts.INS_PERF_TEST_CLASS_RANDOMDATA, testSet, info + " RandomData_generateData();" + length + ";");
+                this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_RANDOMDATA, Consts.INS_PERF_TEST_CLASS_RANDOMDATA, testSet, info + " RandomData_generateData();" + length + ";");
             }
             tableName = "\n\nRANDOM GENERATOR - "  + info + " - variable data - END\n";
             m_perfResultsFile.write(tableName.getBytes());
         }
     }    
-    public static void testAllRandomGenerators(int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception {
+    public void testAllRandomGenerators(int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception {
         testAllRandomGenerators((short) numRepeatWholeOperation, (short) numRepeatWholeMeasurement);
     }
-    public static void testAllRandomGenerators(short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
+    public void testAllRandomGenerators(short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
         String tableName = "\n\nRANDOM GENERATOR\n";
         m_perfResultsFile.write(tableName.getBytes());
-        if (bTestSymmetricAlgs) {
+        if (m_bTestSymmetricAlgs) {
             testRandomGenerator(JCConsts.RandomData_ALG_PSEUDO_RANDOM,"ALG_PSEUDO_RANDOM", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testRandomGenerator(JCConsts.RandomData_ALG_SECURE_RANDOM,"ALG_SECURE_RANDOM", numRepeatWholeOperation, numRepeatWholeMeasurement);     
         }
@@ -1011,7 +857,7 @@ public class PerformanceTesting {
         m_perfResultsFile.write(tableName.getBytes());
     }    
 
-    public static void testCipher(byte key, short keyLength, byte alg, String info, short initMode, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
+    public void testCipher(byte key, short keyLength, byte alg, String info, short initMode, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
         short testDataLength = Consts.TEST_DATA_LENGTH; // default test length
         switch (key) {
             case JCConsts.KeyBuilder_TYPE_RSA_PRIVATE:
@@ -1022,18 +868,18 @@ public class PerformanceTesting {
                 break;
         }    
         
-        TestSettings testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_CIPHER, alg, key, keyLength, JCConsts.Cipher_update, 
+        TestSettings testSet = this.prepareTestSettings(Consts.CLASS_CIPHER, alg, key, keyLength, JCConsts.Cipher_update, 
                 testDataLength, Consts.UNUSED, initMode, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);      
 
         
-        if (!bTestVariableData) {
+        if (!m_bTestVariableData) {
             // Ordinary test of all available methods
             testSet.algorithmMethod = JCConsts.Cipher_update;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_update()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_update()");
             testSet.algorithmMethod = JCConsts.Cipher_doFinal;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_doFinal()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_doFinal()");
             testSet.algorithmMethod = JCConsts.Cipher_init;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_init()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_init()");
         }
         else {
             // Test of speed dependant on data length
@@ -1053,7 +899,7 @@ public class PerformanceTesting {
             testSet.algorithmMethod = JCConsts.Cipher_doFinal;
             for (Integer length : m_testDataLengths) {
                 testSet.dataLength1 = length.shortValue();
-                PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_doFinal()");
+                this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_doFinal()");
             }
             tableName = "\n\nCIPHER - " + info + " - variable data - END\n";
             m_perfResultsFile.write(tableName.getBytes());
@@ -1061,7 +907,7 @@ public class PerformanceTesting {
         
     }
     
-    public static double testCipher(byte key, short keyLength, byte alg, String info, short initMode, short numRepeatWholeOperation, short numRepeatWholeMeasurement, short dataLength) throws IOException, Exception {
+    public double testCipher(byte key, short keyLength, byte alg, String info, short initMode, short numRepeatWholeOperation, short numRepeatWholeMeasurement, short dataLength) throws IOException, Exception {
         double result;
         short testDataLength = dataLength;
         switch (key) {
@@ -1073,26 +919,26 @@ public class PerformanceTesting {
                 break;
         }    
         
-        TestSettings testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_CIPHER, alg, key, keyLength, JCConsts.Cipher_update, 
+        TestSettings testSet = this.prepareTestSettings(Consts.CLASS_CIPHER, alg, key, keyLength, JCConsts.Cipher_update, 
                 testDataLength, Consts.UNUSED, initMode, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);     
 
         testSet.algorithmMethod = JCConsts.Cipher_update;
-        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_update()");
+        this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_update()");
         testSet.algorithmMethod = JCConsts.Cipher_doFinal;
-        result = PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_doFinal()");
+        result = this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_doFinal()");
         testSet.algorithmMethod = JCConsts.Cipher_init;
-        PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_init()");
+        this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_init()");
 
         return result;
     }   
     
-    public static void testAllCiphers(int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception {
+    public void testAllCiphers(int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception {
         testAllCiphers((short) numRepeatWholeOperation, (short) numRepeatWholeMeasurement);
     }
-    public static void testAllCiphers(short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
+    public void testAllCiphers(short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
         String tableName = "\n\nCIPHER\n";
         m_perfResultsFile.write(tableName.getBytes());
-        if (bTestSymmetricAlgs) {
+        if (m_bTestSymmetricAlgs) {
             testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES,JCConsts.Cipher_ALG_DES_CBC_NOPAD,"TYPE_DES LENGTH_DES ALG_DES_CBC_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
             testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES,JCConsts.Cipher_ALG_DES_CBC_ISO9797_M1,"TYPE_DES LENGTH_DES ALG_DES_CBC_ISO9797_M1", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
             testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES,JCConsts.Cipher_ALG_DES_CBC_ISO9797_M2,"TYPE_DES LENGTH_DES ALG_DES_CBC_ISO9797_M2", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
@@ -1159,7 +1005,7 @@ public class PerformanceTesting {
             String message = "\n# Measurements excluded for symmetric algorithms\n";
             m_perfResultsFile.write(message.getBytes());
         }
-        if (bTestAsymmetricAlgs) {
+        if (m_bTestAsymmetricAlgs) {
             // ALG_RSA TYPE_RSA_PRIVATE
             testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Cipher_ALG_RSA_ISO14888,"TYPE_RSA_PRIVATE LENGTH_RSA_512 ALG_RSA_ISO14888", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
             testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Cipher_ALG_RSA_ISO9796,"TYPE_RSA_PRIVATE LENGTH_RSA_512 ALG_RSA_ISO9796", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
@@ -1337,23 +1183,23 @@ public class PerformanceTesting {
         m_perfResultsFile.write(tableName.getBytes());
     }
     
-    public static void testSignature(byte keyType, short keyLength, byte alg, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
+    public void testSignature(byte keyType, short keyLength, byte alg, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
         testSignatureWithKeyClass(Consts.UNUSED, keyType, keyLength, alg, info, numRepeatWholeOperation, numRepeatWholeMeasurement);
     }   
-    public static void testSignatureWithKeyClass(byte keyClass, byte keyType, short keyLength, byte alg, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
-        TestSettings testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_SIGNATURE, alg, keyType, keyLength, JCConsts.Signature_update, 
+    public void testSignatureWithKeyClass(byte keyClass, byte keyType, short keyLength, byte alg, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
+        TestSettings testSet = this.prepareTestSettings(Consts.CLASS_SIGNATURE, alg, keyType, keyLength, JCConsts.Signature_update, 
             Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);      
         testSet.keyClass = keyClass;
         
-        if (!bTestVariableData) {
+        if (!m_bTestVariableData) {
             testSet.algorithmMethod = JCConsts.Signature_update;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_update()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_update()");
             testSet.algorithmMethod = JCConsts.Signature_sign;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_sign()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_sign()");
             testSet.algorithmMethod = JCConsts.Signature_verify;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_verify()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_verify()");
             testSet.algorithmMethod = JCConsts.Signature_init;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_init()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_init()");
         }
         else {
             // Test of speed dependant on data length
@@ -1362,19 +1208,19 @@ public class PerformanceTesting {
             testSet.algorithmMethod = JCConsts.Signature_sign;
             for (Integer length : m_testDataLengths) {
                 testSet.dataLength1 = length.shortValue();
-                PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_sign()");
+                this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_sign()");
             }
             tableName = "\n\nSIGNATURE - "  + info + " - variable data - END\n";
             m_perfResultsFile.write(tableName.getBytes());
         }
     }
-    public static void testAllSignatures(int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception {
+    public void testAllSignatures(int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception {
         testAllSignatures((short) numRepeatWholeOperation, (short) numRepeatWholeMeasurement);
     }
-    public static void testAllSignatures(short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
+    public void testAllSignatures(short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
         String tableName = "\n\nSIGNATURE\n";
         m_perfResultsFile.write(tableName.getBytes());
-        if (bTestSymmetricAlgs) {
+        if (m_bTestSymmetricAlgs) {
             testSignature(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Signature_ALG_AES_MAC_128_NOPAD,"TYPE_AES LENGTH_AES_128 ALG_AES_MAC_128_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testSignature(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_192,JCConsts.Signature_ALG_AES_MAC_128_NOPAD,"TYPE_AES LENGTH_AES_192 ALG_AES_MAC_128_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testSignature(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_256,JCConsts.Signature_ALG_AES_MAC_128_NOPAD,"TYPE_AES LENGTH_AES_256 ALG_AES_MAC_128_NOPAD", numRepeatWholeOperation, numRepeatWholeMeasurement);
@@ -1410,7 +1256,7 @@ public class PerformanceTesting {
             m_perfResultsFile.write(message.getBytes());
         }
         
-        if (bTestAsymmetricAlgs) {
+        if (m_bTestAsymmetricAlgs) {
             // ALG_EC_F2M
             testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_F2M, JCConsts.KeyBuilder_ALG_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_113,JCConsts.Signature_ALG_ECDSA_SHA,"KeyPair_ALG_EC_F2M KeyBuilder_LENGTH_EC_F2M_113 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_F2M, JCConsts.KeyBuilder_ALG_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_131,JCConsts.Signature_ALG_ECDSA_SHA,"KeyPair_ALG_EC_F2M KeyBuilder_LENGTH_EC_F2M_131 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
@@ -1683,15 +1529,15 @@ public class PerformanceTesting {
         m_perfResultsFile.write(tableName.getBytes());        
     }    
     
-    public static void testChecksum(byte alg, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
-        TestSettings testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_CHECKSUM, alg, Consts.UNUSED, Consts.UNUSED, JCConsts.Signature_update, 
+    public void testChecksum(byte alg, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
+        TestSettings testSet = this.prepareTestSettings(Consts.CLASS_CHECKSUM, alg, Consts.UNUSED, Consts.UNUSED, JCConsts.Signature_update, 
             Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);      
         
-        if (!bTestVariableData) {
+        if (!m_bTestVariableData) {
             testSet.algorithmMethod = JCConsts.Checksum_update;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CHECKSUM, Consts.INS_PERF_TEST_CLASS_CHECKSUM, testSet, info + " Checksum_update()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CHECKSUM, Consts.INS_PERF_TEST_CLASS_CHECKSUM, testSet, info + " Checksum_update()");
             testSet.algorithmMethod = JCConsts.Checksum_doFinal;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CHECKSUM, Consts.INS_PERF_TEST_CLASS_CHECKSUM, testSet, info + " Checksum_doFinal()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CHECKSUM, Consts.INS_PERF_TEST_CLASS_CHECKSUM, testSet, info + " Checksum_doFinal()");
         }
         else {
             // Test of speed dependant on data length
@@ -1700,19 +1546,19 @@ public class PerformanceTesting {
             testSet.algorithmMethod = JCConsts.Checksum_doFinal;
             for (Integer length : m_testDataLengths) {
                 testSet.dataLength1 = length.shortValue();
-                PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CHECKSUM, Consts.INS_PERF_TEST_CLASS_CHECKSUM, testSet, info + " Checksum_doFinal()");
+                this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CHECKSUM, Consts.INS_PERF_TEST_CLASS_CHECKSUM, testSet, info + " Checksum_doFinal()");
             }
             tableName = "\n\nCHECKSUM - "  + info + " - variable data - END\n";
             m_perfResultsFile.write(tableName.getBytes());
         }
     }   
-    public static void testAllChecksums(int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception {
+    public void testAllChecksums(int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception {
         testAllChecksums((short) numRepeatWholeOperation, (short) numRepeatWholeMeasurement);
     }
-    public static void testAllChecksums(short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
+    public void testAllChecksums(short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
         String tableName = "\n\nCHECKSUM\n";
         m_perfResultsFile.write(tableName.getBytes());
-        if (bTestSymmetricAlgs) {
+        if (m_bTestSymmetricAlgs) {
             testChecksum(JCConsts.Checksum_ALG_ISO3309_CRC16,"ALG_ISO3309_CRC16", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testChecksum(JCConsts.Checksum_ALG_ISO3309_CRC32,"ALG_ISO3309_CRC32", numRepeatWholeOperation, numRepeatWholeMeasurement);
         }
@@ -1726,19 +1572,19 @@ public class PerformanceTesting {
     
     // TODO: KeyAgreement tests
     
-    public static void testAESKey(byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
+    public void testAESKey(byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
         TestSettings testSet = null;
-        testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.AESKey_setKey, 
+        testSet = this.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.AESKey_setKey, 
                 Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);      
         
-        if (!bTestVariableData) {
+        if (!m_bTestVariableData) {
             testSet.algorithmMethod = JCConsts.AESKey_setKey;
-            double setKeyTime = PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setKey()");
+            double setKeyTime = this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setKey()");
             testSet.algorithmMethod = JCConsts.AESKey_getKey;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getKey()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getKey()");
             // Note: clear internally executes also setKey - substract setKey time from result
             testSet.algorithmMethod = JCConsts.AESKey_clearKey;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearKey()", setKeyTime);
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearKey()", setKeyTime);
         }
         else {
             String message = "No variable data test for " + info + "\n";
@@ -1747,13 +1593,13 @@ public class PerformanceTesting {
         }
     }
     
-    public static void testAllAESKeys(int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception {
+    public void testAllAESKeys(int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception {
         testAllAESKeys((short) numRepeatWholeOperation, (short) numRepeatWholeMeasurement);
     }
-    public static void testAllAESKeys(short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
+    public void testAllAESKeys(short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
         String tableName = "\n\nAESKey\n";
         m_perfResultsFile.write(tableName.getBytes());
-        if (bTestSymmetricAlgs) {
+        if (m_bTestSymmetricAlgs) {
             testAESKey(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,"TYPE_AES LENGTH_AES_128", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testAESKey(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_192,"TYPE_AES LENGTH_AES_192", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testAESKey(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_256,"TYPE_AES LENGTH_AES_256", numRepeatWholeOperation, numRepeatWholeMeasurement);
@@ -1767,17 +1613,17 @@ public class PerformanceTesting {
         m_perfResultsFile.write(tableName.getBytes());
     }
     
-    public static void testDESKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
+    public void testDESKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
         TestSettings testSet = null;
-        testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.DESKey_setKey,
+        testSet = this.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.DESKey_setKey,
                 Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
-        if (!bTestVariableData) {
+        if (!m_bTestVariableData) {
             testSet.algorithmMethod = JCConsts.DESKey_setKey;
-            double setKeyTime = PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setKey()");
+            double setKeyTime = this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setKey()");
             testSet.algorithmMethod = JCConsts.DESKey_getKey;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getKey()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getKey()");
             testSet.algorithmMethod = JCConsts.DESKey_clearKey;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearKey()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearKey()");
         }
         else {
             String message = "No variable data test for " + info + "\n";
@@ -1786,15 +1632,15 @@ public class PerformanceTesting {
         }
     }
     
-    public static void testAllDESKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws Exception{
+    public void testAllDESKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws Exception{
         testAllDESKeys((short)numRepeatWholeOperation, (short)numRepeatWholeMeasurement);
     }
     
-    public static void testAllDESKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
+    public void testAllDESKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
         String tableName = "\n\nDESKey";
         m_perfResultsFile.write(tableName.getBytes());
         
-        if (bTestSymmetricAlgs) {
+        if (m_bTestSymmetricAlgs) {
             testDESKey(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES, "TYPE_DES LENGTH_DES_64", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testDESKey(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_2KEY, "TYPE_DES LENGTH_DES_128", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testDESKey(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_3KEY, "TYPE_DES LENGTH_DES_192", numRepeatWholeOperation, numRepeatWholeMeasurement);
@@ -1808,18 +1654,18 @@ public class PerformanceTesting {
         m_perfResultsFile.write(tableName.getBytes());
     }
     
-    public static void testKoreanSEEDKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
+    public void testKoreanSEEDKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
         TestSettings testSet = null;
-        testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.KoreanSEEDKey_setKey,
+        testSet = this.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.KoreanSEEDKey_setKey,
                 Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
         
-        if (!bTestVariableData) {
+        if (!m_bTestVariableData) {
             testSet.algorithmMethod = JCConsts.KoreanSEEDKey_setKey;
-            double setKeyTime = PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setKey()");
+            double setKeyTime = this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setKey()");
             testSet.algorithmMethod = JCConsts.KoreanSEEDKey_getKey;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getKey()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getKey()");
             testSet.algorithmMethod = JCConsts.KoreanSEEDKey_clearKey;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearKey()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearKey()");
         }
         else {
             String message = "No variable data test for " + info + "\n";
@@ -1827,14 +1673,14 @@ public class PerformanceTesting {
             System.out.print(message);
         }
     }
-    public static void testAllKoreanSEEDKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
+    public void testAllKoreanSEEDKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
         testAllKoreanSEEDKeys((short)numRepeatWholeOperation, (short)numRepeatWholeMeasurement);
     }
-    public static void testAllKoreanSEEDKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
+    public void testAllKoreanSEEDKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
         String tableName = "\n\nKoreanSEEDKey";
         m_perfResultsFile.write(tableName.getBytes());
         
-        if (bTestSymmetricAlgs) {
+        if (m_bTestSymmetricAlgs) {
             testKoreanSEEDKey(JCConsts.KeyBuilder_TYPE_KOREAN_SEED, JCConsts.KeyBuilder_LENGTH_KOREAN_SEED_128, "TYPE KOREAN SEED LENGTH KOREAN SEED 128", numRepeatWholeOperation, numRepeatWholeMeasurement);
         }
         else {
@@ -1846,18 +1692,18 @@ public class PerformanceTesting {
         m_perfResultsFile.write(tableName.getBytes());
     }
     
-    public static void testDSAPrivateKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
+    public void testDSAPrivateKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
         TestSettings testSet = null;
-        testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.DSAPrivateKey_getX,
+        testSet = this.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.DSAPrivateKey_getX,
                 Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
         
-        if (!bTestVariableData) {
+        if (!m_bTestVariableData) {
             testSet.algorithmMethod = JCConsts.DSAPrivateKey_getX;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setX()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setX()");
             testSet.algorithmMethod = JCConsts.DSAPrivateKey_setX;
-            double setXTime = PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getX()");
+            double setXTime = this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getX()");
             testSet.algorithmMethod = JCConsts.DSAPrivateKey_clearX;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearX()", setXTime);
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearX()", setXTime);
         }
         else {
             String message = "No variable data test for " + info + "\n";
@@ -1865,13 +1711,13 @@ public class PerformanceTesting {
             System.out.print(message);
         }
     }
-    public static void testAllDSAPrivateKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
+    public void testAllDSAPrivateKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
         testAllDSAPrivateKeys((short)numRepeatWholeOperation, (short)numRepeatWholeMeasurement);
     }
-    public static void testAllDSAPrivateKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
+    public void testAllDSAPrivateKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
         String tableName = "\n\nDSAPrivateKey";
         m_perfResultsFile.write(tableName.getBytes());
-        if (bTestAsymmetricAlgs) {
+        if (m_bTestAsymmetricAlgs) {
             testDSAPrivateKey(JCConsts.KeyBuilder_TYPE_DSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_DSA_512, "TYPE DSA PRIVATE LENGTH DSA 512", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testDSAPrivateKey(JCConsts.KeyBuilder_TYPE_DSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_DSA_768, "TYPE DSA PRIVATE LENGTH DSA 768", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testDSAPrivateKey(JCConsts.KeyBuilder_TYPE_DSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_DSA_1024, "TYPE DSA PRIVATE LENGTH DSA 1024", numRepeatWholeOperation, numRepeatWholeMeasurement);
@@ -1884,18 +1730,18 @@ public class PerformanceTesting {
         m_perfResultsFile.write(tableName.getBytes());
     }
     
-    public static void testDSAPublicKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
+    public void testDSAPublicKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
         TestSettings testSet = null;
-        testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.DSAPublicKey_getY,
+        testSet = this.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.DSAPublicKey_getY,
                 Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
         
-        if (!bTestVariableData) {
+        if (!m_bTestVariableData) {
             testSet.algorithmMethod = JCConsts.DSAPublicKey_getY;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setY()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setY()");
             testSet.algorithmMethod = JCConsts.DSAPublicKey_setY;
-            double setXTime = PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getY()");
+            double setXTime = this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getY()");
             testSet.algorithmMethod = JCConsts.DSAPublicKey_clearY;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearY()", setXTime);
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearY()", setXTime);
         }
         else {
             String message = "No variable data test for " + info + "\n";
@@ -1903,13 +1749,13 @@ public class PerformanceTesting {
             System.out.print(message);
         }
     }
-    public static void testAllDSAPublicKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
+    public void testAllDSAPublicKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
         testAllDSAPublicKeys((short)numRepeatWholeOperation, (short)numRepeatWholeMeasurement);
     }
-    public static void testAllDSAPublicKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
+    public void testAllDSAPublicKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
         String tableName = "\n\nDSAPublicKey";
         m_perfResultsFile.write(tableName.getBytes());
-        if (bTestAsymmetricAlgs) {
+        if (m_bTestAsymmetricAlgs) {
             testDSAPublicKey(JCConsts.KeyBuilder_TYPE_DSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_DSA_512, "TYPE DSA PUBLIC LENGTH DSA 512", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testDSAPublicKey(JCConsts.KeyBuilder_TYPE_DSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_DSA_768, "TYPE DSA PUBLIC LENGTH DSA 768", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testDSAPublicKey(JCConsts.KeyBuilder_TYPE_DSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_DSA_1024, "TYPE DSA PUBLIC LENGTH DSA 1024", numRepeatWholeOperation, numRepeatWholeMeasurement);
@@ -1922,18 +1768,18 @@ public class PerformanceTesting {
         m_perfResultsFile.write(tableName.getBytes());
     }
     
-    public static void testECF2MPublicKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
+    public void testECF2MPublicKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
         TestSettings testSet = null;
-        testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.ECPublicKey_setW,
+        testSet = this.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.ECPublicKey_setW,
                 Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
         
-        if (!bTestVariableData) {
+        if (!m_bTestVariableData) {
             testSet.algorithmMethod = JCConsts.ECPublicKey_setW;
-            double setWTime = PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setW()");
+            double setWTime = this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setW()");
             testSet.algorithmMethod = JCConsts.ECPublicKey_getW;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getW()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getW()");
             testSet.algorithmMethod = JCConsts.ECPublicKey_clearKey;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearW()", setWTime);
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearW()", setWTime);
         }
         else {
             String message = "No variable data test for " + info + "\n";
@@ -1941,13 +1787,13 @@ public class PerformanceTesting {
             System.out.print(message);
         }
     }
-    public static void testAllECF2MPublicKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
+    public void testAllECF2MPublicKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
         testAllECF2MPublicKeys((short)numRepeatWholeOperation, (short)numRepeatWholeMeasurement);
     }
-    public static void testAllECF2MPublicKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
+    public void testAllECF2MPublicKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
         String tableName = "\n\nECF2MPublicKey";
         m_perfResultsFile.write(tableName.getBytes());
-        if (bTestAsymmetricAlgs) {
+        if (m_bTestAsymmetricAlgs) {
             testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_F2M_113, "TYPE EC F2M PUBLIC LENGTH EC F2M 113", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_F2M_131, "TYPE EC F2M PUBLIC LENGTH EC F2M 131", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_F2M_163, "TYPE EC F2M PUBLIC LENGTH EC F2M 163", numRepeatWholeOperation, numRepeatWholeMeasurement);
@@ -1961,18 +1807,18 @@ public class PerformanceTesting {
         m_perfResultsFile.write(tableName.getBytes());
     }
     
-    public static void testECF2mPrivateKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
+    public void testECF2mPrivateKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
         TestSettings testSet = null;
-        testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.ECPrivateKey_setS,
+        testSet = this.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.ECPrivateKey_setS,
                 Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
         
-        if (!bTestVariableData) {
+        if (!m_bTestVariableData) {
             testSet.algorithmMethod = JCConsts.ECPrivateKey_setS;
-            double setSTime = PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setS()");
+            double setSTime = this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setS()");
             testSet.algorithmMethod = JCConsts.ECPrivateKey_getS;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getS()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getS()");
             testSet.algorithmMethod = JCConsts.ECPrivateKey_clearKey;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearS()", setSTime);
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearS()", setSTime);
         }
         else {
             String message = "No variable data test for " + info + "\n";
@@ -1980,13 +1826,13 @@ public class PerformanceTesting {
             System.out.print(message);
         }
     }
-    public static void testAllECF2MPrivateKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
+    public void testAllECF2MPrivateKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
         testAllECF2MPrivateKeys((short)numRepeatWholeOperation, (short)numRepeatWholeMeasurement);
     }
-    public static void testAllECF2MPrivateKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
+    public void testAllECF2MPrivateKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
         String tableName = "\n\nECF2MPrivateKey";
         m_perfResultsFile.write(tableName.getBytes());
-        if (bTestAsymmetricAlgs) {
+        if (m_bTestAsymmetricAlgs) {
             testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_113, "TYPE EC F2M PRIVATE LENGTH EC F2M 113", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_131, "TYPE EC F2M PRIVATE LENGTH EC F2M 131", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_163, "TYPE EC F2M PRIVATE LENGTH EC F2M 163", numRepeatWholeOperation, numRepeatWholeMeasurement);
@@ -2000,18 +1846,18 @@ public class PerformanceTesting {
         m_perfResultsFile.write(tableName.getBytes());
     }
     
-    public static void testECFPPublicKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
+    public void testECFPPublicKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
         TestSettings testSet = null;
-        testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.ECPublicKey_setW,
+        testSet = this.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.ECPublicKey_setW,
                 Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
         
-        if (!bTestVariableData) {
+        if (!m_bTestVariableData) {
             testSet.algorithmMethod = JCConsts.ECPublicKey_setW;
-            double setWTime = PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setW()");
+            double setWTime = this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setW()");
             testSet.algorithmMethod = JCConsts.ECPublicKey_getW;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getW()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getW()");
             testSet.algorithmMethod = JCConsts.ECPublicKey_clearKey;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearW()", setWTime);
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearW()", setWTime);
         }
         else {
             String message = "No variable data test for " + info + "\n";
@@ -2019,13 +1865,13 @@ public class PerformanceTesting {
             System.out.print(message);
         }
     }
-    public static void testAllECFPPublicKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
+    public void testAllECFPPublicKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
         testAllECFPPublicKeys((short)numRepeatWholeOperation, (short)numRepeatWholeMeasurement);
     }
-    public static void testAllECFPPublicKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
+    public void testAllECFPPublicKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
         String tableName = "\n\nECFPPublicKey";
         m_perfResultsFile.write(tableName.getBytes());
-        if (bTestAsymmetricAlgs) {
+        if (m_bTestAsymmetricAlgs) {
             testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_112, "TYPE EC FP PUBLIC LENGTH EC FP 112", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_128, "TYPE EC FP PUBLIC LENGTH EC FP 128", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_160, "TYPE EC FP PUBLIC LENGTH EC FP 160", numRepeatWholeOperation, numRepeatWholeMeasurement);
@@ -2043,18 +1889,18 @@ public class PerformanceTesting {
         m_perfResultsFile.write(tableName.getBytes());
     }
     
-    public static void testECFPPrivateKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
+    public void testECFPPrivateKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
         TestSettings testSet = null;
-        testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.ECPrivateKey_setS,
+        testSet = this.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.ECPrivateKey_setS,
                 Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
         
-        if (!bTestVariableData) {
+        if (!m_bTestVariableData) {
             testSet.algorithmMethod = JCConsts.ECPrivateKey_setS;
-            double setSTime = PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setS()");
+            double setSTime = this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setS()");
             testSet.algorithmMethod = JCConsts.ECPrivateKey_getS;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getS()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getS()");
             testSet.algorithmMethod = JCConsts.ECPrivateKey_clearKey;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearS()", setSTime);
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearS()", setSTime);
         }
         else {
             String message = "No variable data test for " + info + "\n";
@@ -2062,13 +1908,13 @@ public class PerformanceTesting {
             System.out.print(message);
         }
     }
-    public static void testAllECFPPrivateKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
+    public void testAllECFPPrivateKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
         testAllECFPPrivateKeys((short)numRepeatWholeOperation, (short)numRepeatWholeMeasurement);
     }
-    public static void testAllECFPPrivateKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
+    public void testAllECFPPrivateKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
         String tableName = "\n\nECFPPublicKey";
         m_perfResultsFile.write(tableName.getBytes());
-        if (bTestAsymmetricAlgs) {
+        if (m_bTestAsymmetricAlgs) {
             testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_112, "TYPE EC FP PRIVATE LENGTH EC FP 112", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_128, "TYPE EC FP PRIVATE LENGTH EC FP 128", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testECF2MPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_160, "TYPE EC FP PRIVATE LENGTH EC FP 160", numRepeatWholeOperation, numRepeatWholeMeasurement);
@@ -2086,18 +1932,18 @@ public class PerformanceTesting {
         m_perfResultsFile.write(tableName.getBytes());
     }
     
-    public static void testHMACKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
+    public void testHMACKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
         TestSettings testSet = null;
-        testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.HMACKey_getKey,
+        testSet = this.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.HMACKey_getKey,
                 Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
         
-        if (!bTestVariableData) {
+        if (!m_bTestVariableData) {
             testSet.algorithmMethod = JCConsts.HMACKey_setKey;
-            double setKeyTime = PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setKey()");
+            double setKeyTime = this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setKey()");
             testSet.algorithmMethod = JCConsts.HMACKey_getKey;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getKey()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getKey()");
             testSet.algorithmMethod = JCConsts.HMACKey_clearKey;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearKey()", setKeyTime);
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearKey()", setKeyTime);
         }
         else {
             String message = "No variable data test for " + info + "\n";
@@ -2105,14 +1951,14 @@ public class PerformanceTesting {
             System.out.print(message);
         }
     }
-    public static void testAllHMACKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
+    public void testAllHMACKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
         testAllHMACKeys((short)numRepeatWholeOperation, (short)numRepeatWholeMeasurement);
     }
-    public static void testAllHMACKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
+    public void testAllHMACKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
         String tableName = "\n\nHMACKey";
         m_perfResultsFile.write(tableName.getBytes());
 
-        if (bTestSymmetricAlgs) {
+        if (m_bTestSymmetricAlgs) {
             testHMACKey(JCConsts.KeyBuilder_TYPE_HMAC, JCConsts.KeyBuilder_LENGTH_HMAC_SHA_1_BLOCK_64, "TYPE HMAC SHA-1 LENGTH HMAC 64", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testHMACKey(JCConsts.KeyBuilder_TYPE_HMAC, JCConsts.KeyBuilder_LENGTH_HMAC_SHA_256_BLOCK_64, "TYPE HMAC SHA-256 LENGTH HMAC 64", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testHMACKey(JCConsts.KeyBuilder_TYPE_HMAC, JCConsts.KeyBuilder_LENGTH_HMAC_SHA_384_BLOCK_128, "TYPE HMAC SHA-384 LENGTH HMAC 128", numRepeatWholeOperation, numRepeatWholeMeasurement);
@@ -2127,36 +1973,36 @@ public class PerformanceTesting {
         m_perfResultsFile.write(tableName.getBytes());
     }
     
-    public static void testRSAPrivateCrtKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
+    public void testRSAPrivateCrtKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
         TestSettings testSet = null;
-        testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.RSAPrivateCrtKey_setDP1,
+        testSet = this.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.RSAPrivateCrtKey_setDP1,
                 Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
         
-        if (!bTestVariableData) {
+        if (!m_bTestVariableData) {
             testSet.algorithmMethod = JCConsts.RSAPrivateCrtKey_setDP1;
-            double setDP1Time = PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setDP1()");
+            double setDP1Time = this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setDP1()");
             testSet.algorithmMethod = JCConsts.RSAPrivateCrtKey_setDQ1;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setDQ1()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setDQ1()");
             testSet.algorithmMethod = JCConsts.RSAPrivateCrtKey_setP;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setP()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setP()");
             testSet.algorithmMethod = JCConsts.RSAPrivateCrtKey_setPQ;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setPQ()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setPQ()");
             testSet.algorithmMethod = JCConsts.RSAPrivateCrtKey_setQ;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setQ()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setQ()");
 
             testSet.algorithmMethod = JCConsts.RSAPrivateCrtKey_getDP1;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getDP1()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getDP1()");
             testSet.algorithmMethod = JCConsts.RSAPrivateCrtKey_getDQ1;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getDQ1()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getDQ1()");
             testSet.algorithmMethod = JCConsts.RSAPrivateCrtKey_getP;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getP()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getP()");
             testSet.algorithmMethod = JCConsts.RSAPrivateCrtKey_getPQ;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getPQ()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getPQ()");
             testSet.algorithmMethod = JCConsts.RSAPrivateCrtKey_getQ;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getQ()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getQ()");
 
             testSet.algorithmMethod = JCConsts.RSAPrivateCrtKey_clearKey;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearKey()", setDP1Time);
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearKey()", setDP1Time);
         }
         else {
             String message = "No variable data test for " + info + "\n";
@@ -2164,13 +2010,13 @@ public class PerformanceTesting {
             System.out.print(message);
         }
     }
-    public static void testAllRSAPrivateCrtKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
+    public void testAllRSAPrivateCrtKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
         testAllRSAPrivateCrtKeys((short)numRepeatWholeOperation, (short)numRepeatWholeMeasurement);
     }
-    public static void testAllRSAPrivateCrtKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
+    public void testAllRSAPrivateCrtKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
         String tableName = "\n\nRSAPrivateCRTKey";
         m_perfResultsFile.write(tableName.getBytes());
-        if (bTestAsymmetricAlgs) {
+        if (m_bTestAsymmetricAlgs) {
             testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512, "TYPE RSA PRIVATE CRT LENGTH RSA 512", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736, "TYPE RSA PRIVATE CRT LENGTH RSA 736", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768, "TYPE RSA PRIVATE CRT LENGTH RSA 768", numRepeatWholeOperation, numRepeatWholeMeasurement);
@@ -2191,24 +2037,24 @@ public class PerformanceTesting {
         m_perfResultsFile.write(tableName.getBytes());
     }
     
-    public static void testRSAPrivateKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
+    public void testRSAPrivateKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
         TestSettings testSet = null;
-        testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.RSAPrivateKey_setExponent,
+        testSet = this.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.RSAPrivateKey_setExponent,
                 Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
         
-        if (!bTestVariableData) {
+        if (!m_bTestVariableData) {
             testSet.algorithmMethod = JCConsts.RSAPrivateKey_setExponent;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setExponent()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setExponent()");
             testSet.algorithmMethod = JCConsts.RSAPrivateKey_setModulus;
-            double setModulusTime = PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setModulus()");
+            double setModulusTime = this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setModulus()");
 
             testSet.algorithmMethod = JCConsts.RSAPrivateKey_getExponent;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getExponent()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getExponent()");
             testSet.algorithmMethod = JCConsts.RSAPrivateKey_getModulus;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getModulus()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getModulus()");
 
             testSet.algorithmMethod = JCConsts.RSAPrivateKey_clearKey;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearKey()", setModulusTime);
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearKey()", setModulusTime);
         }
         else {
             String message = "No variable data test for " + info + "\n";
@@ -2216,13 +2062,13 @@ public class PerformanceTesting {
             System.out.print(message);
         }
     }
-    public static void testAllRSAPrivateKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
+    public void testAllRSAPrivateKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
         testAllRSAPrivateKeys((short)numRepeatWholeOperation, (short)numRepeatWholeMeasurement);
     }
-    public static void testAllRSAPrivateKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
+    public void testAllRSAPrivateKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
         String tableName = "\n\nRSAPrivateKey";
         m_perfResultsFile.write(tableName.getBytes());
-        if (bTestAsymmetricAlgs) {
+        if (m_bTestAsymmetricAlgs) {
             testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512, "TYPE RSA PRIVATE LENGTH RSA 512", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_736, "TYPE RSA PRIVATE LENGTH RSA 736", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testRSAPrivateKey(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_768, "TYPE RSA PRIVATE LENGTH RSA 768", numRepeatWholeOperation, numRepeatWholeMeasurement);
@@ -2243,24 +2089,24 @@ public class PerformanceTesting {
         m_perfResultsFile.write(tableName.getBytes());
     }
     
-    public static void testRSAPublicKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
+    public void testRSAPublicKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
         TestSettings testSet = null;
-        testSet = PerformanceTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.RSAPublicKey_setExponent,
+        testSet = this.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.RSAPublicKey_setExponent,
                 Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
         
-        if (!bTestVariableData) {
+        if (!m_bTestVariableData) {
             testSet.algorithmMethod = JCConsts.RSAPublicKey_setExponent;
-            double setExponentTime = PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setExponent()");
+            double setExponentTime = this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setExponent()");
             testSet.algorithmMethod = JCConsts.RSAPublicKey_setModulus;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setModulus()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setModulus()");
 
             testSet.algorithmMethod = JCConsts.RSAPublicKey_getExponent;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getExponent()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getExponent()");
             testSet.algorithmMethod = JCConsts.RSAPublicKey_getModulus;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getModulus()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getModulus()");
 
             testSet.algorithmMethod = JCConsts.RSAPublicKey_clearKey;
-            PerformanceTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearKey()", setExponentTime);
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearKey()", setExponentTime);
         }
         else {
             String message = "No variable data test for " + info + "\n";
@@ -2268,14 +2114,14 @@ public class PerformanceTesting {
             System.out.print(message);
         }
     }
-    public static void testAllRSAPublicKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
+    public void testAllRSAPublicKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
         testAllRSAPublicKeys((short)numRepeatWholeOperation, (short)numRepeatWholeMeasurement);
     }
-    public static void testAllRSAPublicKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
+    public void testAllRSAPublicKeys (short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception{
         String tableName = "\n\nRSAPublicKey";
         m_perfResultsFile.write(tableName.getBytes());
         
-        if (bTestAsymmetricAlgs) {
+        if (m_bTestAsymmetricAlgs) {
             testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_512, "TYPE RSA PUBLIC LENGTH RSA 512", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_736, "TYPE RSA PUBLIC LENGTH RSA 736", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testRSAPublicKey(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_768, "TYPE RSA PUBLIC LENGTH RSA 768", numRepeatWholeOperation, numRepeatWholeMeasurement);
@@ -2296,10 +2142,10 @@ public class PerformanceTesting {
         m_perfResultsFile.write(tableName.getBytes());
     }
     
-    public static void testAllKeys(int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception {
+    public void testAllKeys(int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception {
         testAllKeys((short) numRepeatWholeOperation, (short) numRepeatWholeMeasurement);
     }
-    public static void testAllKeys(short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
+    public void testAllKeys(short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
         testAllAESKeys(numRepeatWholeOperation, numRepeatWholeMeasurement);
         testAllDESKeys(numRepeatWholeOperation, numRepeatWholeMeasurement);
         testAllKoreanSEEDKeys(numRepeatWholeOperation, numRepeatWholeMeasurement);
@@ -2315,7 +2161,7 @@ public class PerformanceTesting {
         testAllRSAPublicKeys(numRepeatWholeOperation, numRepeatWholeMeasurement);
     }
     
-    public static Map<Short, Double> testCipher_dataDependency(byte key, short keyLength, byte alg, String info, short initMode, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception {
+    public Map<Short, Double> testCipher_dataDependency(byte key, short keyLength, byte alg, String info, short initMode, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception {
         Map<Short, Double> results = new TreeMap<>();        
         
       /*  for(short i = 1; i<33; i++)       // length 1-32 - 1 step
