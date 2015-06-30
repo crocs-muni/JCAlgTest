@@ -148,6 +148,23 @@ public class AlgTestJClient {
                     testingPerformance.testPerformance(args, true, selectedTerminal);
                     break;
                 case 5:
+                    /*Check if folder !card_uploaders is correctly set*/
+                    File fileCardUploadersFolder = new File(CardMngr.cardUploadersFolder);
+                    if(!fileCardUploadersFolder.exists()) {
+                        /*Remove new line character from stream after load integer as type of test*/
+                        sc.nextLine();
+                        System.out.println("Cannot find folder with card uploaders. Default folder: "+CardMngr.cardUploadersFolder);
+                        System.out.print("Card uploaders folder path: ");
+                        String newPath = sc.nextLine();
+                        fileCardUploadersFolder = new File(CardMngr.cardUploadersFolder);
+                        /*If new path is also incorrect*/
+                        if(!fileCardUploadersFolder.exists()) {
+                            System.err.println("Folder "+newPath+" does not exist. Cannot start gathering RSA keys.");
+                            return;
+                        }
+                        /*Set new path to !card_uploaders folder*/
+                        CardMngr.cardUploadersFolder = newPath;
+                    } 
                     keyHarvest.gatherRSAKeys();
                     break;
                 /* In this case, user pressed wrong key */

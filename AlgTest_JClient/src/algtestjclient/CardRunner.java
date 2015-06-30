@@ -34,7 +34,7 @@ public class CardRunner implements Runnable {
             //cardMngr.TestCardIO(m_dataLength, m_numRepeats);
             String fileName = m_cardTerminal.getName() + "__" + cardATR + "__" + Long.toString(System.currentTimeMillis()) + ".csv";
             fileName = fileName.replace(' ', '_');
-            cardMngr.GenerateAndGetKeys(fileName, -1, -1, m_readerIndex);
+            cardMngr.GenerateAndGetKeys(fileName, m_numRepeats, -1, m_readerIndex);
             cardMngr.DisconnectFromCard();
          }
          catch (Exception ex) {
