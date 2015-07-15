@@ -1,5 +1,5 @@
 # Usable for: Gemalto_GXP_R4_72K
-mode201
+mode_201
 gemXpressoPro
 
 enable_trace

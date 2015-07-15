@@ -35,7 +35,12 @@ public class TestSettings {
     public short       numRepeatSubOperation = 1;          // relevant suboperation that should be iterated multiple times - e.g., update()
     public short       numRepeatWholeMeasurement = 1;      // whole measurement including apdu in/out repeated
 
- 
+    // Values below are NOT serialized into buffer
+    public byte        bPerformBaselineMeasurement = Consts.TRUE; // if true, measurement of input / output overhead just before target operation is measured and substracted 
+    public byte        P1 = (byte) 0;                              // P1 byte from APDU header
+    public byte        P2 = (byte) 0;                              // P2 byte from APDU header
+    public byte[]      inData = null; 
+    
     public void clear() {
         classType = -1;               
         algorithmSpecification = -1;        
@@ -48,6 +53,10 @@ public class TestSettings {
         numRepeatWholeOperation = 1;        
         numRepeatSubOperation = 1;        
         numRepeatWholeMeasurement = 1;
+        bPerformBaselineMeasurement = Consts.TRUE;
+        P1 = (byte) 0;  
+        P2 = (byte) 0;  
+        inData = null; 
     }
     public void parse(APDU apdu) {
         byte[] apdubuf = apdu.getBuffer();

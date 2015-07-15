@@ -40,6 +40,14 @@ public class Consts {
     public final static byte INS_PERF_TEST_CLASS_CHECKSUM      = (byte) 0x46;
     public final static byte INS_PERF_TEST_CLASS_KEYAGREEMENT  = (byte) 0x47;
     public final static byte INS_PERF_TEST_CLASS_SIGNATURE     = (byte) 0x49;
+    public final static byte INS_PERF_TEST_CLASS_UTIL          = (byte) 0x50;
+    
+    public final static byte INS_PERF_TEST_CLASS_CIPHER_SETKEYINITDOFINAL     = (byte) 0xa3;
+    public final static byte INS_PERF_TEST_CLASS_SIGNATURE_SETKEYINITSIGN     = (byte) 0xa9;
+    
+    public final static byte INS_PERF_TEST_SWALG_HOTP     = (byte) 0xc1;
+    
+    
     
     
     
@@ -57,7 +65,9 @@ public class Consts {
     public final static byte INS_PREPARE_TEST_CLASS_CHECKSUM    = (byte) 0x35;
     public final static byte INS_PREPARE_TEST_CLASS_KEYPAIR     = (byte) 0x36;
     public final static byte INS_PREPARE_TEST_CLASS_KEYAGREEMENT= (byte) 0x37;
+    public final static byte INS_PREPARE_TEST_CLASS_UTIL        = (byte) 0x38;
     
+    public final static byte INS_PREPARE_TEST_SWALG_HOTP     = (byte) 0x39;
     
     
     
@@ -77,6 +87,12 @@ public class Consts {
     
     public static final short TEST_DATA_LENGTH    = (short) 256;     
     //public static final short TEST_DATA_LENGTH    = (short) 64;     
+    
+    public static final short AUTH_TAG_LENGTH    = (short) 8;     
+    public static final short AES128_KEY_LENGTH  = (short) 16;     
+    
+    
+    
     
 	// TODO: refactor - do we need this?
     public static final byte CLASS_KEYPAIR_RSA_P2          = 11;

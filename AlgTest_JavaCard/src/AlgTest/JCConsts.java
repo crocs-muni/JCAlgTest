@@ -468,4 +468,9 @@ public class JCConsts {
     public static final short SignatureMessageRecovery_getAlgorithm                 = 5;
     public static final short SignatureMessageRecovery_beginVerify                  = 6;
     public static final short SignatureMessageRecovery_sign                         = 7;    
+    
+    
+    
+    public static final short Util_xor                                            = 1;    
+    
 } 

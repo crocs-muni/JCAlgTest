@@ -1150,12 +1150,17 @@ public class CardMngr {
     
     public double PerfTestCommand(byte cla, byte ins, TestSettings testSet, byte resetIns) throws Exception {
         long elapsedCard;
-        byte apdu[] = new byte[HEADER_LENGTH + TestSettings.TEST_SETTINGS_LENGTH];
+        byte apdu[] = new byte[HEADER_LENGTH + TestSettings.TEST_SETTINGS_LENGTH + ((testSet.inData == null) ? 0 : testSet.inData.length)];
         apdu[OFFSET_CLA] = cla;
         apdu[OFFSET_INS] = ins;
-        apdu[OFFSET_LC] = TestSettings.TEST_SETTINGS_LENGTH;
-
+        apdu[OFFSET_P1] = testSet.P1;
+        apdu[OFFSET_P2] = testSet.P2;
+        apdu[OFFSET_LC] = (byte) (apdu.length - HEADER_LENGTH);
         testSet.serializeToApduBuff(apdu, ISO7816.OFFSET_CDATA);
+
+        if (testSet.inData != null) {
+            System.arraycopy(testSet.inData, 0, apdu, OFFSET_DATA + TestSettings.TEST_SETTINGS_LENGTH, (short) testSet.inData.length);
+        }
 
         elapsedCard = -System.currentTimeMillis();
         ResponseAPDU resp = sendAPDU(apdu);

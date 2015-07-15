@@ -151,7 +151,14 @@ public class PerformanceTesting {
         // Connect to card
         this.m_perfResultsFile = m_cardManager.establishConnection(testClassPerformance, testInfo, selectedTerminal);
         m_cardATR = m_cardManager.getATR();
-
+/*
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Cipher_ALG_AES_BLOCK_128_CBC_NOPAD,"TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_128_CBC_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, (short) numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
+        testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1024 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, (short) numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
+        testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_2048 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, (short) numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
+        testSignature(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Signature_ALG_AES_MAC_128_NOPAD,"TYPE_AES LENGTH_AES_128 ALG_AES_MAC_128_NOPAD", (short) numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
+        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_2048 ALG_RSA_SHA_PKCS1", (short) numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
+        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_2048 ALG_RSA_SHA_PKCS1", (short) numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
+/**/        
         // Run all required tests
         testAllMessageDigests(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
         testAllRandomGenerators(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
@@ -159,6 +166,7 @@ public class PerformanceTesting {
         testAllSignatures(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
         testAllChecksums(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);     
         testAllKeys(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
+        testAllUtil(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
     }
     
     void LoadAlreadyMeasuredAlgs(String cardName) {
@@ -499,7 +507,7 @@ public class PerformanceTesting {
         if (m_algsMeasuredList.contains(info)) {
             // we already measured this algorithm before, just log it into new measurementsDone file
             String message = info + "\n";
-            m_algsMeasuredFile.write(message.getBytes());        
+            if (m_algsMeasuredFile != null) { m_algsMeasuredFile.write(message.getBytes()); }        
             
             message = "\nmethod name:; " + info + "\n";    
             message += "ALREADY_MEASURED\n";
@@ -519,7 +527,7 @@ public class PerformanceTesting {
                     // log succesfull measurement of current algorithm 
                     m_bAlgsMeasuredSomeNew = true;
                     String message = info + "\n";
-                    m_algsMeasuredFile.write(message.getBytes());        
+                    if (m_algsMeasuredFile != null) { m_algsMeasuredFile.write(message.getBytes()); }        
 
                     // end loop 
                     return measureTime;
@@ -536,7 +544,7 @@ public class PerformanceTesting {
                     // log succesfull measurement of current algorithm - although exception ocurred, it is expected value like NO_SUCH_ALGORITHM
                     m_bAlgsMeasuredSomeNew = true;
                     message = info + "\n";
-                    m_algsMeasuredFile.write(message.getBytes());        
+                    if (m_algsMeasuredFile != null) {m_algsMeasuredFile.write(message.getBytes()); }       
 
                     return -1;
                 }
@@ -556,6 +564,7 @@ public class PerformanceTesting {
                         numFailedRepeats = 0;
 
                         m_cardManager.ConnectToCard();
+                        
                     }
                     else {
                         // Skip this algorithm 
@@ -609,39 +618,40 @@ public class PerformanceTesting {
         String timeStr;
 
         //
-        // Measure processing time without actually calling measured operation
+        // Measure processing time without actually calling measured operation (testSet.numRepeatWholeOperation set to 0)
         //
-        short bkpNumRepeatWholeOperation = testSet.numRepeatWholeOperation;
-        testSet.numRepeatWholeOperation = 0;
-        message +=  "baseline measurements (ms):;";
-        for(int i = 0; i < NUM_BASELINE_CALIBRATION_RUNS;i++) {
-            m_cardManager.resetApplet(appletCLA, Consts.INS_CARD_RESET);
-            double overheadTime = m_cardManager.PerfTestCommand(appletCLA, appletMeasureINS, testSet, Consts.INS_CARD_RESET);
-            sumTimes += overheadTime;
-            timeStr = String.format("%.2f", overheadTime);
-            message +=  timeStr + ";" ;
-            System.out.print(timeStr + " ");
-            if (overheadTime<minOverhead) minOverhead=overheadTime;
-            if (overheadTime>maxOverhead) maxOverhead=overheadTime;
+        if (testSet.bPerformBaselineMeasurement == Consts.TRUE) {
+            short bkpNumRepeatWholeOperation = testSet.numRepeatWholeOperation;
+            testSet.numRepeatWholeOperation = 0;
+            message +=  "baseline measurements (ms):;";
+            for(int i = 0; i < NUM_BASELINE_CALIBRATION_RUNS;i++) {
+                m_cardManager.resetApplet(appletCLA, Consts.INS_CARD_RESET);
+                double overheadTime = m_cardManager.PerfTestCommand(appletCLA, appletMeasureINS, testSet, Consts.INS_CARD_RESET);
+                sumTimes += overheadTime;
+                timeStr = String.format("%.2f", overheadTime);
+                message +=  timeStr + ";" ;
+                System.out.print(timeStr + " ");
+                if (overheadTime<minOverhead) minOverhead=overheadTime;
+                if (overheadTime>maxOverhead) maxOverhead=overheadTime;
+            }
+            avgOverhead = sumTimes / NUM_BASELINE_CALIBRATION_RUNS;
+            message += "\nbaseline stats (ms):;avg:;" + String.format("%.2f", avgOverhead);
+            message += ";min:;" + String.format("%.2f", minOverhead);
+            message += ";max:;" + String.format("%.2f", maxOverhead);
+            message += ";";
+            if ((minOverhead/avgOverhead < (1-check)) || (maxOverhead/avgOverhead > (1+check)))  message += ";;CHECK";
+            System.out.print("\nbaseline avg time: " + avgOverhead);
+            System.out.println();     
+            System.out.println(); message += "\n";
+            result.append(message);
+            message = "";
+            // Restore required number of required measurements 
+            testSet.numRepeatWholeOperation = bkpNumRepeatWholeOperation;
         }
-        avgOverhead = sumTimes / NUM_BASELINE_CALIBRATION_RUNS;
-        message += "\nbaseline stats (ms):;avg:;" + String.format("%.2f", avgOverhead);
-        message += ";min:;" + String.format("%.2f", minOverhead);
-        message += ";max:;" + String.format("%.2f", maxOverhead);
-        message += ";";
-        if ((minOverhead/avgOverhead < (1-check)) || (maxOverhead/avgOverhead > (1+check)))  message += ";;CHECK";
-        System.out.print("\nbaseline avg time: " + avgOverhead);
-        System.out.println();     
-        System.out.println(); message += "\n";
-        result.append(message);
-        message = "";
-
 
         //
         // Measure operations
         //
-        // Restore required number of required measurements 
-        testSet.numRepeatWholeOperation = bkpNumRepeatWholeOperation;
 
         double minOpTime = 9999;
         double maxOpTime = -9999;
@@ -696,6 +706,38 @@ public class PerformanceTesting {
         return avgOpTime;
     }
     
+    public void testUtil(String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
+        TestSettings testSet = this.prepareTestSettings(Consts.CLASS_RANDOMDATA, Consts.UNUSED, Consts.UNUSED, Consts.UNUSED, JCConsts.RandomData_generateData, 
+                Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);      
+
+        if (!m_bTestVariableData) {
+            // Ordinary test of all available methods
+            testSet.algorithmMethod = JCConsts.Util_xor;
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_UTIL, Consts.INS_PERF_TEST_CLASS_UTIL, testSet, info + " Util_xor()");
+        }
+        else {
+            // Test of speed dependant on data length
+            String tableName = "\n\nUTIL - "  + info + " - variable data - BEGIN\n";
+            m_perfResultsFile.write(tableName.getBytes());
+            testSet.algorithmMethod = JCConsts.Util_xor;
+            for (Integer length : m_testDataLengths) {
+                testSet.dataLength1 = length.shortValue();
+                this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_UTIL, Consts.INS_PERF_TEST_CLASS_UTIL, testSet, info + " Util_xor();" + length + ";");
+            }
+            tableName = "\n\nUTIL - "  + info + " - variable data - END\n";
+            m_perfResultsFile.write(tableName.getBytes());
+        }
+    }    
+    public void testAllUtil(int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception {
+        testAllUtil((short) numRepeatWholeOperation, (short) numRepeatWholeMeasurement);
+    }
+    public void testAllUtil(short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
+        String tableName = "\n\nUTIL\n";
+        m_perfResultsFile.write(tableName.getBytes());
+        testUtil("UTIL", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        tableName = "\n\nUTIL - END\n";
+        m_perfResultsFile.write(tableName.getBytes());
+    }    
     
     
         
@@ -882,7 +924,7 @@ public class PerformanceTesting {
             this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_init()");
         }
         else {
-            // Test of speed dependant on data length
+            // Test of speed dependent on data length
             String tableName = "\n\nCIPHER - " + info + " - variable data - BEGIN\n";
             m_perfResultsFile.write(tableName.getBytes());
             switch (key) {
@@ -895,43 +937,22 @@ public class PerformanceTesting {
                     System.out.print(tableName);
                     return;
             }    
-            
+            // Measurement of only doFinal operation
             testSet.algorithmMethod = JCConsts.Cipher_doFinal;
             for (Integer length : m_testDataLengths) {
                 testSet.dataLength1 = length.shortValue();
                 this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_doFinal()");
             }
+            // Measurement of full process - Key.setKey, Cipher.init, Cipher.doFinal
+            for (Integer length : m_testDataLengths) {
+                testSet.dataLength1 = length.shortValue();
+                this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER_SETKEYINITDOFINAL, testSet, info + " Cipher_setKeyInitDoFinal()");
+            }
             tableName = "\n\nCIPHER - " + info + " - variable data - END\n";
             m_perfResultsFile.write(tableName.getBytes());
         }
-        
     }
-    
-    public double testCipher(byte key, short keyLength, byte alg, String info, short initMode, short numRepeatWholeOperation, short numRepeatWholeMeasurement, short dataLength) throws IOException, Exception {
-        double result;
-        short testDataLength = dataLength;
-        switch (key) {
-            case JCConsts.KeyBuilder_TYPE_RSA_PRIVATE:
-            case JCConsts.KeyBuilder_TYPE_RSA_PUBLIC:
-            case JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE:
-                // For RSA, we need test length equal to modulus size
-                testDataLength = (short) (keyLength / 8);
-                break;
-        }    
-        
-        TestSettings testSet = this.prepareTestSettings(Consts.CLASS_CIPHER, alg, key, keyLength, JCConsts.Cipher_update, 
-                testDataLength, Consts.UNUSED, initMode, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);     
-
-        testSet.algorithmMethod = JCConsts.Cipher_update;
-        this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_update()");
-        testSet.algorithmMethod = JCConsts.Cipher_doFinal;
-        result = this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_doFinal()");
-        testSet.algorithmMethod = JCConsts.Cipher_init;
-        this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_init()");
-
-        return result;
-    }   
-    
+  
     public void testAllCiphers(int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception {
         testAllCiphers((short) numRepeatWholeOperation, (short) numRepeatWholeMeasurement);
     }
@@ -1210,6 +1231,12 @@ public class PerformanceTesting {
                 testSet.dataLength1 = length.shortValue();
                 this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_sign()");
             }
+            // Measurement of full process - Key.setKey, Signature.init, Signature.sign
+            for (Integer length : m_testDataLengths) {
+                testSet.dataLength1 = length.shortValue();
+                this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE_SETKEYINITSIGN, testSet, info + " Signature_setKeyInitSign()");
+            }
+            
             tableName = "\n\nSIGNATURE - "  + info + " - variable data - END\n";
             m_perfResultsFile.write(tableName.getBytes());
         }
@@ -2161,24 +2188,63 @@ public class PerformanceTesting {
         testAllRSAPublicKeys(numRepeatWholeOperation, numRepeatWholeMeasurement);
     }
     
-    public Map<Short, Double> testCipher_dataDependency(byte key, short keyLength, byte alg, String info, short initMode, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception {
-        Map<Short, Double> results = new TreeMap<>();        
+    
+    
+
+    public void testCipher_setKeyInitDoFinal(byte key, short keyLength, byte alg, String info, short initMode, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
+        short testDataLength = Consts.TEST_DATA_LENGTH; // default test length
+
+        TestSettings testSet = this.prepareTestSettings(Consts.CLASS_CIPHER, alg, key, keyLength, JCConsts.Cipher_update, 
+                testDataLength, Consts.UNUSED, initMode, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);      
+
+        // Test of speed dependant on data length
+        String tableName = "\n\nCIPHER_setKeyInitDoFinal - " + info + " - variable data - BEGIN\n";
+        m_perfResultsFile.write(tableName.getBytes());
+        testSet.algorithmMethod = JCConsts.Cipher_doFinal;
+        for (Integer length : m_testDataLengths) {
+            testSet.dataLength1 = length.shortValue();
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER_SETKEYINITDOFINAL, testSet, info + " Cipher_doFinal()");
+        }
+        tableName = "\n\nCIPHER_setKeyInitDoFinal - " + info + " - variable data - END\n";
+        m_perfResultsFile.write(tableName.getBytes());
+    }
+    
+
+    public void testSWAlg_HOTP(String info, int numRepeatWholeMeasurement) throws IOException, Exception {
+        short testDataLength = Consts.TEST_DATA_LENGTH; // default test length
+
+        TestSettings testSet = this.prepareTestSettings(Consts.UNUSED, Consts.UNUSED, Consts.UNUSED, JCConsts.KeyBuilder_LENGTH_AES_128, Consts.UNUSED, 
+                testDataLength, Consts.UNUSED, Consts.UNUSED, (short) 1, (short) 1, (short) numRepeatWholeMeasurement);      
+
+        // Test of speed dependant on data length
+        String tableName = "\n\nHOTP_verification - " + info + " - BEGIN\n";
+        m_perfResultsFile.write(tableName.getBytes());
+        testSet.bPerformBaselineMeasurement = Consts.FALSE; // disable measurement of baseline overhead (we like to measure also input data time etc.)
+        testSet.inData = new byte[152];
         
-      /*  for(short i = 1; i<33; i++)       // length 1-32 - 1 step
-            results.put(i,testCipher(key, keyLength, alg,info+" - "+i, numRepeatWholeOperation, numRepeatWholeMeasurement, i));    
-        for(short i = 5; i<16; i++)         // length 33-128 - 8 step
-            results.put(i,testCipher(key, keyLength, alg,info+" - "+(short)(i*8), numRepeatWholeOperation, numRepeatWholeMeasurement, (short)(i*8)));
-      */
-        
-        for(short i = 1; i<8; i++)          // length 16-112 - 16 step
-            results.put((short)(i*16),testCipher(key, keyLength, alg, info+" - "+(short)(i*16), initMode, numRepeatWholeOperation, numRepeatWholeMeasurement, (short)(i*16)));
-        
-        for(short i = 1; i<5; i++)          // length 128-512 - 128 step
-            results.put((short)(i*128),testCipher(key, keyLength, alg,info+" - "+(short)(i*128), initMode, numRepeatWholeOperation, numRepeatWholeMeasurement, (short)(i*128)));
-       
-        for(Map.Entry<Short, Double> entry : results.entrySet())        //temporary output for graph
-            System.out.println("[\"" + entry.getKey() + "\", " + entry.getValue() + "],");
-        
-        return results;
-    } 
+        // Measure parts of operation (first call)
+        testSet.P1 = (byte) 0x00;
+        testSet.P2 = (byte) 0x00;
+        this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_SWALG_HOTP, Consts.INS_PERF_TEST_SWALG_HOTP, testSet, info + " HOTP_verification() first call");
+
+        // Measure full operation excluding preparation of used contexts (second call)
+        testSet.P1 = (byte) 0x00;
+        testSet.P2 = (byte) 0x01;
+        this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_SWALG_HOTP, Consts.INS_PERF_TEST_SWALG_HOTP, testSet, info + " HOTP_verification() second call");
+
+        // Try to measure time required to finish particular part of operation
+        for (byte p1 = 0x20; p1 < 0x2a; p1++) { 
+            testSet.P1 = p1;
+            testSet.P2 = (byte) 0x00;
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_SWALG_HOTP, Consts.INS_PERF_TEST_SWALG_HOTP, testSet, info + " HOTP_verification_part(0x" + CardMngr.byteToHex(p1) + ")");
+        }
+        // Measure parts of operation excluding preparation of used contexts (second call)
+        for (byte p1 = 0x20; p1 < 0x2a; p1++) { 
+            testSet.P1 = p1;
+            testSet.P2 = (byte) 0x01;
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_SWALG_HOTP, Consts.INS_PERF_TEST_SWALG_HOTP, testSet, info + " HOTP_verification_part(0x" + CardMngr.byteToHex(p1) + ")");
+        }
+        tableName = "\n\nHOTP_verification - " + info + " - END\n";
+        m_perfResultsFile.write(tableName.getBytes());
+    }    
 }

@@ -315,6 +315,13 @@ public class PerformanceTestingNGTest {
         assertTrue(perfTesting.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEYAGREEMENT, Consts.INS_PERF_TEST_CLASS_KEYAGREEMENT, testSet, "CLASS_KEYAGREEMENT ALG_EC_SVDP_DH LENGTH_EC_FP_192 KeyAgreement_generateSecret()") > -1);
     }     
 
+   @Test
+    void perftest_HOTP() throws Exception {
+        perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection(null) : perfTesting.m_cardManager.establishConnection(AlgTestSinglePerApdu.class);   
+        assertNotEquals(perfTesting.m_perfResultsFile, null);
+
+        perfTesting.testSWAlg_HOTP("HOTPMeasurement", 1);
+    }        
     @Test
     void debug() throws Exception { 
         perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection(null) : perfTesting.m_cardManager.establishConnection(AlgTestSinglePerApdu.class);   
