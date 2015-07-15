@@ -132,7 +132,7 @@ public class PerformanceTesting {
         }
 
         System.out.println("Specify type of your card (e.g., NXP JCOP CJ2A081):");
-        m_cardName = sc.next();
+        m_cardName = sc.nextLine();
 
         // Try to open and load list of already measured algorithms (if provided)
         LoadAlreadyMeasuredAlgs(m_cardName);
@@ -149,8 +149,9 @@ public class PerformanceTesting {
 
 
         // Connect to card
-        this.m_perfResultsFile = m_cardManager.establishConnection(testClassPerformance, testInfo, selectedTerminal);
+        this.m_perfResultsFile = m_cardManager.establishConnection(testClassPerformance, m_cardName, testInfo, selectedTerminal);
         m_cardATR = m_cardManager.getATR();
+        
 /*
         testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Cipher_ALG_AES_BLOCK_128_CBC_NOPAD,"TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_128_CBC_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, (short) numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
         testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1024 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, (short) numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
@@ -167,6 +168,7 @@ public class PerformanceTesting {
         testAllChecksums(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);     
         testAllKeys(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
         testAllUtil(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
+        testAllSWAlgs(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);        
     }
     
     void LoadAlreadyMeasuredAlgs(String cardName) {
@@ -653,8 +655,8 @@ public class PerformanceTesting {
         // Measure operations
         //
 
-        double minOpTime = 9999;
-        double maxOpTime = -9999;
+        double minOpTime = Double.MAX_VALUE;
+        double maxOpTime = -Double.MAX_VALUE;
 
         double time = 0;
         sumTimes = 0;
@@ -738,9 +740,6 @@ public class PerformanceTesting {
         tableName = "\n\nUTIL - END\n";
         m_perfResultsFile.write(tableName.getBytes());
     }    
-    
-    
-        
 
     public void testKeyPair(byte alg, short length, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
         TestSettings testSet = prepareTestSettings(Consts.CLASS_KEYPAIR, Consts.UNUSED, Consts.UNUSED, length, JCConsts.KeyPair_genKeyPair, 
@@ -2247,4 +2246,41 @@ public class PerformanceTesting {
         tableName = "\n\nHOTP_verification - " + info + " - END\n";
         m_perfResultsFile.write(tableName.getBytes());
     }    
+    
+    
+    public void testSWAlgs(String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
+        TestSettings testSet = this.prepareTestSettings(Consts.CLASS_RANDOMDATA, Consts.UNUSED, Consts.UNUSED, Consts.UNUSED, JCConsts.RandomData_generateData, 
+                Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);      
+
+        if (!m_bTestVariableData) {
+            // Ordinary test of all available methods
+            testSet.algorithmMethod = JCConsts.SWAlgs_AES;
+            testSet.dataLength1 = 16; // sw aes is tested only on 16 bytes
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_SWALGS, Consts.INS_PERF_TEST_SWALGS, testSet, info + " SWAlgs_AES()");
+        }
+        else {
+            // Test of speed dependant on data length
+            String tableName = "\n\nSWALGS - "  + info + " - variable data - BEGIN\n";
+            m_perfResultsFile.write(tableName.getBytes());
+            testSet.algorithmMethod = JCConsts.SWAlgs_AES;
+            for (Integer length : m_testDataLengths) {
+                testSet.dataLength1 = length.shortValue();
+                this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_SWALGS, Consts.INS_PERF_TEST_SWALGS, testSet, info + " SWAlgs_AES();" + length + ";");
+            }
+            tableName = "\n\nSWALGS - "  + info + " - variable data - END\n";
+            m_perfResultsFile.write(tableName.getBytes());
+        }
+    }    
+    public void testAllSWAlgs(int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception {
+        testAllSWAlgs((short) numRepeatWholeOperation, (short) numRepeatWholeMeasurement);
+    }
+    public void testAllSWAlgs(short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
+        String tableName = "\n\nSWALGS\n";
+        m_perfResultsFile.write(tableName.getBytes());
+        testSWAlgs("SWALGS", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        tableName = "\n\nSWALGS - END\n";
+        m_perfResultsFile.write(tableName.getBytes());
+    }       
+        
+    
 }

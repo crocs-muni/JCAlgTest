@@ -154,6 +154,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
     public final static short SW_ALG_TYPE_UNKNOWN          = (short) 0x6003;
     
     final static short RAM1_ARRAY_LENGTH = (short) 600;
+    final static short RAM2_ARRAY_LENGTH = (short) 16;
     
     
     /* Auxiliary variables to choose class - used in APDU as P1 byte. */
@@ -210,6 +211,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
     Signature           m_signatureSign = null;
     Signature           m_signatureVerify = null;
     byte[]              m_ram1 = null;
+    byte[]              m_ram2 = null;
 
     // Objects for various software implementation of algorithms
     Cipher              m_swAlgsEncCipher1 = null;
@@ -230,6 +232,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
     AESKey              m_swAlgsKey7 = null;
     AESKey              m_swAlgsKey8 = null;
     
+    JavaCardAES         m_aesCipher = null;    
 
     /**
      * AlgTest default constructor
@@ -270,8 +273,11 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         m_testSettings = new TestSettings();
         
         m_ram1 = JCSystem.makeTransientByteArray(RAM1_ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);
+        m_ram2 = JCSystem.makeTransientByteArray(RAM2_ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);        
         
         m_trng = RandomData.getInstance(RandomData.ALG_SECURE_RANDOM);
+        
+        m_aesCipher = new JavaCardAES();
         
         if (isOP2) { register(buffer, (short)(offset + 1), buffer[offset]); }
         else { register(); }
@@ -347,7 +353,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                 case Consts.INS_PREPARE_TEST_CLASS_UTIL: prepare_class_Util(apdu);break;
 
                 case Consts.INS_PREPARE_TEST_SWALG_HOTP: prepare_swalg_HOTP(apdu); break;
-                    
+                case Consts.INS_PREPARE_TEST_SWALGS: prepare_swalgs(apdu); break;
 
         
                 case Consts.INS_PERF_TEST_CLASS_KEY: perftest_class_Key(apdu); break;        
@@ -364,6 +370,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                 case Consts.INS_PERF_TEST_CLASS_SIGNATURE_SETKEYINITSIGN: perftest_class_Signature_setKeyInitSign(apdu); break;
 
                 case Consts.INS_PERF_TEST_SWALG_HOTP: perftest_swalg_HOTP(apdu); break;
+                case Consts.INS_PERF_TEST_SWALGS: perftest_swalgs(apdu); break;
                     
                     
                     
@@ -379,6 +386,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
 
     void GetVersion(APDU apdu) {
         byte[]    apdubuf = apdu.getBuffer();
+        apdu.setIncomingAndReceive();
 
         Util.arrayCopyNonAtomic(ALGTEST_JAVACARD_VERSION_CURRENT, (short) 0, apdubuf, (short) 0, (short) ALGTEST_JAVACARD_VERSION_CURRENT.length);
 
@@ -1721,5 +1729,45 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
     }      
     
     
+    void prepare_swalgs(APDU apdu) {
+        byte[] apdubuf = apdu.getBuffer();
+        m_testSettings.parse(apdu);  
+
+        try {
+            switch (m_testSettings.algorithmMethod) {
+                case JCConsts.SWAlgs_AES: {
+                    // allocate engine
+                    m_aesCipher.RoundKeysSchedule(m_ram2, (short) 0, m_ram1);   // schedule keys into m_ram1                   
+                    break;
+                }
+                default: ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
+            }
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);            
+        }
+        catch(CryptoException e)
+        {
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte)e.getReason();
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
+        }  
+    }      
+    void perftest_swalgs(APDU apdu) {  
+        byte[] apdubuf = apdu.getBuffer();
+        m_testSettings.parse(apdu); 
+        short repeats = (short) (m_testSettings.numRepeatWholeOperation * m_testSettings.numRepeatSubOperation);
+        short chunkDataLen = (short) (m_testSettings.dataLength1 / m_testSettings.numRepeatSubOperation);
+
+        switch (m_testSettings.algorithmMethod) {
+            case JCConsts.SWAlgs_AES:   
+                for (short i = 0; i < repeats; i++) { 
+                    m_aesCipher.AESEncryptBlock(m_ram2, (short) 0, m_ram1); // only one 16B block, scheduled keys in m_ram1
+                } 
+                break;
     
+            default: ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
+        }
+
+        apdubuf[ISO7816.OFFSET_CDATA] = SUCCESS;
+        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);            
+    }        
 }

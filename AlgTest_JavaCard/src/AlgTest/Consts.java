@@ -45,7 +45,8 @@ public class Consts {
     public final static byte INS_PERF_TEST_CLASS_CIPHER_SETKEYINITDOFINAL     = (byte) 0xa3;
     public final static byte INS_PERF_TEST_CLASS_SIGNATURE_SETKEYINITSIGN     = (byte) 0xa9;
     
-    public final static byte INS_PERF_TEST_SWALG_HOTP     = (byte) 0xc1;
+    public final static byte INS_PERF_TEST_SWALG_HOTP     = (byte) 0xa4;
+    public final static byte INS_PERF_TEST_SWALGS         = (byte) 0xa5;
     
     
     
@@ -68,6 +69,7 @@ public class Consts {
     public final static byte INS_PREPARE_TEST_CLASS_UTIL        = (byte) 0x38;
     
     public final static byte INS_PREPARE_TEST_SWALG_HOTP     = (byte) 0x39;
+    public final static byte INS_PREPARE_TEST_SWALGS         = (byte) 0xc0;
     
     
     

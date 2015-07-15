@@ -473,4 +473,6 @@ public class JCConsts {
     
     public static final short Util_xor                                            = 1;    
     
+    public static final short SWAlgs_AES                                          = 1;    
+    
 } 

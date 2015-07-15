@@ -322,6 +322,13 @@ public class PerformanceTestingNGTest {
 
         perfTesting.testSWAlg_HOTP("HOTPMeasurement", 1);
     }        
+   @Test
+    void perftest_SWAlgs() throws Exception {
+        perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection(null) : perfTesting.m_cardManager.establishConnection(AlgTestSinglePerApdu.class);   
+        assertNotEquals(perfTesting.m_perfResultsFile, null);
+
+        perfTesting.testAllSWAlgs(1, 5);
+    }     
     @Test
     void debug() throws Exception { 
         perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection(null) : perfTesting.m_cardManager.establishConnection(AlgTestSinglePerApdu.class);   

@@ -241,9 +241,9 @@ public class CardMngr {
         return "No card available";
     }    
     public FileOutputStream establishConnection(Class ClassToTest) throws Exception{
-        return establishConnection(ClassToTest, "", null);
+        return establishConnection(ClassToTest, "", "", null);
     }
-    public FileOutputStream establishConnection(Class ClassToTest, String testInfo, CardTerminal selectedTerminal) throws Exception{
+    public FileOutputStream establishConnection(Class ClassToTest, String cardName, String testInfo, CardTerminal selectedTerminal) throws Exception{
         boolean bConnected = false;
         if (selectedTerminal != null) {
             bConnected = ConnectToCard(ClassToTest, selectedTerminal, reader, atr, protocol);            
@@ -288,9 +288,12 @@ public class CardMngr {
                 System.out.println(message); file.write(message.getBytes());
             }
 
+        
             message = "Used reader; " + reader + "\r\n";
             System.out.println(message); file.write(message.getBytes());
             message = "Card ATR; " + atr + "\r\n";
+            System.out.println(message); file.write(message.getBytes());
+            message = "Card name; " + cardName + "\r\n";
             System.out.println(message); file.write(message.getBytes());
             message = "Used protocol; " + protocol + "\r\n";
             System.out.println(message); file.write(message.getBytes());
@@ -935,7 +938,7 @@ public class CardMngr {
         
         byte apdu[] = new byte[HEADER_LENGTH];
         apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
-        apdu[OFFSET_INS] = (byte) 0x72;
+        apdu[OFFSET_INS] = Consts.INS_CARD_TESTRSAEXPONENTSET;
         apdu[OFFSET_P1] = 0x00;
         apdu[OFFSET_P2] = 0x00;
         apdu[OFFSET_LC] = 0x00;

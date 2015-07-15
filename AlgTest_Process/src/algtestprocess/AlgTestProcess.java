@@ -104,7 +104,8 @@ public class AlgTestProcess {
                     else if (args[1].equals(GENERATE_JCINFO)){
                         System.out.println("Generating JC performance testing to HTML.");
                         if (args.length < 3){
-                            JCinfohtml.run(args[0],"N/A"); 
+                            //JCinfohtml.run(args[0],"N/A"); 
+                            generateJCInfoHTMLTable(args[0]);
                         }else{
                             JCinfohtml.run(args[0],args[2]);
                         }
@@ -613,4 +614,20 @@ public class AlgTestProcess {
         out.format("} \n");
     }    
             
+    
+    private static void generateJCInfoHTMLTable(String basePath) throws IOException {
+        String filesPath = basePath + "results\\";
+        File dir = new File(filesPath);
+        String[] filesArray = dir.list();
+        
+        if ((filesArray != null) && (dir.isDirectory() == true)) {    
+            
+            HashMap filesSupport[] = new HashMap[filesArray.length]; 
+            
+            for (int i = 0; i < filesArray.length; i++) {
+                filesSupport[i] = new HashMap();
+                JCinfohtml.run(filesPath + filesArray[i], filesArray[i]);
+            }   
+        }
+    }
 }

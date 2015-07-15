@@ -12,6 +12,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -22,22 +23,31 @@ import java.util.List;
 public class JCinfohtml {
     
     public static final String TABLE_HEAD = "<table cellspacing='0'> <!-- cellspacing='0' is important, must stay -->\n\t<tr><th>Name of function</th><th><b>Operation average (ms/op)</b></th><th>Operation minimum (ms/op)</th><th>Operation maximum (ms/op)</th><th>Prepare average (ms/op)</th><th>Prepare minimum (ms/op)</th><th>Prepare maximum (ms/op)</th><th>Data length</th><th>Iterations & Invocations</th></tr><!-- Table Header -->\n";
-    public static final List<String> category = Arrays.asList("MESSAGE DIGEST", "RANDOM GENERATOR", "CIPHER", "SIGNATURE", "CHECKSUM", "AESKey", "DESKey", "KoreanSEEDKey", "DSAPrivateKey", "DSAPublicKey", "ECF2MPublicKey", "ECF2MPrivateKey", "ECFPPublicKey", "HMACKey", "RSAPrivateKey", "RSAPublicKey", "RSAPrivateCRTKey", "KEY PAIR");
+    public static final List<String> category = Arrays.asList("MESSAGE DIGEST", "RANDOM GENERATOR", "CIPHER", "SIGNATURE", "CHECKSUM", "AESKey", "DESKey", "KoreanSEEDKey", "DSAPrivateKey", "DSAPublicKey", "ECF2MPublicKey", "ECF2MPrivateKey", "ECFPPublicKey", "HMACKey", "RSAPrivateKey", "RSAPublicKey", "RSAPrivateCRTKey", "KEY PAIR", "UTIL", "SWALGS");
     public static final String topFunctionsFile = "top.txt";  
     public static int lp = 0; //parse file line position
     public static int tp = 0; //table line position
     public static String toFile = "";
     
-    public static List<String> initalize(String input) throws FileNotFoundException, IOException{
+    public static List<String> initalize(String input, StringBuilder cardName) throws FileNotFoundException, IOException{
         BufferedReader reader = new BufferedReader(new FileReader(input));
         List<String> lines = new ArrayList<>();
         String line;
         while ((line = reader.readLine()) != null) {               
-               lines.add(line);
-               if (lines.get(lines.size()-1).startsWith("#"))
-                   lines.remove(lines.size()-1);
-               if (lines.get(lines.size()-1).equals(""))
-                   lines.remove(lines.size()-1);
+            lines.add(line);
+            if (lines.get(lines.size()-1).startsWith("#"))
+                lines.remove(lines.size()-1);
+            if (lines.get(lines.size()-1).equals(""))
+                lines.remove(lines.size()-1);
+
+            String cardNameKey = "Card name;";
+            if (line.contains(cardNameKey)) {
+                String[] info = line.split(";");
+                if (info.length > 1) {
+                    cardName.setLength(0);
+                    cardName.append(info[1].trim());
+                }
+            }
         }
         reader.close();
         return lines;
@@ -62,6 +72,40 @@ public class JCinfohtml {
     
     public static void details(List<String> lines, FileOutputStream file) throws IOException{ 
         String[] info;
+        
+        // Transform lines into hashmap
+        HashMap<String, String> infoMap = new HashMap<>();
+        for(String line : lines) {
+            info = line.split(";"); 
+            if (info.length > 1) {
+                infoMap.put(info[0], info[1]);
+            }
+        }
+        
+        toFile = "";        
+        toFile += "<div class=\"pageColumnRight\">\n"; 
+        toFile+= "<h3>Test details</h3>\n";
+        
+        toFile +="<p>Execution date/time: <strong>"+infoMap.get("Execution date/time")+"</strong></p>\n";
+        toFile +="<p>AlgTestJClient version: <strong>"+infoMap.get("AlgTestJClient version")+"</strong></p>\n";
+        toFile +="<p>AlgTest applet version: <strong>"+infoMap.get("AlgTest applet version")+"</strong></p>\n";
+        toFile +="<p>Used reader: <strong>"+infoMap.get("Used reader")+"</strong></p>\n";
+        toFile +="<p><strong>Card ATR: "+infoMap.get("Card ATR")+"</strong></p></br>\n";
+        toFile +="<p><u><a href=\"https://smartcard-atr.appspot.com/parse?ATR="+infoMap.get("Card ATR").replaceAll(" ","")+"\" target=\"_blank\">Smart card ATR parsing link</a></u></p>\n</br>\n";
+        file.write(toFile.getBytes());
+        toFile = ""; 
+
+        toFile +="<p>JavaCard version: <strong>"+infoMap.get("JCSystem.getVersion()[Major.Minor]")+"</strong></p>\n";
+        toFile +="<p>MEMORY_TYPE_PERSISTENT: <strong>"+infoMap.get("JCSystem.MEMORY_TYPE_PERSISTENT")+"</strong></p>\n";
+        toFile +="<p>MEMORY_TYPE_TRANSIENT_RESET: <strong>"+infoMap.get("JCSystem.MEMORY_TYPE_TRANSIENT_RESET")+"</strong></p>\n";
+        toFile +="<p>MEMORY_TYPE_TRANSIENT_DESELECT: <strong>"+infoMap.get("JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT")+"</strong></p>\n";  
+        toFile +="</br>\n<h3>How it works</h3>\n";
+        toFile +="<p>You can find information about testing on <a href=\"http://www.fi.muni.cz/~xsvenda/jcsupport.html\">GitHub wiki</a>.</p>\n</br>\n"; 
+        toFile+= "</div>\n</div>\n";
+        file.write(toFile.getBytes());
+        toFile = "";  
+     
+/*        
         lp = 2; 
         toFile = "";        
         toFile += "<div class=\"pageColumnRight\">\n"; 
@@ -93,6 +137,7 @@ public class JCinfohtml {
         toFile+= "</div>\n</div>\n";
         file.write(toFile.getBytes());
         toFile = "";  
+*/        
     }
     
     
@@ -110,7 +155,7 @@ public class JCinfohtml {
         toFile = "";      
      }
      
-     public static void begin(FileOutputStream file, String name) throws IOException{ 
+     public static void begin(FileOutputStream file, String name) throws IOException { 
         toFile = "";
         toFile += "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n";
         toFile += "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n";
@@ -177,16 +222,17 @@ public class JCinfohtml {
         toFile += "<h3 id=\"TOP\">TOP FUNCTIONS</h3>\n";                              //name of table
         toFile += TABLE_HEAD;
         
-        for (String topname : top){
-            while(lp<lines.size()-4){
-            if(topname.equals(lines.get(lp))){
-                parseOne(lines, file);
-                file.write(toFile.getBytes());
-                toFile = "";
-            } else {
-                lp++;
-            }            
-        }
+        for (String topname : top) {
+            while (lp < lines.size() - 4) { // why -4?
+                String topNameHeader = "method name:; " + topname;
+                if (topNameHeader.equals(lines.get(lp))) {
+                    parseOne(lines, file);
+                    file.write(toFile.getBytes());
+                    toFile = "";
+                } else {
+                    lp++;
+                }            
+            }
             lp=0;
         }
         
@@ -204,10 +250,10 @@ public class JCinfohtml {
             lp+=2;
             return;
         } else {
-        toFile += ((tp % 2)==0) ? "\t<tr>" : "\t<tr class='even'>";
-        prepare = lines.get(lp).trim().split(";");
-        toFile += "<td><b>"+prepare[1]+"</b></td>";
-        lp+=2;
+            toFile += ((tp % 2)==0) ? "\t<tr>" : "\t<tr class='even'>";
+            prepare = lines.get(lp).trim().split(";");
+            toFile += "<td><b>"+prepare[1]+"</b></td>";
+            lp+=2;
         }
                
          if ((lines.get(lp).contains("baseline")) && (lines.get(lp+3).contains("avg op:"))){
@@ -253,12 +299,14 @@ public class JCinfohtml {
      
      public static void run(String input, String name) throws FileNotFoundException, IOException{
         String output = name;
-        if ("N/A".equals(name))
-            output = "output";     
+        if (name.isEmpty()) {
+            output = "output";    
+        }
         
         FileOutputStream file = new FileOutputStream(output+".html");       
-        List<String> lines = initalize(input);        
-        begin(file, name);
+        StringBuilder cardName = new StringBuilder();
+        List<String> lines = initalize(input, cardName);   
+        begin(file, cardName.toString());
         quickLinks(file);
         details(lines, file);
         topFunction(lines, file);
@@ -275,9 +323,10 @@ public class JCinfohtml {
      */
     public static void main(String[] args) throws FileNotFoundException, IOException {
         FileOutputStream file = new FileOutputStream("output.html");       
-        List<String> lines = initalize("AlgTest_3b_7a_94_00_00_80_65_a2_01_01_01_3d_72_d6_43_.csv");
+        StringBuilder cardName = new StringBuilder();
+        List<String> lines = initalize("AlgTest_3b_7a_94_00_00_80_65_a2_01_01_01_3d_72_d6_43_.csv", cardName);
         
-        begin(file, "\"card name\"");
+        begin(file, cardName.toString());
         quickLinks(file);
         details(lines, file);
         topFunction(lines, file);
