@@ -786,10 +786,18 @@ public class CardMngr {
     
     public void PrintCPLCInfo(StringBuilder pValue, FileOutputStream pFile, byte[] cplcData) throws IOException {
         String  message = "";
+        
+        message = "\r\nCPLC; " + bytesToHex(cplcData);
+        System.out.println(message);
+        pFile.write(message.getBytes());
+        pValue.append(message);            
+        
+        
         CPLC cplc = new CPLC(cplcData);
 
         HashMap<CPLC.Field, byte[]> cplValues = cplc.values();
-        for (CPLC.Field f : cplValues.keySet()) {
+        
+        for (CPLC.Field f : CPLC.Field.values()) {
             byte[] value = (byte[]) cplValues.get(f);
             if (f == CPLC.Field.ICFabricationDate) {
                 message = "\r\nCPLC." + f.name() + " ((Y DDD) date in that year); " + bytesToHex(value, false);
