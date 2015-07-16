@@ -57,6 +57,7 @@ import com.licel.jcardsim.io.JavaxSmartCardInterface;
 import java.io.File;
 import java.lang.ProcessBuilder.Redirect;
 import java.util.ArrayList;
+import java.util.HashMap;
 import javacard.framework.AID;
 import javacard.framework.ISO7816;
 
@@ -245,6 +246,7 @@ public class CardMngr {
     }
     public FileOutputStream establishConnection(Class ClassToTest, String cardName, String testInfo, CardTerminal selectedTerminal) throws Exception{
         boolean bConnected = false;
+        // Connnect to targer card to obtain information
         if (selectedTerminal != null) {
             bConnected = ConnectToCard(ClassToTest, selectedTerminal, reader, atr, protocol);            
         } 
@@ -274,7 +276,7 @@ public class CardMngr {
             Date date = new Date();
             message += dateFormat.format(date) + "\r\n";
             System.out.println(message); file.write(message.getBytes()); 
-
+            
             message = "AlgTestJClient version; " + AlgTestJClient.ALGTEST_JCLIENT_VERSION + "\r\n";
             System.out.println(message); file.write(message.getBytes());    
 
@@ -287,7 +289,6 @@ public class CardMngr {
                 message = "\nERROR: GetAppletVersion fail"; 
                 System.out.println(message); file.write(message.getBytes());
             }
-
         
             message = "Used reader; " + reader + "\r\n";
             System.out.println(message); file.write(message.getBytes());
@@ -298,14 +299,28 @@ public class CardMngr {
             message = "Used protocol; " + protocol + "\r\n";
             System.out.println(message); file.write(message.getBytes());
 
+            
             System.out.println("\n\n#########################");
             System.out.println("\nJCSystem information");
-
             if (GetJCSystemInfo(value, file) == CardMngr.STAT_OK) {}
             else { System.out.println("\nERROR: GetJCSystemInfo fail"); }
             
+            System.out.println("\n\n#########################");
+            System.out.println("\nGlobalPlatform information");
+            if (GetGPInfo(value, file) == CardMngr.STAT_OK) {}
+            else { System.out.println("\nERROR: GetGPInfo fail"); }            
+            
+            // Connnect to target card again 
+            if (selectedTerminal != null) {
+                bConnected = ConnectToCard(ClassToTest, selectedTerminal, reader, atr, protocol);            
+            } 
+            else {
+                bConnected = ConnectToFirstCard(ClassToTest, reader, atr, protocol);            
+            }        
+            
             return file; // if succesfull, returns open file for AlgTest output
         }
+        
         return null;    // returns 'null' in case of error
     }
     
@@ -528,13 +543,20 @@ public class CardMngr {
     }
 
     public static String bytesToHex(byte[] data) {
+        return bytesToHex(data, true);            
+    }    
+    public static String bytesToHex(byte[] data, boolean bInsertSpace) {
         StringBuilder  buf = new StringBuilder ();
         for (int i = 0; i < data.length; i++) {
             buf.append(byteToHex(data[i]));
-            if (i != data.length - 1) { buf.append(" "); }
+            if (i != data.length - 1) { 
+                if (bInsertSpace) { buf.append(" "); }
+            }
         }
         return (buf.toString());
     }
+        
+
     
     // Parse algorithm name and version of JC which introduced it
     //algParts[0] == algorithm name
@@ -665,7 +687,162 @@ public class CardMngr {
                 
 	return status;
     }
+    public static int intCode(short code) {
+        int intCode = code & 0xffff;
+        if (intCode < 0) {
+            assert (intCode >= 0);
+            intCode = -1;
+        }
+        return intCode;
+    }    
+    // Functions for CPLC taken and modified from https://github.com/martinpaljak/GlobalPlatformPro 
+    private static final byte CLA_GP = (byte) 0x80;     
+    private static final byte ISO7816_INS_GET_DATA = (byte) 0xCA;   
+    private static final byte[] SELECT_CM = {(byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00};
+    private static final byte[] FETCH_GP_CPLC_APDU = {CLA_GP, ISO7816_INS_GET_DATA, (byte) 0x9F, (byte) 0x7F, (byte) 0x00};
+    private static final byte[] FETCH_ISO_CPLC_APDU = {ISO7816.CLA_ISO7816, ISO7816_INS_GET_DATA, (byte) 0x9F, (byte) 0x7F, (byte) 0x00};
+    private static final byte[] FETCH_GP_CARDDATA_APDU = {CLA_GP, ISO7816_INS_GET_DATA, (byte) 0x00, (byte) 0x66, (byte) 0x00};
+    public byte[] fetchCPLC() throws Exception {
+        ResponseAPDU resp = sendAPDU(SELECT_CM);
+        // Try CPLC via GP 
+        resp = sendAPDU(FETCH_GP_CPLC_APDU);
+        // If GP CLA fails, try with ISO
+        if (resp.getSW() == intCode(ISO7816.SW_CLA_NOT_SUPPORTED)) {
+            resp = sendAPDU(FETCH_ISO_CPLC_APDU);
+        }
+
+        if (resp.getSW() == intCode(ISO7816.SW_NO_ERROR)) {
+            return resp.getData();
+        } 
+        return null;
+    } 
+    public byte[] fetchCardData() throws Exception {
+        ResponseAPDU resp = sendAPDU(SELECT_CM);
+        // Try CardData via GP 
+        resp = sendAPDU(FETCH_GP_CARDDATA_APDU);
+
+        if (resp.getSW() == intCode(ISO7816.SW_NO_ERROR)) {
+            return resp.getData();
+        } 
+        return null;
+    } 
     
+    public static final class CPLC {
+            public enum Field {
+                    ICFabricator,
+                    ICType,
+                    OperatingSystemID,
+                    OperatingSystemReleaseDate,
+                    OperatingSystemReleaseLevel,
+                    ICFabricationDate,
+                    ICSerialNumber,
+                    ICBatchIdentifier,
+                    ICModuleFabricator,
+                    ICModulePackagingDate,
+                    ICCManufacturer,
+                    ICEmbeddingDate,
+                    ICPrePersonalizer,
+                    ICPrePersonalizationEquipmentDate,
+                    ICPrePersonalizationEquipmentID,
+                    ICPersonalizer,
+                    ICPersonalizationDate,
+                    ICPersonalizationEquipmentID
+            };
+            private HashMap<Field, byte[]> m_values = null;
+
+            public CPLC(byte [] data) {
+                    if (data == null) {
+                            return;
+                    }
+                    if (data.length < 3 || data[2] != 0x2A)
+                            throw new IllegalArgumentException("CPLC must be 0x2A bytes long");
+                    //offset = TLVUtils.skipTag(data, offset, (short)0x9F7F);
+                    short offset = 3;
+                    m_values = new HashMap<>();
+                    m_values.put(Field.ICFabricator, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
+                    m_values.put(Field.ICType, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
+                    m_values.put(Field.OperatingSystemID, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
+                    m_values.put(Field.OperatingSystemReleaseDate, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
+                    m_values.put(Field.OperatingSystemReleaseLevel, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
+                    m_values.put(Field.ICFabricationDate, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
+                    m_values.put(Field.ICSerialNumber, Arrays.copyOfRange(data, offset, offset + 4)); offset += 4;
+                    m_values.put(Field.ICBatchIdentifier, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
+                    m_values.put(Field.ICModuleFabricator, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
+                    m_values.put(Field.ICModulePackagingDate, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
+                    m_values.put(Field.ICCManufacturer, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
+                    m_values.put(Field.ICEmbeddingDate, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
+                    m_values.put(Field.ICPrePersonalizer, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
+                    m_values.put(Field.ICPrePersonalizationEquipmentDate, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
+                    m_values.put(Field.ICPrePersonalizationEquipmentID, Arrays.copyOfRange(data, offset, offset + 4)); offset += 4;
+                    m_values.put(Field.ICPersonalizer, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
+                    m_values.put(Field.ICPersonalizationDate, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
+                    m_values.put(Field.ICPersonalizationEquipmentID, Arrays.copyOfRange(data, offset, offset + 4)); offset += 4;
+            }
+            
+            public HashMap<Field, byte[]> values() {
+                return m_values;
+            }
+    }    
+    
+    public void PrintCPLCInfo(StringBuilder pValue, FileOutputStream pFile, byte[] cplcData) throws IOException {
+        String  message = "";
+        CPLC cplc = new CPLC(cplcData);
+
+        HashMap<CPLC.Field, byte[]> cplValues = cplc.values();
+        for (CPLC.Field f : cplValues.keySet()) {
+            byte[] value = (byte[]) cplValues.get(f);
+            if (f == CPLC.Field.ICFabricationDate) {
+                message = "\r\nCPLC." + f.name() + " ((Y DDD) date in that year); " + bytesToHex(value, false);
+            } 
+            else {
+                message = "\r\nCPLC." + f.name() + "; " + bytesToHex(value, false);
+            }
+            System.out.println(message);
+            pFile.write(message.getBytes());
+            pValue.append(message);            
+        }            
+
+        message += "\r\n";
+
+        pFile.write(message.getBytes());
+        pValue.append(message);
+    }
+    public int GetGPInfo(StringBuilder pValue, FileOutputStream pFile) throws Exception {
+        int         status = STAT_OK;
+
+        // CPLC
+        try {
+            byte[] cplcData = fetchCPLC();
+            if (cplcData == null) {
+                System.out.println("Fail to obtain CPLC info");
+            } 
+            else {
+                PrintCPLCInfo(pValue, pFile, cplcData);
+            }
+        }        
+        catch (Exception ex) {
+            System.out.println("Fail to obtain GPInfo - CPLC");
+            pValue.append("error");
+        }
+/*        
+        // CardData
+        try {
+            byte[] cardData = fetchCardData();
+            if (cardData == null) {
+                System.out.println("Fail to obtain cardData info");
+            } 
+            else {
+                PrintGPInfo(pValue, pFile, cardData);
+            }
+        }        
+        catch (Exception ex) {
+            System.out.println("Fail to obtain GPInfo - cardData");
+            pValue.append("error");
+        }
+*/                      
+                
+	return status;
+    }    
     /**
      * Method that will test all algorithms.
      * @param file FileOutputStream object for output data.

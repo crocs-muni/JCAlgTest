@@ -1060,7 +1060,7 @@ public class SingleModeTest {
         apdu[OFFSET_LC] = (byte)0x03;
         apdu[OFFSET_DATA] = ALG_EC_FP;      // 5
         
-        /* Creates message with class name and writes it in the output file and on the screen */
+        // Creates message with class name and writes it in the output file and on the screen 
         String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_EC_FP_STR[0]) + "\r\n";
         System.out.println(message);
         file.write(message.getBytes());

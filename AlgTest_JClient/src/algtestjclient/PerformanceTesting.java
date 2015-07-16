@@ -132,7 +132,8 @@ public class PerformanceTesting {
         }
 
         System.out.println("Specify type of your card (e.g., NXP JCOP CJ2A081):");
-        m_cardName = sc.nextLine();
+        m_cardName = sc.next();
+        m_cardName += sc.nextLine();
 
         // Try to open and load list of already measured algorithms (if provided)
         LoadAlreadyMeasuredAlgs(m_cardName);
