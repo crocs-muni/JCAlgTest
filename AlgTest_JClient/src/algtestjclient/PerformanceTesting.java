@@ -31,6 +31,7 @@
 
 package algtestjclient;
 
+import AlgTest.AlgTestSinglePerApdu;
 import java.io.*;
 import java.io.FileOutputStream;
 import java.util.Scanner;
@@ -132,8 +133,12 @@ public class PerformanceTesting {
         }
 
         System.out.println("Specify type of your card (e.g., NXP JCOP CJ2A081):");
+        
         m_cardName = sc.next();
         m_cardName += sc.nextLine();
+        if (m_cardName.isEmpty()) {
+            m_cardName = "noname";
+        }
 
         // Try to open and load list of already measured algorithms (if provided)
         LoadAlreadyMeasuredAlgs(m_cardName);
@@ -492,12 +497,7 @@ public class PerformanceTesting {
         // Prepare new set
         m_cardManager.PerfTestCommand(appletCLA, appletINS, testSet, Consts.INS_CARD_RESET);
     }
-/*    
-    public double perftest_measure(byte appletCLA, byte appletPrepareINS, byte appletMeasureINS, short classType, short algorithmSpecification, short keyType, short keyLength, short algorithmMethod, short dataLength1, short dataLength2, short initMode, short numRepeatWholeOperation, short numRepeatSubOperation, short numRepeatWholeMeasurement, String info) throws IOException, Exception {
-        TestSettings testSet = prepareTestSettings(classType, algorithmSpecification, keyType, keyLength, algorithmMethod, dataLength1, dataLength2, initMode, numRepeatWholeOperation, numRepeatSubOperation, numRepeatWholeMeasurement);
-        return perftest_measure(appletCLA, appletPrepareINS, appletMeasureINS, testSet, info);
-    }
-*/    
+   
     public double perftest_measure(byte appletCLA, byte appletPrepareINS, byte appletMeasureINS, TestSettings testSet, String info) throws IOException, Exception {
         return perftest_measure(appletCLA, appletPrepareINS, appletMeasureINS, testSet, info, 0); 
     }
@@ -604,8 +604,6 @@ public class PerformanceTesting {
         System.out.print(message);
         result.append(message);
         
-        
-        
         message = "";
 
         //            
@@ -709,23 +707,48 @@ public class PerformanceTesting {
         return avgOpTime;
     }
     
+    
     public void testUtil(String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
-        TestSettings testSet = this.prepareTestSettings(Consts.CLASS_RANDOMDATA, Consts.UNUSED, Consts.UNUSED, Consts.UNUSED, JCConsts.RandomData_generateData, 
+        TestSettings testSet = this.prepareTestSettings(Consts.CLASS_UTIL, Consts.UNUSED, Consts.UNUSED, Consts.UNUSED, JCConsts.RandomData_generateData, 
                 Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);      
 
+        ArrayList<Pair<Short, String>> testedOps = new ArrayList<>();
+        testedOps.add(new Pair(JCConsts.Util_arrayCopy_RAM, "Util_arrayCopy_RAM()"));
+        testedOps.add(new Pair(JCConsts.Util_arrayCopy_EEPROM, "Util_arrayCopy_EEPROM()"));
+        testedOps.add(new Pair(JCConsts.Util_arrayCopy_RAM2EEPROM, "Util_arrayCopy_RAM2EEPROM()"));
+        testedOps.add(new Pair(JCConsts.Util_arrayCopy_EEPROM2RAM, "Util_arrayCopy_EEPROM2RAM()"));
+        testedOps.add(new Pair(JCConsts.Util_arrayCopyNonAtomic_RAM, "Util_arrayCopyNonAtomic_RAM()"));
+        testedOps.add(new Pair(JCConsts.Util_arrayCopyNonAtomic_EEPROM, "Util_arrayCopyNonAtomic_EEPROM()"));
+        testedOps.add(new Pair(JCConsts.Util_arrayCopyNonAtomic_RAM2EEPROM, "Util_arrayCopyNonAtomic_RAM2EEPROM()"));
+        testedOps.add(new Pair(JCConsts.Util_arrayCopyNonAtomic_EEPROM2RAM, "Util_arrayCopyNonAtomic_EEPROM2RAM()"));
+        testedOps.add(new Pair(JCConsts.Util_arrayFillNonAtomic_RAM, "Util_arrayFillNonAtomic_RAM()"));
+        testedOps.add(new Pair(JCConsts.Util_arrayFillNonAtomic_EEPROM, "Util_arrayFillNonAtomic_EEPROM()"));
+        testedOps.add(new Pair(JCConsts.Util_arrayCompare_RAM, "Util_arrayCompare_RAM()"));
+        testedOps.add(new Pair(JCConsts.Util_arrayCompare_EEPROM, "Util_arrayCompare_EEPROM()"));
+        testedOps.add(new Pair(JCConsts.Util_arrayCompare_RAM2EEPROM, "Util_arrayCompare_RAM2EEPROM()"));
+        testedOps.add(new Pair(JCConsts.Util_arrayCompare_EEPROM2RAM, "Util_arrayCompare_EEPROM2RAM()"));
+            
         if (!m_bTestVariableData) {
             // Ordinary test of all available methods
-            testSet.algorithmMethod = JCConsts.Util_xor;
-            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_UTIL, Consts.INS_PERF_TEST_CLASS_UTIL, testSet, info + " Util_xor()");
+            assert(testSet.dataLength1 <= AlgTestSinglePerApdu.RAM1_ARRAY_LENGTH / 2);  // some methods will operate on same array (copy) so at maxiumum, half of array can be used as input
+            for (Pair op : testedOps) {
+                testSet.algorithmMethod = (Short) op.getL();
+                this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_UTIL, Consts.INS_PERF_TEST_CLASS_UTIL, testSet, info + " " + (String) op.getR());
+            }
         }
         else {
             // Test of speed dependant on data length
             String tableName = "\n\nUTIL - "  + info + " - variable data - BEGIN\n";
             m_perfResultsFile.write(tableName.getBytes());
-            testSet.algorithmMethod = JCConsts.Util_xor;
+
             for (Integer length : m_testDataLengths) {
                 testSet.dataLength1 = length.shortValue();
-                this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_UTIL, Consts.INS_PERF_TEST_CLASS_UTIL, testSet, info + " Util_xor();" + length + ";");
+                if (testSet.dataLength1 <= AlgTestSinglePerApdu.RAM1_ARRAY_LENGTH / 2) {
+                    for (Pair op : testedOps) {
+                        testSet.algorithmMethod = (Short) op.getL();
+                        this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_UTIL, Consts.INS_PERF_TEST_CLASS_UTIL, testSet, info + " " + (String) op.getR());
+                    }
+                }
             }
             tableName = "\n\nUTIL - "  + info + " - variable data - END\n";
             m_perfResultsFile.write(tableName.getBytes());
@@ -2210,13 +2233,29 @@ public class PerformanceTesting {
     }
     
 
+    public void testDataTransferSpeed(String info, int numRepeatWholeMeasurement) throws IOException, Exception {
+        short testDataLength = Consts.TEST_DATA_LENGTH; // default test length
+
+        TestSettings testSet = this.prepareTestSettings(Consts.UNUSED, Consts.UNUSED, Consts.UNUSED, Consts.UNUSED, Consts.UNUSED, 
+                testDataLength, Consts.UNUSED, Consts.UNUSED, (short) 1, (short) 1, (short) numRepeatWholeMeasurement);      
+
+        String tableName = "\n\nDataTransfer - " + info + " - BEGIN\n";
+        m_perfResultsFile.write(tableName.getBytes());
+        testSet.bPerformBaselineMeasurement = Consts.FALSE; // disable measurement of baseline overhead (we like to measure also input data time etc.)
+
+        testSet.inData = new byte[152];
+        this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_SWALG_HOTP, Consts.INS_PERF_TEST_SWALG_HOTP, testSet, info + " HOTP_verification() first call");
+
+        tableName = "\n\nDataTransfer - " + info + " - END\n";
+        m_perfResultsFile.write(tableName.getBytes());
+    }    
+    
     public void testSWAlg_HOTP(String info, int numRepeatWholeMeasurement) throws IOException, Exception {
         short testDataLength = Consts.TEST_DATA_LENGTH; // default test length
 
         TestSettings testSet = this.prepareTestSettings(Consts.UNUSED, Consts.UNUSED, Consts.UNUSED, JCConsts.KeyBuilder_LENGTH_AES_128, Consts.UNUSED, 
                 testDataLength, Consts.UNUSED, Consts.UNUSED, (short) 1, (short) 1, (short) numRepeatWholeMeasurement);      
 
-        // Test of speed dependant on data length
         String tableName = "\n\nHOTP_verification - " + info + " - BEGIN\n";
         m_perfResultsFile.write(tableName.getBytes());
         testSet.bPerformBaselineMeasurement = Consts.FALSE; // disable measurement of baseline overhead (we like to measure also input data time etc.)
@@ -2248,7 +2287,7 @@ public class PerformanceTesting {
         m_perfResultsFile.write(tableName.getBytes());
     }    
     
-    
+
     public void testSWAlgs(String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
         TestSettings testSet = this.prepareTestSettings(Consts.CLASS_RANDOMDATA, Consts.UNUSED, Consts.UNUSED, Consts.UNUSED, JCConsts.RandomData_generateData, 
                 Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);      
@@ -2258,16 +2297,22 @@ public class PerformanceTesting {
             testSet.algorithmMethod = JCConsts.SWAlgs_AES;
             testSet.dataLength1 = 16; // sw aes is tested only on 16 bytes
             this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_SWALGS, Consts.INS_PERF_TEST_SWALGS, testSet, info + " SWAlgs_AES()");
+            
+            testSet.algorithmMethod = JCConsts.SWAlgs_xor;
+            testSet.dataLength1 = 16; // xor is tested only on 16 bytes
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_SWALGS, Consts.INS_PERF_TEST_SWALGS, testSet, info + " SWAlgs_xor()");
         }
         else {
             // Test of speed dependant on data length
             String tableName = "\n\nSWALGS - "  + info + " - variable data - BEGIN\n";
             m_perfResultsFile.write(tableName.getBytes());
+/* at the moment, no swalgs works on variable data - add later           
             testSet.algorithmMethod = JCConsts.SWAlgs_AES;
             for (Integer length : m_testDataLengths) {
                 testSet.dataLength1 = length.shortValue();
                 this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_SWALGS, Consts.INS_PERF_TEST_SWALGS, testSet, info + " SWAlgs_AES();" + length + ";");
             }
+*/        
             tableName = "\n\nSWALGS - "  + info + " - variable data - END\n";
             m_perfResultsFile.write(tableName.getBytes());
         }
@@ -2282,6 +2327,4 @@ public class PerformanceTesting {
         tableName = "\n\nSWALGS - END\n";
         m_perfResultsFile.write(tableName.getBytes());
     }       
-        
-    
 }

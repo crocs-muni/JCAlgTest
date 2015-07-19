@@ -22,6 +22,7 @@ public class Consts {
     public final static byte INS_CARD_TESTEXTAPDU              = (byte) 0x74;
     public final static byte INS_CARD_TESTSUPPORTEDMODES_SINGLE= (byte) 0x75;    
     public final static byte INS_CARD_GETRSAKEY                = (byte) 0x77;    
+    public final static byte INS_CARD_DATAINOUT                = (byte) 0x78;    
     
     
     // BUGBUG: refactor codes
@@ -76,7 +77,9 @@ public class Consts {
     public static final short CLASS_CHECKSUM                    = (short) 0x17;      
     public static final short CLASS_KEYENCRYPTION               = (short) 0x18;      
     public static final short CLASS_KEYPAIR                     = (short) 0x19;      
-    public static final short CLASS_KEYBUILDER                  = (short) 0x20;      
+    public static final short CLASS_KEYBUILDER                  = (short) 0x20;  
+    public static final short CLASS_UTIL                        = (short) 0x21;  
+    
     
     public static final byte UNUSED    = (byte) -1;     
     

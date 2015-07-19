@@ -469,10 +469,29 @@ public class JCConsts {
     public static final short SignatureMessageRecovery_beginVerify                  = 6;
     public static final short SignatureMessageRecovery_sign                         = 7;    
     
+    // Class javacard.framework.Util
+    // javacard.framework.Util Fields:
+    //  -- No Fields --
+    // javacard.framework.Util Methods:
+    public static final short Util_arrayCopy_RAM                                    = 1;
+    public static final short Util_arrayCopy_EEPROM                                 = 2;
+    public static final short Util_arrayCopy_RAM2EEPROM                             = 3;
+    public static final short Util_arrayCopy_EEPROM2RAM                             = 4;
+    public static final short Util_arrayCopyNonAtomic_RAM                           = 5;
+    public static final short Util_arrayCopyNonAtomic_EEPROM                        = 6;
+    public static final short Util_arrayCopyNonAtomic_RAM2EEPROM                    = 7;
+    public static final short Util_arrayCopyNonAtomic_EEPROM2RAM                    = 8;
+    public static final short Util_arrayFillNonAtomic_RAM                           = 9;
+    public static final short Util_arrayFillNonAtomic_EEPROM                        = 10;
+    public static final short Util_arrayCompare_RAM                                 = 11;
+    public static final short Util_arrayCompare_EEPROM                              = 12;
+    public static final short Util_arrayCompare_RAM2EEPROM                          = 13;
+    public static final short Util_arrayCompare_EEPROM2RAM                          = 14;
+    //public static final short Util_makeShort                                        = 15; // not tested
+    //public static final short Util_getShort                                         = 16; // not tested
+    //public static final short Util_setShort                                         = 17; // not tested
     
-    
-    public static final short Util_xor                                            = 1;    
-    
-    public static final short SWAlgs_AES                                          = 1;    
+    public static final short SWAlgs_xor                                            = 1;    
+    public static final short SWAlgs_AES                                            = 2;    
     
 } 

@@ -153,8 +153,8 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
     public final static short SW_ALG_OPS_NOT_SUPPORTED     = (short) 0x6002;
     public final static short SW_ALG_TYPE_UNKNOWN          = (short) 0x6003;
     
-    final static short RAM1_ARRAY_LENGTH = (short) 600;
-    final static short RAM2_ARRAY_LENGTH = (short) 16;
+    public final static short RAM1_ARRAY_LENGTH = (short) 600;
+    public final static short RAM2_ARRAY_LENGTH = (short) 16;
     
     
     /* Auxiliary variables to choose class - used in APDU as P1 byte. */
@@ -212,6 +212,8 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
     Signature           m_signatureVerify = null;
     byte[]              m_ram1 = null;
     byte[]              m_ram2 = null;
+    byte[]              m_eeprom1 = null;
+    
 
     // Objects for various software implementation of algorithms
     Cipher              m_swAlgsEncCipher1 = null;
@@ -247,16 +249,6 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
 
         if(length > 9) {
             // Install parameter detail. Compliant with OP 2.0.1.
-
-            // | size | content
-            // |------|---------------------------
-            // |  1   | [AID_Length]
-            // | 5-16 | [AID_Bytes]
-            // |  1   | [Privilege_Length]
-            // | 1-n  | [Privilege_Bytes] (normally 1Byte)
-            // |  1   | [Application_Proprietary_Length]
-            // | 0-m  | [Application_Proprietary_Bytes]
-
             // shift to privilege offset
             dataOffset += (short)( 1 + buffer[offset]);
             // finally shift to Application specific offset
@@ -264,53 +256,33 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
 
             // go to proprietary data
             dataOffset++;
-
             // update flag
             isOP2 = true;
-
        } else {}
 
         m_testSettings = new TestSettings();
         
         m_ram1 = JCSystem.makeTransientByteArray(RAM1_ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);
-        m_ram2 = JCSystem.makeTransientByteArray(RAM2_ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);        
+        m_ram2 = JCSystem.makeTransientByteArray(RAM2_ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);    
+        m_eeprom1 = new byte[RAM1_ARRAY_LENGTH];
         
         m_trng = RandomData.getInstance(RandomData.ALG_SECURE_RANDOM);
         
-        m_aesCipher = new JavaCardAES();
+        m_aesCipher = new JavaCardAES();    // aes software cipher
         
         if (isOP2) { register(buffer, (short)(offset + 1), buffer[offset]); }
         else { register(); }
     }
 
-    /**
-     * Method installing the applet.
-     * @param bArray the array constaining installation parameters
-     * @param bOffset the starting offset in bArray
-     * @param bLength the length in bytes of the data parameter in bArray
-     */
-    public static void install(byte[] bArray, short bOffset, byte bLength) throws ISOException
-    {
-        /* applet  instance creation */
+    public static void install(byte[] bArray, short bOffset, byte bLength) throws ISOException {
         new AlgTestSinglePerApdu (bArray, bOffset, bLength );
     }
 
-    /**
-     * Select method returns true if applet selection is supported.
-     * @return boolean status of selection.
-     */
-    public boolean select()
-    {
+    public boolean select() {
         return true;
     }
 
-    /**
-     * Deselect method called by the system in the deselection process.
-     */
-    public void deselect()
-    {
-
-        // <PUT YOUR DESELECTION ACTION HERE>
+    public void deselect() {
     }
 
     /**
@@ -335,6 +307,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                 case Consts.INS_CARD_JCSYSTEM_INFO: JCSystemInfo(apdu); break;
                 case Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE: TestSupportedModeSingle(apdu); break;
                 // case INS_CARD_TESTEXTAPDU: TestExtendedAPDUSupport(apdu); break; // this has to be tested by separate applet with ExtAPDU enabled - should succedd during upload and run
+                case Consts.INS_CARD_DATAINOUT: TestIOSpeed(apdu); break;
                 case Consts.INS_CARD_RESET: 
                     JCSystem.requestObjectDeletion(); 
                     Util.arrayFillNonAtomic(m_ram1, (short) 0, (short) m_ram1.length, (byte) 1);
@@ -368,12 +341,8 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                  
                 case Consts.INS_PERF_TEST_CLASS_CIPHER_SETKEYINITDOFINAL: perftest_class_Cipher_setKeyInitDoFinal(apdu); break;
                 case Consts.INS_PERF_TEST_CLASS_SIGNATURE_SETKEYINITSIGN: perftest_class_Signature_setKeyInitSign(apdu); break;
-
                 case Consts.INS_PERF_TEST_SWALG_HOTP: perftest_swalg_HOTP(apdu); break;
                 case Consts.INS_PERF_TEST_SWALGS: perftest_swalgs(apdu); break;
-                    
-                    
-                    
                     
                 default : {
                     // The INS code is not supported by the dispatcher
@@ -459,17 +428,12 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
        apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xFF;
 
        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (short) 240);
-       /**
-        * Sends back APDU of length 'offset'
-        * APDU of length 240 is too long for no reason
-        */
-       //apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (short) offset);
     }
     
 
     void JCSystemInfo(APDU apdu) {
        byte[]    apdubuf = apdu.getBuffer();
-       short     dataLen = apdu.setIncomingAndReceive();
+       apdu.setIncomingAndReceive();
        short     offset = (short) 0;
 
         Util.setShort(apdubuf, offset, JCSystem.getVersion());
@@ -491,7 +455,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
   
    void TestAvailableMemory(APDU apdu) {
        byte[]    apdubuf = apdu.getBuffer();
-       short     dataLen = apdu.setIncomingAndReceive();
+       apdu.setIncomingAndReceive();
        short     offset = (short) 0;
 
        short     toAllocateRAM = (short) 30000;
@@ -628,9 +592,12 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
          }
        }
    }
-    void GetRSAKey(APDU apdu) {
+   /**
+    * Method for on-card generation of RSA keypair and export of result outside (in two apdu)
+    * @param apdu 
+    */
+   void GetRSAKey(APDU apdu) {
       byte[]    apdubuf = apdu.getBuffer();
-      //apdu.setIncomingAndReceive();
 
       // Generate new object if not before yet
       if (m_keyPair == null) {
@@ -642,11 +609,6 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
             m_keyPair.genKeyPair();           
             m_rsaPublicKey = (RSAPublicKey) m_keyPair.getPublic();
 
-            /*            
-            short offset = rsa_PublicKey.getExponent(apdubuf, (short) 0);
-            offset += rsa_PublicKey.getModulus(apdubuf, offset);
-            */
-            
             short offset = 0;
             apdubuf[offset] = (byte)0x82; offset++;
             short len = m_rsaPublicKey.getExponent(apdubuf, (short)(offset + 2));
@@ -694,11 +656,45 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
    
     void prepare_class_Util(APDU apdu) {
         byte[] apdubuf = apdu.getBuffer();
-        //m_testSettings.parse(apdu);  
+        m_testSettings.parse(apdu);  
         short offset = ISO7816.OFFSET_CDATA;
         
-        // no preparation at the time
+        short chunkDataLen = (short) (m_testSettings.dataLength1 / m_testSettings.numRepeatSubOperation);
         
+        switch (m_testSettings.algorithmMethod) {
+            case JCConsts.Util_arrayCopy_RAM: 
+            case JCConsts.Util_arrayCopy_EEPROM: 
+            case JCConsts.Util_arrayCopy_RAM2EEPROM: 
+            case JCConsts.Util_arrayCopy_EEPROM2RAM: 
+            case JCConsts.Util_arrayCopyNonAtomic_RAM: 
+            case JCConsts.Util_arrayCopyNonAtomic_EEPROM: 
+            case JCConsts.Util_arrayCopyNonAtomic_RAM2EEPROM: 
+            case JCConsts.Util_arrayCopyNonAtomic_EEPROM2RAM: 
+            case JCConsts.Util_arrayFillNonAtomic_RAM: 
+            case JCConsts.Util_arrayFillNonAtomic_EEPROM: {
+                m_trng.generateData(m_ram1, (short) 0, (short) (2 * chunkDataLen)); 
+                m_trng.generateData(m_eeprom1, (short) 0, (short) (2 * chunkDataLen)); 
+                break;
+            }
+
+            case JCConsts.Util_arrayCompare_RAM: {
+                m_trng.generateData(m_ram1, (short) 0, chunkDataLen); 
+                Util.arrayCopyNonAtomic(m_ram1, (short) 0, m_ram1, chunkDataLen, chunkDataLen);    // prepare same second part to measure full operation
+            }
+            case JCConsts.Util_arrayCompare_EEPROM: {
+                m_trng.generateData(m_eeprom1, (short) 0, chunkDataLen); 
+                Util.arrayCopyNonAtomic(m_eeprom1, (short) 0, m_eeprom1, chunkDataLen, chunkDataLen);    // prepare same second part to measure full operation
+                break;
+            }
+            case JCConsts.Util_arrayCompare_RAM2EEPROM: // no break
+            case JCConsts.Util_arrayCompare_EEPROM2RAM: {
+                m_trng.generateData(m_ram1, (short) 0, chunkDataLen); 
+                Util.arrayCopyNonAtomic(m_ram1, (short) 0, m_eeprom1, (short) 0, chunkDataLen);    // prepare same second part to measure full operation
+                break;
+            }
+            default: ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
+        }
+    
         apdubuf[offset] = SUCCESS;
         apdu.setOutgoingAndSend(offset, (byte)1);
     }
@@ -707,41 +703,96 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         byte[] apdubuf = apdu.getBuffer();
         m_testSettings.parse(apdu);
         
-        short repeats = (short) (m_testSettings.numRepeatWholeOperation * m_testSettings.numRepeatSubOperation);
         short chunkDataLen = (short) (m_testSettings.dataLength1 / m_testSettings.numRepeatSubOperation);
-        m_trng.generateData(m_ram1, (short) 0, chunkDataLen); // fill input with random data
-        
 
         switch (m_testSettings.algorithmMethod) {
-            case JCConsts.Util_xor:   
-                for (short i = 0; i < repeats; i++) {
-/*                    
-                    for (short k = 0; k < chunkDataLen; k++) { 
-                        m_ram1[k] = (byte) (m_ram1[k] ^ (byte) k); // xor value of k to actual value of m_ram1
-                    }
-/**/
-                    // XOR 16 bytes in fully unrolled loop
-                    m_ram1[(byte) 0] ^=  m_ram1[(byte) 16];
-                    m_ram1[(byte) 1] ^=  m_ram1[(byte) 17];
-                    m_ram1[(byte) 2] ^=  m_ram1[(byte) 18];
-                    m_ram1[(byte) 3] ^=  m_ram1[(byte) 19];
-                    m_ram1[(byte) 4] ^=  m_ram1[(byte) 20];
-                    m_ram1[(byte) 5] ^=  m_ram1[(byte) 21];
-                    m_ram1[(byte) 6] ^=  m_ram1[(byte) 22];
-                    m_ram1[(byte) 7] ^=  m_ram1[(byte) 23];
-                    m_ram1[(byte) 8] ^=  m_ram1[(byte) 24];
-                    m_ram1[(byte) 9] ^=  m_ram1[(byte) 25];
-                    m_ram1[(byte) 10] ^=  m_ram1[(byte) 26];
-                    m_ram1[(byte) 11] ^=  m_ram1[(byte) 27];
-                    m_ram1[(byte) 12] ^=  m_ram1[(byte) 28];
-                    m_ram1[(byte) 13] ^=  m_ram1[(byte) 29];
-                    m_ram1[(byte) 14] ^=  m_ram1[(byte) 30];
-                    m_ram1[(byte) 15] ^=  m_ram1[(byte) 31];
-                } 
+            case JCConsts.Util_arrayCopy_RAM: {
+                for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 
+                    Util.arrayCopy(m_ram1, (short) 0, m_ram1, chunkDataLen, chunkDataLen);   
+                }
                 break;
-   
+            }
+            case JCConsts.Util_arrayCopy_EEPROM: {
+                for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 
+                    Util.arrayCopy(m_eeprom1, (short) 0, m_eeprom1, chunkDataLen, chunkDataLen);  
+                }
+                break;
+            }
+            case JCConsts.Util_arrayCopy_RAM2EEPROM: {
+                for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 
+                    Util.arrayCopy(m_ram1, (short) 0, m_eeprom1, (short) 0, chunkDataLen);  
+                }
+                break;
+            }
+            case JCConsts.Util_arrayCopy_EEPROM2RAM: {
+                for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 
+                    Util.arrayCopy(m_eeprom1, (short) 0, m_ram1, (short) 0, chunkDataLen);  
+                }
+                break;
+            }
+            case JCConsts.Util_arrayCopyNonAtomic_RAM: {
+                for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 
+                    Util.arrayCopyNonAtomic(m_ram1, (short) 0, m_ram1, chunkDataLen, chunkDataLen);   
+                }
+                break;
+            }
+            case JCConsts.Util_arrayCopyNonAtomic_EEPROM: {
+                for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 
+                    Util.arrayCopyNonAtomic(m_eeprom1, (short) 0, m_eeprom1, chunkDataLen, chunkDataLen);  
+                }
+                break;
+            }
+            case JCConsts.Util_arrayCopyNonAtomic_RAM2EEPROM: {
+                for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 
+                    Util.arrayCopyNonAtomic(m_ram1, (short) 0, m_eeprom1, (short) 0, chunkDataLen);  
+                }
+                break;
+            }
+            case JCConsts.Util_arrayCopyNonAtomic_EEPROM2RAM: {
+                for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 
+                    Util.arrayCopyNonAtomic(m_eeprom1, (short) 0, m_ram1, (short) 0, chunkDataLen);  
+                }
+                break;
+            }
+           case JCConsts.Util_arrayFillNonAtomic_RAM: {
+                for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 
+                    Util.arrayFillNonAtomic(m_ram1, (short) 0, chunkDataLen, (byte) 0x55);   
+                }
+                break;
+            }
+            case JCConsts.Util_arrayFillNonAtomic_EEPROM: {
+                for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 
+                    Util.arrayFillNonAtomic(m_eeprom1, (short) 0, chunkDataLen, (byte) 0x55);  
+                }
+                break;
+            }
+            case JCConsts.Util_arrayCompare_RAM: {
+                for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 
+                    Util.arrayCopy(m_ram1, (short) 0, m_ram1, chunkDataLen, chunkDataLen);   
+                }
+                break;
+            }
+            case JCConsts.Util_arrayCompare_EEPROM: {
+                for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 
+                    Util.arrayCopy(m_eeprom1, (short) 0, m_eeprom1, chunkDataLen, chunkDataLen);  
+                }
+                break;
+            }
+            case JCConsts.Util_arrayCompare_RAM2EEPROM: {
+                for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 
+                    Util.arrayCopy(m_ram1, (short) 0, m_eeprom1, (short) 0, chunkDataLen);  
+                }
+                break;
+            }
+            case JCConsts.Util_arrayCompare_EEPROM2RAM: {
+                for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 
+                    Util.arrayCopy(m_eeprom1, (short) 0, m_ram1, (short) 0, chunkDataLen);  
+                }
+                break;
+            }
             default: ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
         }
+                
 
         apdubuf[ISO7816.OFFSET_CDATA] = SUCCESS;
         apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);            
@@ -1740,13 +1791,15 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                     m_aesCipher.RoundKeysSchedule(m_ram2, (short) 0, m_ram1);   // schedule keys into m_ram1                   
                     break;
                 }
+                case JCConsts.SWAlgs_xor:   
+                    // No preparation
+                    break;
                 default: ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
             }
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);            
         }
-        catch(CryptoException e)
-        {
+        catch(CryptoException e) {
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte)e.getReason();
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
         }  
@@ -1763,7 +1816,27 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                     m_aesCipher.AESEncryptBlock(m_ram2, (short) 0, m_ram1); // only one 16B block, scheduled keys in m_ram1
                 } 
                 break;
-    
+            case JCConsts.SWAlgs_xor:   
+                for (short i = 0; i < repeats; i++) {
+                    // XOR 16 bytes in fully unrolled loop
+                    m_ram1[(byte) 0] ^=  m_ram1[(byte) 16];
+                    m_ram1[(byte) 1] ^=  m_ram1[(byte) 17];
+                    m_ram1[(byte) 2] ^=  m_ram1[(byte) 18];
+                    m_ram1[(byte) 3] ^=  m_ram1[(byte) 19];
+                    m_ram1[(byte) 4] ^=  m_ram1[(byte) 20];
+                    m_ram1[(byte) 5] ^=  m_ram1[(byte) 21];
+                    m_ram1[(byte) 6] ^=  m_ram1[(byte) 22];
+                    m_ram1[(byte) 7] ^=  m_ram1[(byte) 23];
+                    m_ram1[(byte) 8] ^=  m_ram1[(byte) 24];
+                    m_ram1[(byte) 9] ^=  m_ram1[(byte) 25];
+                    m_ram1[(byte) 10] ^=  m_ram1[(byte) 26];
+                    m_ram1[(byte) 11] ^=  m_ram1[(byte) 27];
+                    m_ram1[(byte) 12] ^=  m_ram1[(byte) 28];
+                    m_ram1[(byte) 13] ^=  m_ram1[(byte) 29];
+                    m_ram1[(byte) 14] ^=  m_ram1[(byte) 30];
+                    m_ram1[(byte) 15] ^=  m_ram1[(byte) 31];
+                } 
+                break;
             default: ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
         }
 

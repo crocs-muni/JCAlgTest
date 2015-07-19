@@ -329,6 +329,13 @@ public class PerformanceTestingNGTest {
 
         perfTesting.testAllSWAlgs(1, 5);
     }     
+   @Test
+    void perftest_testClass_Util() throws Exception {
+        perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection(null) : perfTesting.m_cardManager.establishConnection(AlgTestSinglePerApdu.class);   
+        assertNotEquals(perfTesting.m_perfResultsFile, null);
+
+        perfTesting.testAllUtil(100, 5);
+    }     
     @Test
     void debug() throws Exception { 
         perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection(null) : perfTesting.m_cardManager.establishConnection(AlgTestSinglePerApdu.class);   

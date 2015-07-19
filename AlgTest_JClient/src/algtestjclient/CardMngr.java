@@ -799,11 +799,28 @@ public class CardMngr {
         
         for (CPLC.Field f : CPLC.Field.values()) {
             byte[] value = (byte[]) cplValues.get(f);
-            if (f == CPLC.Field.ICFabricationDate) {
-                message = "\r\nCPLC." + f.name() + " ((Y DDD) date in that year); " + bytesToHex(value, false);
-            } 
-            else {
-                message = "\r\nCPLC." + f.name() + "; " + bytesToHex(value, false);
+            
+            switch (f) {
+                case ICFabricationDate: {
+                    message = "\r\nCPLC." + f.name() + ";" + bytesToHex(value, false) + ";(Y DDD) date in that year";
+                    break;
+                }
+                case ICFabricator: {
+                    String id = bytesToHex(value, false);
+                    String fabricatorName = "unknown";
+                    if (id.equals("3060")) { fabricatorName = "Renesas"; }
+                    if (id.equals("4090")) { fabricatorName = "Infineon"; }
+                    if (id.equals("4180")) { fabricatorName = "Atmel"; }
+                    if (id.equals("4250")) { fabricatorName = "Samsung"; }
+                    if (id.equals("4790")) { fabricatorName = "NXP"; }
+
+                    message = "\r\nCPLC." + f.name() + ";" + bytesToHex(value, false) + ";" + fabricatorName;
+                    break;
+                }
+                default: {
+                    message = "\r\nCPLC." + f.name() + ";" + bytesToHex(value, false);
+                    break;
+                }
             }
             System.out.println(message);
             pFile.write(message.getBytes());
