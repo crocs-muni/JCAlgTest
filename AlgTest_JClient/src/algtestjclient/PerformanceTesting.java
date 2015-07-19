@@ -175,7 +175,7 @@ public class PerformanceTesting {
         testAllKeys(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
         testAllUtil(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
         testAllSWAlgs(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
-        testAllKeyPairs(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
+        testAllKeyPairs(1, Consts.NUM_REPEAT_WHOLE_MEASUREMENT_KEYPAIRGEN);    // for keypair, different repeat settings is used
     }
     
     void LoadAlreadyMeasuredAlgs(String cardName) {
