@@ -338,7 +338,9 @@ public class PerformanceTestingNGTest {
     }     
     @Test
     void debug() throws Exception { 
+        bTestRealCards = true;
         perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection(null) : perfTesting.m_cardManager.establishConnection(AlgTestSinglePerApdu.class);   
-        perfTesting.testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512,JCConsts.Signature_ALG_RSA_SHA_ISO9796,"ALG_RSA LENGTH_RSA_512 ALG_RSA_SHA_ISO9796", (short) 1, (short) 1);
+        perfTesting.testCipherWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_CRT_PUBLIC LENGTH_RSA_2048 Cipher_ALG_RSA_PKCS1", JCConsts.Cipher_MODE_ENCRYPT, (short) 5, (short) 5);
+        perfTesting.testCipherWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_PUBLIC LENGTH_RSA_2048 Cipher_ALG_RSA_PKCS1", JCConsts.Cipher_MODE_ENCRYPT, (short) 5, (short) 5);
     }
 }
