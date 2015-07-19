@@ -114,7 +114,8 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
     private   MessageDigest    m_digest = null;
     private   RandomData       m_random = null;
     private   Object           m_object = null;
-    private   KeyPair          m_keyPair = null;
+    private   KeyPair          m_keyPair1 = null;
+    private   KeyPair          m_keyPair2 = null;
     private   Checksum         m_checksum = null;
     private   KeyAgreement     m_keyAgreement = null;   
     
@@ -405,8 +406,8 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
            case (byte) 0x19: // no break
            case (byte) 0x1C: { // no break
              try {
-               offset++;m_keyPair = new KeyPair(algorithmClass, algorithmParam1);
-               m_keyPair.genKeyPair();
+               offset++;m_keyPair1 = new KeyPair(algorithmClass, algorithmParam1);
+               m_keyPair1.genKeyPair();
                apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
              }
              catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
@@ -600,14 +601,14 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
       byte[]    apdubuf = apdu.getBuffer();
 
       // Generate new object if not before yet
-      if (m_keyPair == null) {
-          m_keyPair = new KeyPair(KeyPair.ALG_RSA_CRT, KeyBuilder.LENGTH_RSA_1024);	  
+      if (m_keyPair1 == null) {
+          m_keyPair1 = new KeyPair(KeyPair.ALG_RSA_CRT, KeyBuilder.LENGTH_RSA_1024);	  
       }	        
 
       switch (apdubuf[ISO7816.OFFSET_P1]) {
         case 0: {
-            m_keyPair.genKeyPair();           
-            m_rsaPublicKey = (RSAPublicKey) m_keyPair.getPublic();
+            m_keyPair1.genKeyPair();           
+            m_rsaPublicKey = (RSAPublicKey) m_keyPair1.getPublic();
 
             short offset = 0;
             apdubuf[offset] = (byte)0x82; offset++;
@@ -627,7 +628,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
             break;
         }
         case 1: {
-            m_rsaPrivateKey = (RSAPrivateCrtKey) m_keyPair.getPrivate();
+            m_rsaPrivateKey = (RSAPrivateCrtKey) m_keyPair1.getPrivate();
             
             short offset = 0;
             short len = m_rsaPrivateKey.getP(apdubuf, (short)(offset + 3));
@@ -874,72 +875,101 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
 /**/                    
                 case JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE:
                     if (bSetKeyValue == Consts.TRUE) {
-                        m_keyPair = new KeyPair(KeyPair.ALG_RSA_CRT, m_testSettings.keyLength);
-                        m_keyPair.genKeyPair();
-                        m_key1 = m_keyPair.getPrivate();
-                        m_rsaprivatecrt_key = (RSAPrivateCrtKey) m_keyPair.getPrivate();
+                        m_keyPair1 = new KeyPair(KeyPair.ALG_RSA_CRT, m_testSettings.keyLength);
+                        m_keyPair1.genKeyPair();
+                        m_key1 = m_keyPair1.getPrivate();
+                        m_rsaprivatecrt_key = (RSAPrivateCrtKey) m_keyPair1.getPrivate();
+                        m_keyPair2 = new KeyPair(KeyPair.ALG_RSA_CRT, m_testSettings.keyLength);
+                        m_keyPair2.genKeyPair();
+                        m_key2 = m_keyPair2.getPrivate();
                     }
                     break;
                 case JCConsts.KeyBuilder_TYPE_RSA_PRIVATE:
                     if (bSetKeyValue == Consts.TRUE) {
-                        m_keyPair = new KeyPair(KeyPair.ALG_RSA, m_testSettings.keyLength);
-                        m_keyPair.genKeyPair();
-                        m_key1 = m_keyPair.getPrivate();
-                        m_rsaprivate_key = (RSAPrivateKey) m_keyPair.getPrivate();
+                        m_keyPair1 = new KeyPair(KeyPair.ALG_RSA, m_testSettings.keyLength);
+                        m_keyPair1.genKeyPair();
+                        m_key1 = m_keyPair1.getPrivate();
+                        m_rsaprivate_key = (RSAPrivateKey) m_keyPair1.getPrivate();
+                        m_keyPair2 = new KeyPair(KeyPair.ALG_RSA, m_testSettings.keyLength);
+                        m_keyPair2.genKeyPair();
+                        m_key2 = m_keyPair2.getPrivate();
                     }
                     break;                
                 case JCConsts.KeyBuilder_TYPE_RSA_PUBLIC:   
                     if (bSetKeyValue == Consts.TRUE){
-                        m_keyPair = new KeyPair(KeyPair.ALG_RSA, m_testSettings.keyLength);
-                        m_keyPair.genKeyPair(); // TODO: use fixed key value to shorten time required for key generation?
-                        m_key1 = m_keyPair.getPublic();                
-                        m_rsapublic_key = (RSAPublicKey) m_keyPair.getPublic();
+                        m_keyPair1 = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
+                        m_keyPair1.genKeyPair(); // TODO: use fixed key value to shorten time required for key generation?
+                        m_key1 = m_keyPair1.getPublic();                
+                        m_rsapublic_key = (RSAPublicKey) m_keyPair1.getPublic();
+                        m_keyPair2 = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
+                        m_keyPair2.genKeyPair(); // TODO: use fixed key value to shorten time required for key generation?
+                        m_key2 = m_keyPair2.getPublic();                
                     }
                     break;
                 case JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE:
                     if (bSetKeyValue == Consts.TRUE) {
-                        m_keyPair = new KeyPair(KeyPair.ALG_EC_F2M, m_testSettings.keyLength);
-                        m_keyPair.genKeyPair();
-                        m_key1 = m_keyPair.getPrivate();
-                        m_ecprivate_key = (ECPrivateKey) m_keyPair.getPrivate();
+                        m_keyPair1 = new KeyPair(KeyPair.ALG_EC_F2M, m_testSettings.keyLength);
+                        m_keyPair1.genKeyPair();
+                        m_key1 = m_keyPair1.getPrivate();
+                        m_ecprivate_key = (ECPrivateKey) m_keyPair1.getPrivate();
+                        m_keyPair2 = new KeyPair(KeyPair.ALG_EC_F2M, m_testSettings.keyLength);
+                        m_keyPair2.genKeyPair();
+                        m_key2 = m_keyPair2.getPrivate();
                     }
                     break;
                 case JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE:
                     if (bSetKeyValue == Consts.TRUE) {
-                        m_keyPair = new KeyPair(KeyPair.ALG_EC_FP, m_testSettings.keyLength);
-                        m_keyPair.genKeyPair(); // TODO: use fixed key value to shorten time required for key generation?
-                        m_key1 = m_keyPair.getPrivate();                
-                        m_ecprivate_key= (ECPrivateKey) m_keyPair.getPrivate();
+                        m_keyPair1 = new KeyPair(KeyPair.ALG_EC_FP, m_testSettings.keyLength);
+                        m_keyPair1.genKeyPair(); // TODO: use fixed key value to shorten time required for key generation?
+                        m_key1 = m_keyPair1.getPrivate();                
+                        m_ecprivate_key= (ECPrivateKey) m_keyPair1.getPrivate();
+                        m_keyPair2 = new KeyPair(KeyPair.ALG_EC_FP, m_testSettings.keyLength);
+                        m_keyPair2.genKeyPair(); // TODO: use fixed key value to shorten time required for key generation?
+                        m_key2 = m_keyPair2.getPrivate();                
                     }
                     break;
                 case JCConsts.KeyBuilder_TYPE_DSA_PRIVATE:
                     if (bSetKeyValue == Consts.TRUE){
-                        m_keyPair = new KeyPair(KeyPair.ALG_DSA, m_testSettings.keyLength);
-                        m_keyPair.genKeyPair();
-                        m_key1 = m_keyPair.getPrivate();
-                        m_dsaprivate_key = (DSAPrivateKey) m_keyPair.getPrivate();
+                        m_keyPair1 = new KeyPair(KeyPair.ALG_DSA, m_testSettings.keyLength);
+                        m_keyPair1.genKeyPair();
+                        m_key1 = m_keyPair1.getPrivate();
+                        m_dsaprivate_key = (DSAPrivateKey) m_keyPair1.getPrivate();
+                        m_keyPair2 = new KeyPair(KeyPair.ALG_DSA, m_testSettings.keyLength);
+                        m_keyPair2.genKeyPair();
+                        m_key2 = m_keyPair2.getPrivate();
                     }
                     break;
                 case JCConsts.KeyBuilder_TYPE_DSA_PUBLIC:
                     if (bSetKeyValue == Consts.TRUE){
-                        m_keyPair = new KeyPair(KeyPair.ALG_DSA, m_testSettings.keyLength);
-                        m_keyPair.genKeyPair();
-                        m_dsapublic_key = (DSAPublicKey) m_keyPair.getPublic();
+                        m_keyPair1 = new KeyPair(KeyPair.ALG_DSA, m_testSettings.keyLength);
+                        m_keyPair1.genKeyPair();
+                        m_key1 = m_keyPair1.getPrivate();
+                        m_dsapublic_key = (DSAPublicKey) m_keyPair1.getPublic();
+                        m_keyPair2 = new KeyPair(KeyPair.ALG_DSA, m_testSettings.keyLength);
+                        m_keyPair2.genKeyPair();
+                        m_key2 = m_keyPair2.getPrivate();
                     }
                     break;
                 case JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC:
                     if (bSetKeyValue == Consts.TRUE){
-                        m_keyPair = new KeyPair(KeyPair.ALG_EC_F2M, m_testSettings.keyLength);
-                        m_keyPair.genKeyPair();
-                        m_key1 = m_keyPair.getPublic();
-                        m_ecpublic_key = (ECPublicKey) m_keyPair.getPublic();
+                        m_keyPair1 = new KeyPair(KeyPair.ALG_EC_F2M, m_testSettings.keyLength);
+                        m_keyPair1.genKeyPair();
+                        m_key1 = m_keyPair1.getPublic();
+                        m_ecpublic_key = (ECPublicKey) m_keyPair1.getPublic();
+                        m_keyPair2 = new KeyPair(KeyPair.ALG_EC_F2M, m_testSettings.keyLength);
+                        m_keyPair2.genKeyPair();
+                        m_key2 = m_keyPair2.getPublic();
                     }
                     break;
                 case JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC:
                     if (bSetKeyValue == Consts.TRUE){
-                        m_keyPair = new KeyPair(KeyPair.ALG_EC_FP, m_testSettings.keyLength);
-                        m_keyPair.genKeyPair(); // TODO: use fixed key value to shorten time required for key generation?
-                        m_ecpublic_key = (ECPublicKey) m_keyPair.getPublic();              
+                        m_keyPair1 = new KeyPair(KeyPair.ALG_EC_FP, m_testSettings.keyLength);
+                        m_keyPair1.genKeyPair(); // TODO: use fixed key value to shorten time required for key generation?
+                        m_key1 = m_keyPair1.getPublic();                        
+                        m_ecpublic_key = (ECPublicKey) m_keyPair1.getPublic();              
+                        m_keyPair2 = new KeyPair(KeyPair.ALG_EC_FP, m_testSettings.keyLength);
+                        m_keyPair2.genKeyPair(); // TODO: use fixed key value to shorten time required for key generation?
+                        m_key2 = m_keyPair2.getPublic();
                     }
                     break;                
                 default:
@@ -1277,6 +1307,9 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         try {
             m_cipher = Cipher.getInstance((byte) m_testSettings.algorithmSpecification, false);
             m_cipher.init(m_key1, (byte) m_testSettings.initMode);
+            short chunkDataLen = (short) (m_testSettings.dataLength1 / m_testSettings.numRepeatSubOperation);
+            m_trng.generateData(m_ram1, (short) 0, chunkDataLen); // fill input with random data
+            
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA,(byte)1);
         }
@@ -1293,12 +1326,22 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         //   or multiple times (numRepeatSubOperation) on smaller chunks 
         short repeats = (short) (m_testSettings.numRepeatWholeOperation * m_testSettings.numRepeatSubOperation);
         short chunkDataLen = (short) (m_testSettings.dataLength1 / m_testSettings.numRepeatSubOperation);
-        m_trng.generateData(m_ram1, (short) 0, chunkDataLen); // fill input with random data
-        m_ram1[(short) 0] = (byte) 0x00; //Note: for raw RSA, most significant bit must be != 1
+        //m_trng.generateData(m_ram1, (short) 0, chunkDataLen); // fill input with random data
+       
         
         switch (m_testSettings.algorithmMethod) {
-            case JCConsts.Cipher_update:  for (short i = 0; i < repeats; i++) { m_cipher.update(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) 0); } break;
-            case JCConsts.Cipher_doFinal: for (short i = 0; i < repeats; i++) { m_cipher.doFinal(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) 0); } break;
+            case JCConsts.Cipher_update:  
+                for (short i = 0; i < repeats; i++) { 
+                    m_ram1[(short) 0] = (byte) 0x00; //Note: for raw RSA, most significant bit must be != 1
+                    m_cipher.update(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) 0); 
+                } 
+                break;
+            case JCConsts.Cipher_doFinal: 
+                for (short i = 0; i < repeats; i++) { 
+                    m_ram1[(short) 0] = (byte) 0x00; //Note: for raw RSA, most significant bit must be != 1
+                    m_cipher.doFinal(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) 0); 
+                } 
+                break;
             case JCConsts.Cipher_init:    
                 for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 
                     m_cipher.init((i % 2 == 0) ? m_key1 : m_key2, (byte) m_testSettings.initMode); // (i % 2 == 0) ? m_key1 : m_key2 alteration between keys for forcing to init with new key
@@ -1372,7 +1415,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
             m_signatureSign = Signature.getInstance((byte) m_testSettings.algorithmSpecification, false);
             m_signatureVerify = Signature.getInstance((byte) m_testSettings.algorithmSpecification, false);
             m_signatureSign.init(m_key1, Signature.MODE_SIGN);
-            m_signatureVerify.init(m_key1, Signature.MODE_VERIFY);
+            m_signatureVerify.init(m_key2, Signature.MODE_VERIFY);
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
         }
@@ -1393,7 +1436,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         short chunkDataLen = (short) (m_testSettings.dataLength1 / m_testSettings.numRepeatSubOperation);
         switch (m_testSettings.algorithmMethod) {
             case JCConsts.Signature_update:   for (short i = 0; i < repeats; i++) { m_signatureSign.update(m_ram1, (short) 0, chunkDataLen); } break;
-            case JCConsts.Signature_sign:     for (short i = 0; i < repeats; i++) { m_signatureSign.sign(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) 0); } break;
+            case JCConsts.Signature_sign:     for (short i = 0; i < repeats; i++) { m_signatureSign.sign(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) chunkDataLen); } break;
             case JCConsts.Signature_verify:   
                 // Compute valid signature once (used later for verification)
                 m_signatureSign.sign(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) chunkDataLen);                 
@@ -1566,7 +1609,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         m_testSettings.parse(apdu);  
         
         try {
-            m_keyPair = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
+            m_keyPair1 = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
         }
@@ -1580,7 +1623,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         m_testSettings.parse(apdu); 
 
         switch (m_testSettings.algorithmMethod) {
-            case JCConsts.KeyPair_genKeyPair:   for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_keyPair.genKeyPair(); } break;
+            case JCConsts.KeyPair_genKeyPair:   for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_keyPair1.genKeyPair(); } break;
     
             default: ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
         }
