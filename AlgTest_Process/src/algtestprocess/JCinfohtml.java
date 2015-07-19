@@ -16,7 +16,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-
 /**
  *
  * @author rk
@@ -25,9 +24,7 @@ public class JCinfohtml {
     
     public static final String TABLE_HEAD = "<table cellspacing='0'> <!-- cellspacing='0' is important, must stay -->\n\t<tr><th style=\"width: 330px;\">Name of function</th><th><b>Operation average (ms/op)</b></th><th>Operation minimum (ms/op)</th><th>Operation maximum (ms/op)</th><th>Prepare average (ms/op)</th><th>Prepare minimum (ms/op)</th><th>Prepare maximum (ms/op)</th><th>Data length</th><th>Iterations & Invocations</th></tr><!-- Table Header -->\n";
     public static final List<String> category = Arrays.asList("MESSAGE DIGEST", "RANDOM GENERATOR", "CIPHER", "SIGNATURE", "CHECKSUM", "AESKey", "DESKey", "KoreanSEEDKey", "DSAPrivateKey", "DSAPublicKey", "ECF2MPublicKey", "ECF2MPrivateKey", "ECFPPublicKey", "HMACKey", "RSAPrivateKey", "RSAPublicKey", "RSAPrivateCRTKey", "KEY PAIR", "UTIL", "SWALGS");
-    public static final String topFunctionsFile = "top.txt";  
-    private static int lp = 0; //parse file line position
-    private static String toFile = "";
+    public static final String topFunctionsFile = "top.txt";
     
     public static List<String> initalize(String input, StringBuilder cardName) throws FileNotFoundException, IOException{
         BufferedReader reader = new BufferedReader(new FileReader(input));
@@ -53,24 +50,24 @@ public class JCinfohtml {
         return lines;
     }
     
-    public static void parse(List<String> lines, FileOutputStream file) throws IOException{           
+    public static Integer parse(List<String> lines, FileOutputStream file, Integer lp) throws IOException{           
             int tp = 0;
             
             while(lp<lines.size()){
                for (String cat : category)
                    if((cat.equals(lines.get(lp))) || (lines.get(lp).contains("END"))){
                            lp--;                           
-                           return;
+                           return lp;
                    } 
                
-               parseOne(lines, file, tp);
-               tp++;
-               file.write(toFile.getBytes());
-               toFile = ""; 
+               lp = parseOne(lines, file, lp, tp);
+               tp++;                             
         }
+        return lp;    
     }
     
     public static void details(List<String> lines, FileOutputStream file) throws IOException{ 
+        String toFile;
         String[] info;
         
         // Transform lines into hashmap
@@ -90,8 +87,6 @@ public class JCinfohtml {
         toFile +="<p>Used reader: <strong>"+infoMap.get("Used reader")+"</strong></p>\n";
         toFile +="<p><strong>Card ATR: "+infoMap.get("Card ATR")+"</strong></p></br>\n";
         toFile +="<p><u><a href=\"https://smartcard-atr.appspot.com/parse?ATR="+infoMap.get("Card ATR").replaceAll(" ","")+"\" target=\"_blank\">Smart card ATR parsing link</a></u></p>\n</br>\n";
-        file.write(toFile.getBytes());        
-        toFile = "";
         
         toFile +="<p>JavaCard version: <strong>"+infoMap.get("JCSystem.getVersion()[Major.Minor]")+"</strong></p>\n";
         toFile +="<p>MEMORY_TYPE_PERSISTENT: <strong>"+infoMap.get("JCSystem.MEMORY_TYPE_PERSISTENT")+"</strong></p>\n";
@@ -126,27 +121,25 @@ public class JCinfohtml {
         }
         
         toFile +="</div>\n";
-        file.write(toFile.getBytes());
-        toFile = "";
+        file.write(toFile.getBytes());        
     }
     
     
      public static void quickLinks(FileOutputStream file) throws IOException{ 
+        String toFile;
         toFile= "<div class=\"pageColumnQuickLinks\">\n";
         toFile+= "<h3>Quick links</h3>\n<ul style=\"list-style-type: circle;\">\n";
         toFile+="\t<li>"+ "<a href=\"#TOP\">TOP FUNCTIONS</a>"+"</li>\n";
         
-        for (String cat : category) {
+        for (String cat : category)
             toFile+="\t<li>"+ "<a href=\"#"+cat.replaceAll(" ", "_")+"\">"+cat+"</a>" +"</li>\n";
-        }
-        
+               
         toFile+= "</ul>\n</div>\n";
-        file.write(toFile.getBytes());
-        toFile = "";      
+        file.write(toFile.getBytes());              
      }
      
      public static void begin(FileOutputStream file, String headline) throws IOException{ 
-        toFile = "";
+        String toFile = "";
         toFile += "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n";
         toFile += "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n";
         toFile += "<head>\n" + "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\n" ;
@@ -157,7 +150,7 @@ public class JCinfohtml {
                   "<script type=\"text/javascript\" src=\"jquery.tablesorter.js\"></script>\n" +
                   "<script type=\"text/javascript\" id=\"js\">\n" +
                   "\t$.tablesorter.addParser({\n" +
-                  "\t\tid: 'Error',\n" +
+                  "\t\tid: 'error',\n" +
                   "\t\tis: function(s) {\n" +
                   "\t\t\treturn true;\n" +
                   "\t\t},\n" +
@@ -183,8 +176,9 @@ public class JCinfohtml {
                   "16:{sorter:'error'}, 17:{sorter:'error'}, 18:{sorter:'error'}, 19:{sorter:'error'}, 20:{sorter:'error'}, \n" +
                   "\t\t\t21:{sorter:'error'}, 22:{sorter:'error'}, 23:{sorter:'error'}, 24:{sorter:'error'}, 25:{sorter:'error'}, " +
                   "26:{sorter:'error'}, 27:{sorter:'error'}, 28:{sorter:'error'}, 29:{sorter:'error'}, 30:{sorter:'error'} \n" +
-                  "\t\t\t}\t\t});\n\t});" + 
-                  "\n</script>\n";
+                  "\t\t\t}\t\t});\n\t});\n" + 
+                  "</script>\n";
+        
         toFile += "<script>\n" + "\tjQuery(document).ready(function(){\n\tvar offset = 220;var duration = 500;\n" +
                   "\t\tjQuery(window).scroll(function(){\n\tif (jQuery(this).scrollTop()>offset){jQuery('.back-to-top').fadeIn(duration);\n" +
                   "\t}else{jQuery('.back-to-top').fadeOut(duration);}});\n" + 
@@ -199,12 +193,12 @@ public class JCinfohtml {
         toFile += "\t<p style=\"margin-left:20px;\">INFO: This file was generated by AlgTest utility. See <a href=\"http://www.fi.muni.cz/~xsvenda/jcsupport.html\">this website</a>  for more results, source codes and other details.</p>\n" 
                 + "</div>\n </br>\n";
         
-        file.write(toFile.getBytes());
-        toFile = "";      
+        file.write(toFile.getBytes());    
      }
      
-     public static void tableGenerator(List<String> lines, FileOutputStream file) throws IOException{ 
-        while(lp < lines.size()-2) {
+     public static void tableGenerator(List<String> lines, FileOutputStream file, Integer lp) throws IOException{ 
+         String toFile = "";
+         while(lp < lines.size()-2) {
             lp++;            
             for (String cat : category) {
                 if (lines.get(lp).equals(cat) && !((lines.get(lp+1)).contains("END") || (lines.get(lp+2)).contains("END"))) {                    
@@ -216,7 +210,9 @@ public class JCinfohtml {
                     }
                     
                     toFile += TABLE_HEAD;                                   // head of table 
-                    JCinfohtml.parse(lines, file);                          //parsing info of separate tests
+                    file.write(toFile.getBytes());
+                    toFile = "";
+                    lp = parse(lines, file, lp);                                 //parsing info of separate tests
                     toFile += "</table>\n</br>\n";                          //end of table
                     file.write(toFile.getBytes());
                     toFile = "";
@@ -287,15 +283,17 @@ public class JCinfohtml {
     }
      
     public static void generateSortableTable(String tableID, List<String> topAcronyms, List<String> topNames, List<String> files, FileOutputStream file) throws IOException {
+        Integer lp = 0;
         String result = "<table id=\"" + tableID + "\" class=\"tablesorter\" cellspacing='0'>\n";
-        result += "\t<thead><tr>\n\t<th>CARD/FUNCTION";
-        for (int i = 0; i < 40; i++) { result += "&nbsp"; } // insert fixed spaces to force width of card name column
-        result += "</th>";
+        result += "\t<thead><tr>\n\t<th style=\"min-width:300px;\">CARD/FUNCTION</th>";
+        //for (int i = 0; i < 40; i++) { result += "&nbsp"; } // insert fixed spaces to force width of card name column
          
-        for (String topAcronym : topAcronyms) {
+        for (String topAcronym : topAcronyms)
             result += "<th>" + topAcronym + "</th>";    
-        }
+        
         result += "</tr>\n</thead>\n<tbody>\n";         
+        file.write(result.getBytes());
+        result="";
         
         for (String filename : files){
             StringBuilder cardName = new StringBuilder();
@@ -304,15 +302,15 @@ public class JCinfohtml {
                 // If card name is not filled, use whole file name
                 cardName.append(filename.substring(filename.lastIndexOf("/")+1, filename.lastIndexOf(".")));
             }
-            result += "<tr><td width=\"400\"><strong>"+cardName+"</strong></td>";
+            result += "<tr><td><strong>"+cardName+"</strong></td>";
+            file.write(result.getBytes());
+            result = "";
             for (String topName : topNames){
                 boolean bTopNameFound = false;
                 while(lp<lines.size()-4){
                     if(lines.get(lp).contains(topName)){
                         bTopNameFound = true; 
-                        result += parseOneSortable(lines, file);
-                        file.write(result.getBytes());
-                        result = "";
+                        lp = parseOneSortable(lines, file, lp);                        
                     } else {
                         lp++;
                     }
@@ -342,7 +340,7 @@ public class JCinfohtml {
         header +="</ul>\n";    
         return header;
     }
-    public static void sortableGenerator(String dir, FileOutputStream file) throws IOException{ 
+    public static void sortableGenerator(String dir, FileOutputStream file, Integer lp) throws IOException{ 
         List<String> topNames_sym = new ArrayList<>(); 
         List<String> topAcronyms_sym = new ArrayList<>();
         List<String> topNames_asym = new ArrayList<>(); 
@@ -360,62 +358,23 @@ public class JCinfohtml {
         // Sortable table for asymmetric algorithms
         file.write(generateLegendHeader(topNames_asym, topAcronyms_asym).getBytes());
         generateSortableTable("sortable_asym", topAcronyms_asym, topNames_asym, files, file);
-        
-        
-/* del 20150719        
-        toFile += "<table id=\"sortable\" class=\"tablesorter\" cellspacing='0'>\n";
-        toFile += "\t<thead><tr>\n\t<th>CARD/FUNCTION";
-        for (int i = 0; i < 50; i++) { toFile += "&nbsp"; } // insert fixed spaces to force width of card name column
-        toFile += "</th>";
-         
-        for (String topAcronym : topAcronyms) 
-            toFile += "<th>" + topAcronym + "</th>";    
-         
-        toFile += "</tr>\n</thead>\n<tbody>\n";         
-        
-        for (String filename : files){
-            StringBuilder cardName = new StringBuilder();
-            List<String> lines = initalize(filename, cardName);
-            if (cardName.toString().isEmpty()) {
-                cardName.append(filename.substring(filename.lastIndexOf("/")+1, filename.indexOf("___")));
-            }
-            toFile += "<tr><td width=\"400\"><strong>"+cardName+"</strong></td>";
-            for (String topName : topNames){
-                while(lp<lines.size()-4){
-                    if(lines.get(lp).contains(topName)){
-                        parseOneSortable(lines, file);
-                        file.write(toFile.getBytes());
-                        toFile = "";
-                    } else {
-                        lp++;
-                    }
-                }
-                lp=0;
-            }
-            toFile += "</tr>\n";
-         }
-        
-        toFile += "</tbody>\n</table>\n</br>\n";                                  //end of table
-        file.write(toFile.getBytes());
-*/        
-        toFile = "";
-        lp=0;
      }
      
-     public static void topFunction(List<String> lines, FileOutputStream file) throws IOException{
-        int tp = 0;
+     public static void topFunction(List<String> lines, FileOutputStream file, Integer lp) throws IOException{
+        String toFile;
+        Integer tp = 0;
         List<String> topNames = new ArrayList<>();        
         loadTopFunctions(topNames, null);
         
-        toFile += "<h3 id=\"TOP\">TOP FUNCTIONS</h3>\n";                              //name of table
+        toFile = "<h3 id=\"TOP\">TOP FUNCTIONS</h3>\n";                              //name of table
         toFile += TABLE_HEAD;
+        file.write(toFile.getBytes());
+        toFile="";
         
         for (String top : topNames){
             while(lp<lines.size()-4){
             if(lines.get(lp).contains(top)){
-                parseOne(lines, file, tp);
-                file.write(toFile.getBytes());
-                toFile = "";
+                lp = parseOne(lines, file, lp, tp);
             } else {
                 lp++;
             }            
@@ -425,17 +384,17 @@ public class JCinfohtml {
         
         toFile += "</table>\n</br>\n";                                  //end of table
         file.write(toFile.getBytes());
-        toFile = "";
         lp=0;
      }
      
-     public static void parseOne(List<String> lines, FileOutputStream file, int tp){
+     public static Integer parseOne(List<String> lines, FileOutputStream file, Integer lp, Integer tp) throws IOException{        
+        String toFile = "";
         String [] prepare;
         String [] operation;
          
         if (lines.get(lp+1).equals("ALREADY_MEASURED")){
             lp+=2;
-            return;
+            return lp;
         } else {
         toFile += ((tp % 2)==0) ? "\t<tr>" : "\t<tr class='even'>";
         prepare = lines.get(lp).trim().split(";");
@@ -481,10 +440,12 @@ public class JCinfohtml {
          }  
 
          toFile += "</tr>\n";
+         file.write(toFile.getBytes());
          lp++;
+         return lp;
      }
      
-    public static String parseOneSortable(List<String> lines, FileOutputStream file){
+    public static Integer parseOneSortable(List<String> lines, FileOutputStream file, Integer lp) throws IOException{
         String [] prepare;
         String [] operation;
         String result = "";
@@ -493,7 +454,7 @@ public class JCinfohtml {
         String value = "-";
         if (lines.get(lp+1).equals("ALREADY_MEASURED")){
             lp+=2;
-            return "";
+            return lp;
         } else {
             lp+=2;
         }
@@ -522,36 +483,37 @@ public class JCinfohtml {
          result += "<td title=\""+title+"\">"+value;
          result += "</td>";
          lp++;
-         
-         return result;
+         file.write(result.getBytes());
+         return lp;
      }
      
      public static void run(String input, String name) throws FileNotFoundException, IOException{
+        Integer linePosition = 0;
         String output = name;
-        if (name.isEmpty()) {
-            output = "output";    
-        }
+        if (name.isEmpty())
+            output = "output";            
         
         FileOutputStream file = new FileOutputStream(output+".html");       
         StringBuilder cardName = new StringBuilder();
-        List<String> lines = initalize(input, cardName);   
-        begin(file, "Test results card: "+cardName.toString());
+        List<String> lines = initalize(input, cardName);                            //load lines to from file to List
+        begin(file, "Test results card: "+cardName.toString());                     //logo + headline
         quickLinks(file);
-        details(lines, file);
-        topFunction(lines, file);
-        tableGenerator(lines, file);        
-        toFile +="<p>Copyright 2015 - JCAlgTest</p>\n</body>\n" +"</html>";
+        details(lines, file);                                                       //test details + CPLC info
+        topFunction(lines, file, linePosition);                                     
+        tableGenerator(lines, file, linePosition);                                  //all tables generator
+        String toFile = "<p>Copyright 2015 - JCAlgTest</p>\n</body>\n" +"</html>";
         file.write(toFile.getBytes());
         file.close();
         System.out.println("Make sure that CSS file is present in output folder.");
      }
      
      public static void runSortable(String dir) throws FileNotFoundException, IOException{
+        Integer linePosition = 0;
         FileOutputStream file = new FileOutputStream(dir+"//"+"sortable.html");
         begin(file, "Card performance - comparative table");
         
-        sortableGenerator(dir, file);  
-        toFile +="<p>Copyright 2015 - JCAlgTest</p>\n</body>\n" +"</html>";
+        sortableGenerator(dir, file, linePosition);  
+        String toFile = "<p>Copyright 2015 - JCAlgTest</p>\n</body>\n" +"</html>";
         file.write(toFile.getBytes());
         file.close();
         System.out.println("Make sure that CSS file & JS files is present in output folder.");
@@ -562,6 +524,7 @@ public class JCinfohtml {
      * @throws java.io.FileNotFoundException
      */
     public static void main(String[] args) throws FileNotFoundException, IOException {
+        Integer linePosition = 0;
         FileOutputStream file = new FileOutputStream("output.html");       
         StringBuilder cardName = new StringBuilder();
         List<String> lines = initalize("AlgTest_3b_7a_94_00_00_80_65_a2_01_01_01_3d_72_d6_43_.csv", cardName);
@@ -569,10 +532,10 @@ public class JCinfohtml {
         begin(file, "Test results card: "+cardName.toString());
         quickLinks(file);
         details(lines, file);
-        topFunction(lines, file);
-        tableGenerator(lines, file);
+        //topFunction(lines, file, linePosition);
+        tableGenerator(lines, file, linePosition);
         
-        toFile +="<p>Copyright 2015 - JCAlgTest</p>\n</body>\n" +"</html>";
+        String toFile = "<p>Copyright 2015 - JCAlgTest</p>\n</body>\n" +"</html>";
         file.write(toFile.getBytes());
         file.close();
     }
