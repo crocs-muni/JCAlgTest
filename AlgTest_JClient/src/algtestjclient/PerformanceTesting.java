@@ -174,7 +174,8 @@ public class PerformanceTesting {
         testAllChecksums(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);     
         testAllKeys(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
         testAllUtil(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
-        testAllSWAlgs(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);        
+        testAllSWAlgs(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
+        testAllKeyPairs(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
     }
     
     void LoadAlreadyMeasuredAlgs(String cardName) {
