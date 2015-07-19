@@ -139,7 +139,7 @@ public class JCinfohtml {
                   "\t\treturn s.toLowerCase().replace(/-/,99999);\n" +
                   "\t},\n\t\ttype: 'numeric'\n\t});\n\n" +
  		  "\t$(function() {\n" +
-                  "\t$(\"#sortable\").tablesorter({\n" +
+                  "\t$(\"#sortable_sym\").tablesorter({\n" +
                   "\t\theaders: { \n" +
                   "\t\t\t1:{sorter:'error'}, 2:{sorter:'error'}, 3:{sorter:'error'}, 4:{sorter:'error'}, 5:{sorter:'error'}, " +
                   "6:{sorter:'error'}, 7:{sorter:'error'}, 8:{sorter:'error'}, 9:{sorter:'error'}, 10:{sorter:'error'}, \n" +
@@ -147,7 +147,18 @@ public class JCinfohtml {
                   "16:{sorter:'error'}, 17:{sorter:'error'}, 18:{sorter:'error'}, 19:{sorter:'error'}, 20:{sorter:'error'}, \n" +
                   "\t\t\t21:{sorter:'error'}, 22:{sorter:'error'}, 23:{sorter:'error'}, 24:{sorter:'error'}, 25:{sorter:'error'}, " +
                   "26:{sorter:'error'}, 27:{sorter:'error'}, 28:{sorter:'error'}, 29:{sorter:'error'}, 30:{sorter:'error'} \n" +
-                  "\t\t\t}\t\t});\n\t});\n</script>\n";
+                  "\t\t\t}\t\t});\n\t});\n" +
+ 		  "\t$(function() {\n" +
+                  "\t$(\"#sortable_asym\").tablesorter({\n" +
+                  "\t\theaders: { \n" +
+                  "\t\t\t1:{sorter:'error'}, 2:{sorter:'error'}, 3:{sorter:'error'}, 4:{sorter:'error'}, 5:{sorter:'error'}, " +
+                  "6:{sorter:'error'}, 7:{sorter:'error'}, 8:{sorter:'error'}, 9:{sorter:'error'}, 10:{sorter:'error'}, \n" +
+                  "\t\t\t11:{sorter:'error'}, 12:{sorter:'error'}, 13:{sorter:'error'}, 14:{sorter:'error'}, 15:{sorter:'error'}, " +
+                  "16:{sorter:'error'}, 17:{sorter:'error'}, 18:{sorter:'error'}, 19:{sorter:'error'}, 20:{sorter:'error'}, \n" +
+                  "\t\t\t21:{sorter:'error'}, 22:{sorter:'error'}, 23:{sorter:'error'}, 24:{sorter:'error'}, 25:{sorter:'error'}, " +
+                  "26:{sorter:'error'}, 27:{sorter:'error'}, 28:{sorter:'error'}, 29:{sorter:'error'}, 30:{sorter:'error'} \n" +
+                  "\t\t\t}\t\t});\n\t});" + 
+                  "\n</script>\n";
         toFile += "<script>\n" + "\tjQuery(document).ready(function(){\n\tvar offset = 220;var duration = 500;\n" +
                   "\t\tjQuery(window).scroll(function(){\n\tif (jQuery(this).scrollTop()>offset){jQuery('.back-to-top').fadeIn(duration);\n" +
                   "\t}else{jQuery('.back-to-top').fadeOut(duration);}});\n" + 
@@ -189,16 +200,49 @@ public class JCinfohtml {
      }
      
      public static void loadTopFunctions(List<String> topNames, List<String> topAcronyms) throws IOException{
+         List<String> topNames_sym = new ArrayList<>();
+         List<String> topAcronyms_sym = new ArrayList<>();
+         List<String> topNames_asym = new ArrayList<>();
+         List<String> topAcronyms_asym = new ArrayList<>();
+         loadTopFunctions(topNames_sym, topAcronyms_sym, topNames_asym, topAcronyms_asym);
+         topNames.addAll(topNames_sym);
+         topNames.addAll(topNames_asym);
+         if (topAcronyms != null) {
+             topAcronyms.addAll(topAcronyms_sym);
+             topAcronyms.addAll(topAcronyms_asym);
+         }
+     }
+     public static void loadTopFunctions(List<String> topNames_sym, List<String> topAcronyms_sym, List<String> topNames_asym, List<String> topAcronyms_asym) throws IOException{
         BufferedReader reader;
         reader = new BufferedReader(new FileReader(topFunctionsFile));        
         String [] lineArray;        
         String line;
         
+        
         while ((line = reader.readLine()) != null) {
-            lineArray = line.split(";");
-            topNames.add(lineArray[0]);
-            if (topAcronyms != null)
-                topAcronyms.add(lineArray[1]);            
+            if (!(line.trim().isEmpty())) {
+                lineArray = line.split(";");
+
+                if (lineArray.length > 2) {
+                    if (lineArray[2].trim().equalsIgnoreCase("SYM")) {
+                        topNames_sym.add(lineArray[0]);
+                        if (topAcronyms_sym != null) { topAcronyms_sym.add(lineArray[1]); }           
+                    }
+                    else if (lineArray[2].trim().equalsIgnoreCase("ASYM")) {
+                        topNames_asym.add(lineArray[0]);
+                        if (topAcronyms_asym != null) { topAcronyms_asym.add(lineArray[1]); }           
+                    }
+                    else {
+                        // if no indication of type of lagorith was provided, put it into topNames_sym list
+                        System.out.println("ERROR: Unknown type of algorithm detected when parsting top.txt: " + lineArray[2]);
+                    }
+                }
+                else {
+                    // if no indication of type of algorithm was provided, put it into topNames_sym list
+                    topNames_sym.add(lineArray[0]);
+                    if (topAcronyms_sym != null) { topAcronyms_sym.add(lineArray[1]); }
+                }
+            }
         }
         reader.close();
      }
@@ -216,20 +260,87 @@ public class JCinfohtml {
         return files;
     }
      
-     public static void sortableGenerator(String dir, FileOutputStream file) throws IOException{ 
-        List<String> topNames = new ArrayList<>(); 
-        List<String> topAcronyms = new ArrayList<>();
-        loadTopFunctions(topNames, topAcronyms);
+    public static void generateSortableTable(String tableID, List<String> topAcronyms, List<String> topNames, List<String> files, FileOutputStream file) throws IOException {
+        String result = "<table id=\"" + tableID + "\" class=\"tablesorter\" cellspacing='0'>\n";
+        result += "\t<thead><tr>\n\t<th>CARD/FUNCTION";
+        for (int i = 0; i < 40; i++) { result += "&nbsp"; } // insert fixed spaces to force width of card name column
+        result += "</th>";
+         
+        for (String topAcronym : topAcronyms) {
+            result += "<th>" + topAcronym + "</th>";    
+        }
+        result += "</tr>\n</thead>\n<tbody>\n";         
+        
+        for (String filename : files){
+            StringBuilder cardName = new StringBuilder();
+            List<String> lines = initalize(filename, cardName);
+            if (cardName.toString().isEmpty()) {
+                // If card name is not filled, use whole file name
+                cardName.append(filename.substring(filename.lastIndexOf("/")+1, filename.lastIndexOf(".")));
+            }
+            result += "<tr><td width=\"400\"><strong>"+cardName+"</strong></td>";
+            for (String topName : topNames){
+                boolean bTopNameFound = false;
+                while(lp<lines.size()-4){
+                    if(lines.get(lp).contains(topName)){
+                        bTopNameFound = true; 
+                        result += parseOneSortable(lines, file);
+                        file.write(result.getBytes());
+                        result = "";
+                    } else {
+                        lp++;
+                    }
+                }
+                // In case given algorithm (topname) is not present in measured file, put -
+                if (!bTopNameFound) {
+                    result = "<td>-</td>";
+                    file.write(result.getBytes());
+                    result = "";
+                }
+                lp=0;
+            }
+            result += "</tr>\n";
+         }
+        
+        result += "</tbody>\n</table>\n";   
+        file.write(result.getBytes());
+    }
+    
+    public static String generateLegendHeader(List<String> topNames, List<String> topAcronyms) throws IOException{ 
+        String header = "";
+        //header = "Used notation:<br>\n";
+        header += "<ul style=\"list-style-type:circle; font-size:14px; line-height:120%;\">\n";
+        for (int i=0; i<topNames.size(); i++){
+            header +="\t<li><strong>"+topAcronyms.get(i)+"</strong> = "+topNames.get(i)+"</li>\n";
+        }
+        header +="</ul>\n";    
+        return header;
+    }
+    public static void sortableGenerator(String dir, FileOutputStream file) throws IOException{ 
+        List<String> topNames_sym = new ArrayList<>(); 
+        List<String> topAcronyms_sym = new ArrayList<>();
+        List<String> topNames_asym = new ArrayList<>(); 
+        List<String> topAcronyms_asym = new ArrayList<>();
+        loadTopFunctions(topNames_sym, topAcronyms_sym, topNames_asym, topAcronyms_asym);
         List<String> files = listFilesForFolder(new File(dir)); 
         lp=0;
-        toFile +="<ul style=\"list-style-type:circle; font-size:14px; line-height:120%;\">\n";
-        for (int i=0; i<topNames.size(); i++){
-            toFile +="\t<li><strong>"+topAcronyms.get(i)+"</strong> = "+topNames.get(i)+"</li>\n";
-        }
-        toFile +="</ul>\n</br>\n";         
-
+        
+        //
+        // Sortable table for symmetric algorithms
+        //
+        file.write(generateLegendHeader(topNames_sym, topAcronyms_sym).getBytes());
+        generateSortableTable("sortable_sym", topAcronyms_sym, topNames_sym, files, file);
+        //
+        // Sortable table for asymmetric algorithms
+        file.write(generateLegendHeader(topNames_asym, topAcronyms_asym).getBytes());
+        generateSortableTable("sortable_asym", topAcronyms_asym, topNames_asym, files, file);
+        
+        
+/* del 20150719        
         toFile += "<table id=\"sortable\" class=\"tablesorter\" cellspacing='0'>\n";
-        toFile += "\t<thead><tr>\n\t<th>CARD/FUNCTION</th>";
+        toFile += "\t<thead><tr>\n\t<th>CARD/FUNCTION";
+        for (int i = 0; i < 50; i++) { toFile += "&nbsp"; } // insert fixed spaces to force width of card name column
+        toFile += "</th>";
          
         for (String topAcronym : topAcronyms) 
             toFile += "<th>" + topAcronym + "</th>";    
@@ -237,9 +348,12 @@ public class JCinfohtml {
         toFile += "</tr>\n</thead>\n<tbody>\n";         
         
         for (String filename : files){
-            String name = filename.substring(filename.lastIndexOf("/")+1, filename.indexOf("."));
-            toFile += "<tr><td><strong>"+name+"</strong></td>";
-            List<String> lines = initalize(filename, null);
+            StringBuilder cardName = new StringBuilder();
+            List<String> lines = initalize(filename, cardName);
+            if (cardName.toString().isEmpty()) {
+                cardName.append(filename.substring(filename.lastIndexOf("/")+1, filename.indexOf("___")));
+            }
+            toFile += "<tr><td width=\"400\"><strong>"+cardName+"</strong></td>";
             for (String topName : topNames){
                 while(lp<lines.size()-4){
                     if(lines.get(lp).contains(topName)){
@@ -257,6 +371,7 @@ public class JCinfohtml {
         
         toFile += "</tbody>\n</table>\n</br>\n";                                  //end of table
         file.write(toFile.getBytes());
+*/        
         toFile = "";
         lp=0;
      }
@@ -343,15 +458,16 @@ public class JCinfohtml {
          lp++;
      }
      
-    public static void parseOneSortable(List<String> lines, FileOutputStream file){
+    public static String parseOneSortable(List<String> lines, FileOutputStream file){
         String [] prepare;
         String [] operation;
+        String result = "";
         
         String title = "";
-        String value = "";
+        String value = "-";
         if (lines.get(lp+1).equals("ALREADY_MEASURED")){
             lp+=2;
-            return;
+            return "";
         } else {
             lp+=2;
         }
@@ -360,27 +476,28 @@ public class JCinfohtml {
               lp+=3;
               operation = lines.get(lp).trim().split(";");
               
-              value += Float.valueOf(operation[2].replace(",","."));
+              value = (Float.valueOf(operation[2].replace(",","."))).toString();
               title += "min: " + Float.valueOf(operation[4].replace(",",".")) + "; max: ";
               title += Float.valueOf(operation[6].replace(",","."));
               lp++;
-              
          } else {             
-             if(lines.get(lp).contains("baseline") && !(lines.get(lp).contains("error"))){
+             if (lines.get(lp).contains("baseline") && !(lines.get(lp).contains("error"))){
                  lp+=2;                
-                 value += "-";
+                 value = "-";
              } else 
              if (lines.get(lp).contains("error")){
-                 value += "-";
+                  value = "-";
              }
-             else
-             {
-             value += "-";
+             else {
+                  value = "-";
              }                   
          }  
-         toFile += "<td title=\""+title+"\">"+value;
-         toFile += "</td>";
+         
+         result += "<td title=\""+title+"\">"+value;
+         result += "</td>";
          lp++;
+         
+         return result;
      }
      
      public static void run(String input, String name) throws FileNotFoundException, IOException{

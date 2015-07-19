@@ -132,7 +132,7 @@ public class AlgTestProcess {
                 }
             }
             
-            generateGPShellScripts();
+            //generateGPShellScripts();
         } 
         catch (IOException ex) {
             System.out.println("IOException : " + ex);

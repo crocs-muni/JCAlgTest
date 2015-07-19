@@ -143,7 +143,7 @@ public class PerformanceTesting {
         // Try to open and load list of already measured algorithms (if provided)
         LoadAlreadyMeasuredAlgs(m_cardName);
 
-        String testInfo = m_cardName;
+        String testInfo = m_cardName + "___";
         testInfo += "_PERFORMANCE_";
 
         if (m_bTestSymmetricAlgs) { testInfo += "SYMMETRIC_"; }
