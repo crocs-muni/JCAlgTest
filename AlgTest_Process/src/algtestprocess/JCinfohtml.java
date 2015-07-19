@@ -82,7 +82,7 @@ public class JCinfohtml {
         }
     
         toFile = "";
-        toFile += "<div class=\"pageColumnRight\">\n"; 
+        toFile += "<div class=\"pageColumnDetails\">\n"; 
         toFile += "<h3>Test details</h3>\n";        
         toFile +="<p>Execution date/time: <strong>"+infoMap.get("Execution date/time")+"</strong></p>\n";
         toFile +="<p>AlgTestJClient version: <strong>"+infoMap.get("AlgTestJClient version")+"</strong></p>\n";
@@ -90,23 +90,49 @@ public class JCinfohtml {
         toFile +="<p>Used reader: <strong>"+infoMap.get("Used reader")+"</strong></p>\n";
         toFile +="<p><strong>Card ATR: "+infoMap.get("Card ATR")+"</strong></p></br>\n";
         toFile +="<p><u><a href=\"https://smartcard-atr.appspot.com/parse?ATR="+infoMap.get("Card ATR").replaceAll(" ","")+"\" target=\"_blank\">Smart card ATR parsing link</a></u></p>\n</br>\n";
-        file.write(toFile.getBytes());
-        
+        file.write(toFile.getBytes());        
         toFile = "";
+        
         toFile +="<p>JavaCard version: <strong>"+infoMap.get("JCSystem.getVersion()[Major.Minor]")+"</strong></p>\n";
         toFile +="<p>MEMORY_TYPE_PERSISTENT: <strong>"+infoMap.get("JCSystem.MEMORY_TYPE_PERSISTENT")+"</strong></p>\n";
         toFile +="<p>MEMORY_TYPE_TRANSIENT_RESET: <strong>"+infoMap.get("JCSystem.MEMORY_TYPE_TRANSIENT_RESET")+"</strong></p>\n";
         toFile +="<p>MEMORY_TYPE_TRANSIENT_DESELECT: <strong>"+infoMap.get("JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT")+"</strong></p>\n";  
         toFile +="</br>\n<h3>How it works</h3>\n";
         toFile +="<p>You can find information about testing on <a href=\"http://www.fi.muni.cz/~xsvenda/jcsupport.html\">GitHub wiki</a>.</p>\n</br>\n"; 
-        toFile +="</div>\n</div>\n";
+        toFile +="</div>\n";        
+        
+        if(infoMap.containsKey("CPLC")){
+            toFile += "<div class=\"pageColumnCPLC\">\n"; 
+            toFile += "<h3>CPLC info</h3>\n";
+            toFile +="<p>IC Fabricator: <strong>"+infoMap.get("CPLC.ICFabricator")+"</strong></p>\n";
+            toFile +="<p>IC Type: <strong>"+infoMap.get("CPLC.ICType")+"</strong></p>\n";
+            toFile +="<p>OS ID: <strong>"+infoMap.get("CPLC.OperatingSystemID")+"</strong></p>\n";
+            toFile +="<p>OS Release Date: <strong>"+infoMap.get("CPLC.OperatingSystemReleaseDate")+"</strong></p>\n";
+            toFile +="<p>OS Release Level: <strong>"+infoMap.get("CPLC.OperatingSystemReleaseLevel")+"</strong></p>\n";
+            toFile +="<p>IC Fabrication Date ((Y DDD) date in that year): <strong>"+infoMap.get("CPLC.ICFabricationDate ((Y DDD) date in that year)")+"</strong></p>\n";
+            toFile +="<p>IC Serial Number: <strong>"+infoMap.get("CPLC.ICSerialNumber")+"</strong></p>\n";
+            toFile +="<p>IC Batch Identifier: <strong>"+infoMap.get("CPLC.ICBatchIdentifier")+"</strong></p>\n";
+            toFile +="<p>IC Module Fabricator: <strong>"+infoMap.get("CPLC.ICModuleFabricator")+"</strong></p>\n";
+            toFile +="<p>IC Module Packaging Date: <strong>"+infoMap.get("CPLC.ICModulePackagingDate")+"</strong></p>\n";
+            toFile +="<p>IC Manufacturer: <strong>"+infoMap.get("CPLC.ICCManufacturer")+"</strong></p>\n";
+            toFile +="<p>IC Embedding Date: <strong>"+infoMap.get("CPLC.ICEmbeddingDate")+"</strong></p>\n";
+            toFile +="<p>IC Pre Personalizer: <strong>"+infoMap.get("CPLC.ICPrePersonalizer")+"</strong></p>\n";
+            toFile +="<p>IC Pre Personalization Equipment Date: <strong>"+infoMap.get("CPLC.ICPrePersonalizationEquipmentDate")+"</strong></p>\n";
+            toFile +="<p>IC Pre Personalization Equipment ID: <strong>"+infoMap.get("CPLC.ICPrePersonalizationEquipmentID")+"</strong></p>\n";
+            toFile +="<p>IC Personalizer: <strong>"+infoMap.get("CPLC.ICPersonalizer")+"</strong></p>\n";
+            toFile +="<p>IC Personalization Date: <strong>"+infoMap.get("CPLC.ICPersonalizationDate")+"</strong></p>\n";
+            toFile +="<p>IC Personalization Equipment ID: <strong>"+infoMap.get("CPLC.ICPersonalizationEquipmentID")+"</strong></p>\n";            
+            toFile +="</div>\n";
+        }
+        
+        toFile +="</div>\n";
         file.write(toFile.getBytes());
         toFile = "";
     }
     
     
      public static void quickLinks(FileOutputStream file) throws IOException{ 
-        toFile= "<div class=\"pageColumnLeft\">\n";
+        toFile= "<div class=\"pageColumnQuickLinks\">\n";
         toFile+= "<h3>Quick links</h3>\n<ul style=\"list-style-type: circle;\">\n";
         toFile+="\t<li>"+ "<a href=\"#TOP\">TOP FUNCTIONS</a>"+"</li>\n";
         
@@ -226,7 +252,7 @@ public class JCinfohtml {
         for (int i=0; i<topNames.size(); i++){
             toFile +="\t<li><strong>"+topAcronyms.get(i)+"</strong> = "+topNames.get(i)+"</li>\n";
         }
-        toFile +="</ul>\n</br>\n";         
+        toFile +="</ul>\n</div>\n";         
 
         toFile += "<table id=\"sortable\" class=\"tablesorter\" cellspacing='0'>\n";
         toFile += "\t<thead><tr>\n\t<th>CARD/FUNCTION</th>";
