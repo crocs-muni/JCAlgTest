@@ -1,7 +1,7 @@
 
 package algtestjclient;
 
-import AlgTest.AlgTestSinglePerApdu;
+import AlgTest.AlgPerformanceTest;
 
 /**
  *
@@ -34,9 +34,9 @@ public class CardCommunicationException extends Exception
                     return "NO_SUCH_ALGORITHM";
                 case CardMngr.UNINITIALIZED_KEY:
                     return "UNINITIALIZED_KEY";
-                case AlgTestSinglePerApdu.SW_ALG_TYPE_NOT_SUPPORTED:
+                case AlgPerformanceTest.SW_ALG_TYPE_NOT_SUPPORTED:
                     return "SW_ALG_TYPE_NOT_SUPPORTED";
-                case AlgTestSinglePerApdu.SW_ALG_OPS_NOT_SUPPORTED:
+                case AlgPerformanceTest.SW_ALG_OPS_NOT_SUPPORTED:
                     return "SW_ALG_OPS_NOT_SUPPORTED";
                 default:
                     return "UNKONWN_ERROR-card_has_return_value_" + Integer.toHexString(reason);                    

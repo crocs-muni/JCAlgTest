@@ -31,7 +31,7 @@
 
 package algtestjclient;
 
-import AlgTest.AlgTestSinglePerApdu;
+import AlgTest.AlgPerformanceTest;
 import java.io.*;
 import java.io.FileOutputStream;
 import java.util.Scanner;
@@ -41,8 +41,6 @@ import AlgTest.JCConsts;
 import AlgTest.TestSettings;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import javax.smartcardio.CardTerminal;
 
 public class PerformanceTesting {
@@ -732,7 +730,7 @@ public class PerformanceTesting {
             
         if (!m_bTestVariableData) {
             // Ordinary test of all available methods
-            assert(testSet.dataLength1 <= AlgTestSinglePerApdu.RAM1_ARRAY_LENGTH / 2);  // some methods will operate on same array (copy) so at maxiumum, half of array can be used as input
+            assert(testSet.dataLength1 <= AlgPerformanceTest.RAM1_ARRAY_LENGTH / 2);  // some methods will operate on same array (copy) so at maxiumum, half of array can be used as input
             for (Pair op : testedOps) {
                 testSet.algorithmMethod = (Short) op.getL();
                 this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_UTIL, Consts.INS_PERF_TEST_CLASS_UTIL, testSet, info + " " + (String) op.getR());
@@ -745,7 +743,7 @@ public class PerformanceTesting {
 
             for (Integer length : m_testDataLengths) {
                 testSet.dataLength1 = length.shortValue();
-                if (testSet.dataLength1 <= AlgTestSinglePerApdu.RAM1_ARRAY_LENGTH / 2) {
+                if (testSet.dataLength1 <= AlgPerformanceTest.RAM1_ARRAY_LENGTH / 2) {
                     for (Pair op : testedOps) {
                         testSet.algorithmMethod = (Short) op.getL();
                         this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_UTIL, Consts.INS_PERF_TEST_CLASS_UTIL, testSet, info + " " + (String) op.getR());

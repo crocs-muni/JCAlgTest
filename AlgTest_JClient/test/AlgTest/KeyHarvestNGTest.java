@@ -38,7 +38,7 @@ public class KeyHarvestNGTest {
     
     @Test
     void gatherRSAKeys() throws Exception {
-        KeyHarvest.file = (bTestRealCards) ? cardManager.establishConnection(null) : cardManager.establishConnection(AlgTestSinglePerApdu.class);   
+        KeyHarvest.file = (bTestRealCards) ? cardManager.establishConnection(null) : cardManager.establishConnection(AlgPerformanceTest.class);   
         assertNotEquals(KeyHarvest.file, null);
 
         String fileName = cardManager.getTerminalName() + "__" + cardManager.getATR() + "__" + Long.toString(System.currentTimeMillis()) + ".csv";

@@ -9,7 +9,7 @@ import algtestjclient.SingleModeTest;
 import static algtestjclient.SingleModeTest.cardManager;
 import java.io.FileOutputStream;
 
-import AlgTest.AlgTestSinglePerApdu;
+import AlgTest.JCAlgTestApplet;
 import static org.testng.Assert.*;
 
 /**
@@ -36,7 +36,7 @@ public class SingleModeNGTests {
     @Test
     void getSupportedAlgorithms() throws Exception {
         // Prepare connection to simulated card
-        FileOutputStream file = cardManager.establishConnection(AlgTestSinglePerApdu.class);
+        FileOutputStream file = cardManager.establishConnection(JCAlgTestApplet.class);
         assertNotEquals(file, null);
         
         // Run test 

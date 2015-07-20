@@ -33,130 +33,21 @@
  *
  * @author Petr Svenda, Lenka Kunikova, Lukas Srom
  */
-/*
- * Package AID: 6D 79 70 61 63 6B 61 67 31 (6D797061636B616731)
- * Applet AID:  6D 79 70 61 63 30 30 30 31 (6D7970616330303031)
- */
 package AlgTest;
 
-/*
- * Imported packages
- */
-// specific import for Javacard API access
 import javacard.framework.*;
 import javacard.security.*;
 import javacardx.crypto.*;
 
-
-// JC 2.2.2 only
-//import javacardx.apdu.ExtendedLength; 
-//public class AlgTest extends javacard.framework.Applet implements ExtendedLength 
-
-public class AlgTestSinglePerApdu extends javacard.framework.Applet 
-{
-    // NOTE: when incrementing version, don't forget to update ALGTEST_JAVACARD_VERSION_CURRENT value
-    /**
-     * Version 1.6.0 (20.7.2015)
-     * + support for RSA encryption in RSA and RSA_CRT (was only RSA)
-     * + added test for class Util
-     * + added test for software implementation of AES (basically JavaCard code speed test)
-     * - fixed minor issues in initialization of engines
-     */
-    final static byte ALGTEST_JAVACARD_VERSION_1_6_0[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x36, (byte) 0x2e, (byte) 0x30};
-    /**
-     * Version 1.5.1 (15.7.2015)
-     * + added testing of Cipher/Signature sequence setKey, init, doFinal
-     * + added test for different stages of HOTP verification algorithm
-     * + added test for XOR speed 
-     * - fixed minor issues (byte) in setKey
-     */
-    final static byte ALGTEST_JAVACARD_VERSION_1_5_1[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x35, (byte) 0x2e, (byte) 0x31};    
-    /**
-     * Version 1.5 (30.6.2015)
-     * + added external setting of init mode for Cipher
-     * + added improved clerKey testing
-     * + added key alteration for init() methods
-     * + added valid signature before verification 
-     * - fixed bugs in tests (i = 10 instead of i % 10), improper breaks...
-     */
-    final static byte ALGTEST_JAVACARD_VERSION_1_5[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x35};
-    /**
-     * Version 1.4 (15.3.2015)
-     * + Merged separate javacard applet codes into AlgTestSinglePerApdu.java
-     * + Added performance testing from L. Kunikova
-     */
-    final static byte ALGTEST_JAVACARD_VERSION_1_4[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x34};
-    /**
-     * Version 1.3 (30.11.2014)
-     * + Possibility to test single algorithm at single apdu command (possibility for reset in between) via TestSupportedModeSingle()
-     * - fixed bug with exact specification of Checksum.getInstance(ALG_ISO3309_CRC16... inside TestSupportedModeSingle
-     */
-    final static byte ALGTEST_JAVACARD_VERSION_1_3[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x33};
-    /**
-     * Version 1.2 (3.11.2013)
-     * + All relevant constants from JC2.2.2, JC3.0.1 & JC3.0.4 added
-     * + Refactoring of exception capture (all try with two catch). Disabled at the moment due to JC conversion error:  Package contains more than 255 exception handlers.
-     * + Refactoring of version reporting
-     * + Fixed incorrect test during TYPE_RSA_PRIVATE_KEY of LENGTH_RSA_3072 (mistake) of instead of LENGTH_RSA_4096 (correct)
-     * + Changed format of values reported in return array. Unused values are now marked as 0xf0 (change from 0x05). 
-     *   Supported algorithm is now designated as 0x00 (change from 0x01). When CryptoException is thrown and captured, value of CryptoException is stored (range from 0x01-0x05). 
-     */
-    final static byte ALGTEST_JAVACARD_VERSION_1_2[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x32};
-    /**
-     * Version 1.1 (28.6.2013)
-     * + information about version added, command for version retrieval
-     */
-    final static byte ALGTEST_JAVACARD_VERSION_1_1[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x31};
-    /**
-     * Version 1.0 (2004-2013)
-     * + initial version for version-tracking enabled (all features implemented in 2004-2013)
-     */
-    final static byte ALGTEST_JAVACARD_VERSION_1_0[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x30};
-
-    byte ALGTEST_JAVACARD_VERSION_CURRENT[] = ALGTEST_JAVACARD_VERSION_1_6_0;
-
-    private   Cipher           m_encryptCipher = null;
-    private   Cipher           m_encryptCipherRSA = null;
-    private   Signature        m_sign = null;
-    private   MessageDigest    m_digest = null;
-    private   RandomData       m_random = null;
-    private   Object           m_object = null;
-    private   KeyPair          m_keyPair1 = null;
-    private   KeyPair          m_keyPair2 = null;
-    private   Checksum         m_checksum = null;
-    private   KeyAgreement     m_keyAgreement = null;   
-    
-    private   RandomData       m_trng = null; 
-  
-  
-    private   byte[]           m_ramArray = null;
-    private   byte[]           m_eepromArray1 = null;
-    private   byte[]           m_eepromArray2 = null;
-    private   byte[]           m_eepromArray3 = null;
-    private   byte[]           m_eepromArray4 = null;
-    private   byte[]           m_eepromArray5 = null;
-    private   byte[]           m_eepromArray6 = null;
-    private   byte[]           m_eepromArray7 = null;
-    private   byte[]           m_eepromArray8 = null;
-    private   RSAPublicKey     m_rsaPublicKey = null;
-    private   RSAPrivateCrtKey m_rsaPrivateKey = null;   
-  
-    
-    // for class 'javacard.security.KeyAgreement'
-    public static final byte ALG_EC_SVDP_DH = 1;
-    
-    final static short EXPONENT_LENGTH = (short) 128;
-    final static short MODULUS_LENGTH = (short) 128;
-    final static short ADDITIONAL_ARGUMENTS_LENGTH = (short) (ISO7816.OFFSET_CDATA + 4); // two short arguments
-    
+ public class AlgPerformanceTest {
+    //
+    // Performance testing
+    //
     final static byte SUPP_ALG_UNTOUCHED = (byte) 0xf0;
     final static byte SUPP_ALG_SUPPORTED = (byte) 0x00;
     final static byte SUPP_ALG_EXCEPTION_CODE_OFFSET = (byte) 0;
-    
-    
     final static byte SUCCESS =                    (byte) 0xAA;
 
-    public final static short SW_STAT_OK                   = (short) 0x9000;
     public final static short SW_ALG_TYPE_NOT_SUPPORTED    = (short) 0x6001;
     public final static short SW_ALG_OPS_NOT_SUPPORTED     = (short) 0x6002;
     public final static short SW_ALG_TYPE_UNKNOWN          = (short) 0x6003;
@@ -165,22 +56,15 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
     public final static short RAM2_ARRAY_LENGTH = (short) 16;
     
     
-    /* Auxiliary variables to choose class - used in APDU as P1 byte. */
-    public static final byte CLASS_CIPHER          = 0x11;
-    public static final byte CLASS_SIGNATURE       = 0x12;
-    public static final byte CLASS_KEYAGREEMENT    = 0x13;
-    public static final byte CLASS_MESSAGEDIGEST   = 0x15;
-    public static final byte CLASS_RANDOMDATA      = 0x16;
-    public static final byte CLASS_CHECKSUM        = 0x17;
-    public static final byte CLASS_KEYPAIR         = 0x19;
-    public static final byte CLASS_KEYBUILDER      = 0x20;
-
-    
-    //
-    // Performance testing
-    //
     TestSettings    m_testSettings = null;
     
+    MessageDigest    m_digest = null;
+    RandomData       m_random = null;
+    KeyPair          m_keyPair1 = null;
+    KeyPair          m_keyPair2 = null;
+    Checksum         m_checksum = null;
+    KeyAgreement     m_keyAgreement = null;   
+    RandomData       m_trng = null; 
     // class Key 
     AESKey              m_aes_key = null;
     DESKey              m_des_key = null;
@@ -244,30 +128,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
     
     JavaCardAES         m_aesCipher = null;    
 
-    /**
-     * AlgTest default constructor
-     * Only this class's install method should create the applet object.
-     */
-    protected AlgTestSinglePerApdu(byte[] buffer, short offset, byte length)
-    {
-        // data offset is used for application specific parameter.
-        // initialization with default offset (AID offset).
-        short dataOffset = offset;
-        boolean isOP2 = false;
-
-        if(length > 9) {
-            // Install parameter detail. Compliant with OP 2.0.1.
-            // shift to privilege offset
-            dataOffset += (short)( 1 + buffer[offset]);
-            // finally shift to Application specific offset
-            dataOffset += (short)( 1 + buffer[dataOffset]);
-
-            // go to proprietary data
-            dataOffset++;
-            // update flag
-            isOP2 = true;
-       } else {}
-
+    AlgPerformanceTest() {
         m_testSettings = new TestSettings();
         
         m_ram1 = JCSystem.makeTransientByteArray(RAM1_ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);
@@ -277,52 +138,15 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         m_trng = RandomData.getInstance(RandomData.ALG_SECURE_RANDOM);
         
         m_aesCipher = new JavaCardAES();    // aes software cipher
-        
-        if (isOP2) { register(buffer, (short)(offset + 1), buffer[offset]); }
-        else { register(); }
     }
 
-    public static void install(byte[] bArray, short bOffset, byte bLength) throws ISOException {
-        new AlgTestSinglePerApdu (bArray, bOffset, bLength );
-    }
-
-    public boolean select() {
-        return true;
-    }
-
-    public void deselect() {
-    }
-
-    /**
-     * Method processing an incoming APDU.
-     * @see APDU
-     * @param apdu the incoming APDU
-     * @exception ISOException with the response bytes defined by ISO 7816-4
-     */
-    public void process(APDU apdu) throws ISOException
-    {
-        // get the APDU buffer
+    public byte process(APDU apdu) throws ISOException {
+        byte bProcessed = (byte) 0;
         byte[] apduBuffer = apdu.getBuffer();
 
-        // ignore the applet select command dispached to the process
-        if (selectingApplet()) { return; }
-
         if (apduBuffer[ISO7816.OFFSET_CLA] == Consts.CLA_CARD_ALGTEST) {
+            bProcessed = (byte) 1;
             switch ( apduBuffer[ISO7816.OFFSET_INS]) {
-                case Consts.INS_CARD_GETVERSION: GetVersion(apdu); break;
-                case Consts.INS_CARD_TESTAVAILABLE_MEMORY: TestAvailableMemory(apdu); break;
-                case Consts.INS_CARD_TESTRSAEXPONENTSET: TestRSAExponentSet(apdu); break;
-                case Consts.INS_CARD_JCSYSTEM_INFO: JCSystemInfo(apdu); break;
-                case Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE: TestSupportedModeSingle(apdu); break;
-                // case INS_CARD_TESTEXTAPDU: TestExtendedAPDUSupport(apdu); break; // this has to be tested by separate applet with ExtAPDU enabled - should succedd during upload and run
-                case Consts.INS_CARD_DATAINOUT: TestIOSpeed(apdu); break;
-                case Consts.INS_CARD_RESET: 
-                    JCSystem.requestObjectDeletion(); 
-                    Util.arrayFillNonAtomic(m_ram1, (short) 0, (short) m_ram1.length, (byte) 1);
-                    break;
-                case Consts.INS_CARD_GETRSAKEY: GetRSAKey(apdu); break;
-
-                    
                 case Consts.INS_PREPARE_TEST_CLASS_KEY: prepare_class_Key(apdu); break;        
                 case Consts.INS_PREPARE_TEST_CLASS_CIPHER: prepare_class_Cipher(apdu);break;
                 case Consts.INS_PREPARE_TEST_CLASS_SIGNATURE: prepare_class_Signature(apdu);break;
@@ -354,314 +178,15 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                     
                 default : {
                     // The INS code is not supported by the dispatcher
-                    ISOException.throwIt( ISO7816.SW_INS_NOT_SUPPORTED) ;
+                    bProcessed = (byte) 0;
                     break;
                 }
             }
         }
-    }
-
-    void GetVersion(APDU apdu) {
-        byte[]    apdubuf = apdu.getBuffer();
-        apdu.setIncomingAndReceive();
-
-        Util.arrayCopyNonAtomic(ALGTEST_JAVACARD_VERSION_CURRENT, (short) 0, apdubuf, (short) 0, (short) ALGTEST_JAVACARD_VERSION_CURRENT.length);
-
-        apdu.setOutgoingAndSend((byte) 0, (short) ALGTEST_JAVACARD_VERSION_CURRENT.length);
-    }    
-    
-    void TestSupportedModeSingle(APDU apdu) {
-       byte[]    apdubuf = apdu.getBuffer();
-
-       short     dataLen = apdu.setIncomingAndReceive();
-       short     offset = -1;
-       
-       byte      algorithmClass = apdubuf[ISO7816.OFFSET_CDATA];
-       short     algorithmParam1 = Util.makeShort(apdubuf[(short) (ISO7816.OFFSET_CDATA + 1)], apdubuf[(short) (ISO7816.OFFSET_CDATA + 2)]);
-       
-       Util.arrayFillNonAtomic(apdubuf, ISO7816.OFFSET_CDATA, (short) 240, SUPP_ALG_UNTOUCHED);
-       offset++;
-       apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = apdubuf[ISO7816.OFFSET_P1];
-
-       switch (apdubuf[ISO7816.OFFSET_P1]) {
-           case (byte) 0x11: {
-             try {offset++;m_encryptCipher = Cipher.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-             catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-             break;
-           }
-           case (byte) 0x12: {
-             try {offset++;m_sign = Signature.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-             catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-             break;
-           }
-           case (byte) 0x15: {
-             try {offset++;m_digest = MessageDigest.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-             catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-             break;
-           }
-           case (byte) 0x16: {
-             try {offset++;m_random = RandomData.getInstance(algorithmClass); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-             catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-             break;
-           }
-           case (byte) 0x20: {
-             try {offset++;m_key1 = KeyBuilder.buildKey(algorithmClass, algorithmParam1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-             catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-             break;
-           }
-           case (byte) 0x18: // no break
-           case (byte) 0x19: // no break
-           case (byte) 0x1C: { // no break
-             try {
-               offset++;m_keyPair1 = new KeyPair(algorithmClass, algorithmParam1);
-               m_keyPair1.genKeyPair();
-               apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
-             }
-             catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-             break;
-           }
-           case (byte) 0x13: {
-             try {offset++;m_object = KeyAgreement.getInstance(ALG_EC_SVDP_DH, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-             catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;  }
-             break;
-           }
-           case (byte) 0x17: {
-             try {offset++;m_object = Checksum.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
-             catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
-             break;
-           }
-        }
-       // ENDING 0xFF
-       offset++;
-       apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xFF;
-
-       apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (short) 240);
-    }
-    
-
-    void JCSystemInfo(APDU apdu) {
-       byte[]    apdubuf = apdu.getBuffer();
-       apdu.setIncomingAndReceive();
-       short     offset = (short) 0;
-
-        Util.setShort(apdubuf, offset, JCSystem.getVersion());
-        offset = (short)(offset + 2);
-        apdubuf[offset] = (JCSystem.isObjectDeletionSupported() ? (byte) 1: (byte) 0);
-        offset++;
-
-        Util.setShort(apdubuf, offset, JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_PERSISTENT));
-        offset = (short)(offset + 2);
-        Util.setShort(apdubuf, offset, JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_RESET));
-        offset = (short)(offset + 2);
-        Util.setShort(apdubuf, offset, JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT));
-        offset = (short)(offset + 2);
-        Util.setShort(apdubuf, offset, JCSystem.getMaxCommitCapacity());
-        offset = (short)(offset + 2);
-
-        apdu.setOutgoingAndSend((byte) 0, offset);
-      }
-  
-   void TestAvailableMemory(APDU apdu) {
-       byte[]    apdubuf = apdu.getBuffer();
-       apdu.setIncomingAndReceive();
-       short     offset = (short) 0;
-
-       short     toAllocateRAM = (short) 30000;
-       if (apdubuf[ISO7816.OFFSET_P1] == 0x00) {
-           if (m_ramArray == null) {
-             while (true) {
-               if (toAllocateRAM < 20) { break; }
-               try {
-                 m_ramArray = JCSystem.makeTransientByteArray(toAllocateRAM, JCSystem.CLEAR_ON_DESELECT);
-                 // ALLOCATION WAS SUCESSFULL
-                 break;
-               }
-               catch (Exception e) {
-                 // DECREASE TESTED ALLOCATION LENGTH BY 1%
-                 toAllocateRAM = (short) (toAllocateRAM - (short) (toAllocateRAM / 100));
-               }
-             }
-           }
-           else {
-             // ARRAY ALREADY ALLOCATED, JUST RETURN ITS LENGTH
-             toAllocateRAM = (short) m_ramArray.length;
-           }
-       }
-       Util.setShort(apdubuf, offset, toAllocateRAM);
-       offset = (short)(offset + 2);
-       //
-       // EEPROM TEST
-       //
-       if (apdubuf[ISO7816.OFFSET_P1] == 0x01) {
-         short     toAllocateEEPROM = (short) 15000;    // at maximum 15KB allocated into single array 
-         if (m_eepromArray1 == null) {
-           while (true) {
-             if (toAllocateEEPROM < 100) { break; } // We will stop when less then 100 remain to be allocated
-             try {
-               if (m_eepromArray1 == null) { m_eepromArray1 = new byte[toAllocateEEPROM]; }
-               if (m_eepromArray2 == null) { m_eepromArray2 = new byte[toAllocateEEPROM]; }
-               if (m_eepromArray3 == null) { m_eepromArray3 = new byte[toAllocateEEPROM]; }
-               if (m_eepromArray4 == null) { m_eepromArray4 = new byte[toAllocateEEPROM]; }
-               if (m_eepromArray5 == null) { m_eepromArray5 = new byte[toAllocateEEPROM]; }
-               if (m_eepromArray6 == null) { m_eepromArray6 = new byte[toAllocateEEPROM]; }
-               if (m_eepromArray7 == null) { m_eepromArray7 = new byte[toAllocateEEPROM]; }
-               if (m_eepromArray8 == null) { m_eepromArray8 = new byte[toAllocateEEPROM]; }
-               // ALLOCATION OF ALL ARRAYS WAS SUCESSFULL
-
-               break;
-             }
-             catch (Exception e) {
-               // DECREASE TESTED ALLOCATION LENGTH BY 10%
-               toAllocateEEPROM = (short) (toAllocateEEPROM - (short) (toAllocateEEPROM / 10));
-             }
-           }
-         }
-         else {
-           // ARRAY(s) ALREADY ALLOCATED, JUST RETURN THEIR COMBINED LENGTH
-         }
-
-         if (m_eepromArray1 != null) { Util.setShort(apdubuf, offset, (short) m_eepromArray1.length); }
-         else { Util.setShort(apdubuf, offset, (short) 0); }
-         offset = (short)(offset + 2); 
-         if (m_eepromArray2 != null) { Util.setShort(apdubuf, offset, (short) m_eepromArray2.length); }
-         else { Util.setShort(apdubuf, offset, (short) 0); }
-         offset = (short)(offset + 2);
-         if (m_eepromArray3 != null) { Util.setShort(apdubuf, offset, (short) m_eepromArray3.length); }
-         else { Util.setShort(apdubuf, offset, (short) 0); }
-         offset = (short)(offset + 2);
-         if (m_eepromArray4 != null) { Util.setShort(apdubuf, offset, (short) m_eepromArray4.length); }
-         else { Util.setShort(apdubuf, offset, (short) 0); }
-         offset = (short)(offset + 2);
-         if (m_eepromArray5 != null) { Util.setShort(apdubuf, offset, (short) m_eepromArray5.length); }
-         else { Util.setShort(apdubuf, offset, (short) 0); }
-         offset = (short)(offset + 2);
-         if (m_eepromArray6 != null) { Util.setShort(apdubuf, offset, (short) m_eepromArray6.length); }
-         else { Util.setShort(apdubuf, offset, (short) 0); }
-         offset = (short)(offset + 2);
-         if (m_eepromArray7 != null) { Util.setShort(apdubuf, offset, (short) m_eepromArray7.length); }
-         else { Util.setShort(apdubuf, offset, (short) 0); }
-         offset = (short)(offset + 2);
-         if (m_eepromArray8 != null) { Util.setShort(apdubuf, offset, (short) m_eepromArray8.length); }
-         else { Util.setShort(apdubuf, offset, (short) 0); }
-         offset = (short)(offset + 2);
-/**/
-       }
-       apdu.setOutgoingAndSend((short) 0, offset);
-   }  
-   
-   /**
-    * Note - Whole process is differentiated into separate steps to distinguish
-    * between different situation when random exponent cannot be set.
-    * E.g. Some cards allow to set random exponent, but throw Exception when public key
-    * is used for encryption (rsa_PublicKey.setExponent). Other cards fail directly
-    * during exponent setting (rsa_PublicKey.setExponent). One card (PalmeraV5) successfully
-    * passed all steps, but didn't returned encrypted data (resp. length of returned
-    * data was 0 and status 90 00)
-    */
-   void TestRSAExponentSet(APDU apdu) {
-       byte[]    apdubuf = apdu.getBuffer();
-       short     dataLen = apdu.setIncomingAndReceive();
-
-       switch (apdubuf[ISO7816.OFFSET_P1]) {
-         case 1: {
-           // Allocate objects if not allocated yet
-           if (m_rsaPublicKey == null) { m_rsaPublicKey = (RSAPublicKey) KeyBuilder.buildKey(KeyBuilder.TYPE_RSA_PUBLIC,KeyBuilder.LENGTH_RSA_1024,false); }
-           if (m_random == null) { m_random = RandomData.getInstance(RandomData.ALG_SECURE_RANDOM); } 
-           if (m_encryptCipherRSA == null) { m_encryptCipherRSA = Cipher.getInstance(Cipher.ALG_RSA_NOPAD, false); }
-           break;
-         }
-         case 2: {
-           // Try to set random modulus
-           m_random.generateData(apdubuf, ISO7816.OFFSET_CDATA, MODULUS_LENGTH);
-           m_rsaPublicKey.setModulus(apdubuf, ISO7816.OFFSET_CDATA, MODULUS_LENGTH);
-           break;
-         }
-         case 3: {
-           // Try to set random exponent
-           m_random.generateData(apdubuf, ISO7816.OFFSET_CDATA, EXPONENT_LENGTH);
-           // repair exponent
-           apdubuf[ISO7816.OFFSET_CDATA+EXPONENT_LENGTH-1] |= 0x01; // exponent must be odd - set LSB
-           apdubuf[ISO7816.OFFSET_CDATA] |= 0x01 << 7; // exponent must be EXPONENT_LENGTH bytes long - set MSB
-
-           // set exponent part of public key
-           m_rsaPublicKey.setExponent(apdubuf, ISO7816.OFFSET_CDATA, EXPONENT_LENGTH);
-           break;
-         }
-         case 4: {
-           // Try to initialize cipher with public key with random exponent
-           m_encryptCipherRSA.init(m_rsaPublicKey, Cipher.MODE_ENCRYPT);
-           break;
-         }
-         case 5: {
-           // Try to encrypt block of data
-           short offset = m_encryptCipherRSA.doFinal(apdubuf, (byte) 0, MODULUS_LENGTH, apdubuf, (byte) 0);
-           apdu.setOutgoingAndSend((byte) 0, offset);
-           break;
-         }
-       }
-   }
-   /**
-    * Method for on-card generation of RSA keypair and export of result outside (in two apdu)
-    * @param apdu 
-    */
-   void GetRSAKey(APDU apdu) {
-      byte[]    apdubuf = apdu.getBuffer();
-
-      // Generate new object if not before yet
-      if (m_keyPair1 == null) {
-          m_keyPair1 = new KeyPair(KeyPair.ALG_RSA_CRT, KeyBuilder.LENGTH_RSA_1024);	  
-      }	        
-
-      switch (apdubuf[ISO7816.OFFSET_P1]) {
-        case 0: {
-            m_keyPair1.genKeyPair();           
-            m_rsaPublicKey = (RSAPublicKey) m_keyPair1.getPublic();
-
-            short offset = 0;
-            apdubuf[offset] = (byte)0x82; offset++;
-            short len = m_rsaPublicKey.getExponent(apdubuf, (short)(offset + 2));
-            Util.setShort(apdubuf, offset, len); 
-            offset += 2;    // length
-            offset += len;  // value
-            
-            apdubuf[offset] = (byte)0x82; offset++;
-            len = m_rsaPublicKey.getModulus(apdubuf, (short) (offset + 2));
-            Util.setShort(apdubuf, offset, len); 
-            offset += 2;    // length
-            offset += len;  // value
-
-            apdu.setOutgoingAndSend((short) 0, offset);
         
-            break;
-        }
-        case 1: {
-            m_rsaPrivateKey = (RSAPrivateCrtKey) m_keyPair1.getPrivate();
-            
-            short offset = 0;
-            short len = m_rsaPrivateKey.getP(apdubuf, (short)(offset + 3));
-            apdubuf[offset] = (byte)0x82; offset++;
-            Util.setShort(apdubuf, offset, len); offset += 2;
-            offset += len;
-            
-            len = m_rsaPrivateKey.getQ(apdubuf, (short)(offset + 3));
-            apdubuf[offset] = (byte)0x82; offset++;
-            Util.setShort(apdubuf, offset, len); offset += 2;
-            offset += len;
-                    
-            apdu.setOutgoingAndSend((short) 0, offset);
-            break;
-         }
-      }
+        return bProcessed;
     }
-   
-   void TestIOSpeed(APDU apdu) {
-      byte[]    apdubuf = apdu.getBuffer();
-      short     dataLen = apdu.setIncomingAndReceive();
 
-      // RETURN INPUT DATA UNCHANGED
-      apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, dataLen);
-    }  
-   
     void prepare_class_Util(APDU apdu) {
         byte[] apdubuf = apdu.getBuffer();
         m_testSettings.parse(apdu);  
