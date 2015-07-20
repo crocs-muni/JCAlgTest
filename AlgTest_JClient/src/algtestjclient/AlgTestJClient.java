@@ -58,6 +58,12 @@ public class AlgTestJClient {
     public static final String ALGTEST_PERFORMANCE = "AT_PERFORMANCE";          // for performance testing
     
     /**
+     * Version 1.6.0 (19.07.5)
+     * + Many updates, performance tests
+     */
+    public final static String ALGTEST_JCLIENT_VERSION_1_6_0 = "1.6.0";        
+        
+    /**
      * Version 1.3 (30.11.2014)
      * + Improved gathering of data, single command per single algorithm instance possible
      */
@@ -89,7 +95,7 @@ public class AlgTestJClient {
     /**
      * Current version
      */
-    public final static String ALGTEST_JCLIENT_VERSION = ALGTEST_JCLIENT_VERSION_1_3_0;
+    public final static String ALGTEST_JCLIENT_VERSION = ALGTEST_JCLIENT_VERSION_1_6_0;
     
     public final static int STAT_OK = 0;    
     /**

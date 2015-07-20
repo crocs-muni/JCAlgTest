@@ -1000,7 +1000,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                         break;
                     case JCConsts.AESKey_clearKey:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
-                            m_aes_key.setKey(m_ram1, (byte) (i % 10));
+                            m_aes_key.setKey(m_ram1, (byte) (i % 10));  // we need to set key before calling clear - postprocessing is on client side is required substract setKey time
                             m_aes_key.clearKey();
                         } 
                         break;
@@ -1018,7 +1018,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                         break;
                     case JCConsts.DESKey_clearKey:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
-                            m_des_key.setKey(m_ram1, (byte) (i % 10));
+                            m_des_key.setKey(m_ram1, (byte) (i % 10)); // we need to set key before calling clear - postprocessing is on client side is required substract setKey time
                             m_des_key.clearKey();
                         }
                         break;
@@ -1040,7 +1040,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                         break;                    
                     case JCConsts.KoreanSEEDKey_clearKey:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
-                            m_koreanseed_key.setKey(m_ram1, (byte) (i % 10));
+                            m_koreanseed_key.setKey(m_ram1, (byte) (i % 10)); // we need to set key before calling clear - postprocessing is on client side is required substract setKey time
                             m_koreanseed_key.clearKey();
                         } 
                         break;
@@ -1065,7 +1065,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                     case JCConsts.ECPrivateKey_clearKey:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
                             // Bugbug: we are settings only S
-                            m_ecprivate_key.setS(m_ram1, (byte) (i % 10), m_testSettings.keyLength);
+                            m_ecprivate_key.setS(m_ram1, (byte) (i % 10), m_testSettings.keyLength); // we need to set key before calling clear - postprocessing is on client side is required substract setKey time
                             m_ecprivate_key.clearKey();
                         }
                         break;
@@ -1084,7 +1084,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                         break;
                     case JCConsts.ECPublicKey_clearKey:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
-                            m_ecpublic_key.setW(m_ram1, (byte) (i % 10), m_testSettings.keyLength);
+                            m_ecpublic_key.setW(m_ram1, (byte) (i % 10), m_testSettings.keyLength); // we need to set key before calling clear - postprocessing is on client side is required substract setKey time
                             m_ecpublic_key.clearKey();
                         }
                         break;
@@ -1103,7 +1103,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
                         break;
                     case JCConsts.ECPrivateKey_clearKey:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
-                            m_ecprivate_key.setS(m_ram1, (byte) (i % 10), m_testSettings.keyLength);
+                            m_ecprivate_key.setS(m_ram1, (byte) (i % 10), m_testSettings.keyLength); // we need to set key before calling clear - postprocessing is on client side is required substract setKey time
                             m_ecprivate_key.clearKey();
                         }
                         break;
@@ -1326,7 +1326,6 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
         //   or multiple times (numRepeatSubOperation) on smaller chunks 
         short repeats = (short) (m_testSettings.numRepeatWholeOperation * m_testSettings.numRepeatSubOperation);
         short chunkDataLen = (short) (m_testSettings.dataLength1 / m_testSettings.numRepeatSubOperation);
-        //m_trng.generateData(m_ram1, (short) 0, chunkDataLen); // fill input with random data
        
         
         switch (m_testSettings.algorithmMethod) {
@@ -1365,7 +1364,6 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
 
         short repeats = (short) (m_testSettings.numRepeatWholeOperation * m_testSettings.numRepeatSubOperation);
         short chunkDataLen = (short) (m_testSettings.dataLength1 / m_testSettings.numRepeatSubOperation);
-        m_trng.generateData(m_ram1, (short) 0, chunkDataLen); // fill input with random data
         m_ram1[(short) 0] = (byte) 0x00; //Note: for raw RSA, most significant bit must be != 1
         
         switch (m_testSettings.keyType) {
@@ -1416,6 +1414,8 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
             m_signatureVerify = Signature.getInstance((byte) m_testSettings.algorithmSpecification, false);
             m_signatureSign.init(m_key1, Signature.MODE_SIGN);
             m_signatureVerify.init(m_key1, Signature.MODE_VERIFY);
+            m_trng.generateData(m_ram1, (short) 0, (short) m_ram1.length); // fill input with random data
+            
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
         }
@@ -1468,7 +1468,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
 
         short repeats = (short) (m_testSettings.numRepeatWholeOperation * m_testSettings.numRepeatSubOperation);
         short chunkDataLen = (short) (m_testSettings.dataLength1 / m_testSettings.numRepeatSubOperation);
-        m_trng.generateData(m_ram1, (short) 0, chunkDataLen); // fill input with random data
+        //m_trng.generateData(m_ram1, (short) 0, chunkDataLen); // fill input with random data
         
         switch (m_testSettings.keyType) {
             case JCConsts.KeyBuilder_TYPE_DES:  
