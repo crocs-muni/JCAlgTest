@@ -55,7 +55,14 @@ import javacardx.crypto.*;
 public class AlgTestSinglePerApdu extends javacard.framework.Applet 
 {
     // NOTE: when incrementing version, don't forget to update ALGTEST_JAVACARD_VERSION_CURRENT value
-
+    /**
+     * Version 1.6.0 (20.7.2015)
+     * + support for RSA encryption in RSA and RSA_CRT (was only RSA)
+     * + added test for class Util
+     * + added test for software implementation of AES (basically JavaCard code speed test)
+     * - fixed minor issues in initialization of engines
+     */
+    final static byte ALGTEST_JAVACARD_VERSION_1_6_0[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x36, (byte) 0x2e, (byte) 0x30};
     /**
      * Version 1.5.1 (15.7.2015)
      * + added testing of Cipher/Signature sequence setKey, init, doFinal
@@ -106,7 +113,7 @@ public class AlgTestSinglePerApdu extends javacard.framework.Applet
      */
     final static byte ALGTEST_JAVACARD_VERSION_1_0[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x30};
 
-    byte ALGTEST_JAVACARD_VERSION_CURRENT[] = ALGTEST_JAVACARD_VERSION_1_5_1;
+    byte ALGTEST_JAVACARD_VERSION_CURRENT[] = ALGTEST_JAVACARD_VERSION_1_6_0;
 
     private   Cipher           m_encryptCipher = null;
     private   Cipher           m_encryptCipherRSA = null;

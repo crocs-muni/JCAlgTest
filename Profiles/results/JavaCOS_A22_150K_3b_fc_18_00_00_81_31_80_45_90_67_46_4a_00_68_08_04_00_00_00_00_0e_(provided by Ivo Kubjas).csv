@@ -8,6 +8,9 @@ Card ATR; 3b fc 18 00 00 81 31 80 45 90 67 46 4a 00 68 08 04 00 00 00 00 0e
 Card name; JavaCOS A22 dual interface Java card - 150K http://www.smartcardfocus.com/shop/ilp/id~712/javacos-a22-dual-interface-java-card-150k/p/index.shtml 
 Used protocol; T=1
 
+
+JavaCard support version;3.0.2;
+
 JCSystem.getVersion()[Major.Minor];3.0;
 JCSystem.isObjectDeletionSupported;yes;
 JCSystem.MEMORY_TYPE_PERSISTENT;>32767B;
