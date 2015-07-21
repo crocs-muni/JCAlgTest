@@ -131,11 +131,15 @@ public class AlgTestJClient {
             
             System.out.println("Choose which type of AlgTest you want to use.");
             System.out.println("NOTE that you need to have installed coresponding applet on your card! (Not true if you are using simulator.)");
-            System.out.append("1 -> Classic AlgTest MultiPerApdu\n2 -> SinglePerApdu\n3 -> Performance Testing\n4 -> Performance Testing variable data length\n5 -> Harvest RSA keys\n");
+            System.out.append("1 -> List of supported algorithms (2-10 minutes, algorithm detected if object allocation succeds)\n" + 
+                              "2 -> Performance Testing (1-3 hours, every method (e.g., doFinal) of given class (e.g., Cipher) of given algorithm is tested for performance (usually over 256 bytes if applicable)\n" + 
+                              "3 -> Performance Testing variable data length (2-10 hours, same as option 2, but lengths {16, 32, 64, 128, 256 and 512} bytes are tested)\n" + 
+                              "4 -> Harvest RSA keys (unlimited, on-card generated keypairs are exported and stored in file)\n");
             
             Scanner sc = new Scanner(System.in);
             int answ = sc.nextInt();
             switch (answ){
+/*  not supported anymore              
                 // In this case, classic version of AlgTest is used
                 case 1:
                     System.out.println("\n\n#########################");
@@ -145,22 +149,23 @@ public class AlgTestJClient {
                     CardMngr cardManager = new CardMngr();
                     cardManager.testClassic(args, answ);
                     break;
+*/                
                 // In this case, SinglePerApdu version of AlgTest is used.
-                case 2:
+                case 1:
                     selectedTerminal = selectTargetReader();
                     SingleModeTest singleTest = new SingleModeTest();
                     singleTest.TestSingleAlg(args, selectedTerminal);
                     break;
                 // In this case Performance tests are used. 
-                case 3:
+                case 2:
                     selectedTerminal = selectTargetReader();
                     testingPerformance.testPerformance(args, false, selectedTerminal);
                     break;
-                case 4:
+                case 3:
                     selectedTerminal = selectTargetReader();
                     testingPerformance.testPerformance(args, true, selectedTerminal);
                     break;
-                case 5:
+                case 4:
                     KeyHarvest keyHarvest = new KeyHarvest();            
                     
                     // Check if folder !card_uploaders is correctly set
