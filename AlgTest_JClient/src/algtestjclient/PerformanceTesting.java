@@ -41,6 +41,7 @@ import AlgTest.JCConsts;
 import AlgTest.TestSettings;
 import java.util.ArrayList;
 import java.util.List;
+import javacard.framework.ISO7816;
 import javax.smartcardio.CardTerminal;
 
 public class PerformanceTesting {
@@ -538,7 +539,12 @@ public class PerformanceTesting {
                 catch (CardCommunicationException ex) {
                     // Normal exception like NO_SUCH_ALGORITHM  - just print it 
                     String message = ex.toString();
-                    System.out.println(ex.toString()); 
+                    if (ex.getReason() == ISO7816.SW_INS_NOT_SUPPORTED) {
+                        message += ";ERROR: Invalid instruction was send to card. "
+                                + "Possibly, card contains only restricted version of JCAlgTest applet. "
+                                + "If you like to do performance testing, upload full version of  JCAlgTest applet (e.g. AlgTest_v1.6_jc212.cap instead of AlgTest_v1.6_supportOnly_jc212.cap)";    
+                    }
+                    System.out.println(message); 
                     // Write result string into file
                     m_perfResultsFile.write(result.toString().getBytes());
                     // Write exception into file
