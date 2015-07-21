@@ -55,13 +55,15 @@ public class PerformanceTesting {
     public static final String TEST_RSAEXPONENT = "RSAEXPONENT";
     
     // Generic test constants
-    public static final int MAX_FAILED_REPEATS = 2;
+    public static final int MAX_FAILED_REPEATS = 3;
     public static final int NUM_BASELINE_CALIBRATION_RUNS = 5;
     
     // 
     public CardMngr m_cardManager = new CardMngr();
     String m_cardATR = "";
     String m_cardName = "";
+    long   m_elapsedTimeWholeTest = 0;
+    long   m_numHumanInterventions = 0;
     
     //public static final byte mask = 0b01111111;
     public FileOutputStream m_perfResultsFile;
@@ -152,11 +154,11 @@ public class PerformanceTesting {
 
         testInfo += System.currentTimeMillis() + "_";   // add unique time counter
 
-
+        m_elapsedTimeWholeTest = -System.currentTimeMillis();
+        
         // Connect to card
         this.m_perfResultsFile = m_cardManager.establishConnection(testClassPerformance, m_cardName, testInfo, selectedTerminal);
         m_cardATR = m_cardManager.getATR();
-        
         
 /*
         testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Cipher_ALG_AES_BLOCK_128_CBC_NOPAD,"TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_128_CBC_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, (short) numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
@@ -176,6 +178,19 @@ public class PerformanceTesting {
         testAllUtil(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
         testAllSWAlgs(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
         testAllKeyPairs(1, Consts.NUM_REPEAT_WHOLE_MEASUREMENT_KEYPAIRGEN);    // for keypair, different repeat settings is used
+        
+        finalizeMeasurement();
+    }
+    
+    void finalizeMeasurement() throws IOException {
+        m_elapsedTimeWholeTest += System.currentTimeMillis();
+        String message = "";
+        message += "\n\nTotal test time:; " + m_elapsedTimeWholeTest / 1000 + " seconds."; 
+        System.out.println(message);
+        m_perfResultsFile.write(message.getBytes());
+        message = "\n\nTotal human interventions (retries with physical resets etc.):; " + m_numHumanInterventions; 
+        System.out.println(message);
+        m_perfResultsFile.write(message.getBytes());
     }
     
     void LoadAlreadyMeasuredAlgs(String cardName) {
@@ -569,6 +584,7 @@ public class PerformanceTesting {
                     Scanner sc = new Scanner(System.in);
                     String answ = sc.next();
                     if (answ.equals("r")) {
+                        m_numHumanInterventions++;
                         // Card was physically removed, reset retries counter
                         numFailedRepeats = 0;
 
