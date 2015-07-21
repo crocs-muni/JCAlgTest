@@ -399,8 +399,15 @@ public class SingleModeTest {
         Scanner br = new Scanner(System.in);  
         String answ = "";   // When set to 0, program will ask for each algorithm to test.
                 
-        FileOutputStream file = cardManager.establishConnection(testClassSingleApdu, "", "", selectedReader);
+        System.out.println("Specify type of your card (e.g., NXP JCOP CJ2A081):");
+        String cardName = br.next();
+        cardName += br.nextLine();
+        if (cardName.isEmpty()) {
+            cardName = "noname";
+        }            
+        FileOutputStream file = cardManager.establishConnection(testClassSingleApdu, cardName, "", selectedReader);
         
+    
         /* Checking for arguments. */
         if (args.length > 1){       // in case there are arguments from command line present
             if (Arrays.asList(args).contains(TEST_ALL_ALGORITHMS)){testAllAtOnce(file);}

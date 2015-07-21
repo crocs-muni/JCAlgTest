@@ -285,7 +285,7 @@ public class JCinfohtml {
     public static void generateSortableTable(String tableID, List<String> topAcronyms, List<String> topNames, List<String> files, FileOutputStream file) throws IOException {
         Integer lp = 0;
         String result = "<table id=\"" + tableID + "\" class=\"tablesorter\" cellspacing='0'>\n";
-        result += "\t<thead><tr>\n\t<th style=\"min-width:300px;\">CARD/FUNCTION</th>";
+        result += "\t<thead><tr>\n\t<th style=\"min-width:300px;\">CARD/FUNCTION (ms/op)</th>";
         //for (int i = 0; i < 40; i++) { result += "&nbsp"; } // insert fixed spaces to force width of card name column
          
         for (String topAcronym : topAcronyms)
