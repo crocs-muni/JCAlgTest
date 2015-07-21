@@ -230,10 +230,13 @@ public class AlgTestProcess {
             String cardList = "<b>Tested cards abbreviations:</b><br>\r\n";
             for (int i = 0; i < filesArray.length; i++) {
                 String cardIdentification = filesArray[i];
+                cardIdentification = cardIdentification.replace("_ALGSUPPORT", "");
+                cardIdentification = cardIdentification.replace("AlgTest_", "");
                 cardIdentification = cardIdentification.replace('_', ' ');
                 cardIdentification = cardIdentification.replace(".csv", "");
                 cardIdentification = cardIdentification.replace("3B", ", ATR=3B");
                 cardIdentification = cardIdentification.replace("3b", ", ATR=3b");
+                
                 cardList += "<b>c" + i + "</b>	" + cardIdentification + "<br>\r\n";
             }
             cardList += "<br>\r\n"; 
@@ -316,6 +319,9 @@ public class AlgTestProcess {
         
         String shortCardName = "";
         String cardName = fileName;
+        cardName = cardName.replace("_ALGSUPPORT", "");
+        cardName = cardName.replace("AlgTest_", "");
+        
         if (cardName.indexOf("_3B ") != -1) shortCardName = cardName.substring(0, cardName.indexOf("_3B "));
         if (cardName.indexOf("_3b ") != -1) shortCardName = cardName.substring(0, cardName.indexOf("_3b "));
         if (cardName.indexOf("_3B_") != -1) shortCardName = cardName.substring(0, cardName.indexOf("_3B_"));

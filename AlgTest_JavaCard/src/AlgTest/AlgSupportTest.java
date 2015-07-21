@@ -50,6 +50,8 @@ public class AlgSupportTest {
     private   Object           m_object = null;
     private   KeyPair          m_keyPair1 = null;
     private   KeyPair          m_keyPair2 = null;
+    private   Checksum         m_checksum = null;
+    private   KeyAgreement     m_keyAgreement = null;   
     private   RandomData       m_trng = null; 
     private   Key              m_key1 = null;
     
@@ -116,7 +118,7 @@ public class AlgSupportTest {
                 case Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE: TestSupportedModeSingle(apdu); break;
                 // case INS_CARD_TESTEXTAPDU: TestExtendedAPDUSupport(apdu); break; // this has to be tested by separate applet with ExtAPDU enabled - should succedd during upload and run
                 case Consts.INS_CARD_DATAINOUT: TestIOSpeed(apdu); break;
-                case Consts.INS_CARD_RESET: break;
+                case Consts.INS_CARD_RESET: JCSystem.requestObjectDeletion(); break;
                 case Consts.INS_CARD_GETRSAKEY: GetRSAKey(apdu); break;
                 default : {
                     bProcessed = 0;
@@ -178,13 +180,13 @@ public class AlgSupportTest {
              break;
            }
            case (byte) 0x13: {
-             offset++;
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0;
+             try {offset++;m_object = KeyAgreement.getInstance(ALG_EC_SVDP_DH, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+             catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (e.getReason() == CryptoException.NO_SUCH_ALGORITHM) ? (byte) 0 : (byte) 2;  }
              break;
            }
            case (byte) 0x17: {
-             offset++;
-             apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0;
+             try {offset++;m_object = Checksum.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+             catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
              break;
            }
         }
@@ -203,16 +205,16 @@ public class AlgSupportTest {
 
         Util.setShort(apdubuf, offset, JCSystem.getVersion());
         offset = (short)(offset + 2);
-        apdubuf[offset] = (byte) 0;
+        apdubuf[offset] = (JCSystem.isObjectDeletionSupported() ? (byte) 1: (byte) 0);
         offset++;
 
-        Util.setShort(apdubuf, offset, (short) -1);
+        Util.setShort(apdubuf, offset, JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_PERSISTENT));
         offset = (short)(offset + 2);
-        Util.setShort(apdubuf, offset, (short) -1);
+        Util.setShort(apdubuf, offset, JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_RESET));
         offset = (short)(offset + 2);
-        Util.setShort(apdubuf, offset, (short) -1);
+        Util.setShort(apdubuf, offset, JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT));
         offset = (short)(offset + 2);
-        Util.setShort(apdubuf, offset, (short) -1);
+        Util.setShort(apdubuf, offset, JCSystem.getMaxCommitCapacity());
         offset = (short)(offset + 2);
 
         apdu.setOutgoingAndSend((byte) 0, offset);
