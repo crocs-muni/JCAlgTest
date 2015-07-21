@@ -104,7 +104,7 @@ public class JCinfohtml {
             toFile +="<p>OS ID: <strong>"+infoMap.get("CPLC.OperatingSystemID")+"</strong></p>\n";
             toFile +="<p>OS Release Date: <strong>"+infoMap.get("CPLC.OperatingSystemReleaseDate")+"</strong></p>\n";
             toFile +="<p>OS Release Level: <strong>"+infoMap.get("CPLC.OperatingSystemReleaseLevel")+"</strong></p>\n";
-            toFile +="<p>IC Fabrication Date ((Y DDD) date in that year): <strong>"+infoMap.get("CPLC.ICFabricationDate ((Y DDD) date in that year)")+"</strong></p>\n";
+            toFile +="<p>IC Fabrication Date ((Y DDD) date in that year): <strong>"+infoMap.get("CPLC.ICFabricationDate")+"</strong></p>\n";
             toFile +="<p>IC Serial Number: <strong>"+infoMap.get("CPLC.ICSerialNumber")+"</strong></p>\n";
             toFile +="<p>IC Batch Identifier: <strong>"+infoMap.get("CPLC.ICBatchIdentifier")+"</strong></p>\n";
             toFile +="<p>IC Module Fabricator: <strong>"+infoMap.get("CPLC.ICModuleFabricator")+"</strong></p>\n";
