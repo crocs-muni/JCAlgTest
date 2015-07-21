@@ -405,7 +405,7 @@ public class SingleModeTest {
         if (cardName.isEmpty()) {
             cardName = "noname";
         }            
-        FileOutputStream file = cardManager.establishConnection(testClassSingleApdu, cardName, "", selectedReader);
+        FileOutputStream file = cardManager.establishConnection(testClassSingleApdu, cardName, cardName + "_ALGSUPPORT_", selectedReader);
         
     
         /* Checking for arguments. */
@@ -432,86 +432,87 @@ public class SingleModeTest {
                 CardMngr.PrintHelp();
             }
         }
-        else{       // in case there are no arguments from command line present
+        else{       
+            long elapsedTimeWholeTest = -System.currentTimeMillis();
+            testAllAtOnce(file);
+            elapsedTimeWholeTest += System.currentTimeMillis();
+            String message = "\n\nTotal test time:; " + elapsedTimeWholeTest / 1000 + " seconds."; 
+            System.out.println(message);
+            file.write(message.getBytes());
+
+            CloseFile(file);
+            
+/*            
+            
+            // in case there are no arguments from command line present
             System.out.println("Do you want to test all possible algorithms at once? (y/n)");
+            br.reset();
             answ = br.nextLine();       
         
-            /* Chooses action based on input argument 'answ' (y/n). */
+            // Chooses action based on input argument 'answ' (y/n). 
             switch (answ) {
-                /* Program will ask for every class. */
+                // Program will ask for every class. 
                 case "n":
-                    /* Class 'javacardx.crypto.Cipher'. */
                     System.out.println("Do you want to test algorithms from class 'Cipher'? (y/n)");
                         answ = br.nextLine();
                         if (answ.equals("y")){TestClassCipher(file);}
                         else{ClassSkipped(file, "javacardx.crypto.Cipher");}
 
-                    /* Class 'javacard.security.Singnature'. */
                     System.out.println("Do you want to test algorithms from class 'Signature'? (y/n)");
                         answ = br.nextLine();
                         if (answ.equals("y")){TestClassSignature(file);}
                         else{ClassSkipped(file, "javacard.security.Signature");}
 
-                    /* Class 'javacard.security.MessageDigest'. */
                     System.out.println("Do you want to test algorithms from class 'MessageDigest'? (y/n)");
                         answ = br.nextLine();
                         if (answ.equals("y")){TestClassMessageDigest(file);}
                         else{ClassSkipped(file, "javacard.security.MessageDigest");}
 
-                    /* Class 'javacard.security.RandomData'. */
                     System.out.println("Do you want to test algorithms from class 'RandomData'? (y/n)");
                         answ = br.nextLine();
                         if (answ.equals("y")){TestClassRandomData(file);}
                         else{ClassSkipped(file, "javacard.security.RandomData");}
 
-                    /* Class 'javacard.security.KeyBuilder'. */
                     System.out.println("Do you want to test algorithms from class 'KeyBuilder'? (y/n)");
                         answ = br.nextLine();
                         if (answ.equals("y")){TestClassKeyBuilder(file);}
                         else{ClassSkipped(file, "javacard.security.KeyBuilder");}
 
-                    /* Class 'javacard.security.KeyAgreement'. */
                     System.out.println("Do you want to test algorithms from class 'KeyAgreement'? (y/n)");
                         answ = br.nextLine();
                         if (answ.equals("y")){TestClassKeyAgreement(file);}
                         else{ClassSkipped(file, "javacard.security.KeyAgreement");}
 
-                    /* Class 'javacard.security.Checksum'. */
                     System.out.println("Do you want to test algorithms from class 'Checksum'? (y/n)");
                         answ = br.nextLine();
                         if (answ.equals("y")){TestClassChecksum(file);}
                         else{ClassSkipped(file, "javacard.security.Checksum");}
 
-                    /* Class 'javacard.security.KeyPair_RSA'. */
                     System.out.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_RSA on-card generation'? (y/n)");
                         answ = br.nextLine();
                         if (answ.equals("y")){TestClassKeyPair_ALG_RSA(file);}
                         else{ClassSkipped(file, "javacard.security.KeyPair ALG_RSA on-card generation");}
 
-                    /* Class 'javacard.security.KeyPair_RSA_CRT'. */
                     System.out.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_RSA_CRT on-card generation'? (y/n)");
                         answ = br.nextLine();
                         if (answ.equals("y")){TestClassKeyPair_ALG_RSA_CRT(file);}
                         else{ClassSkipped(file, "javacard.security.KeyPair ALG_RSA_CRT on-card generation");}   
 
-                    /* Class 'javacard.security.KeyPair_DSA'. */
                     System.out.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_DSA on-card generation'? (y/n)");
                         answ = br.nextLine();
                         if (answ.equals("y")){TestClassKeyPair_ALG_DSA(file);}
                         else{ClassSkipped(file, "javacard.security.KeyPair ALG_DSA on-card generation");} 
 
-                    /* Class 'javacard.security.KeyPair_DSA'. */
                     System.out.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_EC_F2M on-card generation'? (y/n)");
                         answ = br.nextLine();
                         if (answ.equals("y")){TestClassKeyPair_ALG_EC_F2M(file);}
                         else{ClassSkipped(file, "javacard.security.KeyPair ALG_EC_F2M on-card generation");}
 
-                    /* Class 'javacard.security.KeyPair_DSA'. */
                     System.out.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_EC_FP on-card generation'? (y/n)");
                         answ = br.nextLine();
                         if (answ.equals("y")){TestClassKeyPair_ALG_EC_FP(file);}
                         else{ClassSkipped(file, "javacard.security.KeyPair ALG_EC_FP on-card generation");}
-                    /* RSA exponent */
+                    // RSA exponent 
                     System.out.println("\n\nQ: Do you like to test support for variable RSA public exponent? (y/n)");
                         answ = br.nextLine();
                         if (answ.equals("y")) {
@@ -523,35 +524,27 @@ public class SingleModeTest {
                             String message = "\nERROR: Test variable public exponent support fail\n"; 
                             System.out.println(message); file.write(message.getBytes());
                         }
-                    /* Closing file. */
                     CloseFile(file);
                 break;
 
-                /* Program will test all algorithms at once. */
+                // Program will test all algorithms at once. 
                 case "y":
-                    /*
-                    TestClassCipher(file);
-                    TestClassSignature(file);
-                    TestClassMessageDigest(file);
-                    TestClassRandomData(file);
-                    TestClassKeyBuilder(file);
-                    TestClassKeyAgreement(file);
-                    TestClassChecksum(file);
-                    TestClassKeyPair_ALG_RSA(file);
-                    TestClassKeyPair_ALG_RSA_CRT(file);
-                    TestClassKeyPair_ALG_DSA(file);
-                    TestClassKeyPair_ALG_EC_F2M(file);
-                    TestClassKeyPair_ALG_EC_FP(file);
-                    */
+                    long elapsedTimeWholeTest = -System.currentTimeMillis();
                     testAllAtOnce(file);
+                    elapsedTimeWholeTest += System.currentTimeMillis();
+                    String message = "\n\nTotal test time:; " + elapsedTimeWholeTest / 1000 + " seconds."; 
+                    System.out.println(message);
+                    file.write(message.getBytes());
+                    
                     CloseFile(file);
                 break;
 
-                /* In case of wrong argument. */
+                // In case of wrong argument.
                 default:
                     System.err.println("First argument must be \"y\" or \"n\"!");
                 break;
             }
+            */
         }
     }
     
@@ -589,66 +582,59 @@ public class SingleModeTest {
      * @param elapsedCard
      * @throws IOException
      */
-    public static void CheckResult (FileOutputStream file, String name, byte response, long elapsedCard) throws IOException{
+    public static void CheckResult (FileOutputStream file, String name, byte response, long elapsedCard, int swStatus) throws IOException{
         String message = "";
         String elTimeStr = "";
-        switch (response){
-            case SUPP_ALG_SUPPORTED:
-                // in case negative value is returned as timestamp
-                if (elapsedCard < 0){
-                    elTimeStr = "Not executed!";
-                    message += name + ";" + "no;" + elTimeStr + "\r\n";
-                }
-                else{
-                    elTimeStr = String.format("%1f", (double) elapsedCard / (float) CLOCKS_PER_SEC);
-                    message += name + ";" + "yes;" + elTimeStr + "\r\n";
-                }
-                
-                System.out.println(message);
-                file.write(message.getBytes());
-            break;
-            
-            case NO_SUCH_ALGORITHM:
-                message += name + ";" + "no;" + "\r\n";
-                System.out.println(message);
-                file.write(message.getBytes());
-            break;
-                
-            case ILLEGAL_USE:
-                message += name + ";" + "error(ILLEGAL_USE);" + "\r\n";
-                System.out.println(message);
-                file.write(message.getBytes());
-            break;
-                
-            case ILLEGAL_VALUE:
-                message += name + ";" + "error(ILLEGAL_VALUE);" + "\r\n";
-                System.out.println(message);
-                file.write(message.getBytes());
-            break;
-                
-            case INVALID_INIT:
-                message += name + ";" + "error(INVALID_INIT);" + "\r\n";
-                System.out.println(message);
-                file.write(message.getBytes());
-            break;
-                
-            case UNINITIALIZED_KEY:
-                message += name + ";" + "error(UNINITIALIZED_KEY);" + "\r\n";
-                System.out.println(message);
-                file.write(message.getBytes());
-            break;
-            
-            case 0x6f:
-                message += name + ";" + "maybe;" + "\r\n";
-                System.out.println(message);
-                file.write(message.getBytes());                
-            break;
-                
-            default:
-                // OTHER VALUE, IGNORE 
-                //System.out.println("Unknown value detected in AlgTest applet (0x" + Integer.toHexString(response[i] & 0xff) + "). Possibly, old version of AlTestJClient is used (try update)");
-            break;        
+        
+        if (swStatus == 0x9000) {
+            switch (response){
+                case SUPP_ALG_SUPPORTED:
+                    // in case negative value is returned as timestamp
+                    if (elapsedCard < 0){
+                        elTimeStr = "Not executed!";
+                        message += name + ";" + "no;" + elTimeStr + "\r\n";
+                    }
+                    else{
+                        elTimeStr = String.format("%1f", (double) elapsedCard / (float) CLOCKS_PER_SEC);
+                        message += name + ";" + "yes;" + elTimeStr + "\r\n";
+                    }
+                    break;
+
+                case NO_SUCH_ALGORITHM:
+                    message += name + ";" + "no;" + "\r\n";
+                    break;
+
+                case ILLEGAL_USE:
+                    message += name + ";" + "error(ILLEGAL_USE);" + "\r\n";
+                    break;
+
+                case ILLEGAL_VALUE:
+                    message += name + ";" + "error(ILLEGAL_VALUE);" + "\r\n";
+                    break;
+
+                case INVALID_INIT:
+                    message += name + ";" + "error(INVALID_INIT);" + "\r\n";
+                break;
+
+                case UNINITIALIZED_KEY:
+                    message += name + ";" + "error(UNINITIALIZED_KEY);" + "\r\n";
+                break;
+
+                case 0x6f:
+                    message += name + ";" + "maybe;" + "\r\n";
+                break;
+
+                default:
+                    // OTHER VALUE, IGNORE 
+                System.out.println("Unknown value detected in AlgTest applet (0x" + Integer.toHexString(response & 0xff) + "). Possibly, old version of AlTestJClient is used (try update)");
+                break;        
+            }
         }
+        else {
+            message += name + ";" + "error(0x" + Integer.toHexString(swStatus) + ");" + "\r\n";
+        }
+        System.out.println(message);
+        file.write(message.getBytes());                
     }
         
     /**
@@ -679,11 +665,11 @@ public class SingleModeTest {
             // save time of card response
             elapsedCard += System.currentTimeMillis();
             
-            byte[] resp = response.getBytes();
+            byte[] resp = response.getData();
             System.out.println("RESPONSE: " + resp[0]);
             
             // Calls method CheckResult - should add to output error messages.
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.CIPHER_STR[i]), resp[1], elapsedCard);
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.CIPHER_STR[i]), resp[1], elapsedCard, response.getSW());
         }        
     }
     
@@ -715,10 +701,10 @@ public class SingleModeTest {
             // save time of card response
             elapsedCard += System.currentTimeMillis();
 
-            byte[] resp = response.getBytes();
+            byte[] resp = response.getData();
             
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.SIGNATURE_STR[i]), resp[1], elapsedCard);
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.SIGNATURE_STR[i]), resp[1], elapsedCard, response.getSW());
         }        
     }
     
@@ -749,10 +735,10 @@ public class SingleModeTest {
             ResponseAPDU response = cardManager.sendAPDU(apdu);
             // save time of card response
             elapsedCard += System.currentTimeMillis();
-            byte[] resp = response.getBytes();
+            byte[] resp = response.getData();
             
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.MESSAGEDIGEST_STR[i]), resp[1], elapsedCard);
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.MESSAGEDIGEST_STR[i]), resp[1], elapsedCard, response.getSW());
         }
     }
     
@@ -783,9 +769,9 @@ public class SingleModeTest {
             ResponseAPDU response = cardManager.sendAPDU(apdu);
             // save time of card response
             elapsedCard += System.currentTimeMillis();
-            byte[] resp = response.getBytes();
+            byte[] resp = response.getData();
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.RANDOMDATA_STR[i]), resp[1], elapsedCard);
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.RANDOMDATA_STR[i]), resp[1], elapsedCard, response.getSW());
         }
     }
     
@@ -821,9 +807,9 @@ public class SingleModeTest {
             ResponseAPDU response = cardManager.sendAPDU(apdu);
             // save time of card response
             elapsedCard += System.currentTimeMillis();
-            byte[] resp = response.getBytes();
+            byte[] resp = response.getData();
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, cardManager.GetAlgorithmName(KEYBUILDER_STR[i]), resp[1], elapsedCard);
+            CheckResult(file, cardManager.GetAlgorithmName(KEYBUILDER_STR[i]), resp[1], elapsedCard, response.getSW());
         }
     }
     
@@ -854,10 +840,10 @@ public class SingleModeTest {
             ResponseAPDU response = cardManager.sendAPDU(apdu);
             // save time of card response
             elapsedCard += System.currentTimeMillis();
-            byte[] resp = response.getBytes();
+            byte[] resp = response.getData();
             
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYAGREEMENT_STR[i]), resp[1], elapsedCard);
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYAGREEMENT_STR[i]), resp[1], elapsedCard, response.getSW());
         }
     }
     
@@ -888,9 +874,9 @@ public class SingleModeTest {
             ResponseAPDU response = cardManager.sendAPDU(apdu);
             // save time of card response
             elapsedCard += System.currentTimeMillis();
-            byte[] resp = response.getBytes();
+            byte[] resp = response.getData();
             /* Calls method CheckResult - should add to output error messages. */
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.CHECKSUM_STR[i]), resp[1], elapsedCard);
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.CHECKSUM_STR[i]), resp[1], elapsedCard, response.getSW());
         }
     }
     
@@ -926,10 +912,10 @@ public class SingleModeTest {
             ResponseAPDU response = cardManager.sendAPDU(apdu);
             // save time of card response
             elapsedCard += System.currentTimeMillis();
-            byte[] resp = response.getBytes();
+            byte[] resp = response.getData();
             
             // Calls method CheckResult - should add to output error messages. */
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_RSA_STR[i]), resp[1], elapsedCard);
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_RSA_STR[i]), resp[1], elapsedCard, response.getSW());
         }
     }
     
@@ -966,10 +952,10 @@ public class SingleModeTest {
             ResponseAPDU response = cardManager.sendAPDU(apdu);
             // save time of card response
             elapsedCard += System.currentTimeMillis();
-            byte[] resp = response.getBytes();
+            byte[] resp = response.getData();
             
             // Calls method CheckResult - should add to output error messages.
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_RSACRT_STR[i]), resp[1], elapsedCard);
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_RSACRT_STR[i]), resp[1], elapsedCard, response.getSW());
         }
     }
     
@@ -1005,10 +991,10 @@ public class SingleModeTest {
             ResponseAPDU response = cardManager.sendAPDU(apdu);
             // save time of card response
             elapsedCard += System.currentTimeMillis();
-            byte[] resp = response.getBytes();
+            byte[] resp = response.getData();
             
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_DSA_STR[i]), resp[1], elapsedCard);
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_DSA_STR[i]), resp[1], elapsedCard, response.getSW());
         }
     }
     
@@ -1044,10 +1030,10 @@ public class SingleModeTest {
             ResponseAPDU response = cardManager.sendAPDU(apdu);
             // save time of card response
             elapsedCard += System.currentTimeMillis();
-            byte[] resp = response.getBytes();
+            byte[] resp = response.getData();
             
             // Calls method CheckResult - should add to output error messages.
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_EC_F2M_STR[i]), resp[1], elapsedCard);
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_EC_F2M_STR[i]), resp[1], elapsedCard, response.getSW());
         }
     }
     
@@ -1083,10 +1069,10 @@ public class SingleModeTest {
             ResponseAPDU response = cardManager.sendAPDU(apdu);
             // save time of card response
             elapsedCard += System.currentTimeMillis();
-            byte[] resp = response.getBytes();
+            byte[] resp = response.getData();
             
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_EC_FP_STR[i]), resp[1], elapsedCard);
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_EC_FP_STR[i]), resp[1], elapsedCard, response.getSW());
         }
     }
     
@@ -1112,8 +1098,6 @@ public class SingleModeTest {
         StringBuilder value = new StringBuilder();
         value.setLength(0);
         cardManager.TestVariableRSAPublicExponentSupport(value, file, OFFSET_P2);
-
-        CloseFile(file);
     }
 }   // END OF CLASS 'SINGLEMODETEST'
 
