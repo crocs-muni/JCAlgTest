@@ -316,6 +316,49 @@ public class PerformanceTesting {
         return status;
     }
 
+    
+    public int TestIOSpeed(StringBuilder pValue, FileOutputStream pFile, byte algPartP2) throws Exception {
+        int         status = CardMngr.STAT_OK;
+        long     elapsedCard;
+
+        // Test of speed dependant on data length
+        String tableName = "\n\nIOSPEED - variable data - BEGIN\n";
+        m_perfResultsFile.write(tableName.getBytes());
+        for (Integer length : m_testDataLengths) {
+            short dataLength = length.shortValue();
+            
+            if (dataLength < 250) {
+                // Prepare test memory apdu
+                byte apdu[] = new byte[CardMngr.HEADER_LENGTH + dataLength];
+                apdu[CardMngr.OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
+                apdu[CardMngr.OFFSET_INS] = Consts.INS_CARD_DATAINOUT;
+                apdu[CardMngr.OFFSET_P1] = 0x00;
+                apdu[CardMngr.OFFSET_P2] = 0x00;
+                apdu[CardMngr.OFFSET_LC] = (byte) dataLength;
+
+                elapsedCard = -System.currentTimeMillis();
+
+                ResponseAPDU resp = m_cardManager.sendAPDU(apdu);
+                elapsedCard += System.currentTimeMillis();
+
+                if (resp.getSW() != 0x9000) {
+                    System.out.println("Fail to obtain response for IOSpeed");
+                } else {
+                    // SAVE TIME OF CARD RESPONSE
+
+                    // OK, STORE RESPONSE TO suppAlg ARRAY
+                    byte temp[] = resp.getData();
+
+                    String elTimeStr = "";
+                    // OUTPUT REQUIRED TIME WHEN PARTITIONED CHECk WAS PERFORMED (NOTMULTIPLE ALGORITHMS IN SINGLE RUN)
+                    elTimeStr = String.format("%1f", (double) elapsedCard / (float) CardMngr.CLOCKS_PER_SEC);
+                }
+            }
+        }
+        tableName = "\n\nIOSPEED - variable data - END\n";
+        m_perfResultsFile.write(tableName.getBytes());
+        return status;
+    }    
 
     public int TestAvailableEEPROMMemory(StringBuilder pValue, FileOutputStream pFile, byte algPartP2) throws Exception {
         int         status = CardMngr.STAT_OK;

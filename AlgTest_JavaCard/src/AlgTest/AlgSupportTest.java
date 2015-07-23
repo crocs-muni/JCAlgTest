@@ -420,4 +420,28 @@ public class AlgSupportTest {
       // RETURN INPUT DATA UNCHANGED
       apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, dataLen);
     }  
+   
+  void TestExtendedAPDUSupport(APDU apdu) {
+/* ONLY FOR JC2.2.2  
+    byte[]    apdubuf = apdu.getBuffer();
+    short     LC = apdu.getIncomingLength();
+    short     receivedDataTotal = 0;
+    short     dataLen = apdu.setIncomingAndReceive();
+    short     dataOffset = apdu.getOffsetCdata();
+    short     offset = (short) 0;
+    // Receive all chunks of data
+    while (dataLen > 0) {
+        receivedDataTotal += dataLen;
+        dataLen = apdu.receiveBytes(dataOffset);
+    }
+    // Write length indicated by apdu.getIncomingLength()
+    Util.setShort(apdubuf, offset, LC);
+    offset = (short)(offset + 2);
+    
+    // Write actual length received
+    Util.setShort(apdubuf, offset, receivedDataTotal);
+    offset = (short)(offset + 2);
+    apdu.setOutgoingAndSend((byte) 0, offset);
+*/   }
+   
 }

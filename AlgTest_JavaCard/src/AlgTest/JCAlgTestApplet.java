@@ -44,13 +44,14 @@ package AlgTest;
  */
 // specific import for Javacard API access
 import javacard.framework.*;
+import javacardx.apdu.ExtendedLength;
 
 
 // JC 2.2.2 only
 //import javacardx.apdu.ExtendedLength; 
 //public class AlgTest extends javacard.framework.Applet implements ExtendedLength 
 
-public class JCAlgTestApplet extends javacard.framework.Applet 
+public class JCAlgTestApplet extends javacard.framework.Applet implements ExtendedLength 
 {
     // NOTE: when incrementing version, don't forget to update ALGTEST_JAVACARD_VERSION_CURRENT value
     /**
@@ -177,6 +178,8 @@ public class JCAlgTestApplet extends javacard.framework.Applet
             bProcessed = m_perfTest.process(apdu);
         }
         
+        ProcessDataTest(apdu);
+        
         // If not processed by any of module, then emit exception
         if (bProcessed == 0) {
             ISOException.throwIt( ISO7816.SW_INS_NOT_SUPPORTED) ;
@@ -191,4 +194,28 @@ public class JCAlgTestApplet extends javacard.framework.Applet
 
         apdu.setOutgoingAndSend((byte) 0, (short) ALGTEST_JAVACARD_VERSION_CURRENT.length);
     }    
+    
+    
+    void ProcessDataTest(APDU apdu) {
+        byte[]    apdubuf = apdu.getBuffer();
+        short     LC = apdu.getIncomingLength();
+        short     receivedDataTotal = 0;
+        short     dataLen = apdu.setIncomingAndReceive();
+        short     dataOffset = apdu.getOffsetCdata();
+        short     offset = (short) 0;
+        // Receive all chunks of data
+        while (dataLen > 0) {
+            receivedDataTotal += dataLen;
+            dataLen = apdu.receiveBytes(dataOffset);
+        }
+        // Write length indicated by apdu.getIncomingLength()
+        Util.setShort(apdubuf, offset, LC);
+        offset = (short)(offset + 2);
+
+        // Write actual length received
+        Util.setShort(apdubuf, offset, receivedDataTotal);
+        offset = (short)(offset + 2);
+        apdu.setOutgoingAndSend((byte) 0, offset);
+    }
+    
 }
