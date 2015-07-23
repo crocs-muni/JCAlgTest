@@ -74,11 +74,11 @@ div{
 	float : left;
 	clear : none;
 	min-height : 300px;
-	min-width : 250px;
 	text-shadow: 1px 1px 0px #fff;
 	margin:20px;
+	margin-right:0px;
 	border:#ccc 1px solid;
-
+	padding-right:20px;
 	-moz-border-radius:3px;
 	-webkit-border-radius:3px;
 	border-radius:3px;
@@ -93,10 +93,11 @@ div{
 	float : left;
 	clear : none;
 	min-height : 300px;
-	min-width : 500px;
 	text-shadow: 1px 1px 0px #fff;
 	margin:20px;
+	margin-right:0px;
 	border:#ccc 1px solid;
+	padding-right:20px;
 
 	-moz-border-radius:3px;
 	-webkit-border-radius:3px;
@@ -112,11 +113,13 @@ div{
 	float : left;
 	clear : none;
 	min-height : 300px;
-	min-width : 250px;
+	padding-right:20px;
+	padding-bottom:20px;
 	text-shadow: 1px 1px 0px #fff;
 	margin:20px;
+	margin-right:0px;
 	border:#ccc 1px solid;
-
+	
 	-moz-border-radius:3px;
 	-webkit-border-radius:3px;
 	border-radius:3px;
@@ -183,7 +186,7 @@ table a:link {
 	text-decoration:none;
 }
 table a:visited {
-	color: #999999;
+	color: #444;
 	font-weight:bold;
 	text-decoration:none;
 }
