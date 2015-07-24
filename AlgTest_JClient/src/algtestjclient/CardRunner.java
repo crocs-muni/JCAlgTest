@@ -30,12 +30,13 @@ public class CardRunner implements Runnable {
          CardMngr cardMngr = new CardMngr();
          // cardMngr.m_verbose = false;
          try {
-            String cardATR = cardMngr.ConnectToCard(m_cardTerminal, null, null);
-            //cardMngr.TestCardIO(m_dataLength, m_numRepeats);
-            String fileName = m_cardTerminal.getName() + "__" + cardATR + "__" + Long.toString(System.currentTimeMillis()) + ".csv";
-            fileName = fileName.replace(' ', '_');
-            cardMngr.GenerateAndGetKeys(fileName, m_numRepeats, -1, m_readerIndex);
-            cardMngr.DisconnectFromCard();
+             if(cardMngr.ConnectToCard(m_cardTerminal, null, null)) {
+                String fileName = cardMngr.getTerminalName()+ "__" + cardMngr.getATR() + "__" + Long.toString(System.currentTimeMillis()) + ".csv";
+                fileName = fileName.replace(' ', '_');
+                //cardMngr.TestCardIO(m_dataLength, m_numRepeats);
+                cardMngr.GenerateAndGetKeys(fileName, m_numRepeats, -1);
+                cardMngr.DisconnectFromCard();
+             }
          }
          catch (Exception ex) {
              System.out.println(ex.getMessage());

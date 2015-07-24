@@ -45,21 +45,21 @@ public class PerformanceTestingNGTest {
         short numRepeatWholeMeasurement = 3;
         
         perfTesting.testAllMessageDigests(numRepeatWholeOperation, numRepeatWholeMeasurement);
-        perfTesting.m_cardManager.UploadApplet(0);
+        perfTesting.m_cardManager.UploadApplet();
         perfTesting.testAllRandomGenerators(numRepeatWholeOperation, numRepeatWholeMeasurement);
-        perfTesting.m_cardManager.UploadApplet(0);
+        perfTesting.m_cardManager.UploadApplet();
         perfTesting.testAllCiphers(numRepeatWholeOperation, numRepeatWholeMeasurement);
-        perfTesting.m_cardManager.UploadApplet(0);
+        perfTesting.m_cardManager.UploadApplet();
         perfTesting.testAllSignatures(numRepeatWholeOperation, numRepeatWholeMeasurement);
-        perfTesting.m_cardManager.UploadApplet(0);
+        perfTesting.m_cardManager.UploadApplet();
         perfTesting.testAllChecksums(numRepeatWholeOperation, numRepeatWholeMeasurement);     
-        perfTesting.m_cardManager.UploadApplet(0);
+        perfTesting.m_cardManager.UploadApplet();
         
         perfTesting.testAllKeyPairs(1, numRepeatWholeMeasurement);   
-        perfTesting.m_cardManager.UploadApplet(0);
+        perfTesting.m_cardManager.UploadApplet();
 
         perfTesting.testAllKeys(numRepeatWholeOperation, numRepeatWholeMeasurement);     
-        perfTesting.m_cardManager.UploadApplet(0);
+        perfTesting.m_cardManager.UploadApplet();
     }                   
 
     @Test

@@ -427,27 +427,34 @@ public class CardMngr {
         return cardFound;        
     }    
     
-    public String ConnectToCard(CardTerminal cardTerminal, StringBuilder selectedATR, StringBuilder usedProtocol) throws Exception {
-        m_terminal = cardTerminal;
-        m_card = m_terminal.connect("*");
-        System.out.println("card: " + m_card);
-        m_channel = m_card.getBasicChannel();
+    public boolean ConnectToCard(CardTerminal cardTerminal, StringBuilder selectedATR, StringBuilder usedProtocol) throws Exception {
+        for(int maxAttempts = 2; maxAttempts > 0; ) {
+            maxAttempts--;
+            m_terminal = cardTerminal;
+            m_card = m_terminal.connect("*");
+            System.out.println("card: " + m_card);
+            m_channel = m_card.getBasicChannel();
 
-        //reset the card
-        ATR atr = m_card.getATR();
-        System.out.println(getTerminalName() + " : " + bytesToHex(atr.getBytes()));
+            //reset the card
+            ATR atr = m_card.getATR();
+            System.out.println(getTerminalName() + " : " + bytesToHex(atr.getBytes()));
 
-        // SELECT APPLET
-        ResponseAPDU resp = sendAPDU(selectApplet);
-        if (resp.getSW() != 0x9000) {
-            System.out.println(m_card + " : SELECT FAILED.");
-            return "";
-        } else {
-            if (selectedATR != null) { selectedATR.append(bytesToHex(m_card.getATR().getBytes())); }
-            if (usedProtocol != null) {usedProtocol.append(m_card.getProtocol()); }
-
-            return bytesToHex(atr.getBytes());
+            // SELECT APPLET
+            ResponseAPDU resp = sendAPDU(selectApplet);
+            if (resp.getSW() != 0x9000) {
+                System.out.println(m_card + " : SELECT FAILED.");
+                UploadApplet();
+                m_card.disconnect(false);
+                continue;
+            } else {
+                if (selectedATR != null) { selectedATR.append(bytesToHex(m_card.getATR().getBytes())); }
+                if (usedProtocol != null) {usedProtocol.append(m_card.getProtocol()); }
+                return true;
+            }
         }
+        
+        System.out.println(m_card + " : UPLOAD AND RESELECT FAILED.");
+        return false;
     }    
 
     public void DisconnectFromCard() throws Exception {
@@ -1490,7 +1497,7 @@ public class CardMngr {
         return b;
     }    
     
-    public int RestartCardWithUpload(int seriousProblemCounter, int readerIndex, FileOutputStream file) throws Exception {
+    public int RestartCardWithUpload(int seriousProblemCounter, FileOutputStream file) throws Exception {
         seriousProblemCounter++;
         if (seriousProblemCounter > MAX_SERIOUS_PROBLEMS_IN_ROW) {
             throw new Exception("Too many problems with card, stopping.");
@@ -1499,7 +1506,7 @@ public class CardMngr {
         try {
             Thread.sleep(3000);
             // Some problem, upload applet again
-            UploadApplet(readerIndex);
+            UploadApplet();
             file.write("# Applet uploaded\n\n".toString().getBytes());
 
             Thread.sleep(3000);
@@ -1508,47 +1515,46 @@ public class CardMngr {
         }
         catch (Exception ex) {
             System.out.println(getTerminalName() + " : Failed with " + ex.getMessage());
-            seriousProblemCounter = RestartCardWithUpload(seriousProblemCounter, readerIndex, file);
+            seriousProblemCounter = RestartCardWithUpload(seriousProblemCounter, file);
         }
         return seriousProblemCounter;
     }
         
-    public void UploadApplet(int readerIndex) throws Exception {
-        UploadApplet(readerIndex, "");
-    }
-    public void UploadApplet(int readerIndex, String atr) throws Exception {
-        System.out.println("Uploading applet...");
-        /*Check if folder !card_uploaders is correctly set*/
-        File fileCardUploadersFolder = new File(this.cardUploadersFolder);
-        if (!fileCardUploadersFolder.exists()) {
-            System.err.println("Cannot find !card_uploaders folder. Folder " + this.cardUploadersFolder + " does not exist.");
-            return;
+    public void UploadApplet() throws Exception {
+        System.out.println("Uploading applet to card on terminal " + getTerminalName() + "...");
+        String cardAtr = getATR().replace(" ", "_");
+        
+        //Check if folder !card_uploaders is correctly set
+        File fileCardUploadersFolder = new File(CardMngr.cardUploadersFolder);
+        if(!fileCardUploadersFolder.exists()) {
+            throw new Exception("Cannot find !card_uploaders folder. Folder " + CardMngr.cardUploadersFolder + " does not exist.");
         }
 
-        //atr = atr.replace(" ", "_");
-        /*Set path to run bat file*/
+        //Set path to run bat file
         String batFileName;
-        if (this.cardUploadersFolder.endsWith(File.separator)) { batFileName = this.cardUploadersFolder + "keyHarvest" + File.separator + "run" + readerIndex + ".bat"; } 
-        else { batFileName = this.cardUploadersFolder + File.separator + "keyHarvest" + File.separator + "run" + readerIndex + ".bat"; }
+        if(CardMngr.cardUploadersFolder.endsWith(File.separator)) batFileName = CardMngr.cardUploadersFolder + "upload.bat";
+        else batFileName = CardMngr.cardUploadersFolder + File.separator + "upload.bat";
         
-        ProcessBuilder pb = new ProcessBuilder(batFileName);
+        //Run bat file with arguments cardAtr and readerName
+        String[] commands = new String[]{batFileName, cardAtr, getTerminalName()};
+        ProcessBuilder pb = new ProcessBuilder(commands);
         pb.directory(fileCardUploadersFolder);
-
-        File log = new File("upload_log_" + readerIndex + ".txt");
         pb.redirectErrorStream(true);
-        pb.redirectOutput(Redirect.appendTo(log));
+        pb.redirectOutput(Redirect.appendTo(new File("upload_log_" + getTerminalName() + ".txt")));
 
         Process p = pb.start();
-
         p.waitFor();   
-        /*Check if process ended successful*/
+        //Check if process ended successful
         if(p.exitValue()!=0) {
-            System.out.println(": Error");
-            throw new Exception("Cannot upload applet. Process of file "+batFileName+" ended with "+p.exitValue());
+            System.out.println("Uploading applet: Error");
+            throw new Exception("Cannot upload applet. Process of file " + batFileName + " ended with " + p.exitValue());
         } 
-        else System.out.println(": Done");                
-    }    
-    public int GenerateAndGetKeys(String fileName, int numRepeats, int resetFrequency, int readerIndex) throws Exception { 
+        else {
+            System.out.println("Uploading applet: Done");
+        }                
+    } 
+      
+    public int GenerateAndGetKeys(String fileName, int numRepeats, int resetFrequency) throws Exception { 
         byte apdu[] = new byte[HEADER_LENGTH]; 
         apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
         apdu[OFFSET_INS] = Consts.INS_CARD_GETRSAKEY;
@@ -1565,11 +1571,10 @@ public class CardMngr {
         
         int seriousProblemCounter = 0;
         
-        for (int i = 0; i < numRepeats; i++) {
+        while(numKeysGenerated < numRepeats) {
             try {
                 key.setLength(0);
-
-                if ((resetFrequency != -1) && (i % resetFrequency == 0)) { bResetCard = true; }
+                if ((resetFrequency > 0) && (numKeysGenerated % resetFrequency == 0)) { bResetCard = true; }
 
                 // Reset card if required
                 if (bResetCard) {
@@ -1592,7 +1597,7 @@ public class CardMngr {
                 if (resp.getSW() != 0x9000) {
                     System.out.println(getTerminalName() + " : Failed to generate new key with " + Integer.toHexString(resp.getSW()));
                     // Some problem, upload applet again
-                    UploadApplet(readerIndex);
+                    UploadApplet();
 
                     key.append("# Applet uploaded\n\n");
                     file.write(key.toString().getBytes());
@@ -1650,7 +1655,7 @@ public class CardMngr {
             }
             catch (Exception ex) {
                 System.out.println(getTerminalName() + " : Failed with " + ex.getMessage());
-                seriousProblemCounter = RestartCardWithUpload(seriousProblemCounter, readerIndex, file);
+                seriousProblemCounter = RestartCardWithUpload(seriousProblemCounter, file);
             }
         }
         file.close();     
