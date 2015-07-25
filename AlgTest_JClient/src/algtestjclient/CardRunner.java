@@ -6,6 +6,7 @@
 
 package algtestjclient;
 
+import java.io.FileOutputStream;
 import javax.smartcardio.CardTerminal;
 
 /**
@@ -30,11 +31,9 @@ public class CardRunner implements Runnable {
          CardMngr cardMngr = new CardMngr();
          // cardMngr.m_verbose = false;
          try {
-             if(cardMngr.ConnectToCard(m_cardTerminal, null, null)) {
-                String fileName = cardMngr.getTerminalName()+ "__" + cardMngr.getATR() + "__" + Long.toString(System.currentTimeMillis()) + ".csv";
-                fileName = fileName.replace(' ', '_');
-                //cardMngr.TestCardIO(m_dataLength, m_numRepeats);
-                cardMngr.GenerateAndGetKeys(fileName, m_numRepeats, -1);
+             FileOutputStream file = cardMngr.establishConnection(null, "", m_cardTerminal.getName(), m_cardTerminal);
+             if(file != null) {
+                cardMngr.GenerateAndGetKeys(file, m_numRepeats, -1);
                 cardMngr.DisconnectFromCard();
              }
          }

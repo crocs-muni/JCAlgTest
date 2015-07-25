@@ -247,6 +247,9 @@ public class CardMngr {
     public FileOutputStream establishConnection(Class ClassToTest, String cardName, String testInfo, CardTerminal selectedTerminal) throws Exception{
         boolean bConnected = false;
         // Connnect to targer card to obtain information
+        reader = new StringBuilder();
+        atr = new StringBuilder();
+        protocol = new StringBuilder();
         if (selectedTerminal != null) {
             bConnected = ConnectToCard(ClassToTest, selectedTerminal, reader, atr, protocol);            
         } 
@@ -401,60 +404,37 @@ public class CardMngr {
         else {
             m_terminal = targetReader;
             if (m_terminal.isCardPresent()) {
-                m_card = m_terminal.connect("*");
-                System.out.println("card: " + m_card);
-                m_channel = m_card.getBasicChannel();
+                for(int maxAttempts = 2; maxAttempts > 0; ) {
+                    maxAttempts--;
+                    m_card = m_terminal.connect("*");
+                    System.out.println("card: " + m_card);
+                    m_channel = m_card.getBasicChannel();
                     System.out.println("Card Channel: " + m_channel.getChannelNumber());
 
-                //reset the card
-                ATR atr = m_card.getATR();
-                System.out.println(bytesToHex(atr.getBytes()));
+                    //reset the card
+                    ATR atr = m_card.getATR();
+                    System.out.println(bytesToHex(atr.getBytes()));
 
-                // SELECT APPLET
-                ResponseAPDU resp = sendAPDU(selectApplet);
-                if (resp.getSW() != 0x9000) {
-                    System.out.println("No JCAlgTest applet found.");
-                } else {
-                    // CARD FOUND
-                    cardFound = true;
+                    // SELECT APPLET
+                    ResponseAPDU resp = sendAPDU(selectApplet);
+                    if (resp.getSW() != 0x9000) {
+                        System.out.println("No JCAlgTest applet found.");
+                        UploadApplet();
+                        m_card.disconnect(false);
+                        continue;
+                    } else {
+                        // CARD FOUND
+                        cardFound = true;
 
-                    selectedATR.append(bytesToHex(m_card.getATR().getBytes()));
-                    selectedReader.append(m_terminal.toString());
-                    usedProtocol.append(m_card.getProtocol());
+                        if (selectedATR != null) { selectedATR.append(bytesToHex(m_card.getATR().getBytes())); }
+                        if (selectedReader != null) { selectedReader.append(m_terminal.toString()); }
+                        if (usedProtocol != null) { usedProtocol.append(m_card.getProtocol()); }
+                        return true;
+                    }
                 }
             }
         }
         return cardFound;        
-    }    
-    
-    public boolean ConnectToCard(CardTerminal cardTerminal, StringBuilder selectedATR, StringBuilder usedProtocol) throws Exception {
-        for(int maxAttempts = 2; maxAttempts > 0; ) {
-            maxAttempts--;
-            m_terminal = cardTerminal;
-            m_card = m_terminal.connect("*");
-            System.out.println("card: " + m_card);
-            m_channel = m_card.getBasicChannel();
-
-            //reset the card
-            ATR atr = m_card.getATR();
-            System.out.println(getTerminalName() + " : " + bytesToHex(atr.getBytes()));
-
-            // SELECT APPLET
-            ResponseAPDU resp = sendAPDU(selectApplet);
-            if (resp.getSW() != 0x9000) {
-                System.out.println(m_card + " : SELECT FAILED.");
-                UploadApplet();
-                m_card.disconnect(false);
-                continue;
-            } else {
-                if (selectedATR != null) { selectedATR.append(bytesToHex(m_card.getATR().getBytes())); }
-                if (usedProtocol != null) {usedProtocol.append(m_card.getProtocol()); }
-                return true;
-            }
-        }
-        
-        System.out.println(m_card + " : UPLOAD AND RESELECT FAILED.");
-        return false;
     }    
 
     public void DisconnectFromCard() throws Exception {
@@ -1511,7 +1491,7 @@ public class CardMngr {
 
             Thread.sleep(3000);
 
-            ConnectToCard(m_terminal, null, null);
+            ConnectToCard(null, m_terminal, null, null, null);
         }
         catch (Exception ex) {
             System.out.println(getTerminalName() + " : Failed with " + ex.getMessage());
@@ -1553,8 +1533,15 @@ public class CardMngr {
             System.out.println("Uploading applet: Done");
         }                
     } 
+    
+    public int GenerateAndGetKeys(String fileName, int numRepeats, int resetFrequency) throws Exception {
+        FileOutputStream file = new FileOutputStream(fileName);
+        int ret = GenerateAndGetKeys(file, numRepeats, resetFrequency);   
+        file.close();  
+        return ret;
+    }
       
-    public int GenerateAndGetKeys(String fileName, int numRepeats, int resetFrequency) throws Exception { 
+    public int GenerateAndGetKeys(FileOutputStream file, int numRepeats, int resetFrequency) throws Exception { 
         byte apdu[] = new byte[HEADER_LENGTH]; 
         apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
         apdu[OFFSET_INS] = Consts.INS_CARD_GETRSAKEY;
@@ -1563,8 +1550,7 @@ public class CardMngr {
         apdu[OFFSET_LC] = 0x00;
             
         String message;
-        int numKeysGenerated = 0;
-        FileOutputStream file = new FileOutputStream(fileName);                   
+        int numKeysGenerated = 0;                  
         StringBuilder key = new StringBuilder();
         boolean bResetCard = false;
         if (numRepeats == -1) numRepeats = 300000;
@@ -1583,7 +1569,7 @@ public class CardMngr {
                     file.write(key.toString().getBytes());
 
                     m_card.disconnect(true);
-                    ConnectToCard(m_terminal, null, null);
+                    ConnectToCard(null, m_terminal, null, null, null);
                     bResetCard = false;
                 }
 
@@ -1602,7 +1588,7 @@ public class CardMngr {
                     key.append("# Applet uploaded\n\n");
                     file.write(key.toString().getBytes());
 
-                    ConnectToCard(m_terminal, null, null);
+                    ConnectToCard(null, m_terminal, null, null, null);
                     continue;
                 }
                 else {
@@ -1657,9 +1643,7 @@ public class CardMngr {
                 System.out.println(getTerminalName() + " : Failed with " + ex.getMessage());
                 seriousProblemCounter = RestartCardWithUpload(seriousProblemCounter, file);
             }
-        }
-        file.close();     
-        
+        }   
         return numKeysGenerated;
     }    
    
