@@ -44,14 +44,13 @@ package AlgTest;
  */
 // specific import for Javacard API access
 import javacard.framework.*;
-import javacardx.apdu.ExtendedLength;
 
 
 // JC 2.2.2 only
 //import javacardx.apdu.ExtendedLength; 
 //public class AlgTest extends javacard.framework.Applet implements ExtendedLength 
 
-public class JCAlgTestApplet extends javacard.framework.Applet implements ExtendedLength 
+public class JCAlgTestApplet extends javacard.framework.Applet 
 {
     // NOTE: when incrementing version, don't forget to update ALGTEST_JAVACARD_VERSION_CURRENT value
     /**
@@ -115,8 +114,9 @@ public class JCAlgTestApplet extends javacard.framework.Applet implements Extend
 
     byte ALGTEST_JAVACARD_VERSION_CURRENT[] = ALGTEST_JAVACARD_VERSION_1_6_0;
 
-    AlgSupportTest  m_supportTest = null;
+    AlgSupportTest      m_supportTest = null;
     AlgPerformanceTest  m_perfTest = null;
+    AlgStorageTest      m_storageTest = null;
 
     protected JCAlgTestApplet(byte[] buffer, short offset, byte length) {
         // data offset is used for application specific parameter.
@@ -139,6 +139,7 @@ public class JCAlgTestApplet extends javacard.framework.Applet implements Extend
 
         m_supportTest = new AlgSupportTest();
         m_perfTest = new AlgPerformanceTest();
+        m_storageTest = new AlgStorageTest();
         
         if (isOP2) { register(buffer, (short)(offset + 1), buffer[offset]); }
         else { register(); }
@@ -177,8 +178,10 @@ public class JCAlgTestApplet extends javacard.framework.Applet implements Extend
         if (bProcessed == 0) {
             bProcessed = m_perfTest.process(apdu);
         }
+        if (bProcessed == 0) {
+            bProcessed = m_storageTest.process(apdu);
+        }
         
-        ProcessDataTest(apdu);
         
         // If not processed by any of module, then emit exception
         if (bProcessed == 0) {
@@ -194,28 +197,4 @@ public class JCAlgTestApplet extends javacard.framework.Applet implements Extend
 
         apdu.setOutgoingAndSend((byte) 0, (short) ALGTEST_JAVACARD_VERSION_CURRENT.length);
     }    
-    
-    
-    void ProcessDataTest(APDU apdu) {
-        byte[]    apdubuf = apdu.getBuffer();
-        short     LC = apdu.getIncomingLength();
-        short     receivedDataTotal = 0;
-        short     dataLen = apdu.setIncomingAndReceive();
-        short     dataOffset = apdu.getOffsetCdata();
-        short     offset = (short) 0;
-        // Receive all chunks of data
-        while (dataLen > 0) {
-            receivedDataTotal += dataLen;
-            dataLen = apdu.receiveBytes(dataOffset);
-        }
-        // Write length indicated by apdu.getIncomingLength()
-        Util.setShort(apdubuf, offset, LC);
-        offset = (short)(offset + 2);
-
-        // Write actual length received
-        Util.setShort(apdubuf, offset, receivedDataTotal);
-        offset = (short)(offset + 2);
-        apdu.setOutgoingAndSend((byte) 0, offset);
-    }
-    
 }

@@ -114,8 +114,9 @@ public class JCAlgTestApplet extends javacard.framework.Applet
 
     byte ALGTEST_JAVACARD_VERSION_CURRENT[] = ALGTEST_JAVACARD_VERSION_1_6_0;
 
-    AlgSupportTest  m_supportTest = null;
+    AlgSupportTest      m_supportTest = null;
     AlgPerformanceTest  m_perfTest = null;
+    AlgStorageTest      m_storageTest = null;
 
     protected JCAlgTestApplet(byte[] buffer, short offset, byte length) {
         // data offset is used for application specific parameter.
@@ -138,6 +139,7 @@ public class JCAlgTestApplet extends javacard.framework.Applet
 
         m_supportTest = new AlgSupportTest();
         m_perfTest = new AlgPerformanceTest();
+        m_storageTest = new AlgStorageTest();
         
         if (isOP2) { register(buffer, (short)(offset + 1), buffer[offset]); }
         else { register(); }
@@ -176,6 +178,10 @@ public class JCAlgTestApplet extends javacard.framework.Applet
         if (bProcessed == 0) {
             bProcessed = m_perfTest.process(apdu);
         }
+        if (bProcessed == 0) {
+            bProcessed = m_storageTest.process(apdu);
+        }
+        
         
         // If not processed by any of module, then emit exception
         if (bProcessed == 0) {
