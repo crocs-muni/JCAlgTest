@@ -57,6 +57,7 @@ public class AlgTestProcess {
     public static final String COMPARE_CARDS = "COMPARE";
     public static final String GENERATE_JCCONSTANTS = "JCCONSTS";
     public static final String GENERATE_CHARTS = "CHARTS";
+    public static final String GENERATE_CHARTS_ONEPAGE = "CHARTSPAGE";
     
     
     
@@ -110,6 +111,9 @@ public class AlgTestProcess {
                     else if (args[1].equals(GENERATE_CHARTS)){
                         System.out.println("Generating charts from input file to new directory.");
                         JCinfohtml.runCharts(args[0]);}
+                    else if (args[1].equals(GENERATE_CHARTS_ONEPAGE)){
+                        System.out.println("Generating charts page from input file.");
+                        JCinfohtml.runChartsOnePage(args[0]);}
                     else if (args[1].equals(GENERATE_JCINFO)){
                         System.out.println("Generating JC performance testing to HTML.");
                         if (args.length < 3){
