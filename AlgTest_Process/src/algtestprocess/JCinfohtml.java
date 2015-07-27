@@ -590,7 +590,7 @@ public class JCinfohtml {
     
     public static void parseChartsPage(List<String> lines, FileOutputStream file) throws FileNotFoundException, IOException{
         List<String> topFunctions = new ArrayList<>(); 
-        Set<String> usedFunctions = new TreeSet<>(); 
+        List<String> usedFunctions = new ArrayList<>(); 
         loadTopFunctions(topFunctions, null);
         StringBuilder toFile = new StringBuilder();
         toFile.append("</div>\n</div>\n\t<script type=\"text/javascript\" src=\"https://www.google.com/jsapi\"></script>\n");
@@ -626,7 +626,8 @@ public class JCinfohtml {
                 toFile.append("\t], true);\n\n" +
                   "\tvar options = {\n" +
                   "\t\ttitle: '"+methodName+"',\n" +
-                  "\t\thAxis: {title: 'Length of data'},\n" +
+                  "\t\ttitleTextStyle: {fontSize: 15},\n" +                 
+                  "\t\thAxis: {title: 'Length of data' },\n" +
                   "\t\tvAxis: {title: 'Average operation time (ms)'},\n" +
                   "\t\tlegend:'none',\n" +
                   "\t\tbar:{groupWidth: '85%'},};\n\n" +
@@ -640,9 +641,15 @@ public class JCinfohtml {
         
         //show charts in html file        
         toFile.append("\t<script type=\"text/javascript\" src=\"https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['corechart']}]}\"></script>\n");
-        for (String usedFunction : usedFunctions)
-            toFile.append("\t<div id=\""+usedFunction.replaceAll(" ", "_")+"\" style=\"width: 1000px; height: 600px;\"></div>\n");
-        toFile.append("</body>\n</html>");
+        int i = 0;
+        for (String usedFunction : usedFunctions){
+            if((i%2)==0){
+            toFile.append("\t<div id=\""+usedFunction.replaceAll(" ", "_")+"\" style=\"width: 49%; height: 60%; min-height:400px; max-height:1000px; float:left;\"></div>\n");
+            } else {
+            toFile.append("\t<div id=\""+usedFunction.replaceAll(" ", "_")+"\" style=\"width: 49%; height: 60%; min-height:400px; max-height:1000px; float:right;\"></div>\n");    
+            }
+        }
+        toFile.append("<a href=\"#\" class=\"back-to-top\">Back to Top</a>\n</body>\n</html>");
        
         //quick links to generated charts at the beginning of html file
         String toFileBegin;
