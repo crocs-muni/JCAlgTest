@@ -1,21 +1,21 @@
-card_name; 				jcv; 	success_auth; 	success_upload; 
-NXP JCOP J2D081 80K;			2.2.2;	gppro;		ok
-NXP JCOP CJ2A081;			2.2.2;	gppro;		ok
-NXP JCOP 21 v2.4.2R3;			2.2.2;	gppro;		ok
-NXP JCOP J2A080;			2.2.2;	gppro;		ok
-NXP JCOP CJ3A081;			2.2.2;	gppro;		ok
-NXP JCOP J3A080 v241;			2.2.2;	gppro;		ok
-NXP JCOP 31 V2.4.1 72K; 		2.2.2;	gppro;		ok
-Inf CJTOP 80K INF SLJ 52GLA080AL M8.4; 2.2.2; 	gppro; 		ok
+card_name; 				jcv; 	success_auth; 	success_upload; perf test info;
+NXP JCOP J2D081 80K;			2.2.2;	gppro;		ok;		ok
+NXP JCOP CJ2A081;			2.2.2;	gppro;		ok;		ok	
+NXP JCOP 21 v2.4.2R3;			2.2.2;	gppro;		ok;		ok
+NXP JCOP J2A080;			2.2.2;	gppro;		ok;		ok
+NXP JCOP CJ3A081;			2.2.2;	gppro;		ok;		ok
+NXP JCOP J3A080 v241;			2.2.2;	gppro;		ok;		0x45d reader error on Cipher/Signature.update for DATAFIXED & DATAVARIABLE
+NXP JCOP 31 V2.4.1 72K; 		2.2.2;	gppro;		ok;		ok
+Inf CJTOP 80K INF SLJ 52GLA080AL M8.4; 2.2.2; 	gppro; 		ok;		0x45d reader error on Cipher/Signature.update for DATAFIXED, but NOT for DATAVARIABLE
 
-Oberthur ID-ONE Cosmo 64 RSA v5.4; 	2.2.1;	gppro;		ok
-NXP JCOP 21 V2.2 36K; 			2.2.1;	gppro;		ok
-NXP JCOP 31 V2.2 36K; 			2.2.1;	gppro;		ok
-NXP JCOP 41 V2.2.1 72K;			2.2.1;	gppro;		ok
-G&D Smart Cafe Expert 4.x V2; 		2.2.1; 	gppro -emv;	ok;		gppro -emv
-Gemalto TOP IM GX4 72K;			2.2.1;	gpshell;	ok;		mode_201 gemXpressoPro select -AID A000000018434D00 open_sc -security 1 -keyind 0 -keyver 0 -key 47454d5850524553534f53414d504c45
-Gemplus GXP R4 72K; 			2.2.1;	gpshell;	ok;		mode_201 gemXpressoPro select -AID A000000018434D00 open_sc -security 1 -keyind 0 -keyver 0 -key 47454d5850524553534f53414d504c45
-Gemalto Twin GCX4 72K PK; 		2.2.1; 	gpshell;	not enough mem;	mode_201 gemXpressoPro select -AID A000000018434D00 open_sc -security 1 -keyind 0 -keyver 0 -key 47454d5850524553534f53414d504c45
+Oberthur ID-ONE Cosmo 64 RSA v5.4; 	2.2.1;	gppro;		ok;		whole perf test went ok, but card seems now blocked?
+NXP JCOP 21 V2.2 36K; 			2.2.1;	gppro;		ok;		ok
+NXP JCOP 31 V2.2 36K; 			2.2.1;	gppro;		ok;		ok
+NXP JCOP 41 V2.2.1 72K;			2.2.1;	gppro;		ok;		ok
+G&D Smart Cafe Expert 4.x V2; 		2.2.1; 	gppro -emv;	ok;		ok;	gppro -emv
+Gemalto TOP IM GX4 72K;			2.2.1;	gpshell;	ok;		nok - cards seems to be unresponsive from time to time;	mode_201 gemXpressoPro select -AID A000000018434D00 open_sc -security 1 -keyind 0 -keyver 0 -key 47454d5850524553534f53414d504c45
+Gemplus GXP R4 72K; 			2.2.1;	gpshell;	ok;		ok;	mode_201 gemXpressoPro select -AID A000000018434D00 open_sc -security 1 -keyind 0 -keyver 0 -key 47454d5850524553534f53414d504c45
+Gemalto Twin GCX4 72K PK; 		2.2.1; 	gpshell;	not enough mem;	nok;	mode_201 gemXpressoPro select -AID A000000018434D00 open_sc -security 1 -keyind 0 -keyver 0 -key 47454d5850524553534f53414d504c45
 
 
 Gemplus GXPLite-Generic;		2.1.2;	gpshell;	ok;		gpshell: mode_201 gemXpressoPro select -AID A000000018434D00 open_sc -security 1 -keyind 0 -keyver 0 -key 47454d5850524553534f53414d504c45	
