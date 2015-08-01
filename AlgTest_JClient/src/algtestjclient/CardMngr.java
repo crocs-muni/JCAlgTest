@@ -247,9 +247,9 @@ public class CardMngr {
     public FileOutputStream establishConnection(Class ClassToTest, String cardName, String testInfo, CardTerminal selectedTerminal) throws Exception{
         boolean bConnected = false;
         // Connnect to targer card to obtain information
-        reader = new StringBuilder();
-        atr = new StringBuilder();
-        protocol = new StringBuilder();
+        reader.setLength(0);
+        atr.setLength(0);
+        protocol.setLength(0);
         if (selectedTerminal != null) {
             bConnected = ConnectToCard(ClassToTest, selectedTerminal, reader, atr, protocol);            
         } 
@@ -387,6 +387,9 @@ public class CardMngr {
         StringBuilder selectedReader = new StringBuilder();
         StringBuilder selectedATR = new StringBuilder();
         StringBuilder usedProtocol = new StringBuilder();
+        reader.setLength(0);
+        atr.setLength(0);
+        protocol.setLength(0);
         return ConnectToCard(null, m_terminal, selectedReader, selectedATR, usedProtocol);
     }
     

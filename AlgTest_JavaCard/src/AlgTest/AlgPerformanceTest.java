@@ -1418,4 +1418,5 @@ import javacardx.crypto.*;
         apdubuf[ISO7816.OFFSET_CDATA] = SUCCESS;
         apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);            
     }        
-}
+    
+ }

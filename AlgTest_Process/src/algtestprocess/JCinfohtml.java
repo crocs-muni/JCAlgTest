@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  *
@@ -66,7 +68,7 @@ public class JCinfohtml {
         return lp;    
     }
     
-    public static void details(List<String> lines, FileOutputStream file) throws IOException{ 
+    public static HashMap<String, String> detailsBasic(List<String> lines, FileOutputStream file) throws IOException{
         String toFile;
         String[] info;
         
@@ -91,7 +93,15 @@ public class JCinfohtml {
         toFile +="<p>JavaCard version: <strong>"+infoMap.get("JCSystem.getVersion()[Major.Minor]")+"</strong></p>\n";
         toFile +="<p>MEMORY_TYPE_PERSISTENT: <strong>"+infoMap.get("JCSystem.MEMORY_TYPE_PERSISTENT")+"</strong></p>\n";
         toFile +="<p>MEMORY_TYPE_TRANSIENT_RESET: <strong>"+infoMap.get("JCSystem.MEMORY_TYPE_TRANSIENT_RESET")+"</strong></p>\n";
-        toFile +="<p>MEMORY_TYPE_TRANSIENT_DESELECT: <strong>"+infoMap.get("JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT")+"</strong></p>\n";  
+        toFile +="<p>MEMORY_TYPE_TRANSIENT_DESELECT: <strong>"+infoMap.get("JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT")+"</strong></p>\n";        
+        file.write(toFile.getBytes());
+        
+        return infoMap;
+    } 
+    
+    public static void details(List<String> lines, FileOutputStream file) throws IOException{ 
+        HashMap<String, String> infoMap = detailsBasic(lines, file);
+        String toFile = "";
         toFile +="\n<h3>How it works</h3>\n";
         toFile +="<p>You can find information about testing on <a href=\"http://www.fi.muni.cz/~xsvenda/jcsupport.html\">GitHub wiki</a>.</p>\n"; 
         toFile +="<p>The <b>Operation avg/min/max</b> is the exact number<br> of how many milliseconds the function takes.</p>\n\n"; 
@@ -409,7 +419,7 @@ public class JCinfohtml {
         } else {
         toFile += ((tp % 2)==0) ? "\t<tr>" : "\t<tr class='even'>";
         prepare = lines.get(lp).trim().split(";");
-        //toFile += "<td><b>"+prepare[1]+"</b></td>";
+        //toFile += "<td><b>"+prepare[1]+"</b></td>";       //classic name without reference to chart
         toFile += "<td><a class=\"fancybox fancybox.iframe\" href=\"./charts/"+prepare[1]+".html\" style=\"font-size:12px;\">"+prepare[1]+"</a></td>";
         lp+=2;
         }
@@ -578,6 +588,85 @@ public class JCinfohtml {
         return lp;
     }
     
+    public static void parseChartsPage(List<String> lines, FileOutputStream file) throws FileNotFoundException, IOException{
+        List<String> topFunctions = new ArrayList<>(); 
+        List<String> usedFunctions = new ArrayList<>(); 
+        loadTopFunctions(topFunctions, null);
+        StringBuilder toFile = new StringBuilder();
+        toFile.append("</div>\n</div>\n\t<script type=\"text/javascript\" src=\"https://www.google.com/jsapi\"></script>\n");
+        Integer lp = 0;
+        String methodName = "";
+        
+        // Generating charts of functions that are present in top functions
+        while(lp<lines.size()-4){
+            if(lines.get(lp).contains("method name:")){
+                methodName = lines.get(lp).split(";")[1];
+                if (methodName.startsWith(" "))
+                    methodName = methodName.substring(1);
+            } else {
+            lp++;
+            }
+                
+            if(topFunctions.contains(methodName)){
+                usedFunctions.add(methodName);
+                toFile.append("\t<script type=\"text/javascript\">\n" +
+                            "\tgoogle.setOnLoadCallback(drawChart);\n" +
+                            "\tfunction drawChart() {\n" +
+                            "\t\tvar data = google.visualization.arrayToDataTable([\n");
+                        
+                while(lp<lines.size()-4)
+                    if(lines.get(lp).contains(methodName))
+                       lp = parseOneForChart(lines, toFile, lp);
+                    else
+                       if(lines.get(lp).contains("method name:"))
+                           break;
+                       else
+                           lp++;
+                
+                toFile.append("\t], true);\n\n" +
+                  "\tvar options = {\n" +
+                  "\t\ttitle: '"+methodName+"',\n" +
+                  "\t\ttitleTextStyle: {fontSize: 15},\n" +                 
+                  "\t\thAxis: {title: 'Length of data' },\n" +
+                  "\t\tvAxis: {title: 'Average operation time (ms)'},\n" +
+                  "\t\tlegend:'none',\n" +
+                  "\t\tbar:{groupWidth: '85%'},};\n\n" +
+                  "\tvar chart = new google.visualization.CandlestickChart(document.getElementById('"+methodName.replaceAll(" ", "_")+"'));\n" +
+                  "\tchart.draw(data, options);\n" +
+                  "\t}\n\t</script>\n\n");
+            } else {
+                lp++;
+            }            
+        }               
+        
+        //show charts in html file        
+        toFile.append("\t<script type=\"text/javascript\" src=\"https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['corechart']}]}\"></script>\n");
+        int i = 0;
+        for (String usedFunction : usedFunctions){
+            if((i%2)==0){
+            toFile.append("\t<div id=\""+usedFunction.replaceAll(" ", "_")+"\" style=\"width: 49%; height: 60%; min-height:400px; max-height:1000px; float:left;\"></div>\n");
+            } else {
+            toFile.append("\t<div id=\""+usedFunction.replaceAll(" ", "_")+"\" style=\"width: 49%; height: 60%; min-height:400px; max-height:1000px; float:right;\"></div>\n");    
+            }
+        }
+        toFile.append("<a href=\"#\" class=\"back-to-top\">Back to Top</a>\n</body>\n</html>");
+       
+        //quick links to generated charts at the beginning of html file
+        String toFileBegin;
+        toFileBegin= "<div class=\"pageColumnQuickLinks\" style=\"max-width:350px;\">\n";
+        toFileBegin+= "<h3>Quick links</h3>\n<ul style=\"list-style-type: circle;\">\n";        
+        for (String usedFunction : usedFunctions)
+            toFileBegin+="\t<li>"+ "<a href=\"#"+usedFunction.replaceAll(" ", "_")+"\">"+usedFunction+"</a>" +"</li>\n";
+        toFileBegin+= "</ul>\n</div>\n";
+        file.write(toFileBegin.getBytes());             //quick links written
+        
+        //test details generated at the beginning of html file
+        detailsBasic(lines, file);                      //details written
+        
+        file.write(toFile.toString().getBytes());       //charts written
+        file.close();
+    }
+    
     public static void parseCharts(List<String> lines, String dir, String name) throws FileNotFoundException, IOException{
         Integer lp = 15;
         
@@ -631,6 +720,15 @@ public class JCinfohtml {
          dir.mkdirs();
          parseCharts(lines, (dir.getAbsolutePath()), cardName.toString()); 
      }
-
+     
+      public static void runChartsOnePage(String input) throws IOException{
+         StringBuilder cardName = new StringBuilder();
+         List<String> lines = initalize(input, cardName);
+         String resultsDir = new File(input).getAbsolutePath();
+         resultsDir = resultsDir.substring(0, resultsDir.lastIndexOf("\\"));                 
+         FileOutputStream file = new FileOutputStream(resultsDir + "\\" + cardName+"_charts.html");
+         begin(file, "Charts results card: "+cardName.toString());
+         parseChartsPage(lines, file);
+     }
 }
 

@@ -71,5 +71,6 @@
              <copy file="${basedir}/src/algtest/JCConsts.java" tofile="../AlgTest_JavaCard/src/AlgTest/JCConsts.java"/>
              <copy file="${basedir}/src/algtest/TestSettings.java" tofile="../AlgTest_JavaCard/src/AlgTest/TestSettings.java"/>
              <copy file="${basedir}/src/algtest/JavaCardAES.java" tofile="../AlgTest_JavaCard/src/AlgTest/JavaCardAES.java"/>
+             <copy file="${basedir}/src/algtest/AlgStorageTest.java" tofile="../AlgTest_JavaCard/src/AlgTest/AlgStorageTest.java"/>
           </target>
 </project>

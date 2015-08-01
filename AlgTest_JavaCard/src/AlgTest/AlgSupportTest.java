@@ -69,6 +69,13 @@ public class AlgSupportTest {
     private   RSAPublicKey     m_rsaPublicKey = null;
     private   RSAPrivateCrtKey m_rsaPrivateKey = null;   
   
+    private   Key[]            m_keyArray1 = null;
+    private   Key[]            m_keyArray2 = null;
+    private   Key[]            m_keyArray3 = null;
+    private   Key[]            m_keyArray4 = null;
+    private   Key[]            m_keyArray5 = null;
+    private   Key[]            m_keyArray6 = null;
+    private   Key[]            m_keyArray7 = null;
     
     // for class 'javacard.security.KeyAgreement'
     public static final byte ALG_EC_SVDP_DH = 1;
@@ -112,7 +119,6 @@ public class AlgSupportTest {
         if (apduBuffer[ISO7816.OFFSET_CLA] == Consts.CLA_CARD_ALGTEST) {
             bProcessed = 1;
             switch ( apduBuffer[ISO7816.OFFSET_INS]) {
-                case Consts.INS_CARD_TESTAVAILABLE_MEMORY: TestAvailableMemory(apdu); break;
                 case Consts.INS_CARD_TESTRSAEXPONENTSET: TestRSAExponentSet(apdu); break;
                 case Consts.INS_CARD_JCSYSTEM_INFO: JCSystemInfo(apdu); break;
                 case Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE: TestSupportedModeSingle(apdu); break;
@@ -219,95 +225,7 @@ public class AlgSupportTest {
 
         apdu.setOutgoingAndSend((byte) 0, offset);
       }
-  
-   void TestAvailableMemory(APDU apdu) {
-       byte[]    apdubuf = apdu.getBuffer();
-       apdu.setIncomingAndReceive();
-       short     offset = (short) 0;
-
-       short     toAllocateRAM = (short) 30000;
-       if (apdubuf[ISO7816.OFFSET_P1] == 0x00) {
-           if (m_ramArray == null) {
-             while (true) {
-               if (toAllocateRAM < 20) { break; }
-               try {
-                 m_ramArray = JCSystem.makeTransientByteArray(toAllocateRAM, JCSystem.CLEAR_ON_DESELECT);
-                 // ALLOCATION WAS SUCESSFULL
-                 break;
-               }
-               catch (Exception e) {
-                 // DECREASE TESTED ALLOCATION LENGTH BY 1%
-                 toAllocateRAM = (short) (toAllocateRAM - (short) (toAllocateRAM / 100));
-               }
-             }
-           }
-           else {
-             // ARRAY ALREADY ALLOCATED, JUST RETURN ITS LENGTH
-             toAllocateRAM = (short) m_ramArray.length;
-           }
-       }
-       Util.setShort(apdubuf, offset, toAllocateRAM);
-       offset = (short)(offset + 2);
-       //
-       // EEPROM TEST
-       //
-       if (apdubuf[ISO7816.OFFSET_P1] == 0x01) {
-         short     toAllocateEEPROM = (short) 15000;    // at maximum 15KB allocated into single array 
-         if (m_eepromArray1 == null) {
-           while (true) {
-             if (toAllocateEEPROM < 100) { break; } // We will stop when less then 100 remain to be allocated
-             try {
-               if (m_eepromArray1 == null) { m_eepromArray1 = new byte[toAllocateEEPROM]; }
-               if (m_eepromArray2 == null) { m_eepromArray2 = new byte[toAllocateEEPROM]; }
-               if (m_eepromArray3 == null) { m_eepromArray3 = new byte[toAllocateEEPROM]; }
-               if (m_eepromArray4 == null) { m_eepromArray4 = new byte[toAllocateEEPROM]; }
-               if (m_eepromArray5 == null) { m_eepromArray5 = new byte[toAllocateEEPROM]; }
-               if (m_eepromArray6 == null) { m_eepromArray6 = new byte[toAllocateEEPROM]; }
-               if (m_eepromArray7 == null) { m_eepromArray7 = new byte[toAllocateEEPROM]; }
-               if (m_eepromArray8 == null) { m_eepromArray8 = new byte[toAllocateEEPROM]; }
-               // ALLOCATION OF ALL ARRAYS WAS SUCESSFULL
-
-               break;
-             }
-             catch (Exception e) {
-               // DECREASE TESTED ALLOCATION LENGTH BY 10%
-               toAllocateEEPROM = (short) (toAllocateEEPROM - (short) (toAllocateEEPROM / 10));
-             }
-           }
-         }
-         else {
-           // ARRAY(s) ALREADY ALLOCATED, JUST RETURN THEIR COMBINED LENGTH
-         }
-
-         if (m_eepromArray1 != null) { Util.setShort(apdubuf, offset, (short) m_eepromArray1.length); }
-         else { Util.setShort(apdubuf, offset, (short) 0); }
-         offset = (short)(offset + 2); 
-         if (m_eepromArray2 != null) { Util.setShort(apdubuf, offset, (short) m_eepromArray2.length); }
-         else { Util.setShort(apdubuf, offset, (short) 0); }
-         offset = (short)(offset + 2);
-         if (m_eepromArray3 != null) { Util.setShort(apdubuf, offset, (short) m_eepromArray3.length); }
-         else { Util.setShort(apdubuf, offset, (short) 0); }
-         offset = (short)(offset + 2);
-         if (m_eepromArray4 != null) { Util.setShort(apdubuf, offset, (short) m_eepromArray4.length); }
-         else { Util.setShort(apdubuf, offset, (short) 0); }
-         offset = (short)(offset + 2);
-         if (m_eepromArray5 != null) { Util.setShort(apdubuf, offset, (short) m_eepromArray5.length); }
-         else { Util.setShort(apdubuf, offset, (short) 0); }
-         offset = (short)(offset + 2);
-         if (m_eepromArray6 != null) { Util.setShort(apdubuf, offset, (short) m_eepromArray6.length); }
-         else { Util.setShort(apdubuf, offset, (short) 0); }
-         offset = (short)(offset + 2);
-         if (m_eepromArray7 != null) { Util.setShort(apdubuf, offset, (short) m_eepromArray7.length); }
-         else { Util.setShort(apdubuf, offset, (short) 0); }
-         offset = (short)(offset + 2);
-         if (m_eepromArray8 != null) { Util.setShort(apdubuf, offset, (short) m_eepromArray8.length); }
-         else { Util.setShort(apdubuf, offset, (short) 0); }
-         offset = (short)(offset + 2);
-/**/
-       }
-       apdu.setOutgoingAndSend((short) 0, offset);
-   }  
-   
+ 
    /**
     * Note - Whole process is differentiated into separate steps to distinguish
     * between different situation when random exponent cannot be set.
@@ -419,7 +337,7 @@ public class AlgSupportTest {
 
       // RETURN INPUT DATA UNCHANGED
       apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, dataLen);
-    }  
+   }  
    
   void TestExtendedAPDUSupport(APDU apdu) {
 /* ONLY FOR JC2.2.2  

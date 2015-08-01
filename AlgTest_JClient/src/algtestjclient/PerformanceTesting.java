@@ -64,6 +64,7 @@ public class PerformanceTesting {
     String m_cardName = "";
     long   m_elapsedTimeWholeTest = 0;
     long   m_numHumanInterventions = 0;
+    long   m_numReconnects = 0;
     
     //public static final byte mask = 0b01111111;
     public FileOutputStream m_perfResultsFile;
@@ -159,6 +160,8 @@ public class PerformanceTesting {
         // Connect to card
         this.m_perfResultsFile = m_cardManager.establishConnection(testClassPerformance, m_cardName, testInfo, selectedTerminal);
         m_cardATR = m_cardManager.getATR();
+
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Cipher_ALG_AES_BLOCK_128_CBC_NOPAD,"TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_128_CBC_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, (short) numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
         
 /*
         testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Cipher_ALG_AES_BLOCK_128_CBC_NOPAD,"TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_128_CBC_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, (short) numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
@@ -189,6 +192,9 @@ public class PerformanceTesting {
         System.out.println(message);
         m_perfResultsFile.write(message.getBytes());
         message = "\n\nTotal human interventions (retries with physical resets etc.):; " + m_numHumanInterventions; 
+        System.out.println(message);
+        m_perfResultsFile.write(message.getBytes());
+        message = "\n\nTotal reconnects to card:; " + m_numReconnects; 
         System.out.println(message);
         m_perfResultsFile.write(message.getBytes());
     }
@@ -618,28 +624,49 @@ public class PerformanceTesting {
                 catch (Exception ex) {
                     // Unexpected exception
                     System.out.println(ex.toString()); 
-                    numFailedRepeats++;
-
-                    System.out.println("ERROR: unable to measure operation '" + info + "' properly because of exception (" + ex.toString() + ")");
-                    System.out.println("Current reader is: " + m_cardManager.getTerminalName());
-                    System.out.println("Current card is: " + m_cardName + " - " + m_cardManager.getATR());
-                    System.out.println("Try to physically remove card and/or upload applet manually and insert it again. Press 'r' to retry or 's' to skip this algorithm (if retry fails)\n");
-                    Scanner sc = new Scanner(System.in);
-                    String answ = sc.next();
-                    if (answ.equals("r")) {
-                        m_numHumanInterventions++;
-                        // Card was physically removed, reset retries counter
-                        numFailedRepeats = 0;
-
-                        m_cardManager.ConnectToCard();
-                        
+                    numFailedRepeats++; 
+                    
+                    if (numFailedRepeats == 1) {
+                        // For first fail, try to reconnect to card automatically
+                        try {
+                            m_numReconnects++;
+                            m_cardManager.ConnectToCard();
+                        }
+                        catch (Exception ex2) {
+                            System.out.println(ex2.toString()); 
+                            numFailedRepeats++;
+                        }
                     }
-                    else {
-                        // Skip this algorithm 
-                        System.out.println("Skipping algorithm " + info); 
-                        m_perfResultsFile.write(ex.toString().getBytes());
+                    
+                    if (numFailedRepeats > 1) {
+                        // For second fail, ask user 
+                        System.out.println("ERROR: unable to measure operation '" + info + "' properly because of exception (" + ex.toString() + ")");
+                        System.out.println("Current reader is: " + m_cardManager.getTerminalName());
+                        System.out.println("Current card is: " + m_cardName + " - " + m_cardManager.getATR());
+                        System.out.println("Try to physically remove card and/or upload applet manually and insert it again. Press 'r' to retry or 's' to skip this algorithm (if retry fails)\n");
+                        Scanner sc = new Scanner(System.in);
+                        String answ = sc.next();
+                        if (answ.equals("r")) {
+                            m_numHumanInterventions++;
+                            
+                            try {
+                                m_numReconnects++;
+                                m_cardManager.ConnectToCard();
+                                // Card was physically removed, reset retries counter
+                                numFailedRepeats = 0;
+                            }
+                            catch (Exception ex2) {
+                                System.out.println(ex2.toString()); 
+                                numFailedRepeats++;
+                            }
+                        }
+                        else {
+                            // Skip this algorithm 
+                            System.out.println("Skipping algorithm " + info); 
+                            m_perfResultsFile.write(ex.toString().getBytes());
 
-                        return -1;
+                            return -1;
+                        }
                     }
                 }
             }

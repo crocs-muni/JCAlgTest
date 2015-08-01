@@ -1,11 +1,14 @@
 package AlgTest;
 
 import algtestjclient.PerformanceTesting;
+import algtestjclient.StorageTesting;
+import java.io.File;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 
 import java.io.FileOutputStream;
+import java.io.IOException;
 import static java.lang.System.out;
 import java.lang.reflect.*;
 import static org.testng.Assert.*;
@@ -18,6 +21,7 @@ import org.testng.annotations.Test;
  */
 public class PerformanceTestingNGTest {
     static PerformanceTesting perfTesting = new PerformanceTesting();
+    static StorageTesting storageTesting = new StorageTesting();
     static boolean bTestRealCards = true;
     
     public PerformanceTestingNGTest() {
@@ -342,4 +346,127 @@ public class PerformanceTestingNGTest {
         perfTesting.testCipherWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_CRT_PUBLIC LENGTH_RSA_2048 Cipher_ALG_RSA_PKCS1", JCConsts.Cipher_MODE_ENCRYPT, (short) 5, (short) 5);
         perfTesting.testCipherWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_PUBLIC LENGTH_RSA_2048 Cipher_ALG_RSA_PKCS1", JCConsts.Cipher_MODE_ENCRYPT, (short) 5, (short) 5);
     }
+    
+    void uploadReconnect() throws IOException, InterruptedException, Exception {
+        String batFileName = "d:\\Documents\\Develop\\AlgTest\\AlgTest_JavaCard\\!card_uploaders\\gppro_upload.bat";
+        ProcessBuilder pb = new ProcessBuilder(batFileName);
+        File fileCardUploadersFolder = new File("d:\\Documents\\Develop\\AlgTest\\AlgTest_JavaCard\\!card_uploaders\\");
+        pb.directory(fileCardUploadersFolder);
+
+        File log = new File("upload_log.txt");
+        pb.redirectErrorStream(true);
+        pb.redirectOutput(ProcessBuilder.Redirect.appendTo(log));
+        
+        Process p = pb.start();
+
+        p.waitFor();   
+        
+        storageTesting.m_perfResultsFile = (bTestRealCards) ? storageTesting.m_cardManager.establishConnection(null) : storageTesting.m_cardManager.establishConnection(JCAlgTestApplet.class);   
+        
+    }
+    @Test
+    void storage_keys() throws Exception {
+        bTestRealCards = true;
+//        storageTesting.m_perfResultsFile = (bTestRealCards) ? storageTesting.m_cardManager.establishConnection(null) : storageTesting.m_cardManager.establishConnection(JCAlgTestApplet.class);   
+//        assertNotEquals(storageTesting.m_perfResultsFile, null);
+
+        StringBuilder value = new StringBuilder();
+        
+        TestSettings testSet = null;
+        testSet = perfTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128, JCConsts.AESKey_setKey, 
+                Consts.UNUSED, Consts.UNUSED, Consts.UNUSED, (short) 1, Consts.UNUSED, (short) 1);      
+
+        uploadReconnect();
+        
+        testSet.keyType = JCConsts.KeyBuilder_TYPE_AES;
+        testSet.keyLength = JCConsts.KeyBuilder_LENGTH_AES_128;
+        testSet.P1 = 0;
+        storageTesting.testKeysStorage(Consts.INS_CARD_ALLOWED_KEYS, testSet, "AES 128", storageTesting.m_perfResultsFile, value);    
+
+        uploadReconnect();
+        
+        testSet.keyType = JCConsts.KeyBuilder_TYPE_AES;
+        testSet.keyLength = JCConsts.KeyBuilder_LENGTH_AES_256;
+        storageTesting.testKeysStorage(Consts.INS_CARD_ALLOWED_KEYS, testSet, "AES 256", storageTesting.m_perfResultsFile, value);    
+
+        uploadReconnect();
+        
+        testSet.keyType = JCConsts.KeyBuilder_TYPE_DES;
+        testSet.keyLength = JCConsts.KeyBuilder_LENGTH_DES3_3KEY;
+        storageTesting.testKeysStorage(Consts.INS_CARD_ALLOWED_KEYS, testSet, "DES 192", storageTesting.m_perfResultsFile, value);    
+
+        uploadReconnect();
+        
+        testSet.algorithmSpecification = JCConsts.Cipher_ALG_AES_BLOCK_128_CBC_NOPAD;
+        testSet.keyLength = JCConsts.KeyBuilder_LENGTH_AES_128;
+        testSet.P1 = 0;
+        storageTesting.testKeysStorage(Consts.INS_CARD_ALLOWED_ENGINES, testSet, "CIPHER AES", storageTesting.m_perfResultsFile, value);    
+
+        uploadReconnect();
+
+        
+        testSet.algorithmSpecification = JCConsts.Cipher_ALG_DES_CBC_NOPAD;
+        testSet.keyLength = JCConsts.KeyBuilder_LENGTH_DES3_3KEY;
+        testSet.P1 = 0;
+        storageTesting.testKeysStorage(Consts.INS_CARD_ALLOWED_ENGINES, testSet, "CIPHER DES", storageTesting.m_perfResultsFile, value);    
+        
+        uploadReconnect();
+
+        
+        testSet.keyType = JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE;
+        testSet.keyLength = JCConsts.KeyBuilder_LENGTH_RSA_2048;
+        testSet.P1 = 0;
+        storageTesting.testKeysStorage(Consts.INS_CARD_ALLOWED_KEYS, testSet, "RSA_CRT_PRIVATE 2048", storageTesting.m_perfResultsFile, value);    
+
+        uploadReconnect();
+        
+        testSet.keyType = JCConsts.KeyBuilder_TYPE_RSA_PRIVATE;
+        testSet.keyLength = JCConsts.KeyBuilder_LENGTH_RSA_2048;
+        testSet.P1 = 0;
+        storageTesting.testKeysStorage(Consts.INS_CARD_ALLOWED_KEYS, testSet, "RSA_PRIVATE 2048", storageTesting.m_perfResultsFile, value);    
+
+        uploadReconnect();
+        
+        testSet.keyType = JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE;
+        testSet.keyLength = JCConsts.KeyBuilder_LENGTH_RSA_1024;
+        testSet.P1 = 0;
+        storageTesting.testKeysStorage(Consts.INS_CARD_ALLOWED_KEYS, testSet, "RSA_CRT_PRIVATE 1024", storageTesting.m_perfResultsFile, value);    
+
+        uploadReconnect();
+
+        testSet.keyType = JCConsts.KeyBuilder_TYPE_RSA_PRIVATE;
+        testSet.keyLength = JCConsts.KeyBuilder_LENGTH_RSA_1024;
+        testSet.P1 = 0;
+        storageTesting.testKeysStorage(Consts.INS_CARD_ALLOWED_KEYS, testSet, "RSA_PRIVATE 1024", storageTesting.m_perfResultsFile, value);    
+
+        uploadReconnect();
+        
+
+/*
+        testSet.P1 = 1;
+        storageTesting.testKeysStorage(Consts.INS_CARD_ALLOWED_ENGINES, testSet, storageTesting.m_perfResultsFile, value);    
+*/        
+    }         
+    
+   
+    @Test
+    void storage_keys_overlapped() throws Exception {
+        bTestRealCards = true;
+        storageTesting.m_perfResultsFile = (bTestRealCards) ? storageTesting.m_cardManager.establishConnection(null) : storageTesting.m_cardManager.establishConnection(JCAlgTestApplet.class);   
+        assertNotEquals(storageTesting.m_perfResultsFile, null);
+
+        StringBuilder value = new StringBuilder();
+        
+        TestSettings testSet = null;
+        testSet = perfTesting.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128, JCConsts.AESKey_setKey, 
+                Consts.UNUSED, Consts.UNUSED, Consts.UNUSED, (short) 1, Consts.UNUSED, (short) 1);      
+
+        testSet.keyType = JCConsts.KeyBuilder_TYPE_AES;
+        testSet.keyLength = JCConsts.KeyBuilder_LENGTH_AES_128;
+        testSet.dataLength1 = 1;
+        testSet.P1 = 0;
+        storageTesting.testKeysStorage(Consts.INS_CARD_ALLOWED_KEYS, testSet, "AES 128", storageTesting.m_perfResultsFile, value);    
+        testSet.P1 = 1;
+        storageTesting.testKeysStorage(Consts.INS_CARD_ALLOWED_KEYS, testSet, "AES 128", storageTesting.m_perfResultsFile, value);    
+    }            
 }
