@@ -50,6 +50,7 @@ import java.util.Scanner;
 */
 import javax.smartcardio.*;
 import AlgTest.Consts;
+import AlgTest.JCConsts;
 import AlgTest.TestSettings;
 
 import com.licel.jcardsim.io.CAD;
@@ -1543,14 +1544,32 @@ public class CardMngr {
         file.close();  
         return ret;
     }
+    
+    public TestSettings prepareTestSettings(short classType, short algorithmSpecification, short keyType, short keyLength, short algorithmMethod, short dataLength1, short dataLength2, short initMode, short numRepeatWholeOperation, short numRepeatSubOperation, short numRepeatWholeMeasurement) {
+        TestSettings    testSet = new TestSettings();
+        
+        testSet.classType = classType;                              // custom constant signalizing javacard class - e.g., custom constant for javacardx.crypto.Cipher
+        testSet.algorithmSpecification = algorithmSpecification;    // e.g., Cipher.ALG_AES_BLOCK_128_CBC_NOPAD
+        testSet.keyType = keyType;                                  // e.g., KeyBuilder.TYPE_AES
+        testSet.keyLength = keyLength;                              // e.g., KeyBuilder.LENGTH_AES_128
+        testSet.algorithmMethod = algorithmMethod;                  // custom constant signalizing target javacard method e.g., 
+        testSet.dataLength1 = dataLength1;                          // e.g., length of data used during measurement (e.g., for update())
+        testSet.dataLength2 = dataLength2;                          // e.g., length of data used during measurement (e.g., for doFinal())
+        testSet.initMode = initMode;                                // initialization mode for init(key, mode), e.g., Cipher.ENCRYPT
+        testSet.numRepeatWholeOperation = numRepeatWholeOperation;  // whole operation might be setKey, update, doFinal - numRepeatWholeOperation repeats this whole operation
+        testSet.numRepeatSubOperation = numRepeatSubOperation;      // relevant suboperation that should be iterated multiple times - e.g., update()
+        testSet.numRepeatWholeMeasurement = numRepeatWholeMeasurement;  // whole operation might be setKey, update, doFinal - numRepeatWholeOperation repeats this whole operation
+                
+        return testSet;
+    }
       
     public int GenerateAndGetKeys(FileOutputStream file, int numRepeats, int resetFrequency) throws Exception { 
-        byte apdu[] = new byte[HEADER_LENGTH]; 
-        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
-        apdu[OFFSET_INS] = Consts.INS_CARD_GETRSAKEY;
-        apdu[OFFSET_P1] = 0x00;
-        apdu[OFFSET_P2] = 0x00;
-        apdu[OFFSET_LC] = 0x00;
+//        byte apdu[] = new byte[HEADER_LENGTH]; 
+//        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
+//        apdu[OFFSET_INS] = Consts.INS_CARD_GETRSAKEY;
+//        apdu[OFFSET_P1] = 0x00;
+//        apdu[OFFSET_P2] = 0x00;
+//        apdu[OFFSET_LC] = 0x00;
             
         String message;
         int numKeysGenerated = 0;                  
@@ -1559,6 +1578,25 @@ public class CardMngr {
         if (numRepeats == -1) numRepeats = 300000;
         
         int seriousProblemCounter = 0;
+        
+        TestSettings publicKeySetting = this.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_512, Consts.UNUSED, Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, (short)1, (short) 1, (short)0);
+        publicKeySetting.keyClass = JCConsts.KeyPair_ALG_RSA;
+        byte apduPublic[] = new byte[HEADER_LENGTH + TestSettings.TEST_SETTINGS_LENGTH + ((publicKeySetting.inData == null) ? 0 : publicKeySetting.inData.length)];
+        apduPublic[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
+        apduPublic[OFFSET_INS] = Consts.INS_CARD_GETRSAKEY;
+        apduPublic[OFFSET_P1] = publicKeySetting.P1;
+        apduPublic[OFFSET_P2] = publicKeySetting.P2;
+        apduPublic[OFFSET_LC] = (byte) (apduPublic.length - HEADER_LENGTH);
+        publicKeySetting.serializeToApduBuff(apduPublic, ISO7816.OFFSET_CDATA);
+        TestSettings privateKeySetting = this.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512, Consts.UNUSED, Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, (short)1, (short) 1, (short)0);
+        publicKeySetting.keyClass = JCConsts.KeyPair_ALG_RSA;
+        byte apduPrivate[] = new byte[HEADER_LENGTH + TestSettings.TEST_SETTINGS_LENGTH + ((privateKeySetting.inData == null) ? 0 : privateKeySetting.inData.length)];
+        apduPrivate[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
+        apduPrivate[OFFSET_INS] = Consts.INS_CARD_GETRSAKEY;
+        apduPrivate[OFFSET_P1] = privateKeySetting.P1;
+        apduPrivate[OFFSET_P2] = privateKeySetting.P2;
+        apduPrivate[OFFSET_LC] = (byte) (apduPrivate.length - HEADER_LENGTH);
+        privateKeySetting.serializeToApduBuff(apduPrivate, ISO7816.OFFSET_CDATA);       
         
         while(numKeysGenerated < numRepeats) {
             try {
@@ -1577,10 +1615,11 @@ public class CardMngr {
                 }
 
                 // Prepare for new key generation
-                apdu[OFFSET_P1] = 0x00;
+//                apdu[OFFSET_P1] = 0x00;
 
                 long elapsedCard = - System.currentTimeMillis();
-                ResponseAPDU resp = sendAPDU(apdu);
+                
+                ResponseAPDU resp = sendAPDU(apduPublic);
                 elapsedCard += System.currentTimeMillis();
 
                 if (resp.getSW() != 0x9000) {
@@ -1604,8 +1643,8 @@ public class CardMngr {
 
 
                 // Ask for private key
-                apdu[OFFSET_P1] = 0x01;
-                ResponseAPDU respPrivate = sendAPDU(apdu);
+//                apdu[OFFSET_P1] = 0x01;
+                ResponseAPDU respPrivate = sendAPDU(apduPrivate);
                 if (respPrivate.getSW() != 0x9000) {
                     System.out.println(getTerminalName() + " : Failed to obtain private key with " + Integer.toHexString(respPrivate.getSW()));
                     continue;
