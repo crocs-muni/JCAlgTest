@@ -50,6 +50,7 @@ import java.util.Scanner;
 */
 import javax.smartcardio.*;
 import AlgTest.Consts;
+import AlgTest.JCConsts;
 import AlgTest.TestSettings;
 
 import com.licel.jcardsim.io.CAD;
@@ -407,53 +408,37 @@ public class CardMngr {
         else {
             m_terminal = targetReader;
             if (m_terminal.isCardPresent()) {
-                m_card = m_terminal.connect("*");
-                System.out.println("card: " + m_card);
-                m_channel = m_card.getBasicChannel();
+                for(int maxAttempts = 2; maxAttempts > 0; ) {
+                    maxAttempts--;
+                    m_card = m_terminal.connect("*");
+                    System.out.println("card: " + m_card);
+                    m_channel = m_card.getBasicChannel();
                     System.out.println("Card Channel: " + m_channel.getChannelNumber());
 
-                //reset the card
-                ATR atr = m_card.getATR();
-                System.out.println(bytesToHex(atr.getBytes()));
+                    //reset the card
+                    ATR atr = m_card.getATR();
+                    System.out.println(bytesToHex(atr.getBytes()));
 
-                // SELECT APPLET
-                ResponseAPDU resp = sendAPDU(selectApplet);
-                if (resp.getSW() != 0x9000) {
-                    System.out.println("No JCAlgTest applet found.");
-                } else {
-                    // CARD FOUND
-                    cardFound = true;
+                    // SELECT APPLET
+                    ResponseAPDU resp = sendAPDU(selectApplet);
+                    if (resp.getSW() != 0x9000) {
+                        System.out.println("No JCAlgTest applet found.");
+                        UploadApplet();
+                        m_card.disconnect(false);
+                        continue;
+                    } else {
+                        // CARD FOUND
+                        cardFound = true;
 
-                    selectedATR.append(bytesToHex(m_card.getATR().getBytes()));
-                    selectedReader.append(m_terminal.toString());
-                    usedProtocol.append(m_card.getProtocol());
+                        if (selectedATR != null) { selectedATR.append(bytesToHex(m_card.getATR().getBytes())); }
+                        if (selectedReader != null) { selectedReader.append(m_terminal.toString()); }
+                        if (usedProtocol != null) { usedProtocol.append(m_card.getProtocol()); }
+                        return true;
+                    }
                 }
             }
         }
         return cardFound;        
-    }    
-    
-    public String ConnectToCard(CardTerminal cardTerminal, StringBuilder selectedATR, StringBuilder usedProtocol) throws Exception {
-        m_terminal = cardTerminal;
-        m_card = m_terminal.connect("*");
-        System.out.println("card: " + m_card);
-        m_channel = m_card.getBasicChannel();
-
-        //reset the card
-        ATR atr = m_card.getATR();
-        System.out.println(getTerminalName() + " : " + bytesToHex(atr.getBytes()));
-
-        // SELECT APPLET
-        ResponseAPDU resp = sendAPDU(selectApplet);
-        if (resp.getSW() != 0x9000) {
-            System.out.println(m_card + " : SELECT FAILED.");
-            return "";
-        } else {
-            if (selectedATR != null) { selectedATR.append(bytesToHex(m_card.getATR().getBytes())); }
-            if (usedProtocol != null) {usedProtocol.append(m_card.getProtocol()); }
-
-            return bytesToHex(atr.getBytes());
-        }
     }    
 
     public void DisconnectFromCard() throws Exception {
@@ -1496,7 +1481,7 @@ public class CardMngr {
         return b;
     }    
     
-    public int RestartCardWithUpload(int seriousProblemCounter, int readerIndex, FileOutputStream file) throws Exception {
+    public int RestartCardWithUpload(int seriousProblemCounter, FileOutputStream file) throws Exception {
         seriousProblemCounter++;
         if (seriousProblemCounter > MAX_SERIOUS_PROBLEMS_IN_ROW) {
             throw new Exception("Too many problems with card, stopping.");
@@ -1505,77 +1490,118 @@ public class CardMngr {
         try {
             Thread.sleep(3000);
             // Some problem, upload applet again
-            UploadApplet(readerIndex);
+            UploadApplet();
             file.write("# Applet uploaded\n\n".toString().getBytes());
 
             Thread.sleep(3000);
 
-            ConnectToCard(m_terminal, null, null);
+            ConnectToCard(null, m_terminal, null, null, null);
         }
         catch (Exception ex) {
             System.out.println(getTerminalName() + " : Failed with " + ex.getMessage());
-            seriousProblemCounter = RestartCardWithUpload(seriousProblemCounter, readerIndex, file);
+            seriousProblemCounter = RestartCardWithUpload(seriousProblemCounter, file);
         }
         return seriousProblemCounter;
     }
         
-    public void UploadApplet(int readerIndex) throws Exception {
-        UploadApplet(readerIndex, "");
-    }
-    public void UploadApplet(int readerIndex, String atr) throws Exception {
-        System.out.println("Uploading applet...");
-        /*Check if folder !card_uploaders is correctly set*/
-        File fileCardUploadersFolder = new File(this.cardUploadersFolder);
-        if (!fileCardUploadersFolder.exists()) {
-            System.err.println("Cannot find !card_uploaders folder. Folder " + this.cardUploadersFolder + " does not exist.");
-            return;
+    public void UploadApplet() throws Exception {
+        System.out.println("Uploading applet to card on terminal " + getTerminalName() + "...");
+        String cardAtr = getATR().replace(" ", "_");
+        
+        //Check if folder !card_uploaders is correctly set
+        File fileCardUploadersFolder = new File(CardMngr.cardUploadersFolder);
+        if(!fileCardUploadersFolder.exists()) {
+            throw new Exception("Cannot find !card_uploaders folder. Folder " + CardMngr.cardUploadersFolder + " does not exist.");
         }
 
-        //atr = atr.replace(" ", "_");
-        /*Set path to run bat file*/
+        //Set path to run bat file
         String batFileName;
-        if (this.cardUploadersFolder.endsWith(File.separator)) { batFileName = this.cardUploadersFolder + "keyHarvest" + File.separator + "run" + readerIndex + ".bat"; } 
-        else { batFileName = this.cardUploadersFolder + File.separator + "keyHarvest" + File.separator + "run" + readerIndex + ".bat"; }
+        if(CardMngr.cardUploadersFolder.endsWith(File.separator)) batFileName = CardMngr.cardUploadersFolder + "upload.bat";
+        else batFileName = CardMngr.cardUploadersFolder + File.separator + "upload.bat";
         
-        ProcessBuilder pb = new ProcessBuilder(batFileName);
+        //Run bat file with arguments cardAtr and readerName
+        String[] commands = new String[]{batFileName, cardAtr, getTerminalName()};
+        ProcessBuilder pb = new ProcessBuilder(commands);
         pb.directory(fileCardUploadersFolder);
-
-        File log = new File("upload_log_" + readerIndex + ".txt");
         pb.redirectErrorStream(true);
-        pb.redirectOutput(Redirect.appendTo(log));
+        pb.redirectOutput(Redirect.appendTo(new File("upload_log_" + getTerminalName() + ".txt")));
 
         Process p = pb.start();
-
         p.waitFor();   
-        /*Check if process ended successful*/
+        //Check if process ended successful
         if(p.exitValue()!=0) {
-            System.out.println(": Error");
-            throw new Exception("Cannot upload applet. Process of file "+batFileName+" ended with "+p.exitValue());
+            System.out.println("Uploading applet: Error");
+            throw new Exception("Cannot upload applet. Process of file " + batFileName + " ended with " + p.exitValue());
         } 
-        else System.out.println(": Done");                
-    }    
-    public int GenerateAndGetKeys(String fileName, int numRepeats, int resetFrequency, int readerIndex) throws Exception { 
-        byte apdu[] = new byte[HEADER_LENGTH]; 
-        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
-        apdu[OFFSET_INS] = Consts.INS_CARD_GETRSAKEY;
-        apdu[OFFSET_P1] = 0x00;
-        apdu[OFFSET_P2] = 0x00;
-        apdu[OFFSET_LC] = 0x00;
+        else {
+            System.out.println("Uploading applet: Done");
+        }                
+    } 
+    
+    public int GenerateAndGetKeys(String fileName, int numRepeats, int resetFrequency) throws Exception {
+        FileOutputStream file = new FileOutputStream(fileName);
+        int ret = GenerateAndGetKeys(file, numRepeats, resetFrequency);   
+        file.close();  
+        return ret;
+    }
+    
+    public TestSettings prepareTestSettings(short classType, short algorithmSpecification, short keyType, short keyLength, short algorithmMethod, short dataLength1, short dataLength2, short initMode, short numRepeatWholeOperation, short numRepeatSubOperation, short numRepeatWholeMeasurement) {
+        TestSettings    testSet = new TestSettings();
+        
+        testSet.classType = classType;                              // custom constant signalizing javacard class - e.g., custom constant for javacardx.crypto.Cipher
+        testSet.algorithmSpecification = algorithmSpecification;    // e.g., Cipher.ALG_AES_BLOCK_128_CBC_NOPAD
+        testSet.keyType = keyType;                                  // e.g., KeyBuilder.TYPE_AES
+        testSet.keyLength = keyLength;                              // e.g., KeyBuilder.LENGTH_AES_128
+        testSet.algorithmMethod = algorithmMethod;                  // custom constant signalizing target javacard method e.g., 
+        testSet.dataLength1 = dataLength1;                          // e.g., length of data used during measurement (e.g., for update())
+        testSet.dataLength2 = dataLength2;                          // e.g., length of data used during measurement (e.g., for doFinal())
+        testSet.initMode = initMode;                                // initialization mode for init(key, mode), e.g., Cipher.ENCRYPT
+        testSet.numRepeatWholeOperation = numRepeatWholeOperation;  // whole operation might be setKey, update, doFinal - numRepeatWholeOperation repeats this whole operation
+        testSet.numRepeatSubOperation = numRepeatSubOperation;      // relevant suboperation that should be iterated multiple times - e.g., update()
+        testSet.numRepeatWholeMeasurement = numRepeatWholeMeasurement;  // whole operation might be setKey, update, doFinal - numRepeatWholeOperation repeats this whole operation
+                
+        return testSet;
+    }
+      
+    public int GenerateAndGetKeys(FileOutputStream file, int numRepeats, int resetFrequency) throws Exception { 
+//        byte apdu[] = new byte[HEADER_LENGTH]; 
+//        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
+//        apdu[OFFSET_INS] = Consts.INS_CARD_GETRSAKEY;
+//        apdu[OFFSET_P1] = 0x00;
+//        apdu[OFFSET_P2] = 0x00;
+//        apdu[OFFSET_LC] = 0x00;
             
         String message;
-        int numKeysGenerated = 0;
-        FileOutputStream file = new FileOutputStream(fileName);                   
+        int numKeysGenerated = 0;                  
         StringBuilder key = new StringBuilder();
         boolean bResetCard = false;
         if (numRepeats == -1) numRepeats = 300000;
         
         int seriousProblemCounter = 0;
         
-        for (int i = 0; i < numRepeats; i++) {
+        TestSettings publicKeySetting = this.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_512, Consts.UNUSED, Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, (short)1, (short) 1, (short)0);
+        publicKeySetting.keyClass = JCConsts.KeyPair_ALG_RSA;
+        byte apduPublic[] = new byte[HEADER_LENGTH + TestSettings.TEST_SETTINGS_LENGTH + ((publicKeySetting.inData == null) ? 0 : publicKeySetting.inData.length)];
+        apduPublic[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
+        apduPublic[OFFSET_INS] = Consts.INS_CARD_GETRSAKEY;
+        apduPublic[OFFSET_P1] = publicKeySetting.P1;
+        apduPublic[OFFSET_P2] = publicKeySetting.P2;
+        apduPublic[OFFSET_LC] = (byte) (apduPublic.length - HEADER_LENGTH);
+        publicKeySetting.serializeToApduBuff(apduPublic, ISO7816.OFFSET_CDATA);
+        TestSettings privateKeySetting = this.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512, Consts.UNUSED, Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, (short)1, (short) 1, (short)0);
+        publicKeySetting.keyClass = JCConsts.KeyPair_ALG_RSA;
+        byte apduPrivate[] = new byte[HEADER_LENGTH + TestSettings.TEST_SETTINGS_LENGTH + ((privateKeySetting.inData == null) ? 0 : privateKeySetting.inData.length)];
+        apduPrivate[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
+        apduPrivate[OFFSET_INS] = Consts.INS_CARD_GETRSAKEY;
+        apduPrivate[OFFSET_P1] = privateKeySetting.P1;
+        apduPrivate[OFFSET_P2] = privateKeySetting.P2;
+        apduPrivate[OFFSET_LC] = (byte) (apduPrivate.length - HEADER_LENGTH);
+        privateKeySetting.serializeToApduBuff(apduPrivate, ISO7816.OFFSET_CDATA);       
+        
+        while(numKeysGenerated < numRepeats) {
             try {
                 key.setLength(0);
-
-                if ((resetFrequency != -1) && (i % resetFrequency == 0)) { bResetCard = true; }
+                if ((resetFrequency > 0) && (numKeysGenerated % resetFrequency == 0)) { bResetCard = true; }
 
                 // Reset card if required
                 if (bResetCard) {
@@ -1584,26 +1610,27 @@ public class CardMngr {
                     file.write(key.toString().getBytes());
 
                     m_card.disconnect(true);
-                    ConnectToCard(m_terminal, null, null);
+                    ConnectToCard(null, m_terminal, null, null, null);
                     bResetCard = false;
                 }
 
                 // Prepare for new key generation
-                apdu[OFFSET_P1] = 0x00;
+//                apdu[OFFSET_P1] = 0x00;
 
                 long elapsedCard = - System.currentTimeMillis();
-                ResponseAPDU resp = sendAPDU(apdu);
+                
+                ResponseAPDU resp = sendAPDU(apduPublic);
                 elapsedCard += System.currentTimeMillis();
 
                 if (resp.getSW() != 0x9000) {
                     System.out.println(getTerminalName() + " : Failed to generate new key with " + Integer.toHexString(resp.getSW()));
                     // Some problem, upload applet again
-                    UploadApplet(readerIndex);
+                    UploadApplet();
 
                     key.append("# Applet uploaded\n\n");
                     file.write(key.toString().getBytes());
 
-                    ConnectToCard(m_terminal, null, null);
+                    ConnectToCard(null, m_terminal, null, null, null);
                     continue;
                 }
                 else {
@@ -1616,8 +1643,8 @@ public class CardMngr {
 
 
                 // Ask for private key
-                apdu[OFFSET_P1] = 0x01;
-                ResponseAPDU respPrivate = sendAPDU(apdu);
+//                apdu[OFFSET_P1] = 0x01;
+                ResponseAPDU respPrivate = sendAPDU(apduPrivate);
                 if (respPrivate.getSW() != 0x9000) {
                     System.out.println(getTerminalName() + " : Failed to obtain private key with " + Integer.toHexString(respPrivate.getSW()));
                     continue;
@@ -1656,11 +1683,9 @@ public class CardMngr {
             }
             catch (Exception ex) {
                 System.out.println(getTerminalName() + " : Failed with " + ex.getMessage());
-                seriousProblemCounter = RestartCardWithUpload(seriousProblemCounter, readerIndex, file);
+                seriousProblemCounter = RestartCardWithUpload(seriousProblemCounter, file);
             }
-        }
-        file.close();     
-        
+        }   
         return numKeysGenerated;
     }    
    
