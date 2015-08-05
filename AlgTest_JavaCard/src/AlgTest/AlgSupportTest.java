@@ -54,7 +54,6 @@ public class AlgSupportTest {
     private   KeyAgreement     m_keyAgreement = null;   
     private   RandomData       m_trng = null; 
     private   Key              m_key1 = null;
-    private   TestSettings     m_testSettings = null;
     
   
   
@@ -111,9 +110,7 @@ public class AlgSupportTest {
     public static final byte CLASS_KEYPAIR         = 0x19;
     public static final byte CLASS_KEYBUILDER      = 0x20;
 
-    AlgSupportTest() { 
-        m_testSettings = new TestSettings();
-    }
+    AlgSupportTest() { }
 
     public byte process(APDU apdu) throws ISOException {
         byte bProcessed = 0;
@@ -128,7 +125,7 @@ public class AlgSupportTest {
                 // case INS_CARD_TESTEXTAPDU: TestExtendedAPDUSupport(apdu); break; // this has to be tested by separate applet with ExtAPDU enabled - should succedd during upload and run
                 case Consts.INS_CARD_DATAINOUT: TestIOSpeed(apdu); break;
                 case Consts.INS_CARD_RESET: JCSystem.requestObjectDeletion(); break;
-                case Consts.INS_CARD_GETRSAKEY: GetRSAKey(apdu); break;
+                // case Consts.INS_CARD_GETRSAKEY: GetRSAKey(apdu); break; // moved to AlgKeyHarvest class
                 default : {
                     bProcessed = 0;
                     break;
@@ -280,60 +277,6 @@ public class AlgSupportTest {
          }
        }
    }
-   /**
-    * Method for on-card generation of RSA keypair and export of result outside (in two apdu)
-    * @param apdu 
-    */
-   void GetRSAKey(APDU apdu) {
-      byte[]    apdubuf = apdu.getBuffer();
-      m_testSettings.parse(apdu);
-
-      // Generate new object if not before yet
-      if (m_keyPair1 == null) {
-          m_keyPair1 = new KeyPair((byte)m_testSettings.keyClass, m_testSettings.keyLength);	  
-      }	       
-      
-      switch (m_testSettings.keyType) {
-        case JCConsts.KeyBuilder_ALG_TYPE_RSA_PUBLIC: {
-            m_keyPair1.genKeyPair();           
-            m_rsaPublicKey = (RSAPublicKey) m_keyPair1.getPublic();
-
-            short offset = 0;
-            apdubuf[offset] = (byte)0x82; offset++;
-            short len = m_rsaPublicKey.getExponent(apdubuf, (short)(offset + 2));
-            Util.setShort(apdubuf, offset, len); 
-            offset += 2;    // length
-            offset += len;  // value
-            
-            apdubuf[offset] = (byte)0x82; offset++;
-            len = m_rsaPublicKey.getModulus(apdubuf, (short) (offset + 2));
-            Util.setShort(apdubuf, offset, len); 
-            offset += 2;    // length
-            offset += len;  // value
-
-            apdu.setOutgoingAndSend((short) 0, offset);
-        
-            break;
-        }
-        case JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE: {
-            m_rsaPrivateKey = (RSAPrivateCrtKey) m_keyPair1.getPrivate();
-            
-            short offset = 0;
-            short len = m_rsaPrivateKey.getP(apdubuf, (short)(offset + 3));
-            apdubuf[offset] = (byte)0x82; offset++;
-            Util.setShort(apdubuf, offset, len); offset += 2;
-            offset += len;
-            
-            len = m_rsaPrivateKey.getQ(apdubuf, (short)(offset + 3));
-            apdubuf[offset] = (byte)0x82; offset++;
-            Util.setShort(apdubuf, offset, len); offset += 2;
-            offset += len;
-                    
-            apdu.setOutgoingAndSend((short) 0, offset);
-            break;
-         }
-      }
-    }
    
    void TestIOSpeed(APDU apdu) {
       byte[]    apdubuf = apdu.getBuffer();
