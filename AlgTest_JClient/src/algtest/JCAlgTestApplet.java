@@ -114,6 +114,7 @@ public class JCAlgTestApplet extends javacard.framework.Applet
 
     byte ALGTEST_JAVACARD_VERSION_CURRENT[] = ALGTEST_JAVACARD_VERSION_1_6_0;
 
+    AlgKeyHarvest       m_keyHarvest = null;
     AlgSupportTest      m_supportTest = null;
     AlgPerformanceTest  m_perfTest = null;
     AlgStorageTest      m_storageTest = null;
@@ -137,6 +138,7 @@ public class JCAlgTestApplet extends javacard.framework.Applet
             isOP2 = true;
        } else {}
 
+        m_keyHarvest = new AlgKeyHarvest();
         m_supportTest = new AlgSupportTest();
         m_perfTest = new AlgPerformanceTest();
         m_storageTest = new AlgStorageTest();
@@ -172,6 +174,9 @@ public class JCAlgTestApplet extends javacard.framework.Applet
                 bProcessed = (byte) 1;
         }
 
+        if (bProcessed == 0) {
+            bProcessed = m_keyHarvest.process(apdu);
+        }
         if (bProcessed == 0) {
             bProcessed = m_supportTest.process(apdu);
         }

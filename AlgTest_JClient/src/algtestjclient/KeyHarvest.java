@@ -44,7 +44,7 @@ public class KeyHarvest {
     public static CardMngr cardManager = new CardMngr();
     public static FileOutputStream file;
     
-    void gatherRSAKeys() throws CardException {
+    void gatherRSAKeys(boolean autoUploadBefore, boolean useCrt, int numOfKeys) throws CardException {
 	    //
             // Obtain all readers with cards
             //
@@ -68,11 +68,11 @@ public class KeyHarvest {
             
 	    // Run separate thread for every reader / card		
             ExecutorService executor = Executors.newCachedThreadPool();
-///*            
+  
             for (int i = 0; i < readersWithCardList.size(); i++) {
-                executor.execute(new CardRunner((CardTerminal) readersWithCardList.get(i), (byte) 0, 1000, i));
+                executor.execute(new CardRunner((CardTerminal) readersWithCardList.get(i), (byte) 0, numOfKeys, autoUploadBefore, useCrt));
             }
-/**/        
+        
             executor.shutdown();
             // Wait until all threads are finish
             while (!executor.isTerminated()) {}
