@@ -158,7 +158,7 @@ public class JCinfohtml {
         toFile += "<title>JCAlgTest Performance test</title>\n";
         toFile += "<link rel=\"stylesheet\" type=\"text/css\" href=\"./source/style.css\">\n";
         toFile += "<script src=\"http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js\"></script>\n";
-        toFile += "<script type=\"text/javascript\" src=\"./source/jquery-latest.js\"></script>\n" +
+        toFile += "<script type=\"text/javascript\" src=\"./source/jquery-1.10.1.min.js\"></script>\n" +
                   "<script type=\"text/javascript\" src=\"./source/jquery.tablesorter.js\"></script>\n" +
                   "<script type=\"text/javascript\" id=\"js\">\n" +
                   "\t$.tablesorter.addParser({\n" +
@@ -255,38 +255,44 @@ public class JCinfohtml {
          }
      }
      public static void loadTopFunctions(List<String> topNames_sym, List<String> topAcronyms_sym, List<String> topNames_asym, List<String> topAcronyms_asym) throws IOException{
-        BufferedReader reader;
-        reader = new BufferedReader(new FileReader(topFunctionsFile));        
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(topFunctionsFile));  
+        } catch (IOException e) {
+            System.out.println("Top Functions file not found");
+        }
+             
         String [] lineArray;        
         String line;
         
-        
-        while ((line = reader.readLine()) != null) {
-            if (!(line.trim().isEmpty())) {
-                lineArray = line.split(";");
+        if(reader != null){
+            while ((line = reader.readLine()) != null) {
+                if (!(line.trim().isEmpty())) {
+                    lineArray = line.split(";");
 
-                if (lineArray.length > 2) {
-                    if (lineArray[2].trim().equalsIgnoreCase("SYM")) {
-                        topNames_sym.add(lineArray[0]);
-                        if (topAcronyms_sym != null) { topAcronyms_sym.add(lineArray[1]); }           
-                    }
-                    else if (lineArray[2].trim().equalsIgnoreCase("ASYM")) {
-                        topNames_asym.add(lineArray[0]);
-                        if (topAcronyms_asym != null) { topAcronyms_asym.add(lineArray[1]); }           
+                    if (lineArray.length > 2) {
+                        if (lineArray[2].trim().equalsIgnoreCase("SYM")) {
+                            topNames_sym.add(lineArray[0]);
+                            if (topAcronyms_sym != null) { topAcronyms_sym.add(lineArray[1]); }           
+                        }
+                        else if (lineArray[2].trim().equalsIgnoreCase("ASYM")) {
+                            topNames_asym.add(lineArray[0]);
+                            if (topAcronyms_asym != null) { topAcronyms_asym.add(lineArray[1]); }           
+                        }
+                        else {
+                            // if no indication of type of lagorith was provided, put it into topNames_sym list
+                            System.out.println("ERROR: Unknown type of algorithm detected when parsting top.txt: " + lineArray[2]);
+                        }
                     }
                     else {
-                        // if no indication of type of lagorith was provided, put it into topNames_sym list
-                        System.out.println("ERROR: Unknown type of algorithm detected when parsting top.txt: " + lineArray[2]);
+                        // if no indication of type of algorithm was provided, put it into topNames_sym list
+                        topNames_sym.add(lineArray[0]);
+                        if (topAcronyms_sym != null) { topAcronyms_sym.add(lineArray[1]); }
                     }
                 }
-                else {
-                    // if no indication of type of algorithm was provided, put it into topNames_sym list
-                    topNames_sym.add(lineArray[0]);
-                    if (topAcronyms_sym != null) { topAcronyms_sym.add(lineArray[1]); }
-                }
             }
-        }
-        reader.close();
+            reader.close();
+         }
      }
      
      public static List<String> listFilesForFolder(final File folder) {
@@ -306,7 +312,6 @@ public class JCinfohtml {
         Integer lp = 0;
         String result = "<table id=\"" + tableID + "\" class=\"tablesorter\" cellspacing='0'>\n";
         result += "\t<thead><tr>\n\t<th style=\"min-width:300px;\">CARD/FUNCTION (ms/op)</th>";
-        //for (int i = 0; i < 40; i++) { result += "&nbsp"; } // insert fixed spaces to force width of card name column
          
         for (String topAcronym : topAcronyms)
             result += "<th>" + topAcronym + "</th>";    
@@ -386,26 +391,28 @@ public class JCinfohtml {
         List<String> topNames = new ArrayList<>();        
         loadTopFunctions(topNames, null);
         
-        toFile = "<h3 id=\"TOP\">TOP FUNCTIONS</h3>\n";                              //name of table
-        toFile += "<p>In the table below you can find results of performance testing for frequently used functions.</p>";
-        toFile += TABLE_HEAD;
-        file.write(toFile.getBytes());
-        toFile="";
-        
-        for (String top : topNames){
-            while(lp<lines.size()-4){
-            if(lines.get(lp).contains(top)){
-                lp = parseOne(lines, file, lp, tp);
-            } else {
-                lp++;
-            }            
-        }
+        if (topNames.size() != 0){
+            toFile = "<h3 id=\"TOP\">TOP FUNCTIONS</h3>\n";                              //name of table
+            toFile += "<p>In the table below you can find results of performance testing for frequently used functions.</p>";
+            toFile += TABLE_HEAD;
+            file.write(toFile.getBytes());
+            toFile="";
+
+            for (String top : topNames){
+                while(lp<lines.size()-4){
+                if(lines.get(lp).contains(top)){
+                    lp = parseOne(lines, file, lp, tp);
+                } else {
+                    lp++;
+                }            
+            }
+                lp=0;
+            }
+
+            toFile += "</table>\n</br>\n";                                  //end of table
+            file.write(toFile.getBytes());
             lp=0;
-        }
-        
-        toFile += "</table>\n</br>\n";                                  //end of table
-        file.write(toFile.getBytes());
-        lp=0;
+         }
      }
      
      public static Integer parseOne(List<String> lines, FileOutputStream file, Integer lp, Integer tp) throws IOException{        
@@ -532,9 +539,9 @@ public class JCinfohtml {
          }  
          
          if((min == -1.0) || (max == -1.0) || (avg == -1.0)){
-           toFile.append("\t\t[0, 0, 0, 0, 0],\n");
+           toFile.append("\t\t[0, 0, 0, 0, '0', true],\n");
          } else {
-           toFile.append(("\t\t["+length+", "+min.toString()+", "+avg.toString()+", "+avg.toString()+", "+max.toString()+"],\n"));             
+           toFile.append(("\t\t["+length+", "+avg.toString()+", "+min.toString()+", "+max.toString()+", '"+length+" B', true],\n"));             
          }      
          
          lp++;
@@ -546,15 +553,22 @@ public class JCinfohtml {
     public static Integer parseOneChart(List<String> lines, String dir, String name, Integer lp) throws FileNotFoundException, IOException{
         StringBuilder toFile = new StringBuilder();
         String methodName = lines.get(lp).split(";")[1];
-        FileOutputStream file = new FileOutputStream(dir+"\\"+methodName+".html");
+        
         toFile.append("<!DOCTYPE html>\n" +
                     "<html>\n<head>\n"+
                     "\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n" +
                     "\t<script type=\"text/javascript\" src=\"https://www.google.com/jsapi\"></script>\n" +
                     "\t<script type=\"text/javascript\">\n" +
-                    "\tgoogle.setOnLoadCallback(drawChart);\n" +
-                    "\tfunction drawChart() {\n" +
-                    "\t\tvar data = google.visualization.arrayToDataTable([");
+                    "\tgoogle.setOnLoadCallback(drawFancyVisualization);\n" +
+                    "\tfunction drawFancyVisualization() {\n" +
+                    "\t\tvar data = new google.visualization.DataTable();\n" +
+                    "\t\tdata.addColumn('number', 'Length of data');\n" +
+                    "\t\tdata.addColumn('number', 'Time (ms)');\n" +
+                    "\t\tdata.addColumn({type:'number', role:'interval'});\n" +
+                    "\t\tdata.addColumn({type:'number', role:'interval'});\n" +
+                    "\t\tdata.addColumn({type:'string', role:'annotation'});\n" +
+                    "\t\tdata.addColumn({type:'boolean',role:'certainty'});\n" +
+                    "\t\tdata.addRows([\n");
         
         while(lp<lines.size()-4){
             if(lines.get(lp).contains(methodName)){
@@ -568,22 +582,26 @@ public class JCinfohtml {
             }            
         }
         
-        toFile.append("\t], true);\n\n" +
+        toFile.append("\t]);\n\n" +
                   "\tvar options = {\n" +
-                  "\t\ttitle: '"+methodName+"',\n" +
-                  "\t\thAxis: {title: 'Length of data'},\n" +
-                  "\t\tvAxis: {title: 'Average operation time (ms)'},\n" +
-                  "\t\tlegend:'none',\n" +
-                  "\t\tbar:{groupWidth: '85%'},};\n\n" +
-                  "\tvar chart = new google.visualization.CandlestickChart(document.getElementById('"+methodName.trim()+"'));\n" +
+                "\t\ttitle: '"+methodName+"',\n" +
+                "\t\ttitleTextStyle: {fontSize: 15},\n" +                 
+                "\t\thAxis: {title: 'Length of data', viewWindow: {min: 0, max: 530} },\n" +
+                "\t\tvAxis: {title: 'Average operation time (ms)' },\n" +
+                "\t\tlegend:'none',};\n\n" +
+                  "\tvar chart = new google.visualization.LineChart(document.getElementById('"+methodName.trim()+"'));\n" +
                   "\tchart.draw(data, options);\n" +
                   "\t}\n\n\n\t</script>\n</head>\n<body>\n" +
                   "\t<script type=\"text/javascript\" src=\"https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['corechart']}]}\"></script>\n" +
-                  "\t<div id=\""+methodName.trim()+"\" style=\"width: 750px; height: 500px;\"></div>\n" +
+                  "\t<div id=\""+methodName.trim()+"\" style=\"width: 790px; height: 500px;\"></div>\n" +
                   "</body>\n</html>");
         
-        file.write(toFile.toString().getBytes());
-        file.close();
+        if(!(toFile.toString().contains("[0, 0, 0, 0, '0', true]"))){
+                FileOutputStream file = new FileOutputStream(dir+"\\"+methodName+".html");
+                file.write(toFile.toString().getBytes());
+                file.close();
+        }
+        
         
         return lp;
     }
@@ -593,47 +611,60 @@ public class JCinfohtml {
         List<String> usedFunctions = new ArrayList<>(); 
         loadTopFunctions(topFunctions, null);
         StringBuilder toFile = new StringBuilder();
+        StringBuilder chart = new StringBuilder();
         toFile.append("</div>\n</div>\n\t<script type=\"text/javascript\" src=\"https://www.google.com/jsapi\"></script>\n");
         Integer lp = 0;
         String methodName = "";
         
         // Generating charts of functions that are present in top functions
-        while(lp<lines.size()-4){
+        while(lp<lines.size()-20){
             if(lines.get(lp).contains("method name:")){
                 methodName = lines.get(lp).split(";")[1];
                 if (methodName.startsWith(" "))
-                    methodName = methodName.substring(1);
-            } else {
-            lp++;
-            }
-                
-            if(topFunctions.contains(methodName)){
-                usedFunctions.add(methodName);
-                toFile.append("\t<script type=\"text/javascript\">\n" +
-                            "\tgoogle.setOnLoadCallback(drawChart);\n" +
-                            "\tfunction drawChart() {\n" +
-                            "\t\tvar data = google.visualization.arrayToDataTable([\n");
-                        
-                while(lp<lines.size()-4)
-                    if(lines.get(lp).contains(methodName))
-                       lp = parseOneForChart(lines, toFile, lp);
-                    else
-                       if(lines.get(lp).contains("method name:"))
-                           break;
-                       else
-                           lp++;
-                
-                toFile.append("\t], true);\n\n" +
-                  "\tvar options = {\n" +
-                  "\t\ttitle: '"+methodName+"',\n" +
-                  "\t\ttitleTextStyle: {fontSize: 15},\n" +                 
-                  "\t\thAxis: {title: 'Length of data' },\n" +
-                  "\t\tvAxis: {title: 'Average operation time (ms)'},\n" +
-                  "\t\tlegend:'none',\n" +
-                  "\t\tbar:{groupWidth: '85%'},};\n\n" +
-                  "\tvar chart = new google.visualization.CandlestickChart(document.getElementById('"+methodName.replaceAll(" ", "_")+"'));\n" +
-                  "\tchart.draw(data, options);\n" +
-                  "\t}\n\t</script>\n\n");
+                    methodName = methodName.substring(1);            
+                // delete UTIL condition to generate UTIL algs charts
+                if(((topFunctions.contains(methodName)) || (topFunctions.size() == 0)) && (!(methodName.startsWith("UTIL")))){
+                    chart.append("\t<script type=\"text/javascript\">\n" +
+                                "\tgoogle.setOnLoadCallback(drawFancyVisualization);\n" +
+                                "\tfunction drawFancyVisualization() {\n" +
+                                "\t\tvar data = new google.visualization.DataTable();\n" +
+                                "\t\tdata.addColumn('number', 'Length of data');\n" +
+                                "\t\tdata.addColumn('number', 'Time (ms)');\n" +
+                                "\t\tdata.addColumn({type:'number', role:'interval'});\n" +
+                                "\t\tdata.addColumn({type:'number', role:'interval'});\n" +
+                                "\t\tdata.addColumn({type:'string', role:'annotation'});\n" +
+                                "\t\tdata.addColumn({type:'boolean',role:'certainty'});\n" +
+                                "\t\tdata.addRows([\n");
+
+                    while(lp<lines.size()-6){
+                        if(lines.get(lp).contains(methodName))
+                           lp = parseOneForChart(lines, chart, lp);
+                        else
+                           if(lines.get(lp).contains("method name:"))
+                               break;
+                           else
+                               lp++;
+                    }
+
+                    chart.append("\t]);\n\n" +
+                      "\tvar options = {\n" +
+                      "\t\ttitle: '"+methodName+"',\n" +
+                      "\t\ttitleTextStyle: {fontSize: 15},\n" +                 
+                      "\t\thAxis: {title: 'Length of data', viewWindow: {min: 0, max: 530} },\n" +
+                      "\t\tvAxis: {title: 'Average operation time (ms)' },\n" +
+                      "\t\tlegend:'none',};\n\n" +
+                      "\tvar chart = new google.visualization.LineChart(document.getElementById('"+methodName.replaceAll(" ", "_")+"'));\n" +
+                      "\tchart.draw(data, options);\n" +
+                      "\t}\n\t</script>\n\n");
+
+                    if(!(chart.toString().contains("[0, 0, 0, 0, '0', true]"))){
+                        usedFunctions.add(methodName);
+                        toFile.append(chart.toString());
+                    }
+                    chart.delete(0, chart.length()-1);
+                } else {
+                    lp++;
+                }
             } else {
                 lp++;
             }            
@@ -653,7 +684,7 @@ public class JCinfohtml {
        
         //quick links to generated charts at the beginning of html file
         String toFileBegin;
-        toFileBegin= "<div class=\"pageColumnQuickLinks\" style=\"max-width:350px;\">\n";
+        toFileBegin= "<div class=\"pageColumnQuickLinks\" style=\"max-width:600px;\">\n";
         toFileBegin+= "<h3>Quick links</h3>\n<ul style=\"list-style-type: circle;\">\n";        
         for (String usedFunction : usedFunctions)
             toFileBegin+="\t<li>"+ "<a href=\"#"+usedFunction.replaceAll(" ", "_")+"\">"+usedFunction+"</a>" +"</li>\n";
