@@ -541,7 +541,7 @@ public class JCinfohtml {
          if((min == -1.0) || (max == -1.0) || (avg == -1.0)){
            toFile.append("\t\t[0, 0, 0, 0, '0', true],\n");
          } else {
-           toFile.append(("\t\t["+length+", "+avg.toString()+", "+min.toString()+", "+max.toString()+", '"+length+" B', true],\n"));             
+           toFile.append(("\t\t["+length+", "+avg.toString()+", "+min.toString()+", "+max.toString()+", '"+length+"', true],\n"));             
          }      
          
          lp++;
@@ -562,7 +562,7 @@ public class JCinfohtml {
                     "\tgoogle.setOnLoadCallback(drawFancyVisualization);\n" +
                     "\tfunction drawFancyVisualization() {\n" +
                     "\t\tvar data = new google.visualization.DataTable();\n" +
-                    "\t\tdata.addColumn('number', 'Length of data');\n" +
+                    "\t\tdata.addColumn('number', 'length of data (bytes)');\n" +
                     "\t\tdata.addColumn('number', 'Time (ms)');\n" +
                     "\t\tdata.addColumn({type:'number', role:'interval'});\n" +
                     "\t\tdata.addColumn({type:'number', role:'interval'});\n" +
@@ -586,8 +586,8 @@ public class JCinfohtml {
                   "\tvar options = {\n" +
                 "\t\ttitle: '"+methodName+"',\n" +
                 "\t\ttitleTextStyle: {fontSize: 15},\n" +                 
-                "\t\thAxis: {title: 'Length of data', viewWindow: {min: 0, max: 530} },\n" +
-                "\t\tvAxis: {title: 'Average operation time (ms)' },\n" +
+                "\t\thAxis: {title: 'length of data (bytes)', viewWindow: {min: 0, max: 530} },\n" +
+                "\t\tvAxis: {title: 'duration of operation (ms)' },\n" +
                 "\t\tlegend:'none',};\n\n" +
                   "\tvar chart = new google.visualization.LineChart(document.getElementById('"+methodName.trim()+"'));\n" +
                   "\tchart.draw(data, options);\n" +
@@ -628,7 +628,7 @@ public class JCinfohtml {
                                 "\tgoogle.setOnLoadCallback(drawFancyVisualization);\n" +
                                 "\tfunction drawFancyVisualization() {\n" +
                                 "\t\tvar data = new google.visualization.DataTable();\n" +
-                                "\t\tdata.addColumn('number', 'Length of data');\n" +
+                                "\t\tdata.addColumn('number', 'length of data (bytes)');\n" +
                                 "\t\tdata.addColumn('number', 'Time (ms)');\n" +
                                 "\t\tdata.addColumn({type:'number', role:'interval'});\n" +
                                 "\t\tdata.addColumn({type:'number', role:'interval'});\n" +
@@ -650,8 +650,8 @@ public class JCinfohtml {
                       "\tvar options = {\n" +
                       "\t\ttitle: '"+methodName+"',\n" +
                       "\t\ttitleTextStyle: {fontSize: 15},\n" +                 
-                      "\t\thAxis: {title: 'Length of data', viewWindow: {min: 0, max: 530} },\n" +
-                      "\t\tvAxis: {title: 'Average operation time (ms)' },\n" +
+                      "\t\thAxis: {title: 'length of data (bytes)', viewWindow: {min: 0, max: 530} },\n" +
+                      "\t\tvAxis: {title: 'duration of operation (ms)' },\n" +
                       "\t\tlegend:'none',};\n\n" +
                       "\tvar chart = new google.visualization.LineChart(document.getElementById('"+methodName.replaceAll(" ", "_")+"'));\n" +
                       "\tchart.draw(data, options);\n" +
@@ -668,23 +668,20 @@ public class JCinfohtml {
             } else {
                 lp++;
             }            
-        }               
-        
-        //show charts in html file        
-        toFile.append("\t<script type=\"text/javascript\" src=\"https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['corechart']}]}\"></script>\n");
-        int i = 0;
-        for (String usedFunction : usedFunctions){
-            if((i%2)==0){
-            toFile.append("\t<div id=\""+usedFunction.replaceAll(" ", "_")+"\" style=\"width: 49%; height: 60%; min-height:400px; max-height:1000px; float:left;\"></div>\n");
-            } else {
-            toFile.append("\t<div id=\""+usedFunction.replaceAll(" ", "_")+"\" style=\"width: 49%; height: 60%; min-height:400px; max-height:1000px; float:right;\"></div>\n");    
-            }
+        }        
+
+        for (String usedFunction : usedFunctions) {
+            toFile.append("\t<div id=\"" + usedFunction.replaceAll(" ", "_") + "\" style=\"width: 49%; height: 60%; min-height:400px; max-height:1000px; float:left;\">" 
+                    + "</br><h3 style=\"text-align: center;\">CHARTS ARE LOADING. </br></br> THIS MAY TAKE A FEW SECONDS DEPENDING ON THE NUMBER OF CHARTS. </h3>" 
+                    + "</div>\n");                            
         }
+        
+        toFile.append("\t<script type=\"text/javascript\" src=\"https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['corechart']}]}\"></script>\n");
         toFile.append("<a href=\"#\" class=\"back-to-top\">Back to Top</a>\n</body>\n</html>");
        
         //quick links to generated charts at the beginning of html file
         String toFileBegin;
-        toFileBegin= "<div class=\"pageColumnQuickLinks\" style=\"max-width:600px;\">\n";
+        toFileBegin= "<div class=\"pageColumnQuickLinks\" style=\"max-width:50%;\">\n";
         toFileBegin+= "<h3>Quick links</h3>\n<ul style=\"list-style-type: circle;\">\n";        
         for (String usedFunction : usedFunctions)
             toFileBegin+="\t<li>"+ "<a href=\"#"+usedFunction.replaceAll(" ", "_")+"\">"+usedFunction+"</a>" +"</li>\n";
