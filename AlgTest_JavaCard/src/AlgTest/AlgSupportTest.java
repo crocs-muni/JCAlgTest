@@ -54,7 +54,6 @@ public class AlgSupportTest {
     private   KeyAgreement     m_keyAgreement = null;   
     private   RandomData       m_trng = null; 
     private   Key              m_key1 = null;
-    private   TestSettings     m_testSettings = null;
     
   
   
@@ -111,9 +110,7 @@ public class AlgSupportTest {
     public static final byte CLASS_KEYPAIR         = 0x19;
     public static final byte CLASS_KEYBUILDER      = 0x20;
 
-    AlgSupportTest() { 
-        m_testSettings = new TestSettings();
-    }
+    AlgSupportTest() { }
 
     public byte process(APDU apdu) throws ISOException {
         byte bProcessed = 0;
@@ -286,15 +283,14 @@ public class AlgSupportTest {
     */
    void GetRSAKey(APDU apdu) {
       byte[]    apdubuf = apdu.getBuffer();
-      m_testSettings.parse(apdu);
 
       // Generate new object if not before yet
       if (m_keyPair1 == null) {
-          m_keyPair1 = new KeyPair((byte)m_testSettings.keyClass, m_testSettings.keyLength);	  
-      }	       
-      
-      switch (m_testSettings.keyType) {
-        case JCConsts.KeyBuilder_ALG_TYPE_RSA_PUBLIC: {
+          m_keyPair1 = new KeyPair(KeyPair.ALG_RSA_CRT, KeyBuilder.LENGTH_RSA_1024);	  
+      }	        
+
+      switch (apdubuf[ISO7816.OFFSET_P1]) {
+        case 0: {
             m_keyPair1.genKeyPair();           
             m_rsaPublicKey = (RSAPublicKey) m_keyPair1.getPublic();
 
@@ -315,7 +311,7 @@ public class AlgSupportTest {
         
             break;
         }
-        case JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE: {
+        case 1: {
             m_rsaPrivateKey = (RSAPrivateCrtKey) m_keyPair1.getPrivate();
             
             short offset = 0;
