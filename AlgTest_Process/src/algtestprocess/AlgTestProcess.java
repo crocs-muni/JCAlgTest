@@ -243,7 +243,15 @@ public class AlgTestProcess {
                 cardIdentification = cardIdentification.replace(".csv", "");
                 cardIdentification = cardIdentification.replace("3B", ", ATR=3B");
                 cardIdentification = cardIdentification.replace("3b", ", ATR=3b");
-                cardList += "<b>c" + i + "</b>	" + cardIdentification + "<br>\r\n";
+                cardList += "<b>c" + i + "</b>	" + cardIdentification + ",";
+                String cardName = "";
+                if (filesSupport[i].containsKey("Card name")) { 
+                    cardName = (String) filesSupport[i].get("Card name");
+                    cardName = cardName.replace(" ", ""); cardName = cardName.replace("_", ""); 
+                    cardList += "<a href=\"perfTest\\" + cardName + "_perfFixData.html\">performance</a>,";
+                    cardList += "<a href=\"perfTest\\" + cardName + "_perfVariableData.html\">graphs</a>";
+                }
+                cardList += "<br>\r\n";
             }
             cardList += "<br>\r\n"; 
             
