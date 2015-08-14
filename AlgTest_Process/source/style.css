@@ -38,12 +38,11 @@ a:link {
 	color: #444;
 	font-weight: bold;
 	text-decoration:none;
-	font-size:14px;
-	margin-bottom: 5px;
+	font-size:14px;	
 }
 a:visited {
 	color: #444;
-	font-weight:bold;
+	font-weight:bold;font-weight:bold;
 	text-decoration:none;
 }
 a:active,
@@ -172,9 +171,8 @@ p{
 	font-family:Arial, Helvetica, sans-serif;
 	color:#303030;
 	font-size:14px;
-	font-style: bold;
 	margin-left: 20px;
-	margin-bottom: 10px;
+	margin-bottom: 9px;
 }
 
 /*

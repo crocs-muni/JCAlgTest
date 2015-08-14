@@ -236,7 +236,7 @@ public class AlgTestProcess {
                     + "</head>\r\n"
                     + "<body>\r\n\r\n"; 
 
-            String cardList = "<b>Tested cards abbreviations:</b><br>\r\n";
+            String cardList = "<b id=\"LIST\">Tested cards abbreviations:</b><br>\r\n";
             for (int i = 0; i < filesArray.length; i++) {
                 String cardIdentification = filesArray[i];
                 cardIdentification = cardIdentification.replace('_', ' ');
@@ -248,8 +248,8 @@ public class AlgTestProcess {
                 if (filesSupport[i].containsKey("Card name")) { 
                     cardName = (String) filesSupport[i].get("Card name");
                     cardName = cardName.replace(" ", ""); cardName = cardName.replace("_", ""); 
-                    cardList += "<a href=\"perfTest\\" + cardName + "_perfFixData.html\">performance</a>,";
-                    cardList += "<a href=\"perfTest\\" + cardName + "_perfVariableData.html\">graphs</a>";
+                    cardList += "&nbsp;<a target=\"_blank\" href=\".fixData/" + cardName + ".html\">PERFORMANCE</a>,&nbsp;";
+                    cardList += "<a target=\"_blank\" href=\".variableData/" + cardName + ".html\">CHARTS</a>";
                 }
                 cardList += "<br>\r\n";
             }
