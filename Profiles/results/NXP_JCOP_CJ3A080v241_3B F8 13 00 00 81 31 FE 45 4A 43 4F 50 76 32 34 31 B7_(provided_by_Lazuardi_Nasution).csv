@@ -1,6 +1,7 @@
 Used reader;ACS ACR1281 1S Dual Reader ICC 0
 
 Card ATR;3B:F8:13:00:00:81:31:FE:45:4A:43:4F:50:76:32:34:31:B7
+Card name; NXP J3A080
 AlgTestJClient version; 1.2
 AlgTest applet version; 1.2
 

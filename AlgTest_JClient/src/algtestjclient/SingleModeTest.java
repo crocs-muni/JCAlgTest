@@ -666,7 +666,9 @@ public class SingleModeTest {
             elapsedCard += System.currentTimeMillis();
             
             byte[] resp = response.getData();
-            System.out.println("RESPONSE: " + resp[0]);
+            if (resp.length > 0) {
+                System.out.println("RESPONSE: " + resp[0]);
+            }
             
             // Calls method CheckResult - should add to output error messages.
             CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.CIPHER_STR[i]), resp[1], elapsedCard, response.getSW());
