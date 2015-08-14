@@ -64,6 +64,7 @@
              <copy file="${basedir}/dist/lib/jcardsim-2.2.2-all.jar" tofile="${basedir}/test/jcardsim-2.2.2-all.jar"/>
 
              <!-- Copy files necessary for compilation of JC applet-->
+             <copy file="${basedir}/src/algtest/AlgKeyHarvest.java" tofile="../AlgTest_JavaCard/src/AlgTest/AlgKeyHarvest.java"/>
              <copy file="${basedir}/src/algtest/AlgPerformanceTest.java" tofile="../AlgTest_JavaCard/src/AlgTest/AlgPerformanceTest.java"/>
              <copy file="${basedir}/src/algtest/AlgSupportTest.java" tofile="../AlgTest_JavaCard/src/AlgTest/AlgSupportTest.java"/>
              <copy file="${basedir}/src/algtest/JCAlgTestApplet.java" tofile="../AlgTest_JavaCard/src/AlgTest/JCAlgTestApplet.java"/>

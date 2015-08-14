@@ -166,26 +166,53 @@ public class AlgTestJClient {
                     testingPerformance.testPerformance(args, true, selectedTerminal);
                     break;
                 case 4:
-                    KeyHarvest keyHarvest = new KeyHarvest();            
+                    KeyHarvest keyHarvest = new KeyHarvest();    
+                    // Remove new line character from stream after load integer as type of test
+                    sc.nextLine();       
+                    System.out.print("Upload applet before harvest (y/n): ");
+                    String autoUploadBeforeString = sc.nextLine();
+                    boolean autoUploadBefore = false;
+                    if (autoUploadBeforeString.toLowerCase().equals("y")) autoUploadBefore = true;
+                    else if (!autoUploadBeforeString.toLowerCase().equals("n")) {
+                        System.out.println("Wrong answer. Auto upload applet before harvest is disabled.");
+                    }
+                    
+                    System.out.print("Use RSA harvest with CRT (y/n): ");
+                    String useCrtString = sc.nextLine();
+                    boolean useCrt = false;
+                    if (useCrtString.toLowerCase().equals("y")) useCrt = true;
+                    else if (!useCrtString.toLowerCase().equals("n")) {
+                        System.out.println("Wrong answer. CRT is disabled.");
+                    }
                     
                     // Check if folder !card_uploaders is correctly set
                     File fileCardUploadersFolder = new File(CardMngr.cardUploadersFolder);
-                    if(!fileCardUploadersFolder.exists()) {
-                        // Remove new line character from stream after load integer as type of test
-                        sc.nextLine();
+                    if (!fileCardUploadersFolder.exists()) {
                         System.out.println("Cannot find folder with card uploaders. Default folder: " + CardMngr.cardUploadersFolder);
                         System.out.print("Card uploaders folder path: ");
                         String newPath = sc.nextLine();
                         fileCardUploadersFolder = new File(CardMngr.cardUploadersFolder);
                         // If new path is also incorrect
-                        if(!fileCardUploadersFolder.exists()) {
+                        if (!fileCardUploadersFolder.exists()) {
                             System.err.println("Folder " + newPath + " does not exist. Cannot start gathering RSA keys.");
                             return;
                         }
                         // Set new path to !card_uploaders folder
                         CardMngr.cardUploadersFolder = newPath;
                     } 
-                    keyHarvest.gatherRSAKeys();
+                    
+                    System.out.print("Number of keys to generate: ");
+                    String numOfKeysString = sc.nextLine();
+                    int numOfKeys = 10;
+                    try {
+                        numOfKeys = Integer.parseInt(numOfKeysString);
+                    }
+                    catch(NumberFormatException ex) {
+                        System.out.println("Wrong number. Number of keys to generate is set to 10.");
+                    }
+                  
+                    
+                    keyHarvest.gatherRSAKeys(autoUploadBefore, useCrt, numOfKeys);
                     break;
                 // In this case, user pressed wrong key 
                 default:

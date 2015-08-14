@@ -17,13 +17,15 @@ public class CardRunner implements Runnable {
     CardTerminal m_cardTerminal;
     byte m_dataLength;
     int m_numRepeats;
-    int m_readerIndex;
+    boolean m_uploadBeforeStart;
+    boolean m_useCrt;
     
-    public CardRunner(CardTerminal cardTerminal, byte dataLength, int numRepeats, int readerIndex) {
+    public CardRunner(CardTerminal cardTerminal, byte dataLength, int numRepeats, boolean uploadBeforeStart, boolean useCrt) {
         m_cardTerminal = cardTerminal;
         m_dataLength = dataLength;
         m_numRepeats = numRepeats;
-        m_readerIndex = readerIndex;
+        m_uploadBeforeStart = uploadBeforeStart;
+        m_useCrt = useCrt;
     }
     
      @Override
@@ -33,12 +35,12 @@ public class CardRunner implements Runnable {
          try {
              FileOutputStream file = cardMngr.establishConnection(null, "", m_cardTerminal.getName(), m_cardTerminal);
              if(file != null) {
-                cardMngr.GenerateAndGetKeys(file, m_numRepeats, -1);
+                cardMngr.GenerateAndGetKeys(file, m_numRepeats, -1, m_uploadBeforeStart, m_useCrt);
                 cardMngr.DisconnectFromCard();
              }
          }
          catch (Exception ex) {
-             System.out.println(ex.getMessage());
+             System.out.println("Card in terminal "+m_cardTerminal.getName()+" stoped with exception: "+ex.getMessage());
          }
      }
 }
