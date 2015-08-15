@@ -64,7 +64,7 @@ div{
 .main{
 	display : block;
 	overflow : auto;
-	min-height: 400px;
+	min-height: 100px;
 	text-shadow: 1px 1px 0px #fff;
 }
 
@@ -282,7 +282,7 @@ table tr:hover td{
     right: 20px;
     text-decoration: none;
     color: #000000;
-    background-color: rgba(200, 200, 200, 0.75);
+    background-color: rgba(200, 200, 200, 0.5);
     font-size: 12px;
     padding: 1em;
     display: none;	
