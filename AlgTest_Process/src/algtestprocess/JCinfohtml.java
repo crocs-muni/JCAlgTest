@@ -425,6 +425,8 @@ public class JCinfohtml {
         List<String> files = listFilesForFolder(new File(dir));
         lp = 0;
 
+        String message = "<h3>Note: Sortable tables - click on column name to sort ascendingly/descendingly</h3>\r\n";
+        file.write(message.getBytes());
         //
         // Sortable table for symmetric algorithms
         //
@@ -786,7 +788,7 @@ public class JCinfohtml {
     public static void runSortable(String dir) throws FileNotFoundException, IOException {
         Integer linePosition = 0;
         FileOutputStream file = new FileOutputStream(dir + "//" + "sortable.html");
-        begin(file, "Card performance - comparative table");
+        begin(file, "Card performance - comparative sortable tables");
         sortableGenerator(dir, file, linePosition);
         endOfHtml(file);
         System.out.println("Make sure that CSS file & JS files (\"Source\" folder) is present in output folder.");
