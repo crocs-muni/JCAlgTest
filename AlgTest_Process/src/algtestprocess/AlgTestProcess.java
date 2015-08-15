@@ -113,11 +113,15 @@ public class AlgTestProcess {
                         JCinfohtml.runCharts(args[0]);}
                     else if (args[1].equals(GENERATE_CHARTS_ONEPAGE)){
                         System.out.println("Generating charts page from input file.");
+                        if (args.length > 2){ 
+                            generateChartsPages(args[0]);
+                        }else{
+                            JCinfohtml.runChartsOnePage(args[0]);
+                        }
                         JCinfohtml.runChartsOnePage(args[0]);}
                     else if (args[1].equals(GENERATE_JCINFO)){
                         System.out.println("Generating JC performance testing to HTML.");
-                        if (args.length < 3){
-                            //JCinfohtml.run(args[0],"N/A"); 
+                        if (args.length < 3){ 
                             generateJCInfoHTMLTable(args[0]);
                         }else{
                             JCinfohtml.run(args[0],args[2]);
@@ -648,6 +652,22 @@ public class AlgTestProcess {
             for (int i = 0; i < filesArray.length; i++) {
                 filesSupport[i] = new HashMap();
                 JCinfohtml.run(filesPath + filesArray[i], filesArray[i]);
+            }   
+        }
+    }
+    
+    private static void generateChartsPages(String basePath) throws IOException {
+        String filesPath = basePath + "results\\";
+        File dir = new File(filesPath);
+        String[] filesArray = dir.list();
+        
+        if ((filesArray != null) && (dir.isDirectory() == true)) {    
+            
+            HashMap filesSupport[] = new HashMap[filesArray.length]; 
+            
+            for (int i = 0; i < filesArray.length; i++) {
+                filesSupport[i] = new HashMap();
+                JCinfohtml.runChartsOnePage(filesPath + filesArray[i]);
             }   
         }
     }
