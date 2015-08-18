@@ -757,21 +757,25 @@ public class JCinfohtml {
     public static void endOfHtml(FileOutputStream file) throws FileNotFoundException, IOException {
         String toFile = "<script>/* <![CDATA[ */(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)\n"
                 + "[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');ga('create','UA-1931909-2','auto');ga('send','pageview');/* ]]> */</script>\n\n";
-        toFile += "</br><p>Copyright 2015 - <a target=\"_blank\" href=\"http://www.fi.muni.cz/~xsvenda/jcsupport.html\">JCAlgTest</a></br></br></p>\n<a href=\"#\" class=\"back-to-top\">Back to Top</a>\n</body>\n" + "</html>";
+        toFile += "</br></p>\n<a href=\"#\" class=\"back-to-top\">Back to Top</a>\n</body>\n" + "</html>";
+        toFile += "<div style=\"margin:10px 20px 10px 20px;\">\n" +
+                  "<center>\n" +
+                  "<p><a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\"><img alt=\"Creative Commons License\" style=\"border-width:0\" src=\"https://i.creativecommons.org/l/by/4.0/88x31.png\" /></a><br /><span xmlns:dct=\"http://purl.org/dc/terms/\" href=\"http://purl.org/dc/dcmitype/Dataset\" property=\"dct:title\" rel=\"dct:type\">JCAlgTest</span> by <span xmlns:cc=\"http://creativecommons.org/ns#\" property=\"cc:attributionName\">CRoCS MU</span> is licensed <br>under a <a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\">Creative Commons Attribution 4.0 International License</a>.</p>\n" +
+                  "</center>\n</div>";
         file.write(toFile.getBytes());
         file.close();
     }
 
     public static void run(String input, String name) throws FileNotFoundException, IOException {
         Integer linePosition = 0;
-        String output = name;
-        if (name.isEmpty()) {
-            output = "output";
-        }
         
         StringBuilder cardName = new StringBuilder();
+        String cardNameFile = name;
+                
         List<String> lines = initalize(input, cardName);                            //load lines to from file to List
-        String cardNameFile = cardName.toString().replaceAll(" ", "");
+        if (!(cardName.toString().equals("")) && !(cardName.toString().equals(" ")))
+            cardNameFile = cardName.toString().replaceAll(" ", "");
+  
         cardNameFile = cardNameFile.replaceAll("_", "");
         FileOutputStream file = new FileOutputStream(cardNameFile + ".html");
         begin(file, "Test results card: " + cardName.toString());                     //logo + headline

@@ -121,10 +121,10 @@ public class AlgTestProcess {
                         JCinfohtml.runChartsOnePage(args[0]);}
                     else if (args[1].equals(GENERATE_JCINFO)){
                         System.out.println("Generating JC performance testing to HTML.");
-                        if (args.length < 3){ 
+                        if (args.length > 2){ 
                             generateJCInfoHTMLTable(args[0]);
                         }else{
-                            JCinfohtml.run(args[0],args[2]);
+                            JCinfohtml.run(args[0],args[1]);
                         }
                     }
                     else {System.err.println("Incorrect arguments!");}
@@ -640,9 +640,8 @@ public class AlgTestProcess {
     }    
             
     
-    private static void generateJCInfoHTMLTable(String basePath) throws IOException {
-        String filesPath = basePath + "results\\";
-        File dir = new File(filesPath);
+    private static void generateJCInfoHTMLTable(String basePath) throws IOException {        
+        File dir = new File(basePath);
         String[] filesArray = dir.list();
         
         if ((filesArray != null) && (dir.isDirectory() == true)) {    
@@ -651,14 +650,13 @@ public class AlgTestProcess {
             
             for (int i = 0; i < filesArray.length; i++) {
                 filesSupport[i] = new HashMap();
-                JCinfohtml.run(filesPath + filesArray[i], filesArray[i]);
+                JCinfohtml.run(basePath + filesArray[i], filesArray[i]);
             }   
         }
     }
     
-    private static void generateChartsPages(String basePath) throws IOException {
-        String filesPath = basePath + "results\\";
-        File dir = new File(filesPath);
+    private static void generateChartsPages(String basePath) throws IOException {        
+        File dir = new File(basePath);
         String[] filesArray = dir.list();
         
         if ((filesArray != null) && (dir.isDirectory() == true)) {    
@@ -667,7 +665,7 @@ public class AlgTestProcess {
             
             for (int i = 0; i < filesArray.length; i++) {
                 filesSupport[i] = new HashMap();
-                JCinfohtml.runChartsOnePage(filesPath + filesArray[i]);
+                JCinfohtml.runChartsOnePage(basePath + filesArray[i]);
             }   
         }
     }
