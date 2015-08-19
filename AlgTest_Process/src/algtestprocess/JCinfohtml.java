@@ -479,7 +479,7 @@ public class JCinfohtml {
             toFile += ((tp % 2) == 0) ? "\t<tr>" : "\t<tr class='even'>";
             prepare = lines.get(lp).trim().split(";");
             toFile += "<td><b>"+prepare[1]+"</b></td>";       //classic name without reference to chart
-            //toFile += "<td><a class=\"fancybox fancybox.iframe\" href=\"./charts/" + prepare[1] + ".html\" style=\"font-size:12px;\">" + prepare[1] + "</a></td>";
+            //toFile += "<td><a class=\"fancybox fancybox.iframe\" href=\"./graphs/" + prepare[1] + ".html\" style=\"font-size:12px;\">" + prepare[1] + "</a></td>";
             lp += 2;
         }
 
@@ -563,7 +563,7 @@ public class JCinfohtml {
         return lp;
     }
 
-    public static Integer parseOneForChart(List<String> lines, StringBuilder toFile, Integer lp) throws IOException {
+    public static Integer parseOneForGraph(List<String> lines, StringBuilder toFile, Integer lp) throws IOException {
         String[] operation;
         Float min = -1.0F;
         Float max = -1.0F;
@@ -596,7 +596,7 @@ public class JCinfohtml {
         return lp;
     }
 
-    public static Integer parseOneChart(List<String> lines, String dir, String name, Integer lp) throws FileNotFoundException, IOException {
+    public static Integer parseOneGraph(List<String> lines, String dir, String name, Integer lp) throws FileNotFoundException, IOException {
         StringBuilder toFile = new StringBuilder();
         String methodName = lines.get(lp).split(";")[1];
 
@@ -618,7 +618,7 @@ public class JCinfohtml {
 
         while (lp < lines.size() - 4) {
             if (lines.get(lp).contains(methodName)) {
-                lp = parseOneForChart(lines, toFile, lp);
+                lp = parseOneForGraph(lines, toFile, lp);
             } else {
                 if (lines.get(lp).contains("method name:")) {
                     break;
@@ -651,7 +651,7 @@ public class JCinfohtml {
         return lp;
     }
 
-    public static void parseChartsPage(List<String> lines, FileOutputStream file) throws FileNotFoundException, IOException {
+    public static void parseGraphsPage(List<String> lines, FileOutputStream file) throws FileNotFoundException, IOException {
         List<String> topFunctions = new ArrayList<>();
         List<String> usedFunctions = new ArrayList<>();
         loadTopFunctions(topFunctions, null);
@@ -685,7 +685,7 @@ public class JCinfohtml {
 
                     while (lp < lines.size() - 6) {
                         if (lines.get(lp).contains(methodName)) {
-                            lp = parseOneForChart(lines, chart, lp);
+                            lp = parseOneForGraph(lines, chart, lp);
                         } else if (lines.get(lp).contains("method name:")) {
                             break;
                         } else {
@@ -721,7 +721,7 @@ public class JCinfohtml {
         sec = sec.setScale(2, BigDecimal.ROUND_HALF_UP);
         for (String usedFunction : usedFunctions) {
             toFile.append("\t<div id=\"" + usedFunction.replaceAll(" ", "_") + "\" style=\" min-height:400px; max-height:1000px; min-width:600px; width:49%; height:60%; float:left;\">"
-                    + "</br><h3 style=\"text-align: center;\">" + usedFunction + "</br></br></h3><p style=\"text-align: center;\"><strong>CHART IS LOADING. </br></br> THIS MAY TAKE A <u>"+ sec +"</u> SECONDS DEPENDING ON THE NUMBER OF CHARTS.</strong></p>"
+                    + "</br><h3 style=\"text-align: center;\">" + usedFunction + "</br></br></h3><p style=\"text-align: center;\"><strong>GRAPH IS LOADING. </br></br> THIS MAY TAKE <u>"+ sec +"</u> SECONDS DEPENDING ON THE NUMBER OF GRAPHS.</strong></p>"
                     + "</div>\n");
         }
 
@@ -730,7 +730,7 @@ public class JCinfohtml {
         //quick links to generated charts at the beginning of html file
         String toFileBegin;
         toFileBegin = "<div class=\"pageColumnQuickLinks\" style=\"max-width:50%;\">\n";        
-        toFileBegin += "<h3>Quick links | number of charts: "+usedFunctions.size()+" | est. load time: "+ sec +" s</h3>\n<ul style=\"list-style-type: circle;\">\n";
+        toFileBegin += "<h3>Quick links | number of graphs: "+usedFunctions.size()+" | est. load time: "+ sec +" s</h3>\n<ul style=\"list-style-type: circle;\">\n";
         for (String usedFunction : usedFunctions) {
             toFileBegin += "\t<li>" + "<a href=\"#" + usedFunction.replaceAll(" ", "_") + "\">" + usedFunction + "</a>" + "</li>\n";
         }
@@ -742,12 +742,12 @@ public class JCinfohtml {
         file.write(toFile.toString().getBytes());       //charts written
     }
 
-    public static void parseCharts(List<String> lines, String dir, String name) throws FileNotFoundException, IOException {
+    public static void parseGraphs(List<String> lines, String dir, String name) throws FileNotFoundException, IOException {
         Integer lp = 15;
 
         while (lp < lines.size() - 4) {
             if (lines.get(lp).contains("method name:")) {
-                lp = parseOneChart(lines, dir, name, lp);
+                lp = parseOneGraph(lines, dir, name, lp);
             } else {
                 lp++;
             }
@@ -767,11 +767,10 @@ public class JCinfohtml {
     }
 
     public static void run(String input, String name) throws FileNotFoundException, IOException {
-        Integer linePosition = 0;
-        
+        Integer linePosition = 0;        
         StringBuilder cardName = new StringBuilder();
         String cardNameFile = name;
-                
+        
         List<String> lines = initalize(input, cardName);                            //load lines to from file to List
         if (!(cardName.toString().equals("")) && !(cardName.toString().equals(" ")))
             cardNameFile = cardName.toString().replaceAll(" ", "");
@@ -796,27 +795,30 @@ public class JCinfohtml {
         System.out.println("Make sure that CSS file & JS files (\"Source\" folder) is present in output folder.");
     }
 
-    public static void runCharts(String input) throws IOException {
+    public static void runGraphs(String input) throws IOException {
         StringBuilder cardName = new StringBuilder();
         List<String> lines = initalize(input, cardName);
         String resultsDir = new File(input).getAbsolutePath();
-        resultsDir = resultsDir.substring(0, resultsDir.lastIndexOf("\\")) + "\\charts";
+        resultsDir = resultsDir.substring(0, resultsDir.lastIndexOf("\\")) + "\\graphs";
         File dir = new File(resultsDir);
         dir.mkdirs();
-        parseCharts(lines, (dir.getAbsolutePath()), cardName.toString());
+        parseGraphs(lines, (dir.getAbsolutePath()), cardName.toString());
         System.out.println("Make sure that CSS file & JS files (\"Source\" folder) is present in output folder.");
     }
 
-    public static void runChartsOnePage(String input) throws IOException {
+    public static void runGraphsOnePage(String input) throws IOException {
         StringBuilder cardName = new StringBuilder();
+        String cardNameFile = "graphspage";
         List<String> lines = initalize(input, cardName);
         String resultsDir = new File(input).getAbsolutePath();
         resultsDir = resultsDir.substring(0, resultsDir.lastIndexOf("\\"));
-        String cardNameFile = cardName.toString().replaceAll(" ", "");
-        cardNameFile = cardNameFile.replaceAll("_", "");
+        if (!(cardName.toString().equals("")) && !(cardName.toString().equals(" "))){
+            cardNameFile = cardName.toString().replaceAll(" ", "");
+            cardNameFile = cardNameFile.replaceAll("_", "");
+        } 
         FileOutputStream file = new FileOutputStream(resultsDir + "\\" + cardNameFile + ".html");
-        beginLite(file, "Charts results card: " + cardName.toString());
-        parseChartsPage(lines, file);
+        beginLite(file, "Graphs results card: " + cardName.toString());
+        parseGraphsPage(lines, file);
         endOfHtml(file);
         System.out.println("Make sure that CSS file & JS files (\"Source\" folder) is present in output folder.");
     }
