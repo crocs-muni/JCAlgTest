@@ -1538,9 +1538,9 @@ public class CardMngr {
         }                
     } 
     
-    public int GenerateAndGetKeys(String fileName, int numRepeats, int resetFrequency, boolean uploadBeforeStart, boolean useCrt) throws Exception {
+    public int GenerateAndGetKeys(String fileName, int numRepeats, int resetFrequency, boolean uploadBeforeStart, short bitLength, boolean useCrt) throws Exception {
         FileOutputStream file = new FileOutputStream(fileName);
-        int ret = GenerateAndGetKeys(file, numRepeats, resetFrequency, uploadBeforeStart, useCrt);   
+        int ret = GenerateAndGetKeys(file, numRepeats, resetFrequency, uploadBeforeStart, bitLength, useCrt);   
         file.close();  
         return ret;
     }
@@ -1572,7 +1572,7 @@ public class CardMngr {
         return apdu;
     }
       
-    public int GenerateAndGetKeys(FileOutputStream file, int numRepeats, int resetFrequency, boolean uploadBeforeStart, boolean useCrt) throws Exception { 
+    public int GenerateAndGetKeys(FileOutputStream file, int numRepeats, int resetFrequency, boolean uploadBeforeStart, short bitLength, boolean useCrt) throws Exception { 
         String message;
         int numKeysGenerated = 0;                  
         StringBuilder key = new StringBuilder();
@@ -1587,10 +1587,10 @@ public class CardMngr {
         
         short keyClass = JCConsts.KeyPair_ALG_RSA;
         if (useCrt) keyClass = JCConsts.KeyPair_ALG_RSA_CRT;
-        TestSettings publicKeySetting = this.prepareKeyHarvestSettings(keyClass, JCConsts.KeyBuilder_ALG_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_512);
+        TestSettings publicKeySetting = this.prepareKeyHarvestSettings(keyClass, JCConsts.KeyBuilder_ALG_TYPE_RSA_PUBLIC, bitLength);
         byte apduPublic[] = this.prepareApduForKeyHarvest(publicKeySetting);
         
-        TestSettings privateKeySetting = this.prepareKeyHarvestSettings(keyClass, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512);
+        TestSettings privateKeySetting = this.prepareKeyHarvestSettings(keyClass, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, bitLength);
         byte apduPrivate[] = this.prepareApduForKeyHarvest(privateKeySetting);
         
         int errors = 0;
