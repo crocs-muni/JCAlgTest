@@ -31,6 +31,7 @@
 
 package algtestjclient;
 
+import AlgTest.JCConsts;
 import java.io.*;
 import java.util.List;
 import java.util.Scanner;
@@ -177,6 +178,28 @@ public class AlgTestJClient {
                         System.out.println("Wrong answer. Auto upload applet before harvest is disabled.");
                     }
                     
+                    System.out.print("Bit length of key to generate (512, 1024 or 2048): ");
+                    String bitLengthString = sc.nextLine();
+                    int acceptedInputs[] = {512, 1024, 2048};
+                    short bitLength = JCConsts.KeyBuilder_LENGTH_RSA_512;
+                    try {
+                        int input = Integer.parseInt(bitLengthString);
+                        boolean isAcceptedInput = false;
+                        for (int acceptedInput : acceptedInputs) {
+                            if (input == acceptedInput) {
+                                isAcceptedInput = true;
+                                bitLength = (short)acceptedInput;
+                                break;
+                            }
+                        }
+                        if (!isAcceptedInput) {
+                            throw new NumberFormatException();
+                        }
+                    }
+                    catch(NumberFormatException ex) {
+                        System.out.println("Wrong number. Bit length is set to "+bitLength+".");
+                    }
+                    
                     System.out.print("Use RSA harvest with CRT (y/n): ");
                     String useCrtString = sc.nextLine();
                     boolean useCrt = false;
@@ -208,11 +231,11 @@ public class AlgTestJClient {
                         numOfKeys = Integer.parseInt(numOfKeysString);
                     }
                     catch(NumberFormatException ex) {
-                        System.out.println("Wrong number. Number of keys to generate is set to 10.");
+                        System.out.println("Wrong number. Number of keys to generate is set to "+numOfKeys+".");
                     }
                   
                     
-                    keyHarvest.gatherRSAKeys(autoUploadBefore, useCrt, numOfKeys);
+                    keyHarvest.gatherRSAKeys(autoUploadBefore, bitLength, useCrt, numOfKeys);
                     break;
                 // In this case, user pressed wrong key 
                 default:
