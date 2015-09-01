@@ -180,7 +180,7 @@ public class AlgTestJClient {
                     
                     System.out.print("Bit length of key to generate (512, 1024 or 2048): ");
                     String bitLengthString = sc.nextLine();
-                    int acceptedInputs[] = {512, 1024, 2048};
+                    int acceptedInputs[] = {512, 1024};
                     short bitLength = JCConsts.KeyBuilder_LENGTH_RSA_512;
                     try {
                         int input = Integer.parseInt(bitLengthString);
