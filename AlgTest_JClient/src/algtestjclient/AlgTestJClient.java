@@ -106,7 +106,7 @@ public class AlgTestJClient {
         if(args.length > 0){
             if (args[0].equals(ALGTEST_MULTIPERAPDU)){
                 CardMngr cardManager = new CardMngr();
-                cardManager.testClassic(args, 0);
+                cardManager.testClassic(args, 0, null);
             }  // 0 means ask for every alg to test
                                                     // possibly change for constant?
                                                     // or maybe change for 1 and test all algs at once?

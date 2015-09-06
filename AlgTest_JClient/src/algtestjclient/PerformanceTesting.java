@@ -127,8 +127,6 @@ public class PerformanceTesting {
                 System.err.println("Incorrect parameter, running all tests!");
             break;
         }
-
-
         int numRepeatWholeOperation = Consts.NUM_REPEAT_WHOLE_OPERATION;
         if (m_bTestVariableData) {
             numRepeatWholeOperation = Consts.NUM_REPEAT_WHOLE_OPERATION_VARIABLE_DATA;                
@@ -257,7 +255,7 @@ public class PerformanceTesting {
             message = "\nERROR: Test variable public exponent support fail\n"; 
             System.out.println(message); file.write(message.getBytes());
         }
-        file.flush();
+        if (file != null) file.flush();
         
         /* Available RAM memory. */
         value.setLength(0);
@@ -266,7 +264,7 @@ public class PerformanceTesting {
             message = "\nERROR: Get available RAM memory fail\n"; 
             System.out.println(message); file.write(message.getBytes());
         }
-        file.flush();
+        if (file != null) file.flush();
         
         /* Available EEPROM memory. */
         value.setLength(0);
@@ -275,7 +273,9 @@ public class PerformanceTesting {
             message = "\nERROR: Get available EEPROM memory fail\n"; 
             System.out.println(message); file.write(message.getBytes());
         }
-        file.flush();
+        if (file != null) file.flush();
+        
+        if (file != null) file.close();
     }
     
     public int TestAvailableRAMMemory(StringBuilder pValue, FileOutputStream pFile, byte algPartP2) throws Exception {
@@ -302,9 +302,9 @@ public class PerformanceTesting {
             // OK, STORE RESPONSE TO suppAlg ARRAY
             byte temp[] = resp.getData();
                 
-            String elTimeStr = "";
+            //String elTimeStr = "";
             // OUTPUT REQUIRED TIME WHEN PARTITIONED CHECk WAS PERFORMED (NOTMULTIPLE ALGORITHMS IN SINGLE RUN)
-            elTimeStr = String.format("%1f", (double) elapsedCard / (float) CardMngr.CLOCKS_PER_SEC);
+            String elTimeStr = String.format("%1f", (double) elapsedCard / (float) CardMngr.CLOCKS_PER_SEC);
 
             String message = "";
             message += "\r\n\r\nAvailable RAM memory;"; 

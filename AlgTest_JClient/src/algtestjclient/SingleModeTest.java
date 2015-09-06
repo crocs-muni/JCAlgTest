@@ -546,6 +546,7 @@ public class SingleModeTest {
             }
             */
         }
+        CloseFile(file);
     }
     
     /**
@@ -554,7 +555,7 @@ public class SingleModeTest {
      */
     public static void CloseFile(FileOutputStream file){
         try {
-            file.close();
+            if (file != null) file.close();
         } catch (IOException ex) {
             Logger.getLogger(SingleModeTest.class.getName()).log(Level.SEVERE, null, ex);
         }
