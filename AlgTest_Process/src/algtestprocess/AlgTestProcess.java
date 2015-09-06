@@ -56,8 +56,8 @@ public class AlgTestProcess {
     public static final String GENERATE_SORTABLE = "SORTABLE";
     public static final String COMPARE_CARDS = "COMPARE";
     public static final String GENERATE_JCCONSTANTS = "JCCONSTS";
-    public static final String GENERATE_CHARTS = "CHARTS";
-    public static final String GENERATE_CHARTS_ONEPAGE = "CHARTSPAGE";
+    public static final String GENERATE_GRAPHS = "GRAPHS";
+    public static final String GENERATE_GRAPHS_ONEPAGE = "GRAPHSPAGE";
     
     
     
@@ -108,23 +108,23 @@ public class AlgTestProcess {
                     else if (args[1].equals(GENERATE_SORTABLE)){
                         System.out.println("Generating sortable table from all files in directory.");
                         JCinfohtml.runSortable(args[0]);}
-                    else if (args[1].equals(GENERATE_CHARTS)){
-                        System.out.println("Generating charts from input file to new directory.");
-                        JCinfohtml.runCharts(args[0]);}
-                    else if (args[1].equals(GENERATE_CHARTS_ONEPAGE)){
-                        System.out.println("Generating charts page from input file.");
+                    else if (args[1].equals(GENERATE_GRAPHS)){
+                        System.out.println("Generating graphs from input file to new directory.");
+                        JCinfohtml.runGraphs(args[0]);}
+                    else if (args[1].equals(GENERATE_GRAPHS_ONEPAGE)){
+                        System.out.println("Generating gprahs page from input file.");
                         if (args.length > 2){ 
-                            generateChartsPages(args[0]);
+                            generateGraphsPages(args[0]);
                         }else{
-                            JCinfohtml.runChartsOnePage(args[0]);
+                            JCinfohtml.runGraphsOnePage(args[0]);
                         }
-                        JCinfohtml.runChartsOnePage(args[0]);}
+                        JCinfohtml.runGraphsOnePage(args[0]);}
                     else if (args[1].equals(GENERATE_JCINFO)){
                         System.out.println("Generating JC performance testing to HTML.");
-                        if (args.length < 3){ 
+                        if (args.length > 2){ 
                             generateJCInfoHTMLTable(args[0]);
                         }else{
-                            JCinfohtml.run(args[0],args[2]);
+                            JCinfohtml.run(args[0],args[1]);
                         }
                     }
                     else {System.err.println("Incorrect arguments!");}
@@ -253,7 +253,7 @@ public class AlgTestProcess {
                     cardName = (String) filesSupport[i].get("Card name");
                     cardName = cardName.replace(" ", ""); cardName = cardName.replace("_", ""); 
                     cardList += "&nbsp;<a target=\"_blank\" href=\".fixData/" + cardName + ".html\">PERFORMANCE</a>,&nbsp;";
-                    cardList += "<a target=\"_blank\" href=\".variableData/" + cardName + ".html\">CHARTS</a>";
+                    cardList += "<a target=\"_blank\" href=\".variableData/" + cardName + ".html\">GRAPHS</a>";
                 }
                 cardList += "<br>\r\n";
             }
@@ -640,9 +640,8 @@ public class AlgTestProcess {
     }    
             
     
-    private static void generateJCInfoHTMLTable(String basePath) throws IOException {
-        String filesPath = basePath + "results\\";
-        File dir = new File(filesPath);
+    private static void generateJCInfoHTMLTable(String basePath) throws IOException {        
+        File dir = new File(basePath);
         String[] filesArray = dir.list();
         
         if ((filesArray != null) && (dir.isDirectory() == true)) {    
@@ -651,14 +650,13 @@ public class AlgTestProcess {
             
             for (int i = 0; i < filesArray.length; i++) {
                 filesSupport[i] = new HashMap();
-                JCinfohtml.run(filesPath + filesArray[i], filesArray[i]);
+                JCinfohtml.run(basePath + filesArray[i], filesArray[i]);
             }   
         }
     }
     
-    private static void generateChartsPages(String basePath) throws IOException {
-        String filesPath = basePath + "results\\";
-        File dir = new File(filesPath);
+    private static void generateGraphsPages(String basePath) throws IOException {        
+        File dir = new File(basePath);
         String[] filesArray = dir.list();
         
         if ((filesArray != null) && (dir.isDirectory() == true)) {    
@@ -667,7 +665,7 @@ public class AlgTestProcess {
             
             for (int i = 0; i < filesArray.length; i++) {
                 filesSupport[i] = new HashMap();
-                JCinfohtml.runChartsOnePage(filesPath + filesArray[i]);
+                JCinfohtml.runGraphsOnePage(basePath + filesArray[i]);
             }   
         }
     }
