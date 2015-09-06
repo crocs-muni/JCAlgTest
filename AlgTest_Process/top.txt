@@ -1,13 +1,13 @@
-ALG_SECURE_RANDOM RandomData_generateData();SECURE RANDOM;SYM
-ALG_SHA MessageDigest_doFinal();SHA-1 hash;SYM
-ALG_SHA_256 MessageDigest_doFinal();SHA2-256 hash;SYM
-TYPE_DES LENGTH_DES3_3KEY ALG_DES_CBC_NOPAD Cipher_doFinal();3DES encrypt;SYM
-TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_128_CBC_NOPAD Cipher_doFinal();AES128 encrypt;SYM
-TYPE_AES LENGTH_AES_256 ALG_AES_BLOCK_128_CBC_NOPAD Cipher_doFinal();AES256 encrypt;SYM
+ALG_SECURE_RANDOM RandomData_generateData();SECURE RANDOM (256B);SYM
+ALG_SHA MessageDigest_doFinal();SHA-1 hash (256B);SYM
+ALG_SHA_256 MessageDigest_doFinal();SHA2-256 hash (256B);SYM
+TYPE_DES LENGTH_DES3_3KEY ALG_DES_CBC_NOPAD Cipher_doFinal();3DES encrypt (256B);SYM
+TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_128_CBC_NOPAD Cipher_doFinal();AES128 encrypt (256B);SYM
+TYPE_AES LENGTH_AES_256 ALG_AES_BLOCK_128_CBC_NOPAD Cipher_doFinal();AES256 encrypt (256B);SYM
 TYPE_DES LENGTH_DES_192 setKey();3DES setKey(192b);SYM
 TYPE_AES LENGTH_AES_128 setKey();AES setKey(128b);SYM
 TYPE_AES LENGTH_AES_256 setKey();AES setKey(256b);SYM
-SWALGS SWAlgs_AES(); SWAES oneblock;SYM
+SWALGS SWAlgs_AES(); <a href="http://www.fi.muni.cz/~xsvenda/jcalgs.html#aes">SWAES oneblock (16B)</a>;SYM
 UTIL Util_arrayCopyNonAtomic_RAM(); arrayCopy nonAtomic RAM2RAM (256B)
 UTIL Util_arrayCopyNonAtomic_EEPROM(); arrayCopy nonAtomic EEPROM2EEPROM (256B)
 
