@@ -11,11 +11,9 @@
     <description>Builds, tests, and runs the project AlgTestJClient.</description>
     <import file="nbproject/build-impl.xml"/>
     <!--
-
     There exist several targets which are by default empty and which can be 
     used for execution of your tasks. These targets are usually executed 
     before and after some main targets. They are: 
-
       -pre-init:                 called before initialization of project properties
       -post-init:                called after initialization of project properties
       -pre-compile:              called before javac compilation
@@ -29,24 +27,17 @@
       -pre-jar:                  called before JAR building
       -post-jar:                 called after JAR building
       -post-clean:               called after cleaning build products
-
     (Targets beginning with '-' are not intended to be called on their own.)
-
     Example of inserting an obfuscator after compilation could look like this:
-
         <target name="-post-compile">
             <obfuscate>
                 <fileset dir="${build.classes.dir}"/>
             </obfuscate>
         </target>
-
     For list of available properties check the imported 
     nbproject/build-impl.xml file. 
-
-
     Another way to customize the build is by overriding existing main targets.
     The targets of interest are: 
-
       -init-macrodef-javac:     defines macro for javac compilation
       -init-macrodef-junit:     defines macro for junit execution
       -init-macrodef-debug:     defines macro for class debugging
@@ -55,19 +46,32 @@
       run:                      execution of project 
       -javadoc-build:           Javadoc generation
       test-report:              JUnit report generation
-
     An example of overriding the target for project execution could look like this:
-
         <target name="run" depends="AlgTestJClient-impl.jar">
             <exec dir="bin" executable="launcher.exe">
                 <arg file="${dist.jar}"/>
             </exec>
         </target>
-
     Notice that the overridden target depends on the jar target and not only on 
     the compile target as the regular run target does. Again, for a list of available 
     properties which you can use, check the target you are overriding in the
     nbproject/build-impl.xml file. 
-
     -->
+
+          <target name="-post-jar">
+	     <!-- Copy newly build jar into test directory for simulator of smart cards-->
+             <copy file="${basedir}/dist/AlgTestJClient.jar" tofile="${basedir}/test/AlgTestJClient.jar"/>
+             <copy file="${basedir}/dist/lib/jcardsim-2.2.2-all.jar" tofile="${basedir}/test/jcardsim-2.2.2-all.jar"/>
+
+             <!-- Copy files necessary for compilation of JC applet-->
+             <copy file="${basedir}/src/algtest/AlgKeyHarvest.java" tofile="../AlgTest_JavaCard/src/AlgTest/AlgKeyHarvest.java"/>
+             <copy file="${basedir}/src/algtest/AlgPerformanceTest.java" tofile="../AlgTest_JavaCard/src/AlgTest/AlgPerformanceTest.java"/>
+             <copy file="${basedir}/src/algtest/AlgSupportTest.java" tofile="../AlgTest_JavaCard/src/AlgTest/AlgSupportTest.java"/>
+             <copy file="${basedir}/src/algtest/JCAlgTestApplet.java" tofile="../AlgTest_JavaCard/src/AlgTest/JCAlgTestApplet.java"/>
+             <copy file="${basedir}/src/algtest/Consts.java" tofile="../AlgTest_JavaCard/src/AlgTest/Consts.java"/>
+             <copy file="${basedir}/src/algtest/JCConsts.java" tofile="../AlgTest_JavaCard/src/AlgTest/JCConsts.java"/>
+             <copy file="${basedir}/src/algtest/TestSettings.java" tofile="../AlgTest_JavaCard/src/AlgTest/TestSettings.java"/>
+             <copy file="${basedir}/src/algtest/JavaCardAES.java" tofile="../AlgTest_JavaCard/src/AlgTest/JavaCardAES.java"/>
+             <copy file="${basedir}/src/algtest/AlgStorageTest.java" tofile="../AlgTest_JavaCard/src/AlgTest/AlgStorageTest.java"/>
+          </target>
 </project>

@@ -49,12 +49,40 @@ import java.util.Scanner;
 //import javacard.framework.AID;
 */
 import javax.smartcardio.*;
+import AlgTest.Consts;
+import AlgTest.JCConsts;
+import AlgTest.TestSettings;
+
+import com.licel.jcardsim.io.CAD;
+import com.licel.jcardsim.io.JavaxSmartCardInterface;
+import java.io.File;
+import java.lang.ProcessBuilder.Redirect;
+import java.util.ArrayList;
+import java.util.HashMap;
+import javacard.framework.AID;
+import javacard.framework.ISO7816;
+
 
 /**
  *
  * @author petrs
  */
 public class CardMngr {
+    public CAD m_cad = null;
+    public JavaxSmartCardInterface m_simulator = null;
+    
+    final static byte SUCCESS =                    (byte) 0xAA;
+    
+    // TODO: unification of errors
+    final static int CANT_BE_MEASURED              = 256;   
+    final static byte ILLEGAL_USE = (byte) 5;
+    final static byte ILLEGAL_VALUE = (byte) 1;
+    final static byte INVALID_INIT = (byte) 4;
+    final static byte NO_SUCH_ALGORITHM = (byte) 3;
+    final static byte UNINITIALIZED_KEY = (byte) 2;       
+
+    public final int MAX_SERIOUS_PROBLEMS_IN_ROW = 2;
+    
     /* Argument constants for choosing algorithm to test. */
     
     /* Arguments for choosing which AlgTest version to run. */
@@ -109,345 +137,16 @@ public class CardMngr {
     public static final byte CLASS_KEYPAIR_EC_F2M  = 0x1B;
     public static final byte CLASS_KEYPAIR_EC_FP   = 0x1C;
 
-      //  
-      //Class javacard.security.Signature
-      //
-    public static final byte ALG_DES_MAC4_NOPAD                  = 1;
-    public static final byte ALG_DES_MAC8_NOPAD                  = 2;
-    public static final byte ALG_DES_MAC4_ISO9797_M1             = 3;
-    public static final byte ALG_DES_MAC8_ISO9797_M1             = 4;
-    public static final byte ALG_DES_MAC4_ISO9797_M2             = 5;
-    public static final byte ALG_DES_MAC8_ISO9797_M2             = 6;
-    public static final byte ALG_DES_MAC4_PKCS5                  = 7;
-    public static final byte ALG_DES_MAC8_PKCS5                  = 8;
-    public static final byte ALG_RSA_SHA_ISO9796                 = 9;
-    public static final byte ALG_RSA_SHA_PKCS1                   = 10;
-    public static final byte ALG_RSA_MD5_PKCS1                   = 11;
-    public static final byte ALG_RSA_RIPEMD160_ISO9796           = 12;
-    public static final byte ALG_RSA_RIPEMD160_PKCS1             = 13;
-    public static final byte ALG_DSA_SHA                         = 14;
-    public static final byte ALG_RSA_SHA_RFC2409                 = 15;
-    public static final byte ALG_RSA_MD5_RFC2409                 = 16;
-    public static final byte ALG_ECDSA_SHA                       = 17;
-    public static final byte ALG_AES_MAC_128_NOPAD               = 18;
-    public static final byte ALG_DES_MAC4_ISO9797_1_M2_ALG3      = 19;
-    public static final byte ALG_DES_MAC8_ISO9797_1_M2_ALG3      = 20;
-    public static final byte ALG_RSA_SHA_PKCS1_PSS               = 21;
-    public static final byte ALG_RSA_MD5_PKCS1_PSS               = 22;
-    public static final byte ALG_RSA_RIPEMD160_PKCS1_PSS         = 23;
-      // JC2.2.2
-    public static final byte ALG_HMAC_SHA1                       = 24;
-    public static final byte ALG_HMAC_SHA_256                    = 25;
-    public static final byte ALG_HMAC_SHA_384                    = 26;
-    public static final byte ALG_HMAC_SHA_512                    = 27;
-    public static final byte ALG_HMAC_MD5                        = 28;
-    public static final byte ALG_HMAC_RIPEMD160                  = 29;
-    public static final byte ALG_RSA_SHA_ISO9796_MR              = 30;
-    public static final byte ALG_RSA_RIPEMD160_ISO9796_MR        = 31;
-    public static final byte ALG_KOREAN_SEED_MAC_NOPAD = 32;
-    // JC3.0.1
-    public static final byte ALG_ECDSA_SHA_256 = 33;  
-    public static final byte ALG_ECDSA_SHA_384 = 34;  
-    public static final byte ALG_AES_MAC_192_NOPAD = 35;  
-    public static final byte ALG_AES_MAC_256_NOPAD = 36;  
-    public static final byte ALG_ECDSA_SHA_224 = 37;  
-    public static final byte ALG_ECDSA_SHA_512 = 38;  
-    public static final byte ALG_RSA_SHA_224_PKCS1 = 39;  
-    public static final byte ALG_RSA_SHA_256_PKCS1 = 40;  
-    public static final byte ALG_RSA_SHA_384_PKCS1 = 41;  
-    public static final byte ALG_RSA_SHA_512_PKCS1 = 42;  
-    public static final byte ALG_RSA_SHA_224_PKCS1_PSS = 43;  
-    public static final byte ALG_RSA_SHA_256_PKCS1_PSS = 44;  
-    public static final byte ALG_RSA_SHA_384_PKCS1_PSS = 45;  
-    public static final byte ALG_RSA_SHA_512_PKCS1_PSS = 46;  
-    // JC3.0.4
-    public static final byte ALG_DES_MAC4_ISO9797_1_M1_ALG3 = 47;   
-    public static final byte ALG_DES_MAC8_ISO9797_1_M1_ALG3 = 48;
-    
-    public static final String SIGNATURE_STR[] = {"javacard.crypto.Signature", 
-        "ALG_DES_MAC4_NOPAD#<=2.1", "ALG_DES_MAC8_NOPAD#<=2.1", 
-        "ALG_DES_MAC4_ISO9797_M1#<=2.1", "ALG_DES_MAC8_ISO9797_M1#<=2.1", "ALG_DES_MAC4_ISO9797_M2#<=2.1", "ALG_DES_MAC8_ISO9797_M2#<=2.1", 
-        "ALG_DES_MAC4_PKCS5#<=2.1", "ALG_DES_MAC8_PKCS5#<=2.1", "ALG_RSA_SHA_ISO9796#<=2.1", "ALG_RSA_SHA_PKCS1#<=2.1", "ALG_RSA_MD5_PKCS1#<=2.1", 
-        "ALG_RSA_RIPEMD160_ISO9796#<=2.1", "ALG_RSA_RIPEMD160_PKCS1#<=2.1", "ALG_DSA_SHA#<=2.1", "ALG_RSA_SHA_RFC2409#<=2.1", 
-        "ALG_RSA_MD5_RFC2409#<=2.1", "ALG_ECDSA_SHA#2.2.0", "ALG_AES_MAC_128_NOPAD#2.2.0", "ALG_DES_MAC4_ISO9797_1_M2_ALG3#2.2.0", 
-        "ALG_DES_MAC8_ISO9797_1_M2_ALG3#2.2.0", "ALG_RSA_SHA_PKCS1_PSS#2.2.0", "ALG_RSA_MD5_PKCS1_PSS#2.2.0", "ALG_RSA_RIPEMD160_PKCS1_PSS#2.2.0", 
-        // 2.2.2
-        "ALG_HMAC_SHA1#2.2.2", "ALG_HMAC_SHA_256#2.2.2", "ALG_HMAC_SHA_384#2.2.2", "ALG_HMAC_SHA_512#2.2.2", "ALG_HMAC_MD5#2.2.2", "ALG_HMAC_RIPEMD160#2.2.2", 
-        "ALG_RSA_SHA_ISO9796_MR#2.2.2", "ALG_RSA_RIPEMD160_ISO9796_MR#2.2.2", "ALG_SEED_MAC_NOPAD#2.2.2", 
-        //3.0.1
-        "ALG_ECDSA_SHA_256#3.0.1", "ALG_ECDSA_SHA_384#3.0.1", "ALG_AES_MAC_192_NOPAD#3.0.1", "ALG_AES_MAC_256_NOPAD#3.0.1", "ALG_ECDSA_SHA_224#3.0.1", "ALG_ECDSA_SHA_512#3.0.1", 
-        "ALG_RSA_SHA_224_PKCS1#3.0.1", "ALG_RSA_SHA_256_PKCS1#3.0.1", "ALG_RSA_SHA_384_PKCS1#3.0.1", "ALG_RSA_SHA_512_PKCS1#3.0.1", 
-        "ALG_RSA_SHA_224_PKCS1_PSS#3.0.1", "ALG_RSA_SHA_256_PKCS1_PSS#3.0.1", "ALG_RSA_SHA_384_PKCS1_PSS#3.0.1", "ALG_RSA_SHA_512_PKCS1_PSS#3.0.1",
-        //3.0.4
-        "ALG_DES_MAC4_ISO9797_1_M1_ALG3#3.0.4", "ALG_DES_MAC8_ISO9797_1_M1_ALG3#3.0.4"
-    };
-
-      //
-      //Class javacardx.crypto.Cipher
-      //
-    public static final byte ALG_DES_CBC_NOPAD                     = 1;
-    public static final byte ALG_DES_CBC_ISO9797_M1                = 2;
-    public static final byte ALG_DES_CBC_ISO9797_M2                = 3;
-    public static final byte ALG_DES_CBC_PKCS5                     = 4;
-    public static final byte ALG_DES_ECB_NOPAD                     = 5;
-    public static final byte ALG_DES_ECB_ISO9797_M1                = 6;
-    public static final byte ALG_DES_ECB_ISO9797_M2                = 7;
-    public static final byte ALG_DES_ECB_PKCS5                     = 8;
-    public static final byte ALG_RSA_ISO14888                      = 9;
-    public static final byte ALG_RSA_PKCS1                         = 10;
-    public static final byte ALG_RSA_ISO9796                       = 11;
-    public static final byte ALG_RSA_NOPAD                         = 12;
-    public static final byte ALG_AES_BLOCK_128_CBC_NOPAD           = 13;
-    public static final byte ALG_AES_BLOCK_128_ECB_NOPAD           = 14;
-    public static final byte ALG_RSA_PKCS1_OAEP                    = 15;
-      // JC2.2.2
-    public static final byte ALG_KOREAN_SEED_ECB_NOPAD             = 16;
-    public static final byte ALG_KOREAN_SEED_CBC_NOPAD             = 17;
-    // JC3.0.1
-    public static final byte ALG_AES_BLOCK_192_CBC_NOPAD = 18;  
-    public static final byte ALG_AES_BLOCK_192_ECB_NOPAD = 19;  
-    public static final byte ALG_AES_BLOCK_256_CBC_NOPAD = 20;  
-    public static final byte ALG_AES_BLOCK_256_ECB_NOPAD = 21;  
-    public static final byte ALG_AES_CBC_ISO9797_M1 = 22;  
-    public static final byte ALG_AES_CBC_ISO9797_M2 = 23;  
-    public static final byte ALG_AES_CBC_PKCS5 = 24;  
-    public static final byte ALG_AES_ECB_ISO9797_M1 = 25;  
-    public static final byte ALG_AES_ECB_ISO9797_M2 = 26;  
-    public static final byte ALG_AES_ECB_PKCS5 = 27;      
-
-    public static final String CIPHER_STR[] = {"javacardx.crypto.Cipher", 
-        "ALG_DES_CBC_NOPAD#<=2.1", "ALG_DES_CBC_ISO9797_M1#<=2.1", "ALG_DES_CBC_ISO9797_M2#<=2.1", "ALG_DES_CBC_PKCS5#<=2.1", 
-        "ALG_DES_ECB_NOPAD#<=2.1", "ALG_DES_ECB_ISO9797_M1#<=2.1", "ALG_DES_ECB_ISO9797_M2#<=2.1", "ALG_DES_ECB_PKCS5#<=2.1",
-        "ALG_RSA_ISO14888#<=2.1", "ALG_RSA_PKCS1#<=2.1", "ALG_RSA_ISO9796#<=2.1", 
-        //2.1.1
-        "ALG_RSA_NOPAD#2.1.1", 
-        //2.2.0
-        "ALG_AES_BLOCK_128_CBC_NOPAD#2.2.0", "ALG_AES_BLOCK_128_ECB_NOPAD#2.2.0", "ALG_RSA_PKCS1_OAEP#2.2.0", 
-        //2.2.2
-        "ALG_KOREAN_SEED_ECB_NOPAD#2.2.2", "ALG_KOREAN_SEED_CBC_NOPAD#2.2.2",
-        //3.0.1
-        "ALG_AES_BLOCK_192_CBC_NOPAD#3.0.1", "ALG_AES_BLOCK_192_ECB_NOPAD#3.0.1", "ALG_AES_BLOCK_256_CBC_NOPAD#3.0.1", "ALG_AES_BLOCK_256_ECB_NOPAD#3.0.1", 
-        "ALG_AES_CBC_ISO9797_M1#3.0.1", "ALG_AES_CBC_ISO9797_M2#3.0.1", "ALG_AES_CBC_PKCS5#3.0.1", "ALG_AES_ECB_ISO9797_M1#3.0.1", "ALG_AES_ECB_ISO9797_M2#3.0.1", "ALG_AES_ECB_PKCS5#3.0.1"         
-    }; 
-
-      //
-      //Class javacard.security.KeyAgreement
-      //
-    public static final byte ALG_EC_SVDP_DH                        = 1;
-    public static final byte ALG_EC_SVDP_DHC                       = 2;
-    // JC3.0.1
-    public static final byte ALG_EC_SVDP_DH_KDF                    = 1;  
-    public static final byte ALG_EC_SVDP_DH_PLAIN                  = 3;     
-    public static final byte ALG_EC_SVDP_DHC_KDF                   = 2;  
-    public static final byte ALG_EC_SVDP_DHC_PLAIN                 = 4;  
-    
-    public static final String KEYAGREEMENT_STR[] = {"javacard.security.KeyAgreement", 
-        //2.2.1
-        "ALG_EC_SVDP_DH#2.2.1", "ALG_EC_SVDP_DHC#2.2.1",
-        //3.0.1
-        "ALG_EC_SVDP_DH_KDF#3.0.1", "ALG_EC_SVDP_DH_PLAIN#3.0.1", "ALG_EC_SVDP_DHC_KDF#3.0.1", "ALG_EC_SVDP_DHC_PLAIN#3.0.1"
-    };
-    
-      //
-      //Class javacard.security.KeyBuilder
-      //
-    public static final byte TYPE_DES_TRANSIENT_RESET              = 1;
-    public static final byte TYPE_DES_TRANSIENT_DESELECT           = 2;
-    public static final byte TYPE_DES                              = 3;
-    public static final byte TYPE_RSA_PUBLIC                       = 4;
-    public static final byte TYPE_RSA_PRIVATE                      = 5;
-    public static final byte TYPE_RSA_CRT_PRIVATE                  = 6;
-    public static final byte TYPE_DSA_PUBLIC                       = 7;
-    public static final byte TYPE_DSA_PRIVATE                      = 8; 
-    public static final byte TYPE_EC_F2M_PUBLIC                    = 9;
-    public static final byte TYPE_EC_F2M_PRIVATE                   = 10;
-    public static final byte TYPE_EC_FP_PUBLIC                     = 11;
-    public static final byte TYPE_EC_FP_PRIVATE                    = 12;
-    public static final byte TYPE_AES_TRANSIENT_RESET              = 13;
-    public static final byte TYPE_AES_TRANSIENT_DESELECT           = 14;
-    public static final byte TYPE_AES                              = 15;
-      // JC2.2.2
-    public static final byte TYPE_KOREAN_SEED_TRANSIENT_RESET      = 16;
-    public static final byte TYPE_KOREAN_SEED_TRANSIENT_DESELECT   = 17;
-    public static final byte TYPE_KOREAN_SEED                      = 18;
-    public static final byte TYPE_HMAC_TRANSIENT_RESET             = 19;
-    public static final byte TYPE_HMAC_TRANSIENT_DESELECT          = 20;
-    public static final byte TYPE_HMAC                             = 21;
-    // JC3.0.1
-    public static final byte TYPE_RSA_PRIVATE_TRANSIENT_RESET       = 22;  
-    public static final byte TYPE_RSA_PRIVATE_TRANSIENT_DESELECT    = 23;  
-    public static final byte TYPE_RSA_CRT_PRIVATE_TRANSIENT_RESET   = 24;  
-    public static final byte TYPE_RSA_CRT_PRIVATE_TRANSIENT_DESELECT= 25;  
-    public static final byte TYPE_DSA_PRIVATE_TRANSIENT_RESET       = 26;
-    public static final byte TYPE_DSA_PRIVATE_TRANSIENT_DESELECT    = 27;  
-    public static final byte TYPE_EC_F2M_PRIVATE_TRANSIENT_RESET    = 28;  
-    public static final byte TYPE_EC_F2M_PRIVATE_TRANSIENT_DESELECT = 29;  
-    public static final byte TYPE_EC_FP_PRIVATE_TRANSIENT_RESET     = 30;  
-    public static final byte TYPE_EC_FP_PRIVATE_TRANSIENT_DESELECT  = 31;  
-    
-    private final int LENGTH_DES            = 64;
-    private final int LENGTH_DES3_2KEY      = 128;
-    private final int LENGTH_DES3_3KEY      = 192;
-    private final int LENGTH_RSA_512        = 512;
-    private final int LENGTH_RSA_736        = 736;
-    private final int LENGTH_RSA_768        = 768;
-    private final int LENGTH_RSA_896        = 896;
-    private final int LENGTH_RSA_1024       = 1024;
-    private final int LENGTH_RSA_1280       = 1280;
-    private final int LENGTH_RSA_1536       = 1536;
-    private final int LENGTH_RSA_1984       = 1984;
-    private final int LENGTH_RSA_2048       = 2048;
-    private final int LENGTH_RSA_3072       = 3072;
-    private final int LENGTH_RSA_4096       = 4096;
-    private final int LENGTH_DSA_512        = 512;
-    private final int LENGTH_DSA_768        = 768;
-    private final int LENGTH_DSA_1024       = 1024;
-    private final int LENGTH_EC_FP_112      = 112;
-    private final int LENGTH_EC_F2M_113     = 113;
-    private final int LENGTH_EC_FP_128      = 128;
-    private final int LENGTH_EC_F2M_131     = 131;
-    private final int LENGTH_EC_FP_160      = 160;
-    private final int LENGTH_EC_F2M_163     = 163;
-    private final int LENGTH_EC_FP_192      = 192;
-    private final int LENGTH_EC_F2M_193     = 193;
-    private final int LENGTH_EC_FP_224      = 224;  
-    private final int LENGTH_EC_FP_256      = 256;  
-    private final int LENGTH_EC_FP_384      = 384;  
-    private final int LENGTH_EC_FP_521      = 521;    
-    private final int LENGTH_AES_128        = 128;
-    private final int LENGTH_AES_192        = 192;
-    private final int LENGTH_AES_256        = 256;
-      // JC2.2.2
-    private final int LENGTH_KOREAN_SEED_128        = 128;
-    private final int LENGTH_HMAC_SHA_1_BLOCK_64    = 64;
-    private final int LENGTH_HMAC_SHA_256_BLOCK_64  = 64;
-    private final int LENGTH_HMAC_SHA_384_BLOCK_64  = 128;
-    private final int LENGTH_HMAC_SHA_512_BLOCK_64  = 128;
-    
-    public static final String KEYBUILDER_STR[] = {
-        "javacard.security.KeyBuilder", 
-        "@@@DES_KEY@@@", "TYPE_DES_TRANSIENT_RESET#<=2.1", "TYPE_DES_TRANSIENT_DESELECT#<=2.1", "TYPE_DES LENGTH_DES#<=2.1", "TYPE_DES LENGTH_DES3_2KEY#<=2.1", "TYPE_DES LENGTH_DES3_3KEY#<=2.1",
-        //2.2.0
-        "@@@AES_KEY@@@", "TYPE_AES_TRANSIENT_RESET#2.2.0", "TYPE_AES_TRANSIENT_DESELECT#2.2.0", "TYPE_AES LENGTH_AES_128#2.2.0", "TYPE_AES LENGTH_AES_192#2.2.0", "TYPE_AES LENGTH_AES_256#2.2.0",
-        "@@@RSA_PUBLIC_KEY@@@", "TYPE_RSA_PUBLIC LENGTH_RSA_512#<=2.1", "TYPE_RSA_PUBLIC LENGTH_RSA_736#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_768#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_896#2.2.0",
-            "TYPE_RSA_PUBLIC LENGTH_RSA_1024#<=2.1", "TYPE_RSA_PUBLIC LENGTH_RSA_1280#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_1536#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_1984#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_2048#<=2.1", "TYPE_RSA_PUBLIC LENGTH_RSA_3072#never#0", "TYPE_RSA_PUBLIC LENGTH_RSA_4096#3.0.1",
-        "@@@RSA_PRIVATE_KEY@@@", "TYPE_RSA_PRIVATE LENGTH_RSA_512#<=2.1", "TYPE_RSA_PRIVATE LENGTH_RSA_736#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_768#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_896#2.2.0",
-            "TYPE_RSA_PRIVATE LENGTH_RSA_1024#<=2.1", "TYPE_RSA_PRIVATE LENGTH_RSA_1280#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_1536#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_1984#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_2048#<=2.1", "TYPE_RSA_PRIVATE LENGTH_RSA_3072#never#0", "TYPE_RSA_PRIVATE LENGTH_RSA_4096#3.0.1", 
-            "TYPE_RSA_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_RSA_PRIVATE_TRANSIENT_DESELECT#3.0.1",
-        "@@@RSA_CRT_PRIVATE_KEY@@@", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_512#<=2.1", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_736#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_768#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_896#2.2.0",
-            "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1024#<=2.1", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1280#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1536#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1984#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_2048#<=2.1", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_3072#never#0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_4096#3.0.1",
-            "TYPE_RSA_CRT_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_RSA_CRT_PRIVATE_TRANSIENT_DESELECT#3.0.1",
-        "@@@DSA_PRIVATE_KEY@@@", "TYPE_DSA_PRIVATE LENGTH_DSA_512#<=2.1", "TYPE_DSA_PRIVATE LENGTH_DSA_768#<=2.1", "TYPE_DSA_PRIVATE LENGTH_DSA_1024#<=2.1", "TYPE_DSA_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_DSA_PRIVATE_TRANSIENT_DESELECT#3.0.1", 
-        "@@@DSA_PUBLIC_KEY@@@", "TYPE_DSA_PUBLIC LENGTH_DSA_512#<=2.1", "TYPE_DSA_PUBLIC LENGTH_DSA_768#<=2.1", "TYPE_DSA_PUBLIC LENGTH_DSA_1024#<=2.1", 
-        "@@@EC_F2M_PRIVATE_KEY@@@", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_113#2.2.0", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_131#2.2.0", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_163#2.2.0", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_193#2.2.0", "TYPE_EC_F2M_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_EC_F2M_PRIVATE_TRANSIENT_DESELECT#3.0.1",
-        "@@@EC_FP_PRIVATE_KEY@@@", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_112#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_128#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_160#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_192#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_224#3.0.1", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_256#3.0.1", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_384#3.0.1", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_521#3.0.4", "TYPE_EC_FP_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_EC_FP_PRIVATE_TRANSIENT_DESELECT#3.0.1",
-        "@@@KOREAN_SEED_KEY@@@", "TYPE_KOREAN_SEED_TRANSIENT_RESET#2.2.2", "TYPE_KOREAN_SEED_TRANSIENT_DESELECT#2.2.2", "TYPE_KOREAN_SEED LENGTH_KOREAN_SEED_128#2.2.2", 
-        "@@@HMAC_KEY@@@", "TYPE_HMAC_TRANSIENT_RESET#2.2.2", "TYPE_HMAC_TRANSIENT_DESELECT#2.2.2", "TYPE_HMAC LENGTH_HMAC_SHA_1_BLOCK_64#2.2.2", "TYPE_HMAC LENGTH_HMAC_SHA_256_BLOCK_64#2.2.2", "TYPE_HMAC LENGTH_HMAC_SHA_384_BLOCK_64#2.2.2", "TYPE_HMAC LENGTH_HMAC_SHA_512_BLOCK_64#2.2.2",
-    }; 
-      //
-      //Class javacard.security.KeyPair
-      //introduced in 2.1.1
-    public static final byte ALG_RSA                       = 1;
-    public static final byte ALG_RSA_CRT                   = 2;
-    public static final byte ALG_DSA                       = 3;
-    public static final byte ALG_EC_F2M                    = 4;
-    public static final byte ALG_EC_FP                     = 5;
-
-    public static final String KEYPAIR_RSA_STR[] = {"javacard.security.KeyPair ALG_RSA on-card generation", 
-        "ALG_RSA LENGTH_RSA_512#2.1.1", "ALG_RSA LENGTH_RSA_736#2.2.0", "ALG_RSA LENGTH_RSA_768#2.1.1", "ALG_RSA LENGTH_RSA_896#2.2.0",
-        "ALG_RSA LENGTH_RSA_1024#2.1.1", "ALG_RSA LENGTH_RSA_1280#2.2.0", "ALG_RSA LENGTH_RSA_1536#2.2.0", "ALG_RSA LENGTH_RSA_1984#2.2.0", "ALG_RSA LENGTH_RSA_2048#2.1.1", 
-        "ALG_RSA LENGTH_RSA_3072#never#0", "ALG_RSA LENGTH_RSA_4096#3.0.1"
-        };
-
-    public static final String KEYPAIR_RSACRT_STR[] = {"javacard.security.KeyPair ALG_RSA_CRT on-card generation", 
-        "ALG_RSA_CRT LENGTH_RSA_512#2.1.1", "ALG_RSA_CRT LENGTH_RSA_736#2.2.0", "ALG_RSA_CRT LENGTH_RSA_768#2.1.1", "ALG_RSA_CRT LENGTH_RSA_896#2.2.0",
-        "ALG_RSA_CRT LENGTH_RSA_1024#2.1.1", "ALG_RSA_CRT LENGTH_RSA_1280#2.2.0", "ALG_RSA_CRT LENGTH_RSA_1536#2.2.0", "ALG_RSA_CRT LENGTH_RSA_1984#2.2.0", "ALG_RSA_CRT LENGTH_RSA_2048#2.1.1", 
-        "ALG_RSA_CRT LENGTH_RSA_3072#never#0", "ALG_RSA_CRT LENGTH_RSA_4096#3.0.1"
-        };    
-  
-    public static final String KEYPAIR_DSA_STR[] = {"javacard.security.KeyPair ALG_DSA on-card generation", 
-        "ALG_DSA LENGTH_DSA_512#2.1.1", "ALG_DSA LENGTH_DSA_768#2.1.1", "ALG_DSA LENGTH_DSA_1024#2.1.1"
-    };
-  
-    public static final String KEYPAIR_EC_F2M_STR[] = {"javacard.security.KeyPair ALG_EC_F2M on-card generation", 
-        "ALG_EC_F2M LENGTH_EC_F2M_113#2.2.1", "ALG_EC_F2M LENGTH_EC_F2M_131#2.2.1", "ALG_EC_F2M LENGTH_EC_F2M_163#2.2.1", "ALG_EC_F2M LENGTH_EC_F2M_193#2.2.1"
-    };
- 
-    public static final String KEYPAIR_EC_FP_STR[] = {"javacard.security.KeyPair ALG_EC_FP on-card generation", 
-        "ALG_EC_FP LENGTH_EC_FP_112#2.2.1", "ALG_EC_FP LENGTH_EC_FP_128#2.2.1", "ALG_EC_FP LENGTH_EC_FP_160#2.2.1", "ALG_EC_FP LENGTH_EC_FP_192#2.2.1", "ALG_EC_FP LENGTH_EC_FP_224#3.0.1", "ALG_EC_FP LENGTH_EC_FP_256#3.0.1", "ALG_EC_FP LENGTH_EC_FP_384#3.0.1", "ALG_EC_FP LENGTH_EC_FP_521#3.0.4"
-    };
-
-    public static final byte CLASS_KEYPAIR_RSA_P2          = 11;
-    public static final byte CLASS_KEYPAIR_RSACRT_P2       = 11;
-    public static final byte CLASS_KEYPAIR_DSA_P2          = 3;
-    public static final byte CLASS_KEYPAIR_EC_F2M_P2       = 4;
-    public static final byte CLASS_KEYPAIR_EC_FP_P2        = 4;
-
-      //Class javacard.security.MessageDigest
-    public static final byte ALG_SHA                       = 1;
-    public static final byte ALG_MD5                       = 2;
-    public static final byte ALG_RIPEMD160                 = 3;
-      // JC2.2.2
-    public static final byte ALG_SHA_256                   = 4;
-    public static final byte ALG_SHA_384                   = 5;
-    public static final byte ALG_SHA_512                   = 6;
-    // JC3.0.1
-    public static final byte ALG_SHA_224 = 7;
-    
-    public static final String MESSAGEDIGEST_STR[] = {"javacard.security.MessageDigest", 
-        "ALG_SHA#<=2.1", "ALG_MD5#<=2.1", "ALG_RIPEMD160#<=2.1", 
-        //2.2.2
-        "ALG_SHA_256#2.2.2", "ALG_SHA_384#2.2.2", "ALG_SHA_512#2.2.2", 
-        //3.0.1
-        "ALG_SHA_224#3.0.1"
-    }; 
-
-
-      //Class javacard.security.RandomData
-    public static final byte ALG_PSEUDO_RANDOM             = 1;
-    public static final byte ALG_SECURE_RANDOM             = 2;
-
-    public static final String RANDOMDATA_STR[] = {"javacard.security.RandomData", 
-        "ALG_PSEUDO_RANDOM#<=2.1", "ALG_SECURE_RANDOM#<=2.1"}; 
-
-      // Class javacard.security.Checksum
-    public static final byte ALG_ISO3309_CRC16             = 1;
-    public static final byte ALG_ISO3309_CRC32             = 2;
-
-    public static final String CHECKSUM_STR[] = {"javacard.security.Checksum", "ALG_ISO3309_CRC16#2.2.1", "ALG_ISO3309_CRC32#2.2.1"}; 
-    
-    public static final String JCSYSTEM_STR[] = {"javacard.framework.JCSystem", "JCSystem.getVersion()[Major.Minor]#<=2.1", 
-        "JCSystem.isObjectDeletionSupported#2.2.0", "JCSystem.MEMORY_TYPE_PERSISTENT#2.2.1", "JCSystem.MEMORY_TYPE_TRANSIENT_RESET#2.2.1", 
-        "JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT#2.2.1"}; 
-
-    public static final String RAWRSA_1024_STR[] = {"Variable RSA 1024 - support for variable public exponent. If supported, user-defined fast modular exponentiation can be executed on the smart card via cryptographic coprocessor. This is very specific feature and you will probably not need it", 
-        "Allocate RSA 1024 objects", "Set random modulus", "Set random public exponent", "Initialize cipher with public key with random exponent", "Use random public exponent"}; 
-
-    public static final String EXTENDEDAPDU_STR[] = {"javacardx.apdu.ExtendedLength", "Extended APDU#2.2.2"}; 
-
-    public static final String BASIC_INFO[] = {"Basic info", "JavaCard support version"}; 
    
-    public static final String[] ALL_CLASSES_STR[] = {
-        BASIC_INFO, JCSYSTEM_STR, EXTENDEDAPDU_STR, CIPHER_STR, SIGNATURE_STR, MESSAGEDIGEST_STR, RANDOMDATA_STR, KEYBUILDER_STR, 
-        KEYPAIR_RSA_STR, KEYPAIR_RSACRT_STR, KEYPAIR_DSA_STR, KEYPAIR_EC_F2M_STR, 
-        KEYPAIR_EC_FP_STR, KEYAGREEMENT_STR, CHECKSUM_STR, RAWRSA_1024_STR
-    };
-
-    
-    public static final short 	ILLEGAL_USE         = 5;
-    public static final short 	ILLEGAL_VALUE       = 1;
-    public static final short 	INVALID_INIT        = 4;
-    public static final short 	NO_SUCH_ALGORITHM   = 3;
-    public static final short 	UNINITIALIZED_KEY   = 2; 
-   
-    CardTerminal m_terminal = null;
+    public CardTerminal m_terminal = null;
     CardChannel m_channel = null;
     Card m_card = null;
+    public static String cardUploadersFolder = System.getProperty("user.dir")+File.separator+"!card_uploaders";
     
     public static final byte selectApplet[] = {
         (byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00, (byte) 0x09, 
         (byte) 0x6D, (byte) 0x79, (byte) 0x70, (byte) 0x61, (byte) 0x63, (byte) 0x30, (byte) 0x30, (byte) 0x30, (byte) 0x31}; 
-    
+
     public static final String helpString = "This program can be used with following parameters:\r\n"
             + ALGTEST_MULTIPERAPDU + " -> for using classic AlgTest with multiple tests per APDU command\r\n"
             + ALGTEST_SINGLEPERAPDU + " -> for using AlgTest with single test per APDU command\r\n"
@@ -516,16 +215,55 @@ public class CardMngr {
     */
     
     /* CLOCKS_PER_SEC also used in 'PerformanceTesting.java' */
-    public final int CLOCKS_PER_SEC = 1000;
+    public static final int CLOCKS_PER_SEC = 1000;
     
+    
+    
+    public static void PrintHelp () throws FileNotFoundException, IOException{
+        System.out.println(CardMngr.helpString);
+        
+        System.out.println("Do you want to print supported parameters for AlgTest to separate file? 1 = YES, 0 = NO/r/n");
+        Scanner sc = new Scanner(System.in);
+        int answ = sc.nextInt();
+        if (answ == 1){
+            FileOutputStream file = new FileOutputStream("AlgTest_supported_parameters.txt");
+            file.write(CardMngr.paramList.getBytes());
+            System.out.println("List of supported parameters for AlgTest created in project folder.");
+        }
+    }  
+    
+    public String getTerminalName() {
+        if (m_terminal != null) { return m_terminal.getName(); }
+        if (m_simulator != null) { return "JCardSim simulator"; }
+        return "No terminal found";
+    }
+    public String getATR() {
+        if (m_card != null) { return bytesToHex(m_card.getATR().getBytes()); }
+        if (m_simulator != null) { return SIMULATOR_ATR; }
+        return "No card available";
+    }    
     public FileOutputStream establishConnection(Class ClassToTest) throws Exception{
-        if (ConnectToCard(ClassToTest, reader, atr, protocol)) {
+        return establishConnection(ClassToTest, "", "", null);
+    }
+    public FileOutputStream establishConnection(Class ClassToTest, String cardName, String testInfo, CardTerminal selectedTerminal) throws Exception{
+        boolean bConnected = false;
+        // Connnect to targer card to obtain information
+        reader.setLength(0);
+        atr.setLength(0);
+        protocol.setLength(0);
+        if (selectedTerminal != null) {
+            bConnected = ConnectToCard(ClassToTest, selectedTerminal, reader, atr, protocol);            
+        } 
+        else {
+            bConnected = ConnectToFirstCard(ClassToTest, reader, atr, protocol);            
+        }
+        if (bConnected) {
             String message = "";
             if (atr.toString().equals("")){atr.append(SIMULATOR_ATR + " (provided by jCardSimulator)");} // if atr == "" it means that simulator is running and thus simulator atr must be used
             System.out.println("ATR: " + atr);
-            String fileName = "AlgTest_" + atr + ".csv";
+            String fileName = testInfo + "_" + atr + ".csv";
             fileName = fileName.replace(":", "");
-            fileName = fileName.replace(" ", "");
+            fileName = fileName.replace(" ", "_");
             
             FileOutputStream file = new FileOutputStream(fileName);
             
@@ -542,7 +280,7 @@ public class CardMngr {
             Date date = new Date();
             message += dateFormat.format(date) + "\r\n";
             System.out.println(message); file.write(message.getBytes()); 
-
+            
             message = "AlgTestJClient version; " + AlgTestJClient.ALGTEST_JCLIENT_VERSION + "\r\n";
             System.out.println(message); file.write(message.getBytes());    
 
@@ -555,44 +293,62 @@ public class CardMngr {
                 message = "\nERROR: GetAppletVersion fail"; 
                 System.out.println(message); file.write(message.getBytes());
             }
-
+        
             message = "Used reader; " + reader + "\r\n";
             System.out.println(message); file.write(message.getBytes());
             message = "Card ATR; " + atr + "\r\n";
             System.out.println(message); file.write(message.getBytes());
+            message = "Card name; " + cardName + "\r\n";
+            System.out.println(message); file.write(message.getBytes());
             message = "Used protocol; " + protocol + "\r\n";
             System.out.println(message); file.write(message.getBytes());
 
+            
             System.out.println("\n\n#########################");
             System.out.println("\nJCSystem information");
-
             if (GetJCSystemInfo(value, file) == CardMngr.STAT_OK) {}
             else { System.out.println("\nERROR: GetJCSystemInfo fail"); }
-            // returns created file for output data
-            return file;
             
+            System.out.println("\n\n#########################");
+            System.out.println("\nGlobalPlatform information");
+            if (GetGPInfo(value, file) == CardMngr.STAT_OK) {}
+            else { System.out.println("\nERROR: GetGPInfo fail"); }            
+            
+            // Connnect to target card again 
+            if (selectedTerminal != null) {
+                bConnected = ConnectToCard(ClassToTest, selectedTerminal, reader, atr, protocol);            
+            } 
+            else {
+                bConnected = ConnectToFirstCard(ClassToTest, reader, atr, protocol);            
+            }        
+            
+            return file; // if succesfull, returns open file for AlgTest output
         }
+        
         return null;    // returns 'null' in case of error
     }
-
-    public boolean ConnectToCard(Class ClassToTest, StringBuilder selectedReader, StringBuilder selectedATR, StringBuilder usedProtocol) throws Exception {
+    public boolean ConnectToFirstCard() throws Exception {
+        StringBuilder selectedReader = new StringBuilder();
+        StringBuilder selectedATR = new StringBuilder();
+        StringBuilder usedProtocol = new StringBuilder();
+        return ConnectToFirstCard(null, selectedReader, selectedATR, usedProtocol);
+    }
+    
+    public boolean ConnectToFirstCard(Class ClassToTest, StringBuilder selectedReader, StringBuilder selectedATR, StringBuilder usedProtocol) throws Exception {
         boolean cardFound = false;        
-        // TRY ALL READERS, FIND FIRST SELECTABLE
-        List terminalList = GetReaderList();
-
-        if(terminalList == null){   // if there are no terminals connected
+        
+        if (ClassToTest != null) {
             System.out.println("No terminals found");
             System.out.println("Creating simulator...");
-            if (ClassToTest == null){   // if there is no class to be tested specified, simulator can't install needed applet
-                System.err.println("No class to test given!");
-            }
-            else{       // simulator will install given class
-                MakeSim(ClassToTest);
-            }
+            MakeSim(ClassToTest);
+
             System.out.println("Simulator created.");
             cardFound = true;
         }
-        else{
+        else {
+            // TRY ALL READERS, FIND FIRST SELECTABLE
+           List<CardTerminal> terminalList = GetReaderList();
+           if (terminalList.isEmpty()) { System.out.println("No terminals found"); }
             //List numbers of Card readers        
             for (int i = 0; i < terminalList.size(); i++) {
                 System.out.println(i + " : " + terminalList.get(i));
@@ -626,6 +382,63 @@ public class CardMngr {
         }
         return cardFound;        
     }
+    
+    public boolean ConnectToCard() throws Exception {
+        StringBuilder selectedReader = new StringBuilder();
+        StringBuilder selectedATR = new StringBuilder();
+        StringBuilder usedProtocol = new StringBuilder();
+        reader.setLength(0);
+        atr.setLength(0);
+        protocol.setLength(0);
+        return ConnectToCard(null, m_terminal, selectedReader, selectedATR, usedProtocol);
+    }
+    
+    public boolean ConnectToCard(Class ClassToTest, CardTerminal targetReader, StringBuilder selectedReader, StringBuilder selectedATR, StringBuilder usedProtocol) throws Exception {
+        boolean cardFound = false;        
+        
+        if (ClassToTest != null) {
+            System.out.println("No terminals found");
+            System.out.println("Creating simulator...");
+            MakeSim(ClassToTest);
+
+            System.out.println("Simulator created.");
+            cardFound = true;
+        }
+        else {
+            m_terminal = targetReader;
+            if (m_terminal.isCardPresent()) {
+                for(int maxAttempts = 2; maxAttempts > 0; ) {
+                    maxAttempts--;
+                    m_card = m_terminal.connect("*");
+                    System.out.println("card: " + m_card);
+                    m_channel = m_card.getBasicChannel();
+                    System.out.println("Card Channel: " + m_channel.getChannelNumber());
+
+                    //reset the card
+                    ATR atr = m_card.getATR();
+                    System.out.println(bytesToHex(atr.getBytes()));
+
+                    // SELECT APPLET
+                    ResponseAPDU resp = sendAPDU(selectApplet);
+                    if (resp.getSW() != 0x9000) {
+                        System.out.println("No JCAlgTest applet found.");
+                        UploadApplet();
+                        m_card.disconnect(false);
+                        continue;
+                    } else {
+                        // CARD FOUND
+                        cardFound = true;
+
+                        if (selectedATR != null) { selectedATR.append(bytesToHex(m_card.getATR().getBytes())); }
+                        if (selectedReader != null) { selectedReader.append(m_terminal.toString()); }
+                        if (usedProtocol != null) { usedProtocol.append(m_card.getProtocol()); }
+                        return true;
+                    }
+                }
+            }
+        }
+        return cardFound;        
+    }    
 
     public void DisconnectFromCard() throws Exception {
         if (m_card != null) {
@@ -634,16 +447,36 @@ public class CardMngr {
         }
     }
 
-    public List GetReaderList() {
+    public static List<CardTerminal> GetReaderList() {
         try {
             TerminalFactory factory = TerminalFactory.getDefault();
-            List readersList = factory.terminals().list();
+            List<CardTerminal> readersList = factory.terminals().list();
             return readersList;
         } catch (CardException ex) {
             System.out.println("Exception : " + ex);
-            return null;
+            return new ArrayList<>();
         }
     }
+    
+    public static List<CardTerminal> GetReaderList(boolean bTerminalWithCardsOnly) {
+        List<CardTerminal> readersList = new ArrayList<>();
+        List<CardTerminal> readersListAll = GetReaderList();
+        if (bTerminalWithCardsOnly) {
+            try {
+                for (CardTerminal terminal : readersListAll) {
+                    if (terminal.isCardPresent()) {
+                        readersList.add(terminal);
+                    }
+                }
+                
+                return readersList;
+            } catch (CardException ex) {
+                System.out.println("Exception : " + ex);
+                return null;
+            }
+        }
+        else { return readersListAll; }
+    }    
 
     /**
      * Method which will send bytes to on-card application using smartcardio interface.
@@ -659,11 +492,9 @@ public class CardMngr {
 
         System.out.println(bytesToHex(commandAPDU.getBytes()));
         
-        if(m_channel == null){  // in case there is no real card present -> simulator is running
-            /* BUGBUG: we need to figure out how to support JCardSim in nice way (copy of class files, directory structure...)
-            responseAPDU = simulator.transmitCommand(commandAPDU);
-            */
-            return null;
+        if (m_simulator != null){  // in case simulator is running
+            responseAPDU = m_simulator.transmitCommand(commandAPDU);
+            Thread.sleep(20);   // introduce some delay to simulate card communication speed bit more accuratelly 
         }
         else {                  // in case there is actual card present
             responseAPDU = m_channel.transmit(commandAPDU);
@@ -675,7 +506,7 @@ public class CardMngr {
         if (responseAPDU.getSW1() == (byte) 0x61) {
             CommandAPDU apduToSend = new CommandAPDU((byte) 0x00,
                     (byte) 0xC0, (byte) 0x00, (byte) 0x00,
-                    (int) responseAPDU.getSW1());
+                    responseAPDU.getSW2());
 
             responseAPDU = m_channel.transmit(apduToSend);
             System.out.println(bytesToHex(responseAPDU.getBytes()));
@@ -686,14 +517,14 @@ public class CardMngr {
         return (responseAPDU);
     }
 
-    public String byteToHex(byte data) {
+    public static String byteToHex(byte data) {
         StringBuilder  buf = new StringBuilder ();
         buf.append(toHexChar((data >>> 4) & 0x0F));
         buf.append(toHexChar(data & 0x0F));
         return buf.toString();
     }
 
-    public char toHexChar(int i) {
+    public static char toHexChar(int i) {
         if ((0 <= i) && (i <= 9)) {
             return (char) ('0' + i);
         } else {
@@ -701,14 +532,21 @@ public class CardMngr {
         }
     }
 
-    public String bytesToHex(byte[] data) {
+    public static String bytesToHex(byte[] data) {
+        return bytesToHex(data, true);            
+    }    
+    public static String bytesToHex(byte[] data, boolean bInsertSpace) {
         StringBuilder  buf = new StringBuilder ();
         for (int i = 0; i < data.length; i++) {
             buf.append(byteToHex(data[i]));
-            buf.append(" ");
+            if (i != data.length - 1) { 
+                if (bInsertSpace) { buf.append(" "); }
+            }
         }
         return (buf.toString());
     }
+        
+
     
     // Parse algorithm name and version of JC which introduced it
     //algParts[0] == algorithm name
@@ -734,8 +572,8 @@ public class CardMngr {
     
 	// Prepare test memory apdu
         byte apdu[] = new byte[HEADER_LENGTH + 1];
-        apdu[OFFSET_CLA] = (byte) 0xB0;
-        apdu[OFFSET_INS] = (byte) 0x60;
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
+        apdu[OFFSET_INS] = Consts.INS_CARD_GETVERSION;
         apdu[OFFSET_P1] = 0x00;
         apdu[OFFSET_P2] = 0x00;
         apdu[OFFSET_LC] = 0x01;
@@ -767,7 +605,7 @@ public class CardMngr {
     
 	// Prepare test memory apdu
         byte apdu[] = new byte[HEADER_LENGTH+1];
-        apdu[OFFSET_CLA] = (byte) 0xB0;
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
         apdu[OFFSET_INS] = (byte) 0x73;
         apdu[OFFSET_P1] = 0x00;
         apdu[OFFSET_P2] = 0x00;
@@ -795,29 +633,36 @@ public class CardMngr {
                 int eepromSize = (temp[3] << 8) + (temp[4] & 0xff);
                 int ramResetSize = (temp[5] << 8) + (temp[6] & 0xff);
                 int ramDeselectSize = (temp[7] << 8) + (temp[8] & 0xff);
+                int maxCommitSize = (temp[9] << 8) + (temp[10] & 0xff);
 
 
 
                 String message;
-                message = String.format("\r\n%1s;%d.%d;", GetAlgorithmName(JCSYSTEM_STR[1]), versionMajor, versionMinor); 
+                message = String.format("\r\n%1s;%d.%d;", GetAlgorithmName(SingleModeTest.JCSYSTEM_STR[1]), versionMajor, versionMinor); 
                 System.out.println(message);
                 pFile.write(message.getBytes());
                 pValue.append(message);
-                message = String.format("\r\n%s;%s;", GetAlgorithmName(JCSYSTEM_STR[2]),(bDeletionSupported != 0) ? "yes" : "no"); 
+                message = String.format("\r\n%s;%s;", GetAlgorithmName(SingleModeTest.JCSYSTEM_STR[2]),(bDeletionSupported != 0) ? "yes" : "no"); 
 
                 System.out.println(message);
                 pFile.write(message.getBytes());
                 pValue.append(message);
-                message = String.format("\r\n%s;%s%dB;", GetAlgorithmName(JCSYSTEM_STR[3]),(eepromSize == 32767) ? ">" : "", eepromSize); 
+                message = String.format("\r\n%s;%s%dB;", GetAlgorithmName(SingleModeTest.JCSYSTEM_STR[3]),(eepromSize == 32767) ? ">" : "", eepromSize); 
                 System.out.println(message);
                 pFile.write(message.getBytes());
                 pValue.append(message);
-                message = String.format("\r\n%s;%s%dB;", GetAlgorithmName(JCSYSTEM_STR[4]),(ramResetSize == 32767) ? ">" : "", ramResetSize); 
+                message = String.format("\r\n%s;%s%dB;", GetAlgorithmName(SingleModeTest.JCSYSTEM_STR[4]),(ramResetSize == 32767) ? ">" : "", ramResetSize); 
                 System.out.println(message);
                 pFile.write(message.getBytes());
                 pValue.append(message);
-                message = String.format("\r\n%s;%s%dB;\n", GetAlgorithmName(JCSYSTEM_STR[5]),(ramDeselectSize == 32767) ? ">" : "", ramDeselectSize); 
+                message = String.format("\r\n%s;%s%dB;\n", GetAlgorithmName(SingleModeTest.JCSYSTEM_STR[5]),(ramDeselectSize == 32767) ? ">" : "", ramDeselectSize); 
                 System.out.println(message);
+                message = String.format("\r\n%s;%dB;", GetAlgorithmName(SingleModeTest.JCSYSTEM_STR[5]), maxCommitSize); 
+                System.out.println(message);
+                pFile.write(message.getBytes());
+                pValue.append(message);
+                
+                
                 message += "\r\n";
 
                 pFile.write(message.getBytes());
@@ -832,7 +677,187 @@ public class CardMngr {
                 
 	return status;
     }
+    public static int intCode(short code) {
+        int intCode = code & 0xffff;
+        if (intCode < 0) {
+            assert (intCode >= 0);
+            intCode = -1;
+        }
+        return intCode;
+    }    
+    // Functions for CPLC taken and modified from https://github.com/martinpaljak/GlobalPlatformPro 
+    private static final byte CLA_GP = (byte) 0x80;     
+    private static final byte ISO7816_INS_GET_DATA = (byte) 0xCA;   
+    private static final byte[] SELECT_CM = {(byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00};
+    private static final byte[] FETCH_GP_CPLC_APDU = {CLA_GP, ISO7816_INS_GET_DATA, (byte) 0x9F, (byte) 0x7F, (byte) 0x00};
+    private static final byte[] FETCH_ISO_CPLC_APDU = {ISO7816.CLA_ISO7816, ISO7816_INS_GET_DATA, (byte) 0x9F, (byte) 0x7F, (byte) 0x00};
+    private static final byte[] FETCH_GP_CARDDATA_APDU = {CLA_GP, ISO7816_INS_GET_DATA, (byte) 0x00, (byte) 0x66, (byte) 0x00};
+    public byte[] fetchCPLC() throws Exception {
+        ResponseAPDU resp = sendAPDU(SELECT_CM);
+        // Try CPLC via GP 
+        resp = sendAPDU(FETCH_GP_CPLC_APDU);
+        // If GP CLA fails, try with ISO
+        if (resp.getSW() == intCode(ISO7816.SW_CLA_NOT_SUPPORTED)) {
+            resp = sendAPDU(FETCH_ISO_CPLC_APDU);
+        }
+
+        if (resp.getSW() == intCode(ISO7816.SW_NO_ERROR)) {
+            return resp.getData();
+        } 
+        return null;
+    } 
+    public byte[] fetchCardData() throws Exception {
+        ResponseAPDU resp = sendAPDU(SELECT_CM);
+        // Try CardData via GP 
+        resp = sendAPDU(FETCH_GP_CARDDATA_APDU);
+
+        if (resp.getSW() == intCode(ISO7816.SW_NO_ERROR)) {
+            return resp.getData();
+        } 
+        return null;
+    } 
     
+    public static final class CPLC {
+            public enum Field {
+                    ICFabricator,
+                    ICType,
+                    OperatingSystemID,
+                    OperatingSystemReleaseDate,
+                    OperatingSystemReleaseLevel,
+                    ICFabricationDate,
+                    ICSerialNumber,
+                    ICBatchIdentifier,
+                    ICModuleFabricator,
+                    ICModulePackagingDate,
+                    ICCManufacturer,
+                    ICEmbeddingDate,
+                    ICPrePersonalizer,
+                    ICPrePersonalizationEquipmentDate,
+                    ICPrePersonalizationEquipmentID,
+                    ICPersonalizer,
+                    ICPersonalizationDate,
+                    ICPersonalizationEquipmentID
+            };
+            private HashMap<Field, byte[]> m_values = null;
+
+            public CPLC(byte [] data) {
+                    if (data == null) {
+                            return;
+                    }
+                    if (data.length < 3 || data[2] != 0x2A)
+                            throw new IllegalArgumentException("CPLC must be 0x2A bytes long");
+                    //offset = TLVUtils.skipTag(data, offset, (short)0x9F7F);
+                    short offset = 3;
+                    m_values = new HashMap<>();
+                    m_values.put(Field.ICFabricator, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
+                    m_values.put(Field.ICType, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
+                    m_values.put(Field.OperatingSystemID, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
+                    m_values.put(Field.OperatingSystemReleaseDate, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
+                    m_values.put(Field.OperatingSystemReleaseLevel, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
+                    m_values.put(Field.ICFabricationDate, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
+                    m_values.put(Field.ICSerialNumber, Arrays.copyOfRange(data, offset, offset + 4)); offset += 4;
+                    m_values.put(Field.ICBatchIdentifier, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
+                    m_values.put(Field.ICModuleFabricator, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
+                    m_values.put(Field.ICModulePackagingDate, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
+                    m_values.put(Field.ICCManufacturer, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
+                    m_values.put(Field.ICEmbeddingDate, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
+                    m_values.put(Field.ICPrePersonalizer, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
+                    m_values.put(Field.ICPrePersonalizationEquipmentDate, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
+                    m_values.put(Field.ICPrePersonalizationEquipmentID, Arrays.copyOfRange(data, offset, offset + 4)); offset += 4;
+                    m_values.put(Field.ICPersonalizer, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
+                    m_values.put(Field.ICPersonalizationDate, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
+                    m_values.put(Field.ICPersonalizationEquipmentID, Arrays.copyOfRange(data, offset, offset + 4)); offset += 4;
+            }
+            
+            public HashMap<Field, byte[]> values() {
+                return m_values;
+            }
+    }    
+    
+    public void PrintCPLCInfo(StringBuilder pValue, FileOutputStream pFile, byte[] cplcData) throws IOException {
+        String  message = "";
+        
+        message = "\r\nCPLC; " + bytesToHex(cplcData);
+        System.out.println(message);
+        pFile.write(message.getBytes());
+        pValue.append(message);            
+        
+        
+        CPLC cplc = new CPLC(cplcData);
+
+        HashMap<CPLC.Field, byte[]> cplValues = cplc.values();
+        
+        for (CPLC.Field f : CPLC.Field.values()) {
+            byte[] value = (byte[]) cplValues.get(f);
+            
+            switch (f) {
+                case ICFabricationDate: {
+                    message = "\r\nCPLC." + f.name() + ";" + bytesToHex(value, false) + ";(Y DDD) date in that year";
+                    break;
+                }
+                case ICFabricator: {
+                    String id = bytesToHex(value, false);
+                    String fabricatorName = "unknown";
+                    if (id.equals("3060")) { fabricatorName = "Renesas"; }
+                    if (id.equals("4090")) { fabricatorName = "Infineon"; }
+                    if (id.equals("4180")) { fabricatorName = "Atmel"; }
+                    if (id.equals("4250")) { fabricatorName = "Samsung"; }
+                    if (id.equals("4790")) { fabricatorName = "NXP"; }
+
+                    message = "\r\nCPLC." + f.name() + ";" + bytesToHex(value, false) + ";" + fabricatorName;
+                    break;
+                }
+                default: {
+                    message = "\r\nCPLC." + f.name() + ";" + bytesToHex(value, false);
+                    break;
+                }
+            }
+            System.out.println(message);
+            pFile.write(message.getBytes());
+            pValue.append(message);            
+        }            
+
+        message += "\r\n";
+
+        pFile.write(message.getBytes());
+        pValue.append(message);
+    }
+    public int GetGPInfo(StringBuilder pValue, FileOutputStream pFile) throws Exception {
+        int         status = STAT_OK;
+
+        // CPLC
+        try {
+            byte[] cplcData = fetchCPLC();
+            if (cplcData == null) {
+                System.out.println("Fail to obtain CPLC info");
+            } 
+            else {
+                PrintCPLCInfo(pValue, pFile, cplcData);
+            }
+        }        
+        catch (Exception ex) {
+            System.out.println("Fail to obtain GPInfo - CPLC");
+            pValue.append("error");
+        }
+/*        
+        // CardData
+        try {
+            byte[] cardData = fetchCardData();
+            if (cardData == null) {
+                System.out.println("Fail to obtain cardData info");
+            } 
+            else {
+                PrintGPInfo(pValue, pFile, cardData);
+            }
+        }        
+        catch (Exception ex) {
+            System.out.println("Fail to obtain GPInfo - cardData");
+            pValue.append("error");
+        }
+*/                      
+                
+	return status;
+    }    
     /**
      * Method that will test all algorithms.
      * @param file FileOutputStream object for output data.
@@ -844,69 +869,69 @@ public class CardMngr {
         
         // Class javacardx.crypto.Cipher
         value.setLength(0);
-        if (GetSupportedAndParse(CLASS_CIPHER, CIPHER_STR, value, file, (byte) 0, answ) == STAT_OK) {}
+        if (GetSupportedAndParse(CLASS_CIPHER, SingleModeTest.CIPHER_STR, value, file, (byte) 0, answ) == STAT_OK) {}
         else { String errorMessage = "\nERROR: javacardx.crypto.Cipher fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
         file.flush();
 
         // Class javacard.security.Signature
         value.setLength(0);
-        if (GetSupportedAndParse(CLASS_SIGNATURE, SIGNATURE_STR, value, file, (byte) 0, answ) == STAT_OK) {}
+        if (GetSupportedAndParse(CLASS_SIGNATURE, SingleModeTest.SIGNATURE_STR, value, file, (byte) 0, answ) == STAT_OK) {}
         else { String errorMessage = "\nERROR: javacard.security.Signature fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
         file.flush();
 
         // Class javacard.security.MessageDigest
         value.setLength(0);
-        if (GetSupportedAndParse(CLASS_MESSAGEDIGEST, MESSAGEDIGEST_STR, value, file, (byte) 0, answ) == STAT_OK) {}
+        if (GetSupportedAndParse(CLASS_MESSAGEDIGEST, SingleModeTest.MESSAGEDIGEST_STR, value, file, (byte) 0, answ) == STAT_OK) {}
         else { String errorMessage = "\nERROR: javacard.security.MessageDigest fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
         file.flush();
 
         // Class javacard.security.RandomData
         value.setLength(0);
-        if (GetSupportedAndParse(CLASS_RANDOMDATA, RANDOMDATA_STR, value, file, (byte) 0, answ) == STAT_OK) {}
+        if (GetSupportedAndParse(CLASS_RANDOMDATA, SingleModeTest.RANDOMDATA_STR, value, file, (byte) 0, answ) == STAT_OK) {}
         else { String errorMessage = "\nERROR: javacard.security.RandomData fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
         file.flush();
 
         // Class javacard.security.KeyBuilder
         value.setLength(0);
-        if (GetSupportedAndParse(CLASS_KEYBUILDER, KEYBUILDER_STR, value, file, (byte) 0, answ) == STAT_OK) {}
+        if (GetSupportedAndParse(CLASS_KEYBUILDER, SingleModeTest.KEYBUILDER_STR, value, file, (byte) 0, answ) == STAT_OK) {}
         else { String errorMessage = "\nERROR: javacard.security.KeyBuilder fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
         file.flush();
 
         // Class javacard.security.KeyPair RSA
         value.setLength(0);
-        if (GetSupportedAndParse(CLASS_KEYPAIR_RSA, KEYPAIR_RSA_STR, value, file, CLASS_KEYPAIR_RSA_P2, answ) == STAT_OK) {}
+        if (GetSupportedAndParse(CLASS_KEYPAIR_RSA, SingleModeTest.KEYPAIR_RSA_STR, value, file, Consts.CLASS_KEYPAIR_RSA_P2, answ) == STAT_OK) {}
         else { String errorMessage = "\nERROR: javacard.security.KeyPair RSA fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
         file.flush();
         // Class javacard.security.KeyPair RSA_CRT
         value.setLength(0);
-        if (GetSupportedAndParse(CLASS_KEYPAIR_RSA_CRT, KEYPAIR_RSACRT_STR, value, file, CLASS_KEYPAIR_RSACRT_P2, answ) == STAT_OK) {}
+        if (GetSupportedAndParse(CLASS_KEYPAIR_RSA_CRT, SingleModeTest.KEYPAIR_RSACRT_STR, value, file, Consts.CLASS_KEYPAIR_RSACRT_P2, answ) == STAT_OK) {}
         else { String errorMessage = "\nERROR: javacard.security.KeyPair RSA_CRT fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
         file.flush();
         // Class javacard.security.KeyPair DSA
         value.setLength(0);
-        if (GetSupportedAndParse(CLASS_KEYPAIR_DSA, KEYPAIR_DSA_STR, value, file, CLASS_KEYPAIR_DSA_P2, answ) == STAT_OK) {}
+        if (GetSupportedAndParse(CLASS_KEYPAIR_DSA, SingleModeTest.KEYPAIR_DSA_STR, value, file, Consts.CLASS_KEYPAIR_DSA_P2, answ) == STAT_OK) {}
         else { String errorMessage = "\nERROR: javacard.security.KeyPair DSA fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
         file.flush();
         // Class javacard.security.KeyPair EC_F2M
         value.setLength(0);
-        if (GetSupportedAndParse(CLASS_KEYPAIR_EC_F2M, KEYPAIR_EC_F2M_STR, value, file,  CLASS_KEYPAIR_EC_F2M_P2, answ) == STAT_OK) {}
+        if (GetSupportedAndParse(CLASS_KEYPAIR_EC_F2M, SingleModeTest.KEYPAIR_EC_F2M_STR, value, file,  Consts.CLASS_KEYPAIR_EC_F2M_P2, answ) == STAT_OK) {}
         else { String errorMessage = "\nERROR: javacard.security.KeyPair EC_F2M fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
         file.flush();
         // Class javacard.security.KeyPair EC_FP
         value.setLength(0);
-        if (GetSupportedAndParse(CLASS_KEYPAIR_EC_FP, KEYPAIR_EC_FP_STR, value, file, CLASS_KEYPAIR_EC_FP_P2, answ) == STAT_OK) {}
+        if (GetSupportedAndParse(CLASS_KEYPAIR_EC_FP, SingleModeTest.KEYPAIR_EC_FP_STR, value, file, Consts.CLASS_KEYPAIR_EC_FP_P2, answ) == STAT_OK) {}
         else { String errorMessage = "\nERROR: javacard.security.KeyPair EC_FP fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
         file.flush();
 
         // Class javacard.security.KeyAgreement
         value.setLength(0);
-        if (GetSupportedAndParse(CLASS_KEYAGREEMENT, KEYAGREEMENT_STR, value, file, (byte) 0, answ) == STAT_OK) {}
+        if (GetSupportedAndParse(CLASS_KEYAGREEMENT, SingleModeTest.KEYAGREEMENT_STR, value, file, (byte) 0, answ) == STAT_OK) {}
         else { String errorMessage = "\nERROR: javacard.security.KeyAgreement fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
         file.flush();
 
         // Class javacard.security.Checksum
         value.setLength(0);
-        if (GetSupportedAndParse(CLASS_CHECKSUM, CHECKSUM_STR, value, file, (byte) 0, answ) == STAT_OK) {}
+        if (GetSupportedAndParse(CLASS_CHECKSUM, SingleModeTest.CHECKSUM_STR, value, file, (byte) 0, answ) == STAT_OK) {}
         else { String errorMessage = "\nERROR: javacard.security.Checksum fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
         file.flush();
     }
@@ -923,75 +948,75 @@ public class CardMngr {
         /* Class 'javacardx.crypto.Cipher'. */
         else if (Arrays.asList(args).contains(TEST_CLASS_CIPHER)){
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_CIPHER, CIPHER_STR, value, file, (byte) 0, FORCE_TEST) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_CIPHER, SingleModeTest.CIPHER_STR, value, file, (byte) 0, FORCE_TEST) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacardx.crypto.Cipher fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
         }
         /* Class 'javacard.security.Signature'. */
         else if (Arrays.asList(args).contains(TEST_CLASS_SIGNATURE)){
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_SIGNATURE, SIGNATURE_STR, value, file, (byte) 0, FORCE_TEST) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_SIGNATURE, SingleModeTest.SIGNATURE_STR, value, file, (byte) 0, FORCE_TEST) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.Signature fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
         }
         /* Class 'javacard.security.MessageDigest'. */
         else if (Arrays.asList(args).contains(TEST_CLASS_MESSAGEDIGEST)){
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_MESSAGEDIGEST, MESSAGEDIGEST_STR, value, file, (byte) 0, FORCE_TEST) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_MESSAGEDIGEST, SingleModeTest.MESSAGEDIGEST_STR, value, file, (byte) 0, FORCE_TEST) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.MessageDigest fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
         }
         /* Class 'javacard.security.RandomData'. */
         else if (Arrays.asList(args).contains(TEST_CLASS_RANDOMDATA)){
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_RANDOMDATA, RANDOMDATA_STR, value, file, (byte) 0, FORCE_TEST) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_RANDOMDATA, SingleModeTest.RANDOMDATA_STR, value, file, (byte) 0, FORCE_TEST) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.RandomData fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
         }
         /* Class 'javacard.security.KeyBuilder'. */
         else if (Arrays.asList(args).contains(TEST_CLASS_KEYBUILDER)){
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_KEYBUILDER, KEYBUILDER_STR, value, file, (byte) 0, FORCE_TEST) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_KEYBUILDER, SingleModeTest.KEYBUILDER_STR, value, file, (byte) 0, FORCE_TEST) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.KeyBuilder fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
         }
         /* Class 'javacard.security.KeyPair' RSA. */
         else if (Arrays.asList(args).contains(TEST_CLASS_KEYPAIR_ALG_RSA)){
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_KEYPAIR_RSA, KEYPAIR_RSA_STR, value, file, CLASS_KEYPAIR_RSA_P2, FORCE_TEST) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_KEYPAIR_RSA, SingleModeTest.KEYPAIR_RSA_STR, value, file, Consts.CLASS_KEYPAIR_RSA_P2, FORCE_TEST) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.KeyPair RSA fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
         }
         /* Class 'javacard.security.KeyPair' RSA CRT. */
         else if (Arrays.asList(args).contains(TEST_CLASS_KEYPAIR_ALG_RSA_CRT)){
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_KEYPAIR_RSA_CRT, KEYPAIR_RSACRT_STR, value, file, CLASS_KEYPAIR_RSACRT_P2, FORCE_TEST) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_KEYPAIR_RSA_CRT, SingleModeTest.KEYPAIR_RSACRT_STR, value, file, Consts.CLASS_KEYPAIR_RSACRT_P2, FORCE_TEST) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.KeyPair RSA_CRT fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
         }
         /* Class 'javacard.security.KeyPair' DSA. */
         else if (Arrays.asList(args).contains(TEST_CLASS_KEYPAIR_ALG_DSA)){
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_KEYPAIR_DSA, KEYPAIR_DSA_STR, value, file, CLASS_KEYPAIR_DSA_P2, FORCE_TEST) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_KEYPAIR_DSA, SingleModeTest.KEYPAIR_DSA_STR, value, file, Consts.CLASS_KEYPAIR_DSA_P2, FORCE_TEST) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.KeyPair DSA fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
         }
         /* Class 'javacard.security.KeyPair' EC_F2M. */
         else if (Arrays.asList(args).contains(TEST_CLASS_KEYPAIR_ALG_EC_F2M)){
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_KEYPAIR_EC_F2M, KEYPAIR_EC_F2M_STR, value, file,  CLASS_KEYPAIR_EC_F2M_P2, FORCE_TEST) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_KEYPAIR_EC_F2M, SingleModeTest.KEYPAIR_EC_F2M_STR, value, file,  Consts.CLASS_KEYPAIR_EC_F2M_P2, FORCE_TEST) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.KeyPair EC_F2M fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
         }
         /* Class 'javacard.security.KeyPair' EC_FP. */
         else if (Arrays.asList(args).contains(TEST_CLASS_KEYPAIR_ALG_EC_FP)){
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_KEYPAIR_EC_FP, KEYPAIR_EC_FP_STR, value, file, CLASS_KEYPAIR_EC_FP_P2, FORCE_TEST) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_KEYPAIR_EC_FP, SingleModeTest.KEYPAIR_EC_FP_STR, value, file, Consts.CLASS_KEYPAIR_EC_FP_P2, FORCE_TEST) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.KeyPair EC_FP fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
         }
         else {
-            PrintHelp();
+            CardMngr.PrintHelp();
         }
     }
     
@@ -1019,73 +1044,73 @@ public class CardMngr {
         else{
             // Class javacardx.crypto.Cipher
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_CIPHER, CIPHER_STR, value, file, (byte) 0, answ) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_CIPHER, SingleModeTest.CIPHER_STR, value, file, (byte) 0, answ) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacardx.crypto.Cipher fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
 
             // Class javacard.security.Signature
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_SIGNATURE, SIGNATURE_STR, value, file, (byte) 0, answ) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_SIGNATURE, SingleModeTest.SIGNATURE_STR, value, file, (byte) 0, answ) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.Signature fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
 
             // Class javacard.security.MessageDigest
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_MESSAGEDIGEST, MESSAGEDIGEST_STR, value, file, (byte) 0, answ) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_MESSAGEDIGEST, SingleModeTest.MESSAGEDIGEST_STR, value, file, (byte) 0, answ) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.MessageDigest fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
 
             // Class javacard.security.RandomData
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_RANDOMDATA, RANDOMDATA_STR, value, file, (byte) 0, answ) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_RANDOMDATA, SingleModeTest.RANDOMDATA_STR, value, file, (byte) 0, answ) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.RandomData fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
 
             // Class javacard.security.KeyBuilder
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_KEYBUILDER, KEYBUILDER_STR, value, file, (byte) 0, answ) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_KEYBUILDER, SingleModeTest.KEYBUILDER_STR, value, file, (byte) 0, answ) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.KeyBuilder fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
 
             // Class javacard.security.KeyPair RSA
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_KEYPAIR_RSA, KEYPAIR_RSA_STR, value, file, CLASS_KEYPAIR_RSA_P2, answ) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_KEYPAIR_RSA, SingleModeTest.KEYPAIR_RSA_STR, value, file, Consts.CLASS_KEYPAIR_RSA_P2, answ) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.KeyPair RSA fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
 
             // Class javacard.security.KeyPair RSA_CRT
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_KEYPAIR_RSA_CRT, KEYPAIR_RSACRT_STR, value, file, CLASS_KEYPAIR_RSACRT_P2, answ) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_KEYPAIR_RSA_CRT, SingleModeTest.KEYPAIR_RSACRT_STR, value, file, Consts.CLASS_KEYPAIR_RSACRT_P2, answ) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.KeyPair RSA_CRT fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
 
             // Class javacard.security.KeyPair DSA
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_KEYPAIR_DSA, KEYPAIR_DSA_STR, value, file, CLASS_KEYPAIR_DSA_P2, answ) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_KEYPAIR_DSA, SingleModeTest.KEYPAIR_DSA_STR, value, file, Consts.CLASS_KEYPAIR_DSA_P2, answ) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.KeyPair DSA fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
 
             // Class javacard.security.KeyPair EC_F2M
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_KEYPAIR_EC_F2M, KEYPAIR_EC_F2M_STR, value, file,  CLASS_KEYPAIR_EC_F2M_P2, answ) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_KEYPAIR_EC_F2M, SingleModeTest.KEYPAIR_EC_F2M_STR, value, file,  Consts.CLASS_KEYPAIR_EC_F2M_P2, answ) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.KeyPair EC_F2M fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
 
             // Class javacard.security.KeyPair EC_FP
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_KEYPAIR_EC_FP, KEYPAIR_EC_FP_STR, value, file, CLASS_KEYPAIR_EC_FP_P2, answ) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_KEYPAIR_EC_FP, SingleModeTest.KEYPAIR_EC_FP_STR, value, file, Consts.CLASS_KEYPAIR_EC_FP_P2, answ) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.KeyPair EC_FP fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
 
             // Class javacard.security.KeyAgreement
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_KEYAGREEMENT, KEYAGREEMENT_STR, value, file, (byte) 0, answ) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_KEYAGREEMENT, SingleModeTest.KEYAGREEMENT_STR, value, file, (byte) 0, answ) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.KeyAgreement fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
 
             // Class javacard.security.Checksum
             value.setLength(0);
-            if (GetSupportedAndParse(CLASS_CHECKSUM, CHECKSUM_STR, value, file, (byte) 0, answ) == STAT_OK) {}
+            if (GetSupportedAndParse(CLASS_CHECKSUM, SingleModeTest.CHECKSUM_STR, value, file, (byte) 0, answ) == STAT_OK) {}
             else { String errorMessage = "\nERROR: javacard.security.Checksum fail\r\n"; System.out.println(errorMessage); file.write(errorMessage.getBytes()); }
             file.flush();
             
@@ -1098,15 +1123,15 @@ public class CardMngr {
             file.flush();
         }
         
-        file.close();
+        if (file != null) file.close();
     }
     
     public int TestVariableRSAPublicExponentSupport(StringBuilder pValue, FileOutputStream pFile, byte algPartP2) throws Exception {
         int         status = STAT_OK;
         
         byte apdu[] = new byte[HEADER_LENGTH];
-        apdu[OFFSET_CLA] = (byte) 0xB0;
-        apdu[OFFSET_INS] = (byte) 0x72;
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
+        apdu[OFFSET_INS] = Consts.INS_CARD_TESTRSAEXPONENTSET;
         apdu[OFFSET_P1] = 0x00;
         apdu[OFFSET_P2] = 0x00;
         apdu[OFFSET_LC] = 0x00;
@@ -1201,7 +1226,7 @@ public class CardMngr {
                 elapsedCard = -System.currentTimeMillis();
 
                 byte apdu[] = new byte[HEADER_LENGTH];
-                apdu[OFFSET_CLA] = (byte) 0xB0;
+                apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
                 apdu[OFFSET_INS] = (byte) 0x70;
                 apdu[OFFSET_P1] = algClass;
                 apdu[OFFSET_P2] = p2;
@@ -1209,7 +1234,7 @@ public class CardMngr {
 
                 ResponseAPDU resp = sendAPDU(apdu);
                 if (resp.getSW() != 0x9000) {
-                    String message = "Fail to obtain response for GetSupportedAndParse\r\n";
+                    String message = "Fail to obtain response for GetSupportedAndParse(" + algNames[0] + ") with 0x" + Integer.toHexString(resp.getSW());
                     System.out.println(message);
                     pFile.write(message.getBytes());
                 } else {
@@ -1304,34 +1329,361 @@ public class CardMngr {
         return status;
     }
     
+    public boolean resetApplet(byte cla, byte ins) {
+        try {
+            System.out.println("\nFree unused card objects...\n");
+            byte apdu[] = {cla,ins,0,0};
+            ResponseAPDU resp = sendAPDU(apdu);
+            if (resp.getSW() != 0x9000) {
+                return false;
+            }
+            return true;
+        }
+        catch(Exception e) {
+            return false;
+        }
+    }    
+    
+    public double PerfTestCommand(byte cla, byte ins, TestSettings testSet, byte resetIns) throws Exception {
+        long elapsedCard;
+        byte apdu[] = new byte[HEADER_LENGTH + TestSettings.TEST_SETTINGS_LENGTH + ((testSet.inData == null) ? 0 : testSet.inData.length)];
+        apdu[OFFSET_CLA] = cla;
+        apdu[OFFSET_INS] = ins;
+        apdu[OFFSET_P1] = testSet.P1;
+        apdu[OFFSET_P2] = testSet.P2;
+        apdu[OFFSET_LC] = (byte) (apdu.length - HEADER_LENGTH);
+        testSet.serializeToApduBuff(apdu, ISO7816.OFFSET_CDATA);
+
+        if (testSet.inData != null) {
+            System.arraycopy(testSet.inData, 0, apdu, OFFSET_DATA + TestSettings.TEST_SETTINGS_LENGTH, (short) testSet.inData.length);
+        }
+
+        elapsedCard = -System.currentTimeMillis();
+        ResponseAPDU resp = sendAPDU(apdu);
+        if (resp.getSW() != 0x9000) {           
+            boolean succes = resetApplet(cla, resetIns);
+            if (succes) {
+                elapsedCard = -System.currentTimeMillis();
+                resp = sendAPDU(apdu);
+                elapsedCard += System.currentTimeMillis();
+                if (resp.getNr() != 0) {
+                    byte data[] = resp.getData();          
+                    if (data[0] != SUCCESS) throw new CardCommunicationException(data[0]);
+                } 
+                else {
+                    throw new CardCommunicationException(resp.getSW());
+                }
+            }
+            else
+            {
+                System.out.println("Reset applet didn't work, speed of algorithm couldn't be mesured");
+                throw new CardCommunicationException(CANT_BE_MEASURED);
+            }
+        }
+        else {
+            elapsedCard += System.currentTimeMillis();
+            if (resp.getNr()!=0) {
+                byte data[];
+                data = resp.getData();          
+                if(data[0] != SUCCESS) throw new CardCommunicationException(data[0]);
+            }            
+            else {
+                throw new CardCommunicationException(resp.getSW());
+            }
+            
+        }
+        return (double) elapsedCard ;
+    }    
+    
+    public double BasicTest(byte algClass, byte alg, byte p1, byte p2, byte[] cdata, byte dataLength, byte resetIns) throws Exception
+    {
+        long elapsedCard;
+        byte apdu[] = new byte[HEADER_LENGTH + dataLength];
+        apdu[OFFSET_CLA] = algClass;
+        apdu[OFFSET_INS] = alg;
+        apdu[OFFSET_P1] = p1;
+        apdu[OFFSET_P2] = p2;
+        apdu[OFFSET_LC] = dataLength;
+        System.arraycopy(cdata, 0, apdu, OFFSET_DATA, dataLength);
+        elapsedCard = -System.currentTimeMillis();
+        ResponseAPDU resp = sendAPDU(apdu);
+        if (resp.getSW() != 0x9000) 
+        {           
+            boolean succes = resetApplet(algClass, resetIns);
+            if (succes)
+            {
+                elapsedCard = -System.currentTimeMillis();
+                resp = sendAPDU(apdu);
+                elapsedCard += System.currentTimeMillis();
+                if (resp.getNr()!=0)
+                {
+                    byte data[];
+                    data = resp.getData();          
+                    if(data[0] != SUCCESS) throw new CardCommunicationException(data[0]);
+                }                
+            }
+            else
+            {
+                System.out.println("Reset applet didn't work, speed of algorithm couldn't be mesured");
+                throw new CardCommunicationException(CANT_BE_MEASURED);
+            }
+        }
+        else
+        {
+            elapsedCard += System.currentTimeMillis();
+            if (resp.getNr()!=0)
+            {
+                byte data[];
+                data = resp.getData();          
+                if(data[0] != SUCCESS) throw new CardCommunicationException(data[0]);
+            }            
+        }
+        return (double) elapsedCard ;
+    }       
+    
+    
     /**
      * Sets up simulator using jCardSim API.
      * @param m_applet Class of on-card AlgTest to be installed in simulator.
      */
-    public void MakeSim(Class m_applet){
-    /* BUGBUG: we need to figure out how to support JCardSim in nice way (copy of class files, directory structure...)
+    public void MakeSim(Class applet){
+    ///* BUGBUG: we need to figure out how to support JCardSim in nice way (copy of class files, directory structure...)
         System.setProperty("com.licel.jcardsim.terminal.type", "2");
         CAD cad = new CAD(System.getProperties());
-        simulator = (JavaxSmartCardInterface) cad.getCardInterface();
+        m_simulator = (JavaxSmartCardInterface) cad.getCardInterface();
         AID appletAID = new AID(selectApplet, (short)0, (byte) selectApplet.length);
         // installs applet
-        simulator.installApplet(appletAID, m_applet);
+        m_simulator.installApplet(appletAID, applet);
         // selects applet
-        simulator.selectApplet(appletAID);
-    */
+        m_simulator.selectApplet(appletAID);
     }
-    public void PrintHelp () throws FileNotFoundException, IOException{
-        System.out.println(helpString);
-        
-        System.out.println("Do you want to print supported parameters for AlgTest to separate file? 1 = YES, 0 = NO/r/n");
-        Scanner sc = new Scanner(System.in);
-        int answ = sc.nextInt();
-        if (answ == 1){
-            FileOutputStream file = new FileOutputStream("AlgTest_supported_parameters.txt");
-            file.write(paramList.getBytes());
-            System.out.println("List of supported parameters for AlgTest created in project folder.");
-            
-            file.close();
+
+    
+    public static byte[] hexStringToByteArray(String s) {
+        String sanitized = s.replace(" ", "");
+        byte[] b = new byte[sanitized.length() / 2];
+        for (int i = 0; i < b.length; i++) {
+            int index = i * 2;
+            int v = Integer.parseInt(sanitized.substring(index, index + 2), 16);
+            b[i] = (byte) v;
         }
+        return b;
     }
+ 
+    public static byte[] valuesStringToByteArray(String s) {
+        String sanitized = s.replace(" ", "");
+        byte[] b = new byte[sanitized.length() / 2];
+        for (int i = 0; i < b.length; i++) {
+            int index = i * 2;
+            int v = Integer.parseInt(sanitized.substring(index, index + 2), 16);
+            b[i] = (byte) v;
+        }
+        return b;
+    }    
+    
+    public int RestartCardWithUpload(int seriousProblemCounter, FileOutputStream file) throws Exception {
+        seriousProblemCounter++;
+        if (seriousProblemCounter >= MAX_SERIOUS_PROBLEMS_IN_ROW) {
+            throw new Exception("Too many problems with card, stopping.");
+        }
+
+        try {
+            Thread.sleep(3000);
+            // Some problem, upload applet again
+            UploadApplet();
+            file.write("# Applet uploaded\n\n".toString().getBytes());
+
+            Thread.sleep(3000);
+
+            ConnectToCard(null, m_terminal, null, null, null);
+        }
+        catch (Exception ex) {
+            System.out.println(getTerminalName() + " : Failed with " + ex.getMessage());
+            seriousProblemCounter = RestartCardWithUpload(seriousProblemCounter, file);
+        }
+        return seriousProblemCounter;
+    }
+        
+    public void UploadApplet() throws Exception {
+        System.out.println("Uploading applet to card on terminal " + getTerminalName() + "...");
+        String cardAtr = getATR().replace(" ", "_");
+        
+        //Check if folder !card_uploaders is correctly set
+        File fileCardUploadersFolder = new File(CardMngr.cardUploadersFolder);
+        if(!fileCardUploadersFolder.exists()) {
+            throw new Exception("Cannot find !card_uploaders folder. Folder " + CardMngr.cardUploadersFolder + " does not exist.");
+        }
+
+        //Set path to run bat file
+        String batFileName;
+        if(CardMngr.cardUploadersFolder.endsWith(File.separator)) batFileName = CardMngr.cardUploadersFolder + "upload.bat";
+        else batFileName = CardMngr.cardUploadersFolder + File.separator + "upload.bat";
+        
+        //Run bat file with arguments cardAtr and readerName
+        String[] commands = new String[]{batFileName, cardAtr, getTerminalName()};
+        ProcessBuilder pb = new ProcessBuilder(commands);
+        pb.directory(fileCardUploadersFolder);
+        pb.redirectErrorStream(true);
+        pb.redirectOutput(Redirect.appendTo(new File("upload_log_" + getTerminalName() + ".txt")));
+
+        Process p = pb.start();
+        p.waitFor();   
+        //Check if process ended successful
+        if(p.exitValue()!=0) {
+            System.out.println("Uploading applet: Error");
+            throw new Exception("Cannot upload applet. Process of file " + batFileName + " ended with " + p.exitValue());
+        }
+        else {
+            System.out.println("Uploading applet: Done");
+        }                
+    } 
+    
+    public int GenerateAndGetKeys(String fileName, int numRepeats, int resetFrequency, boolean uploadBeforeStart, short bitLength, boolean useCrt) throws Exception {
+        FileOutputStream file = new FileOutputStream(fileName);
+        int ret = GenerateAndGetKeys(file, numRepeats, resetFrequency, uploadBeforeStart, bitLength, useCrt);   
+        file.close();  
+        return ret;
+    }
+    
+    public TestSettings prepareKeyHarvestSettings(short keyClass,short keyType, short keyLength) {
+        TestSettings    testSet = new TestSettings();
+        testSet.classType = Consts.CLASS_KEYBUILDER;
+        testSet.algorithmSpecification = Consts.UNUSED;
+        testSet.keyType = keyType;                                  // e.g., KeyBuilder.TYPE_AES
+        testSet.keyLength = keyLength;                              // e.g., KeyBuilder.LENGTH_AES_128
+        testSet.keyClass = keyClass;                                // e.g., KeyPair.ALG_RSA_CRT
+        testSet.algorithmMethod = Consts.UNUSED;                  
+        testSet.dataLength1 = Consts.TEST_DATA_LENGTH;                     
+        testSet.dataLength2 = Consts.UNUSED;                        
+        testSet.initMode = Consts.UNUSED;                               
+        testSet.numRepeatSubOperation = 1;      
+        testSet.numRepeatWholeMeasurement = 0;                  
+        return testSet;
+    }
+    
+    public byte[] prepareApduForKeyHarvest(TestSettings setting) {
+        byte apdu[] = new byte[HEADER_LENGTH + TestSettings.TEST_SETTINGS_LENGTH + ((setting.inData == null) ? 0 : setting.inData.length)];
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
+        apdu[OFFSET_INS] = Consts.INS_CARD_GETRSAKEY;
+        apdu[OFFSET_P1] = setting.P1;
+        apdu[OFFSET_P2] = setting.P2;
+        apdu[OFFSET_LC] = (byte) (apdu.length - HEADER_LENGTH);
+        setting.serializeToApduBuff(apdu, ISO7816.OFFSET_CDATA);
+        return apdu;
+    }
+      
+    public int GenerateAndGetKeys(FileOutputStream file, int numRepeats, int resetFrequency, boolean uploadBeforeStart, short bitLength, boolean useCrt) throws Exception { 
+        String message;
+        int numKeysGenerated = 0;                  
+        StringBuilder key = new StringBuilder();
+        boolean bResetCard = false;
+        if (numRepeats == -1) numRepeats = 300000;
+        if (uploadBeforeStart) {
+            UploadApplet();
+            ConnectToCard(null, m_terminal, null, null, null);
+        }
+        
+        int seriousProblemCounter = 0;
+        
+        short keyClass = JCConsts.KeyPair_ALG_RSA;
+        if (useCrt) keyClass = JCConsts.KeyPair_ALG_RSA_CRT;
+        TestSettings publicKeySetting = this.prepareKeyHarvestSettings(keyClass, JCConsts.KeyBuilder_ALG_TYPE_RSA_PUBLIC, bitLength);
+        byte apduPublic[] = this.prepareApduForKeyHarvest(publicKeySetting);
+        
+        TestSettings privateKeySetting = this.prepareKeyHarvestSettings(keyClass, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, bitLength);
+        byte apduPrivate[] = this.prepareApduForKeyHarvest(privateKeySetting);
+        
+        int errors = 0;
+        while(numKeysGenerated < numRepeats) {
+            try {
+                key.setLength(0);
+                if ((resetFrequency > 0) && (numKeysGenerated % resetFrequency == 0)) { bResetCard = true; }
+
+                // Reset card if required
+                if (bResetCard) {
+                    System.out.println(getTerminalName() + " : Reseting card...");
+                    key.append("# Card reseted\n\n");
+                    file.write(key.toString().getBytes());
+
+                    m_card.disconnect(true);
+                    ConnectToCard(null, m_terminal, null, null, null);
+                    bResetCard = false;
+                }
+
+                // Prepare for new key generation
+                long elapsedCard = - System.currentTimeMillis();
+                
+                ResponseAPDU resp = sendAPDU(apduPublic);
+                elapsedCard += System.currentTimeMillis();
+
+                if (resp.getSW() != 0x9000) {
+                    System.out.println(getTerminalName() + " : Failed to generate new key with " + Integer.toHexString(resp.getSW()));
+                    // Some problem, upload applet again
+                    UploadApplet();
+                    errors++;
+                    if(errors>=2) throw new Exception("Cannot upload applet.");
+
+                    key.append("# Applet uploaded\n\n");
+                    file.write(key.toString().getBytes());
+
+                    ConnectToCard(null, m_terminal, null, null, null);
+                    continue;
+                }
+                else {
+                    // We got public key out
+                    byte pubKey[] = resp.getData();
+                    key.append("PUBL: ");
+                    key.append(bytesToHex(pubKey));
+                    key.append("\n");
+                    errors = 0;
+                }
+
+
+                // Ask for private key
+                ResponseAPDU respPrivate = sendAPDU(apduPrivate);
+                if (respPrivate.getSW() != 0x9000) {
+                    System.out.println(getTerminalName() + " : Failed to obtain private key with " + Integer.toHexString(respPrivate.getSW()));
+                    continue;
+                }  
+                else {
+                    // We got private key out
+                    byte privKey[] = respPrivate.getData();
+                    key.append("PRIV: ");
+                    key.append(bytesToHex(privKey));
+                    key.append("\n");
+                }
+
+
+                String elTimeStr;
+                // OUTPUT REQUIRED TIME WHEN PARTITIONED CHECK WAS PERFORMED (NOTMULTIPLE ALGORITHMS IN SINGLE RUN)
+                elTimeStr = String.valueOf((double) elapsedCard / (float) CLOCKS_PER_SEC);
+                key.append("# ");
+                key.append(numKeysGenerated + 1);
+                key.append(":");
+                key.append(elTimeStr);
+                key.append("\n\n");
+
+                // Save key to file
+                file.write(key.toString().getBytes());
+
+
+                numKeysGenerated++; 
+
+                message = getTerminalName() + " | " + numKeysGenerated + " : " ;
+                message += elTimeStr;
+                System.out.println(message);
+
+                file.flush();
+                
+                seriousProblemCounter = 0;   // problems were solved now
+            }
+            catch (Exception ex) {
+                System.out.println(getTerminalName() + " : Failed with " + ex.getMessage());
+                seriousProblemCounter = RestartCardWithUpload(seriousProblemCounter, file);
+            }
+        }   
+        return numKeysGenerated;
+    }    
+   
+    
 }

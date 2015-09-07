@@ -32,7 +32,13 @@
 package algtestprocess;
 
 import algtestjclient.CardMngr;
+import algtestjclient.SingleModeTest;
 import java.io.*;
+import static java.lang.System.out;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,7 +52,15 @@ import java.util.StringTokenizer;
 public class AlgTestProcess {
     /* Arguments for AlgTestProcess. */
     public static final String GENERATE_HTML = "HTML";
+    public static final String GENERATE_JCINFO = "JCINFO";
+    public static final String GENERATE_SORTABLE = "SORTABLE";
     public static final String COMPARE_CARDS = "COMPARE";
+    public static final String GENERATE_JCCONSTANTS = "JCCONSTS";
+    public static final String GENERATE_GRAPHS = "GRAPHS";
+    public static final String GENERATE_GRAPHS_ONEPAGE = "GRAPHSPAGE";
+    
+    
+    
     
     // if one card results are generated
     public static final String[] JAVA_CARD_VERSION = {"2.1.2", "2.2.1", "2.2.2"};
@@ -88,6 +102,31 @@ public class AlgTestProcess {
                     else if (args[1].equals(COMPARE_CARDS)){
                         System.out.println("Comparing cards.");
                         compareSupportedAlgs(args[0]);}
+                    else if (args[1].equals(GENERATE_JCCONSTANTS)){
+                        System.out.println("Generating file with JC constants.");
+                        generateJCConstantsFile(args[0]);}
+                    else if (args[1].equals(GENERATE_SORTABLE)){
+                        System.out.println("Generating sortable table from all files in directory.");
+                        JCinfohtml.runSortable(args[0]);}
+                    else if (args[1].equals(GENERATE_GRAPHS)){
+                        System.out.println("Generating graphs from input file to new directory.");
+                        JCinfohtml.runGraphs(args[0]);}
+                    else if (args[1].equals(GENERATE_GRAPHS_ONEPAGE)){
+                        System.out.println("Generating gprahs page from input file.");
+                        if (args.length > 2){ 
+                            generateGraphsPages(args[0]);
+                        }else{
+                            JCinfohtml.runGraphsOnePage(args[0]);
+                        }
+                        JCinfohtml.runGraphsOnePage(args[0]);}
+                    else if (args[1].equals(GENERATE_JCINFO)){
+                        System.out.println("Generating JC performance testing to HTML.");
+                        if (args.length > 2){ 
+                            generateJCInfoHTMLTable(args[0]);
+                        }else{
+                            JCinfohtml.run(args[0],args[1]);
+                        }
+                    }
                     else {System.err.println("Incorrect arguments!");}
                 }
                 else{                
@@ -106,7 +145,7 @@ public class AlgTestProcess {
                 }
             }
             
-            generateGPShellScripts();
+            //generateGPShellScripts();
         } 
         catch (IOException ex) {
             System.out.println("IOException : " + ex);
@@ -201,14 +240,22 @@ public class AlgTestProcess {
                     + "</head>\r\n"
                     + "<body>\r\n\r\n"; 
 
-            String cardList = "<b>Tested cards abbreviations:</b><br>\r\n";
+            String cardList = "<b id=\"LIST\">Tested cards abbreviations:</b><br>\r\n";
             for (int i = 0; i < filesArray.length; i++) {
                 String cardIdentification = filesArray[i];
                 cardIdentification = cardIdentification.replace('_', ' ');
                 cardIdentification = cardIdentification.replace(".csv", "");
                 cardIdentification = cardIdentification.replace("3B", ", ATR=3B");
                 cardIdentification = cardIdentification.replace("3b", ", ATR=3b");
-                cardList += "<b>c" + i + "</b>	" + cardIdentification + "<br>\r\n";
+                cardList += "<b>c" + i + "</b>	" + cardIdentification + ",";
+                String cardName = "";
+                if (filesSupport[i].containsKey("Card name")) { 
+                    cardName = (String) filesSupport[i].get("Card name");
+                    cardName = cardName.replace(" ", ""); cardName = cardName.replace("_", ""); 
+                    cardList += "&nbsp;<a target=\"_blank\" href=\".fixData/" + cardName + ".html\">PERFORMANCE</a>,&nbsp;";
+                    cardList += "<a target=\"_blank\" href=\".variableData/" + cardName + ".html\">GRAPHS</a>";
+                }
+                cardList += "<br>\r\n";
             }
             cardList += "<br>\r\n"; 
             
@@ -266,7 +313,7 @@ public class AlgTestProcess {
             //
             // HTML TABLE BODY
             //
-            for (String[] classStr : CardMngr.ALL_CLASSES_STR) {
+            for (String[] classStr : SingleModeTest.ALL_CLASSES_STR) {
                 formatTableAlgorithm_HTML(filesArray, classStr, filesSupport, file);
             }
             
@@ -278,7 +325,7 @@ public class AlgTestProcess {
             file.write(footer.getBytes());
 
             file.flush();
-            if (file != null) file.close();            
+            file.close();            
         }
         else {
             System.out.println("directory is empty");
@@ -489,4 +536,138 @@ public class AlgTestProcess {
         // Twin_GCX4_72K_PK
         CardProfiles.generateScript(capFileName + "jc2.2.1.cap", packageAID, appletAID, "Twin_GCX4_72K_PK", "mode_201\r\ngemXpressoPro", "-AID A000000018434D00", "-keyind 0 -keyver 0 -key 47454d5850524553534f53414d504c45");
     }
+    
+        
+    private static void printMembers(Member[] mbrs, String s, String longClassName, String shortClassName) throws IllegalArgumentException, IllegalAccessException {
+        int allignSpaceLength = 80;
+        int methodIndex = 0;
+        out.format("    // %s %s:\n", longClassName, s);
+	for (Member mbr : mbrs) {
+	    if (mbr instanceof Field) {
+                Field value = (Field) mbr;
+                value.setAccessible(true);                
+                
+                String result = value.toGenericString();
+                result = result.replace(longClassName, shortClassName);
+                result = result.replace(".", "_");
+                try {
+                    Object o = value.get(null);
+                    out.format("    %s", result);
+                    for (int i = 0; i < allignSpaceLength - result.length(); i++) out.print(" ");
+                    out.format("= %d;\n", o);                
+                }
+                catch (NullPointerException e) {
+                    // not reasonable value
+                    int a = 0;                
+                }
+/*
+                try {
+                    byte bVal = value.getByte(null);
+                    short sVal = value.getShort(null);
+                    out.format("MY public final static byte %s = (byte) %d;%n", value.getName(), bVal);
+                } catch (IllegalArgumentException ex) {
+                    Logger.getLogger(PerformanceTestingNGTest.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IllegalAccessException ex) {
+                    Logger.getLogger(PerformanceTestingNGTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
+                Annotation[] anot = value.getAnnotationsByType(Consts.Twizzle.class);
+		if (anot != null && anot.length > 0) {
+                    out.format("  %s%n", anot[0].toString());
+                }
+*/        
+            }
+	    else if (mbr instanceof Constructor) 
+		out.format("  %s%n", ((Constructor)mbr).toGenericString());
+	    else if (mbr instanceof Method) {
+                methodIndex++;
+                Method value = (Method) mbr;
+               
+                String result = value.toGenericString();
+                result = result.replace(longClassName, shortClassName);
+                result = result.replace(".", "_");
+                
+                String msg = String.format("public static final short %s_%s", shortClassName, value.getName());
+                out.format("    %s", msg);
+                for (int i = 0; i < allignSpaceLength - msg.length(); i++) out.print(" ");
+                out.format("= %d;\n", methodIndex);                 
+            }
+	}
+	if (mbrs.length == 0)
+	    out.format("    //  -- No %s --%n", s);
+	out.format("%n");
+    }    
+    
+    static void formatClass(String longClassName, String shortClassName) throws ClassNotFoundException, IllegalArgumentException, IllegalAccessException {
+        out.format("\n\n\n    // Class %s\n", longClassName);
+        Class<?> c = Class.forName(longClassName);
+        Field[] fields = c.getDeclaredFields();
+        printMembers(fields, "Fields", longClassName, shortClassName);
+        Method[] methods = c.getDeclaredMethods();
+        printMembers(methods, "Methods", longClassName, shortClassName);
+    }
+
+    static void generateJCConstantsFile(String fileName) throws Exception {   
+        // NOTE: constants will be generated only for JC library version you included
+        // BUGBUG: now only to stdout, store into fileName
+        out.format("package AlgTest;\n\n");
+        out.format("public class JCConsts { \n");
+   
+        formatClass("javacard.security.Signature", "Signature");
+        formatClass("javacardx.crypto.Cipher", "Cipher");
+        formatClass("javacard.security.KeyAgreement", "KeyAgreement");
+        formatClass("javacard.security.KeyBuilder", "KeyBuilder");
+        formatClass("javacard.security.KeyPair", "KeyPair");
+        formatClass("javacard.security.MessageDigest", "MessageDigest");
+        formatClass("javacard.security.RandomData", "RandomData");
+        formatClass("javacard.security.Checksum", "Checksum");
+        formatClass("javacardx.crypto.KeyEncryption", "KeyEncryption");
+        formatClass("javacard.security.AESKey", "AESKey");
+        formatClass("javacard.security.DESKey", "DESKey");
+        formatClass("javacard.security.DSAKey", "DSAKey");
+        formatClass("javacard.security.DSAPrivateKey", "DSAPrivateKey");
+        formatClass("javacard.security.DSAPublicKey", "DSAPublicKey");
+        formatClass("javacard.security.ECKey", "ECKey");
+        formatClass("javacard.security.ECPrivateKey", "ECPrivateKey");
+        formatClass("javacard.security.ECPublicKey", "ECPublicKey");
+        formatClass("javacard.security.HMACKey", "HMACKey");
+        formatClass("javacard.security.RSAPrivateCrtKey", "RSAPrivateCrtKey");
+        formatClass("javacard.security.RSAPrivateKey", "RSAPrivateKey");
+        formatClass("javacard.security.RSAPublicKey", "RSAPublicKey");
+        formatClass("javacard.security.SignatureMessageRecovery", "SignatureMessageRecovery");
+        
+        out.format("} \n");
+    }    
+            
+    
+    private static void generateJCInfoHTMLTable(String basePath) throws IOException {        
+        File dir = new File(basePath);
+        String[] filesArray = dir.list();
+        
+        if ((filesArray != null) && (dir.isDirectory() == true)) {    
+            
+            HashMap filesSupport[] = new HashMap[filesArray.length]; 
+            
+            for (int i = 0; i < filesArray.length; i++) {
+                filesSupport[i] = new HashMap();
+                JCinfohtml.run(basePath + filesArray[i], filesArray[i]);
+            }   
+        }
+    }
+    
+    private static void generateGraphsPages(String basePath) throws IOException {        
+        File dir = new File(basePath);
+        String[] filesArray = dir.list();
+        
+        if ((filesArray != null) && (dir.isDirectory() == true)) {    
+            
+            HashMap filesSupport[] = new HashMap[filesArray.length]; 
+            
+            for (int i = 0; i < filesArray.length; i++) {
+                filesSupport[i] = new HashMap();
+                JCinfohtml.runGraphsOnePage(basePath + filesArray[i]);
+            }   
+        }
+    }
 }
+

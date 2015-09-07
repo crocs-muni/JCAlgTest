@@ -32,17 +32,14 @@
 package algtestjclient;
 
 /* Import 'ALGTEST_JCLIENT_VERSION' variable - possibly replace with actual import of those variables later? */
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
+import AlgTest.Consts;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.smartcardio.CardTerminal;
 import javax.smartcardio.ResponseAPDU;
 
 /**
@@ -53,7 +50,7 @@ import javax.smartcardio.ResponseAPDU;
  * @version 1.0
  */
 public class SingleModeTest {
-    CardMngr cardManager = new CardMngr();
+    public static CardMngr cardManager = new CardMngr();
     
     /* Argument constants for choosing algorithm to test. */
     public static final String TEST_ALL_ALGORITHMS = "ALL_ALGS";
@@ -81,15 +78,7 @@ public class SingleModeTest {
     public static final byte OFFSET_DATA = 0x05;
     public static final byte HEADER_LENGTH = 0x05;
     
-    /* Auxiliary variables to choose class - used in APDU as P1 byte. */
-    public static final byte CLASS_CIPHER          = 0x11;
-    public static final byte CLASS_SIGNATURE       = 0x12;
-    public static final byte CLASS_KEYAGREEMENT    = 0x13;
-    public static final byte CLASS_MESSAGEDIGEST   = 0x15;
-    public static final byte CLASS_RANDOMDATA      = 0x16;
-    public static final byte CLASS_CHECKSUM        = 0x17;
-    public static final byte CLASS_KEYPAIR         = 0x19;
-    public static final byte CLASS_KEYBUILDER      = 0x20;
+
     
     /* Response values - send back by on card application as response to command APDU. */
     public static final short   SUPP_ALG_SUPPORTED  = 0;
@@ -99,13 +88,68 @@ public class SingleModeTest {
     public static final short 	NO_SUCH_ALGORITHM   = 3;
     public static final short 	UNINITIALIZED_KEY   = 2; 
     
-    /* Algorithms from class 'javacard.security.KeyPair'. */
-    public static final byte ALG_RSA = 1;
-    public static final byte ALG_RSA_CRT = 2;
-    public static final byte ALG_DSA = 3;
-    public static final byte ALG_EC_F2M = 4;
-    public static final byte ALG_EC_FP = 5;
     
+    public static final String SIGNATURE_STR[] = {"javacard.crypto.Signature", 
+        "ALG_DES_MAC4_NOPAD#<=2.1", "ALG_DES_MAC8_NOPAD#<=2.1", 
+        "ALG_DES_MAC4_ISO9797_M1#<=2.1", "ALG_DES_MAC8_ISO9797_M1#<=2.1", "ALG_DES_MAC4_ISO9797_M2#<=2.1", "ALG_DES_MAC8_ISO9797_M2#<=2.1", 
+        "ALG_DES_MAC4_PKCS5#<=2.1", "ALG_DES_MAC8_PKCS5#<=2.1", "ALG_RSA_SHA_ISO9796#<=2.1", "ALG_RSA_SHA_PKCS1#<=2.1", "ALG_RSA_MD5_PKCS1#<=2.1", 
+        "ALG_RSA_RIPEMD160_ISO9796#<=2.1", "ALG_RSA_RIPEMD160_PKCS1#<=2.1", "ALG_DSA_SHA#<=2.1", "ALG_RSA_SHA_RFC2409#<=2.1", 
+        "ALG_RSA_MD5_RFC2409#<=2.1", "ALG_ECDSA_SHA#2.2.0", "ALG_AES_MAC_128_NOPAD#2.2.0", "ALG_DES_MAC4_ISO9797_1_M2_ALG3#2.2.0", 
+        "ALG_DES_MAC8_ISO9797_1_M2_ALG3#2.2.0", "ALG_RSA_SHA_PKCS1_PSS#2.2.0", "ALG_RSA_MD5_PKCS1_PSS#2.2.0", "ALG_RSA_RIPEMD160_PKCS1_PSS#2.2.0", 
+        // 2.2.2
+        "ALG_HMAC_SHA1#2.2.2", "ALG_HMAC_SHA_256#2.2.2", "ALG_HMAC_SHA_384#2.2.2", "ALG_HMAC_SHA_512#2.2.2", "ALG_HMAC_MD5#2.2.2", "ALG_HMAC_RIPEMD160#2.2.2", 
+        "ALG_RSA_SHA_ISO9796_MR#2.2.2", "ALG_RSA_RIPEMD160_ISO9796_MR#2.2.2", "ALG_SEED_MAC_NOPAD#2.2.2", 
+        //3.0.1
+        "ALG_ECDSA_SHA_256#3.0.1", "ALG_ECDSA_SHA_384#3.0.1", "ALG_AES_MAC_192_NOPAD#3.0.1", "ALG_AES_MAC_256_NOPAD#3.0.1", "ALG_ECDSA_SHA_224#3.0.1", "ALG_ECDSA_SHA_512#3.0.1", 
+        "ALG_RSA_SHA_224_PKCS1#3.0.1", "ALG_RSA_SHA_256_PKCS1#3.0.1", "ALG_RSA_SHA_384_PKCS1#3.0.1", "ALG_RSA_SHA_512_PKCS1#3.0.1", 
+        "ALG_RSA_SHA_224_PKCS1_PSS#3.0.1", "ALG_RSA_SHA_256_PKCS1_PSS#3.0.1", "ALG_RSA_SHA_384_PKCS1_PSS#3.0.1", "ALG_RSA_SHA_512_PKCS1_PSS#3.0.1",
+        //3.0.4
+        "ALG_DES_MAC4_ISO9797_1_M1_ALG3#3.0.4", "ALG_DES_MAC8_ISO9797_1_M1_ALG3#3.0.4"
+    };
+    
+    public static final String CIPHER_STR[] = {"javacardx.crypto.Cipher", 
+        "ALG_DES_CBC_NOPAD#<=2.1", "ALG_DES_CBC_ISO9797_M1#<=2.1", "ALG_DES_CBC_ISO9797_M2#<=2.1", "ALG_DES_CBC_PKCS5#<=2.1", 
+        "ALG_DES_ECB_NOPAD#<=2.1", "ALG_DES_ECB_ISO9797_M1#<=2.1", "ALG_DES_ECB_ISO9797_M2#<=2.1", "ALG_DES_ECB_PKCS5#<=2.1",
+        "ALG_RSA_ISO14888#<=2.1", "ALG_RSA_PKCS1#<=2.1", "ALG_RSA_ISO9796#<=2.1", 
+        //2.1.1
+        "ALG_RSA_NOPAD#2.1.1", 
+        //2.2.0
+        "ALG_AES_BLOCK_128_CBC_NOPAD#2.2.0", "ALG_AES_BLOCK_128_ECB_NOPAD#2.2.0", "ALG_RSA_PKCS1_OAEP#2.2.0", 
+        //2.2.2
+        "ALG_KOREAN_SEED_ECB_NOPAD#2.2.2", "ALG_KOREAN_SEED_CBC_NOPAD#2.2.2",
+        //3.0.1
+        "ALG_AES_BLOCK_192_CBC_NOPAD#3.0.1", "ALG_AES_BLOCK_192_ECB_NOPAD#3.0.1", "ALG_AES_BLOCK_256_CBC_NOPAD#3.0.1", "ALG_AES_BLOCK_256_ECB_NOPAD#3.0.1", 
+        "ALG_AES_CBC_ISO9797_M1#3.0.1", "ALG_AES_CBC_ISO9797_M2#3.0.1", "ALG_AES_CBC_PKCS5#3.0.1", "ALG_AES_ECB_ISO9797_M1#3.0.1", "ALG_AES_ECB_ISO9797_M2#3.0.1", "ALG_AES_ECB_PKCS5#3.0.1"         
+    }; 
+
+    public static final String KEYAGREEMENT_STR[] = {"javacard.security.KeyAgreement", 
+        //2.2.1
+        "ALG_EC_SVDP_DH#2.2.1", "ALG_EC_SVDP_DHC#2.2.1",
+        //3.0.1
+        "ALG_EC_SVDP_DH_KDF#3.0.1", "ALG_EC_SVDP_DH_PLAIN#3.0.1", "ALG_EC_SVDP_DHC_KDF#3.0.1", "ALG_EC_SVDP_DHC_PLAIN#3.0.1"
+    };
+/*
+    public static final String KEYBUILDER_STR[] = {
+        "javacard.security.KeyBuilder", 
+        "@@@DES_KEY@@@", "TYPE_DES_TRANSIENT_RESET#<=2.1", "TYPE_DES_TRANSIENT_DESELECT#<=2.1", "TYPE_DES LENGTH_DES#<=2.1", "TYPE_DES LENGTH_DES3_2KEY#<=2.1", "TYPE_DES LENGTH_DES3_3KEY#<=2.1",
+        //2.2.0
+        "@@@AES_KEY@@@", "TYPE_AES_TRANSIENT_RESET#2.2.0", "TYPE_AES_TRANSIENT_DESELECT#2.2.0", "TYPE_AES LENGTH_AES_128#2.2.0", "TYPE_AES LENGTH_AES_192#2.2.0", "TYPE_AES LENGTH_AES_256#2.2.0",
+        "@@@RSA_PUBLIC_KEY@@@", "TYPE_RSA_PUBLIC LENGTH_RSA_512#<=2.1", "TYPE_RSA_PUBLIC LENGTH_RSA_736#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_768#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_896#2.2.0",
+            "TYPE_RSA_PUBLIC LENGTH_RSA_1024#<=2.1", "TYPE_RSA_PUBLIC LENGTH_RSA_1280#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_1536#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_1984#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_2048#<=2.1", "TYPE_RSA_PUBLIC LENGTH_RSA_3072#never#0", "TYPE_RSA_PUBLIC LENGTH_RSA_4096#3.0.1",
+        "@@@RSA_PRIVATE_KEY@@@", "TYPE_RSA_PRIVATE LENGTH_RSA_512#<=2.1", "TYPE_RSA_PRIVATE LENGTH_RSA_736#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_768#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_896#2.2.0",
+            "TYPE_RSA_PRIVATE LENGTH_RSA_1024#<=2.1", "TYPE_RSA_PRIVATE LENGTH_RSA_1280#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_1536#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_1984#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_2048#<=2.1", "TYPE_RSA_PRIVATE LENGTH_RSA_3072#never#0", "TYPE_RSA_PRIVATE LENGTH_RSA_4096#3.0.1", 
+            "TYPE_RSA_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_RSA_PRIVATE_TRANSIENT_DESELECT#3.0.1",
+        "@@@RSA_CRT_PRIVATE_KEY@@@", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_512#<=2.1", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_736#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_768#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_896#2.2.0",
+            "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1024#<=2.1", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1280#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1536#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1984#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_2048#<=2.1", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_3072#never#0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_4096#3.0.1",
+            "TYPE_RSA_CRT_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_RSA_CRT_PRIVATE_TRANSIENT_DESELECT#3.0.1",
+        "@@@DSA_PRIVATE_KEY@@@", "TYPE_DSA_PRIVATE LENGTH_DSA_512#<=2.1", "TYPE_DSA_PRIVATE LENGTH_DSA_768#<=2.1", "TYPE_DSA_PRIVATE LENGTH_DSA_1024#<=2.1", "TYPE_DSA_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_DSA_PRIVATE_TRANSIENT_DESELECT#3.0.1", 
+        "@@@DSA_PUBLIC_KEY@@@", "TYPE_DSA_PUBLIC LENGTH_DSA_512#<=2.1", "TYPE_DSA_PUBLIC LENGTH_DSA_768#<=2.1", "TYPE_DSA_PUBLIC LENGTH_DSA_1024#<=2.1", 
+        "@@@EC_F2M_PRIVATE_KEY@@@", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_113#2.2.0", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_131#2.2.0", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_163#2.2.0", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_193#2.2.0", "TYPE_EC_F2M_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_EC_F2M_PRIVATE_TRANSIENT_DESELECT#3.0.1",
+        "@@@EC_FP_PRIVATE_KEY@@@", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_112#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_128#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_160#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_192#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_224#3.0.1", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_256#3.0.1", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_384#3.0.1", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_521#3.0.4", "TYPE_EC_FP_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_EC_FP_PRIVATE_TRANSIENT_DESELECT#3.0.1",
+        "@@@KOREAN_SEED_KEY@@@", "TYPE_KOREAN_SEED_TRANSIENT_RESET#2.2.2", "TYPE_KOREAN_SEED_TRANSIENT_DESELECT#2.2.2", "TYPE_KOREAN_SEED LENGTH_KOREAN_SEED_128#2.2.2", 
+        "@@@HMAC_KEY@@@", "TYPE_HMAC_TRANSIENT_RESET#2.2.2", "TYPE_HMAC_TRANSIENT_DESELECT#2.2.2", "TYPE_HMAC LENGTH_HMAC_SHA_1_BLOCK_64#2.2.2", "TYPE_HMAC LENGTH_HMAC_SHA_256_BLOCK_64#2.2.2", "TYPE_HMAC LENGTH_HMAC_SHA_384_BLOCK_64#2.2.2", "TYPE_HMAC LENGTH_HMAC_SHA_512_BLOCK_64#2.2.2",
+    }; 
+*/    
     /**
      * String array used in KeyBuilder testing for printing alg names.
      */
@@ -129,6 +173,70 @@ public class SingleModeTest {
         "TYPE_KOREAN_SEED_TRANSIENT_RESET#2.2.2", "TYPE_KOREAN_SEED_TRANSIENT_DESELECT#2.2.2", "TYPE_KOREAN_SEED LENGTH_KOREAN_SEED_128#2.2.2", 
         "TYPE_HMAC_TRANSIENT_RESET#2.2.2", "TYPE_HMAC_TRANSIENT_DESELECT#2.2.2", "TYPE_HMAC LENGTH_HMAC_SHA_1_BLOCK_64#2.2.2", "TYPE_HMAC LENGTH_HMAC_SHA_256_BLOCK_64#2.2.2", "TYPE_HMAC LENGTH_HMAC_SHA_384_BLOCK_64#2.2.2", "TYPE_HMAC LENGTH_HMAC_SHA_512_BLOCK_64#2.2.2",
     };
+    
+    public static final String KEYPAIR_RSA_STR[] = {"javacard.security.KeyPair ALG_RSA on-card generation", 
+        "ALG_RSA LENGTH_RSA_512#2.1.1", "ALG_RSA LENGTH_RSA_736#2.2.0", "ALG_RSA LENGTH_RSA_768#2.1.1", "ALG_RSA LENGTH_RSA_896#2.2.0",
+        "ALG_RSA LENGTH_RSA_1024#2.1.1", "ALG_RSA LENGTH_RSA_1280#2.2.0", "ALG_RSA LENGTH_RSA_1536#2.2.0", "ALG_RSA LENGTH_RSA_1984#2.2.0", "ALG_RSA LENGTH_RSA_2048#2.1.1", 
+        "ALG_RSA LENGTH_RSA_3072#never#0", "ALG_RSA LENGTH_RSA_4096#3.0.1"
+        };
+
+    public static final String KEYPAIR_RSACRT_STR[] = {"javacard.security.KeyPair ALG_RSA_CRT on-card generation", 
+        "ALG_RSA_CRT LENGTH_RSA_512#2.1.1", "ALG_RSA_CRT LENGTH_RSA_736#2.2.0", "ALG_RSA_CRT LENGTH_RSA_768#2.1.1", "ALG_RSA_CRT LENGTH_RSA_896#2.2.0",
+        "ALG_RSA_CRT LENGTH_RSA_1024#2.1.1", "ALG_RSA_CRT LENGTH_RSA_1280#2.2.0", "ALG_RSA_CRT LENGTH_RSA_1536#2.2.0", "ALG_RSA_CRT LENGTH_RSA_1984#2.2.0", "ALG_RSA_CRT LENGTH_RSA_2048#2.1.1", 
+        "ALG_RSA_CRT LENGTH_RSA_3072#never#0", "ALG_RSA_CRT LENGTH_RSA_4096#3.0.1"
+        };    
+  
+    public static final String KEYPAIR_DSA_STR[] = {"javacard.security.KeyPair ALG_DSA on-card generation", 
+        "ALG_DSA LENGTH_DSA_512#2.1.1", "ALG_DSA LENGTH_DSA_768#2.1.1", "ALG_DSA LENGTH_DSA_1024#2.1.1"
+    };
+  
+    public static final String KEYPAIR_EC_F2M_STR[] = {"javacard.security.KeyPair ALG_EC_F2M on-card generation", 
+        "ALG_EC_F2M LENGTH_EC_F2M_113#2.2.1", "ALG_EC_F2M LENGTH_EC_F2M_131#2.2.1", "ALG_EC_F2M LENGTH_EC_F2M_163#2.2.1", "ALG_EC_F2M LENGTH_EC_F2M_193#2.2.1"
+    };
+ 
+    public static final String KEYPAIR_EC_FP_STR[] = {"javacard.security.KeyPair ALG_EC_FP on-card generation", 
+        "ALG_EC_FP LENGTH_EC_FP_112#2.2.1", "ALG_EC_FP LENGTH_EC_FP_128#2.2.1", "ALG_EC_FP LENGTH_EC_FP_160#2.2.1", "ALG_EC_FP LENGTH_EC_FP_192#2.2.1", "ALG_EC_FP LENGTH_EC_FP_224#3.0.1", "ALG_EC_FP LENGTH_EC_FP_256#3.0.1", "ALG_EC_FP LENGTH_EC_FP_384#3.0.1", "ALG_EC_FP LENGTH_EC_FP_521#3.0.4"
+    };
+    
+    public static final String MESSAGEDIGEST_STR[] = {"javacard.security.MessageDigest", 
+        "ALG_SHA#<=2.1", "ALG_MD5#<=2.1", "ALG_RIPEMD160#<=2.1", 
+        //2.2.2
+        "ALG_SHA_256#2.2.2", "ALG_SHA_384#2.2.2", "ALG_SHA_512#2.2.2", 
+        //3.0.1
+        "ALG_SHA_224#3.0.1"
+    }; 
+
+    public static final String RANDOMDATA_STR[] = {"javacard.security.RandomData", 
+        "ALG_PSEUDO_RANDOM#<=2.1", "ALG_SECURE_RANDOM#<=2.1"}; 
+
+    public static final String CHECKSUM_STR[] = {"javacard.security.Checksum", "ALG_ISO3309_CRC16#2.2.1", "ALG_ISO3309_CRC32#2.2.1"}; 
+    
+    public static final String JCSYSTEM_STR[] = {"javacard.framework.JCSystem", "JCSystem.getVersion()[Major.Minor]#<=2.1", 
+        "JCSystem.isObjectDeletionSupported#2.2.0", "JCSystem.MEMORY_TYPE_PERSISTENT#2.2.1", "JCSystem.MEMORY_TYPE_TRANSIENT_RESET#2.2.1", 
+        "JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT#2.2.1", "JCSystem.getMaxCommitCapacity()#2.1"}; 
+
+    public static final String RAWRSA_1024_STR[] = {"Variable RSA 1024 - support for variable public exponent. If supported, user-defined fast modular exponentiation can be executed on the smart card via cryptographic coprocessor. This is very specific feature and you will probably not need it", 
+        "Allocate RSA 1024 objects", "Set random modulus", "Set random public exponent", "Initialize cipher with public key with random exponent", "Use random public exponent"}; 
+
+    public static final String EXTENDEDAPDU_STR[] = {"javacardx.apdu.ExtendedLength", "Extended APDU#2.2.2"}; 
+
+    public static final String BASIC_INFO[] = {"Basic info", "JavaCard support version"}; 
+   
+    public static final String[] ALL_CLASSES_STR[] = {
+        BASIC_INFO, JCSYSTEM_STR, EXTENDEDAPDU_STR, CIPHER_STR, SIGNATURE_STR, MESSAGEDIGEST_STR, RANDOMDATA_STR, KEYBUILDER_STR, 
+        KEYPAIR_RSA_STR, KEYPAIR_RSACRT_STR, KEYPAIR_DSA_STR, KEYPAIR_EC_F2M_STR, 
+        KEYPAIR_EC_FP_STR, KEYAGREEMENT_STR, CHECKSUM_STR, RAWRSA_1024_STR
+    };
+    
+    
+    /* Algorithms from class 'javacard.security.KeyPair'. */
+    public static final byte ALG_RSA = 1;
+    public static final byte ALG_RSA_CRT = 2;
+    public static final byte ALG_DSA = 3;
+    public static final byte ALG_EC_F2M = 4;
+    public static final byte ALG_EC_FP = 5;
+    
+
     
     /**
      * Array of bytes used in KeyBuilder testing.
@@ -273,7 +381,7 @@ public class SingleModeTest {
         (byte)0x02, (byte)0x00,         // [62,63] - 512
     };
     
-    public final int CLOCKS_PER_SEC = 1000;
+    public final static int CLOCKS_PER_SEC = 1000;
        
     /**
      * Method containing 'menu'.
@@ -281,18 +389,25 @@ public class SingleModeTest {
      * @throws IOException
      * @throws Exception
      */
-    public void TestSingleAlg (String[] args) throws IOException, Exception{
+    public void TestSingleAlg (String[] args, CardTerminal selectedReader) throws IOException, Exception{
         /* BUGBUG: we need to figure out how to support JCardSim in nice way (copy of class files, directory structure...)
         Class testClassSingleApdu = AlgTestSinglePerApdu.class;
         */
         Class testClassSingleApdu = null;
         /* Reads text from a character-input stream, buffering characters so as to provide
            for the efficient reading of characters, arrays, and lines. */
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));  
-        int answ = 0;   // When set to 0, program will ask for each algorithm to test.
+        Scanner br = new Scanner(System.in);  
+        String answ = "";   // When set to 0, program will ask for each algorithm to test.
                 
-        FileOutputStream file = cardManager.establishConnection(testClassSingleApdu);
+        System.out.println("Specify type of your card (e.g., NXP JCOP CJ2A081):");
+        String cardName = br.next();
+        cardName += br.nextLine();
+        if (cardName.isEmpty()) {
+            cardName = "noname";
+        }            
+        FileOutputStream file = cardManager.establishConnection(testClassSingleApdu, cardName, cardName + "_ALGSUPPORT_", selectedReader);
         
+    
         /* Checking for arguments. */
         if (args.length > 1){       // in case there are arguments from command line present
             if (Arrays.asList(args).contains(TEST_ALL_ALGORITHMS)){testAllAtOnce(file);}
@@ -314,92 +429,93 @@ public class SingleModeTest {
                 cardManager.TestVariableRSAPublicExponentSupport(value, file, OFFSET_P2);}
             else{
                 System.err.println("Incorect parameter!");
-                cardManager.PrintHelp();
+                CardMngr.PrintHelp();
             }
         }
-        else{       // in case there are no arguments from command line present
-            System.out.println("Do you want to test all possible algorithms at once?\n1 = YES, 0 = NO");
-            answ = Integer.decode(br.readLine());       
+        else{       
+            long elapsedTimeWholeTest = -System.currentTimeMillis();
+            testAllAtOnce(file);
+            elapsedTimeWholeTest += System.currentTimeMillis();
+            String message = "\n\nTotal test time:; " + elapsedTimeWholeTest / 1000 + " seconds."; 
+            System.out.println(message);
+            file.write(message.getBytes());
+
+            CloseFile(file);
+            
+/*            
+            
+            // in case there are no arguments from command line present
+            System.out.println("Do you want to test all possible algorithms at once? (y/n)");
+            br.reset();
+            answ = br.nextLine();       
         
-            /* Chooses action based on input argument 'answ' (1/0). */
+            // Chooses action based on input argument 'answ' (y/n). 
             switch (answ) {
-                /* Program will ask for every class. */
-                case 0:
-                    /* Class 'javacardx.crypto.Cipher'. */
-                    System.out.println("Do you want to test algorithms from class 'Cipher'?\n1 = YES, 0 = NO");
-                        answ = Integer.decode(br.readLine());
-                        if (answ == 1){TestClassCipher(file);}
+                // Program will ask for every class. 
+                case "n":
+                    System.out.println("Do you want to test algorithms from class 'Cipher'? (y/n)");
+                        answ = br.nextLine();
+                        if (answ.equals("y")){TestClassCipher(file);}
                         else{ClassSkipped(file, "javacardx.crypto.Cipher");}
 
-                    /* Class 'javacard.security.Singnature'. */
-                    System.out.println("Do you want to test algorithms from class 'Signature'?\n1 = YES, 0 = NO");
-                        answ = Integer.decode(br.readLine());
-                        if (answ == 1){TestClassSignature(file);}
+                    System.out.println("Do you want to test algorithms from class 'Signature'? (y/n)");
+                        answ = br.nextLine();
+                        if (answ.equals("y")){TestClassSignature(file);}
                         else{ClassSkipped(file, "javacard.security.Signature");}
 
-                    /* Class 'javacard.security.MessageDigest'. */
-                    System.out.println("Do you want to test algorithms from class 'MessageDigest'?\n1 = YES, 0 = NO");
-                        answ = Integer.decode(br.readLine());
-                        if (answ == 1){TestClassMessageDigest(file);}
+                    System.out.println("Do you want to test algorithms from class 'MessageDigest'? (y/n)");
+                        answ = br.nextLine();
+                        if (answ.equals("y")){TestClassMessageDigest(file);}
                         else{ClassSkipped(file, "javacard.security.MessageDigest");}
 
-                    /* Class 'javacard.security.RandomData'. */
-                    System.out.println("Do you want to test algorithms from class 'RandomData'?\n1 = YES, 0 = NO");
-                        answ = Integer.decode(br.readLine());
-                        if (answ == 1){TestClassRandomData(file);}
+                    System.out.println("Do you want to test algorithms from class 'RandomData'? (y/n)");
+                        answ = br.nextLine();
+                        if (answ.equals("y")){TestClassRandomData(file);}
                         else{ClassSkipped(file, "javacard.security.RandomData");}
 
-                    /* Class 'javacard.security.KeyBuilder'. */
-                    System.out.println("Do you want to test algorithms from class 'KeyBuilder'?\n1 = YES, 0 = NO");
-                        answ = Integer.decode(br.readLine());
-                        if (answ == 1){TestClassKeyBuilder(file);}
+                    System.out.println("Do you want to test algorithms from class 'KeyBuilder'? (y/n)");
+                        answ = br.nextLine();
+                        if (answ.equals("y")){TestClassKeyBuilder(file);}
                         else{ClassSkipped(file, "javacard.security.KeyBuilder");}
 
-                    /* Class 'javacard.security.KeyAgreement'. */
-                    System.out.println("Do you want to test algorithms from class 'KeyAgreement'?\n1 = YES, 0 = NO");
-                        answ = Integer.decode(br.readLine());
-                        if (answ == 1){TestClassKeyAgreement(file);}
+                    System.out.println("Do you want to test algorithms from class 'KeyAgreement'? (y/n)");
+                        answ = br.nextLine();
+                        if (answ.equals("y")){TestClassKeyAgreement(file);}
                         else{ClassSkipped(file, "javacard.security.KeyAgreement");}
 
-                    /* Class 'javacard.security.Checksum'. */
-                    System.out.println("Do you want to test algorithms from class 'Checksum'?\n1 = YES, 0 = NO");
-                        answ = Integer.decode(br.readLine());
-                        if (answ == 1){TestClassChecksum(file);}
+                    System.out.println("Do you want to test algorithms from class 'Checksum'? (y/n)");
+                        answ = br.nextLine();
+                        if (answ.equals("y")){TestClassChecksum(file);}
                         else{ClassSkipped(file, "javacard.security.Checksum");}
 
-                    /* Class 'javacard.security.KeyPair_RSA'. */
-                    System.out.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_RSA on-card generation'?\n1 = YES, 0 = NO");
-                        answ = Integer.decode(br.readLine());
-                        if (answ == 1){TestClassKeyPair_ALG_RSA(file);}
+                    System.out.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_RSA on-card generation'? (y/n)");
+                        answ = br.nextLine();
+                        if (answ.equals("y")){TestClassKeyPair_ALG_RSA(file);}
                         else{ClassSkipped(file, "javacard.security.KeyPair ALG_RSA on-card generation");}
 
-                    /* Class 'javacard.security.KeyPair_RSA_CRT'. */
-                    System.out.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_RSA_CRT on-card generation'?\n1 = YES, 0 = NO");
-                        answ = Integer.decode(br.readLine());
-                        if (answ == 1){TestClassKeyPair_ALG_RSA_CRT(file);}
+                    System.out.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_RSA_CRT on-card generation'? (y/n)");
+                        answ = br.nextLine();
+                        if (answ.equals("y")){TestClassKeyPair_ALG_RSA_CRT(file);}
                         else{ClassSkipped(file, "javacard.security.KeyPair ALG_RSA_CRT on-card generation");}   
 
-                    /* Class 'javacard.security.KeyPair_DSA'. */
-                    System.out.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_DSA on-card generation'?\n1 = YES, 0 = NO");
-                        answ = Integer.decode(br.readLine());
-                        if (answ == 1){TestClassKeyPair_ALG_DSA(file);}
+                    System.out.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_DSA on-card generation'? (y/n)");
+                        answ = br.nextLine();
+                        if (answ.equals("y")){TestClassKeyPair_ALG_DSA(file);}
                         else{ClassSkipped(file, "javacard.security.KeyPair ALG_DSA on-card generation");} 
 
-                    /* Class 'javacard.security.KeyPair_DSA'. */
-                    System.out.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_EC_F2M on-card generation'?\n1 = YES, 0 = NO");
-                        answ = Integer.decode(br.readLine());
-                        if (answ == 1){TestClassKeyPair_ALG_EC_F2M(file);}
+                    System.out.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_EC_F2M on-card generation'? (y/n)");
+                        answ = br.nextLine();
+                        if (answ.equals("y")){TestClassKeyPair_ALG_EC_F2M(file);}
                         else{ClassSkipped(file, "javacard.security.KeyPair ALG_EC_F2M on-card generation");}
 
-                    /* Class 'javacard.security.KeyPair_DSA'. */
-                    System.out.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_EC_FP on-card generation'?\n1 = YES, 0 = NO");
-                        answ = Integer.decode(br.readLine());
-                        if (answ == 1){TestClassKeyPair_ALG_EC_FP(file);}
+                    System.out.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_EC_FP on-card generation'? (y/n)");
+                        answ = br.nextLine();
+                        if (answ.equals("y")){TestClassKeyPair_ALG_EC_FP(file);}
                         else{ClassSkipped(file, "javacard.security.KeyPair ALG_EC_FP on-card generation");}
-                    /* RSA exponent */
-                    System.out.println("\n\nQ: Do you like to test support for variable RSA public exponent?\n1 = YES, 0 = NO");
-                        answ = Integer.decode(br.readLine());
-                        if (answ == 1) {
+                    // RSA exponent 
+                    System.out.println("\n\nQ: Do you like to test support for variable RSA public exponent? (y/n)");
+                        answ = br.nextLine();
+                        if (answ.equals("y")) {
                         // Variable public exponent
                         StringBuilder value = new StringBuilder();
                         value.setLength(0);
@@ -408,35 +524,27 @@ public class SingleModeTest {
                             String message = "\nERROR: Test variable public exponent support fail\n"; 
                             System.out.println(message); file.write(message.getBytes());
                         }
-                    /* Closing file. */
                     CloseFile(file);
                 break;
 
-                /* Program will test all algorithms at once. */
-                case 1:
-                    /*
-                    TestClassCipher(file);
-                    TestClassSignature(file);
-                    TestClassMessageDigest(file);
-                    TestClassRandomData(file);
-                    TestClassKeyBuilder(file);
-                    TestClassKeyAgreement(file);
-                    TestClassChecksum(file);
-                    TestClassKeyPair_ALG_RSA(file);
-                    TestClassKeyPair_ALG_RSA_CRT(file);
-                    TestClassKeyPair_ALG_DSA(file);
-                    TestClassKeyPair_ALG_EC_F2M(file);
-                    TestClassKeyPair_ALG_EC_FP(file);
-                    */
+                // Program will test all algorithms at once. 
+                case "y":
+                    long elapsedTimeWholeTest = -System.currentTimeMillis();
                     testAllAtOnce(file);
+                    elapsedTimeWholeTest += System.currentTimeMillis();
+                    String message = "\n\nTotal test time:; " + elapsedTimeWholeTest / 1000 + " seconds."; 
+                    System.out.println(message);
+                    file.write(message.getBytes());
+                    
                     CloseFile(file);
                 break;
 
-                /* In case of wrong argument. */
+                // In case of wrong argument.
                 default:
-                    System.err.println("First argument must be 0 or 1!");
+                    System.err.println("First argument must be \"y\" or \"n\"!");
                 break;
             }
+            */
         }
         CloseFile(file);
     }
@@ -445,9 +553,9 @@ public class SingleModeTest {
      * Closes file given in parameter.
      * @param file FileOutputStream object to close.
      */
-    public void CloseFile(FileOutputStream file){
+    public static void CloseFile(FileOutputStream file){
         try {
-            file.close();
+            if (file != null) file.close();
         } catch (IOException ex) {
             Logger.getLogger(SingleModeTest.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -472,60 +580,62 @@ public class SingleModeTest {
      * @param file FileOutputStream object containing output file.
      * @param name String containing algorithm name.
      * @param response Response byte of APDU (second byte of incoming APDU) .
+     * @param elapsedCard
      * @throws IOException
      */
-    public void CheckResult (FileOutputStream file, String name, byte response, long elapsedCard) throws IOException{
+    public static void CheckResult (FileOutputStream file, String name, byte response, long elapsedCard, int swStatus) throws IOException{
         String message = "";
         String elTimeStr = "";
-        switch (response){
-            case SUPP_ALG_SUPPORTED:
-                elTimeStr = String.format("%1f", (double) elapsedCard / (float) CLOCKS_PER_SEC);
-                message += name + ";" + "yes;" + elTimeStr + "\r\n";
-                System.out.println(message);
-                file.write(message.getBytes());
-            break;
-            
-            case NO_SUCH_ALGORITHM:
-                message += name + ";" + "no;" + "\r\n";
-                System.out.println(message);
-                file.write(message.getBytes());
-            break;
-                
-            case ILLEGAL_USE:
-                message += name + ";" + "error(ILLEGAL_USE);" + "\r\n";
-                System.out.println(message);
-                file.write(message.getBytes());
-            break;
-                
-            case ILLEGAL_VALUE:
-                message += name + ";" + "error(ILLEGAL_VALUE);" + "\r\n";
-                System.out.println(message);
-                file.write(message.getBytes());
-            break;
-                
-            case INVALID_INIT:
-                message += name + ";" + "error(INVALID_INIT);" + "\r\n";
-                System.out.println(message);
-                file.write(message.getBytes());
-            break;
-                
-            case UNINITIALIZED_KEY:
-                message += name + ";" + "error(UNINITIALIZED_KEY);" + "\r\n";
-                System.out.println(message);
-                file.write(message.getBytes());
-            break;
-            
-            case 0x6f:
-                message += name + ";" + "maybe;" + "\r\n";
-                System.out.println(message);
-                file.write(message.getBytes());                
-            break;
-                
-            default:
-                // OTHER VALUE, IGNORE 
-                //System.out.println("Unknown value detected in AlgTest applet (0x" + Integer.toHexString(response[i] & 0xff) + "). Possibly, old version of AlTestJClient is used (try update)");
-            break;        
+        
+        if (swStatus == 0x9000) {
+            switch (response){
+                case SUPP_ALG_SUPPORTED:
+                    // in case negative value is returned as timestamp
+                    if (elapsedCard < 0){
+                        elTimeStr = "Not executed!";
+                        message += name + ";" + "no;" + elTimeStr + "\r\n";
+                    }
+                    else{
+                        elTimeStr = String.format("%1f", (double) elapsedCard / (float) CLOCKS_PER_SEC);
+                        message += name + ";" + "yes;" + elTimeStr + "\r\n";
+                    }
+                    break;
+
+                case NO_SUCH_ALGORITHM:
+                    message += name + ";" + "no;" + "\r\n";
+                    break;
+
+                case ILLEGAL_USE:
+                    message += name + ";" + "error(ILLEGAL_USE);" + "\r\n";
+                    break;
+
+                case ILLEGAL_VALUE:
+                    message += name + ";" + "error(ILLEGAL_VALUE);" + "\r\n";
+                    break;
+
+                case INVALID_INIT:
+                    message += name + ";" + "error(INVALID_INIT);" + "\r\n";
+                break;
+
+                case UNINITIALIZED_KEY:
+                    message += name + ";" + "error(UNINITIALIZED_KEY);" + "\r\n";
+                break;
+
+                case 0x6f:
+                    message += name + ";" + "maybe;" + "\r\n";
+                break;
+
+                default:
+                    // OTHER VALUE, IGNORE 
+                System.out.println("Unknown value detected in AlgTest applet (0x" + Integer.toHexString(response & 0xff) + "). Possibly, old version of AlTestJClient is used (try update)");
+                break;        
+            }
         }
+        else {
+            message += name + ";" + "error(0x" + Integer.toHexString(swStatus) + ");" + "\r\n";
+        }
+        System.out.println(message);
+        file.write(message.getBytes());                
     }
         
     /**
@@ -533,34 +643,36 @@ public class SingleModeTest {
      * @param file FileOutputStream object containing output file.
      * @throws Exception
      */
-    public void TestClassCipher(FileOutputStream file) throws Exception{
+    public static void TestClassCipher(FileOutputStream file) throws Exception{
         long       elapsedCard = 0;
         byte[] apdu = new byte[6];
-            apdu[OFFSET_CLA] = (byte)0xB0;  // for AlgTest applet
-            apdu[OFFSET_INS] = (byte)0x75;  // for AlgTest applet switch to 'TestSupportedModeSingle'
-            apdu[OFFSET_P1] = CLASS_CIPHER;   // 0x11
-            apdu[OFFSET_P2] = (byte)0x00;
-            apdu[OFFSET_LC] = (byte)0x01;
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
+        apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
+        apdu[OFFSET_P1] = Consts.CLASS_CIPHER;   // 0x11
+        apdu[OFFSET_P2] = (byte)0x00;
+        apdu[OFFSET_LC] = (byte)0x01;
 
         /* Creates message with class name and writes it in the output file and on the screen. */
-        String message = "\n" + cardManager.GetAlgorithmName(CardMngr.CIPHER_STR[0]) + "\r\n";
+        String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.CIPHER_STR[0]) + "\r\n";
         System.out.println(message);
         file.write(message.getBytes());
         
-        for (int i=1; i<CardMngr.CIPHER_STR.length; i++){    // i = 1 because Cipher[0] is class name
+        for (int i=1; i< SingleModeTest.CIPHER_STR.length; i++){    // i = 1 because Cipher[0] is class name
             // get starting time of communication cycle
+            apdu[OFFSET_DATA] = (byte) i;
+
             elapsedCard = -System.currentTimeMillis();
-            apdu[OFFSET_DATA] = (byte)i;
             ResponseAPDU response = cardManager.sendAPDU(apdu);
+            // save time of card response
+            elapsedCard += System.currentTimeMillis();
             
-            byte[] resp = response.getBytes();
-            System.out.println("RESPONSE: " + resp[0]);
+            byte[] resp = response.getData();
+            if (resp.length > 0) {
+                System.out.println("RESPONSE: " + resp[0]);
+            }
             
-                // save time of card response
-                elapsedCard += System.currentTimeMillis();
-                
-            /* Calls method CheckResult - should add to output error messages. */
-            CheckResult(file, cardManager.GetAlgorithmName(CardMngr.CIPHER_STR[i]), resp[1], elapsedCard);
+            // Calls method CheckResult - should add to output error messages.
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.CIPHER_STR[i]), resp[1], elapsedCard, response.getSW());
         }        
     }
     
@@ -570,32 +682,32 @@ public class SingleModeTest {
      * @throws IOException
      * @throws Exception
      */
-    public void TestClassSignature (FileOutputStream file) throws IOException, Exception{
+    public static void TestClassSignature (FileOutputStream file) throws IOException, Exception{
         long       elapsedCard = 0;
         byte[] apdu = new byte[6];
-            apdu[OFFSET_CLA] = (byte)0xB0;  // for AlgTest applet
-            apdu[OFFSET_INS] = (byte)0x75;  // for AlgTest applet switch to 'TestSupportedModeSingle'
-            apdu[OFFSET_P1] = CLASS_SIGNATURE;   // 0x12
-            apdu[OFFSET_P2] = (byte)0x00;
-            apdu[OFFSET_LC] = (byte)0x01;
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
+        apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
+        apdu[OFFSET_P1] = Consts.CLASS_SIGNATURE;   // 0x12
+        apdu[OFFSET_P2] = (byte)0x00;
+        apdu[OFFSET_LC] = (byte)0x01;
         
         /* Creates message with class name and writes it in the output file and on the screen. */
-        String message = "\n" + cardManager.GetAlgorithmName(CardMngr.SIGNATURE_STR[0]) + "\r\n";
+        String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.SIGNATURE_STR[0]) + "\r\n";
         System.out.println(message);
         file.write(message.getBytes());
         
-        for (int i=1; i<CardMngr.SIGNATURE_STR.length; i++){    // i = 1 because Signature[0] is class name
+        for (int i=1; i<SingleModeTest.SIGNATURE_STR.length; i++){    // i = 1 because Signature[0] is class name
             // get starting time of communication cycle
-            elapsedCard = -System.currentTimeMillis();
             apdu[OFFSET_DATA] = (byte)i;
+            elapsedCard = -System.currentTimeMillis();
             ResponseAPDU response = cardManager.sendAPDU(apdu);
-            byte[] resp = response.getBytes();
+            // save time of card response
+            elapsedCard += System.currentTimeMillis();
+
+            byte[] resp = response.getData();
             
-                // save time of card response
-                elapsedCard += System.currentTimeMillis();
-                
-            /* Calls method CheckResult - should add to output error messages. */
-            CheckResult(file, cardManager.GetAlgorithmName(CardMngr.SIGNATURE_STR[i]), resp[1], elapsedCard);
+            // Calls method CheckResult - should add to output error messages. 
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.SIGNATURE_STR[i]), resp[1], elapsedCard, response.getSW());
         }        
     }
     
@@ -605,32 +717,31 @@ public class SingleModeTest {
      * @throws IOException
      * @throws Exception
      */
-    public void TestClassMessageDigest (FileOutputStream file) throws IOException, Exception{
+    public static void TestClassMessageDigest (FileOutputStream file) throws IOException, Exception{
         long       elapsedCard = 0;
         byte[] apdu = new byte[6];
-            apdu[OFFSET_CLA] = (byte)0xB0;  // for AlgTest applet
-            apdu[OFFSET_INS] = (byte)0x75;  // for AlgTest applet switch to 'TestSupportedModeSingle'
-            apdu[OFFSET_P1] = CLASS_MESSAGEDIGEST;   // 0x15
-            apdu[OFFSET_P2] = (byte)0x00;
-            apdu[OFFSET_LC] = (byte)0x01;
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
+        apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
+        apdu[OFFSET_P1] = Consts.CLASS_MESSAGEDIGEST;   // 0x15
+        apdu[OFFSET_P2] = (byte)0x00;
+        apdu[OFFSET_LC] = (byte)0x01;
         
         /* Creates message with class name and writes it in the output file and on the screen. */
-        String message = "\n" + cardManager.GetAlgorithmName(CardMngr.MESSAGEDIGEST_STR[0]) + "\r\n";
+        String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.MESSAGEDIGEST_STR[0]) + "\r\n";
         System.out.println(message);
         file.write(message.getBytes());
         
-        for (int i=1; i<CardMngr.MESSAGEDIGEST_STR.length; i++){    // i = 1 because MessageDigest[0] is class name
+        for (int i=1; i<SingleModeTest.MESSAGEDIGEST_STR.length; i++){    // i = 1 because MessageDigest[0] is class name
             // get starting time of communication cycle
-            elapsedCard = -System.currentTimeMillis();
             apdu[OFFSET_DATA] = (byte)i;
+            elapsedCard = -System.currentTimeMillis();
             ResponseAPDU response = cardManager.sendAPDU(apdu);
-            byte[] resp = response.getBytes();
+            // save time of card response
+            elapsedCard += System.currentTimeMillis();
+            byte[] resp = response.getData();
             
-                // save time of card response
-                elapsedCard += System.currentTimeMillis();
-                
-            /* Calls method CheckResult - should add to output error messages. */
-            CheckResult(file, cardManager.GetAlgorithmName(CardMngr.MESSAGEDIGEST_STR[i]), resp[1], elapsedCard);
+            // Calls method CheckResult - should add to output error messages. 
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.MESSAGEDIGEST_STR[i]), resp[1], elapsedCard, response.getSW());
         }
     }
     
@@ -640,32 +751,30 @@ public class SingleModeTest {
      * @throws IOException
      * @throws Exception
      */
-    public void TestClassRandomData (FileOutputStream file) throws IOException, Exception{
+    public static void TestClassRandomData (FileOutputStream file) throws IOException, Exception{
         long       elapsedCard = 0;
         byte[] apdu = new byte[6];
-            apdu[OFFSET_CLA] = (byte)0xB0;  // for AlgTest applet
-            apdu[OFFSET_INS] = (byte)0x75;  // for AlgTest applet switch to 'TestSupportedModeSingle'
-            apdu[OFFSET_P1] = CLASS_RANDOMDATA;   // 0x16
-            apdu[OFFSET_P2] = (byte)0x00;
-            apdu[OFFSET_LC] = (byte)0x01;
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
+        apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
+        apdu[OFFSET_P1] = Consts.CLASS_RANDOMDATA;   // 0x16
+        apdu[OFFSET_P2] = (byte)0x00;
+        apdu[OFFSET_LC] = (byte)0x01;
         
         /* Creates message with class name and writes it in the output file and on the screen. */
-        String message = "\r\n" + cardManager.GetAlgorithmName(CardMngr.RANDOMDATA_STR[0]) + "\r\n";
+        String message = "\r\n" + cardManager.GetAlgorithmName(SingleModeTest.RANDOMDATA_STR[0]) + "\r\n";
         System.out.println(message);
         file.write(message.getBytes());
         
-        for (int i=1; i<CardMngr.RANDOMDATA_STR.length; i++){    // i = 1 because RandomData[0] is class name
+        for (int i=1; i<SingleModeTest.RANDOMDATA_STR.length; i++){    // i = 1 because RandomData[0] is class name
             // get starting time of communication cycle
-            elapsedCard = -System.currentTimeMillis();
             apdu[OFFSET_DATA] = (byte)i;
+            elapsedCard = -System.currentTimeMillis();
             ResponseAPDU response = cardManager.sendAPDU(apdu);
-            byte[] resp = response.getBytes();
-            
-                // save time of card response
-                elapsedCard += System.currentTimeMillis();
-            
-            /* Calls method CheckResult - should add to output error messages. */
-            CheckResult(file, cardManager.GetAlgorithmName(CardMngr.RANDOMDATA_STR[i]), resp[1], elapsedCard);
+            // save time of card response
+            elapsedCard += System.currentTimeMillis();
+            byte[] resp = response.getData();
+            // Calls method CheckResult - should add to output error messages. 
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.RANDOMDATA_STR[i]), resp[1], elapsedCard, response.getSW());
         }
     }
     
@@ -675,40 +784,35 @@ public class SingleModeTest {
      * @throws IOException
      * @throws Exception
      */
-    public void TestClassKeyBuilder (FileOutputStream file) throws IOException, Exception{
+    public static void TestClassKeyBuilder (FileOutputStream file) throws IOException, Exception{
         long       elapsedCard = 0;
         byte[] apdu = new byte[8];
-            apdu[OFFSET_CLA] = (byte)0xB0;  // for AlgTest applet
-            apdu[OFFSET_INS] = (byte)0x75;  // for AlgTest applet switch to 'TestSupportedModeSingle'
-            apdu[OFFSET_P1] = CLASS_KEYBUILDER;   // 0x20
-            apdu[OFFSET_P2] = (byte)0x00;
-            apdu[OFFSET_LC] = (byte)0x03;
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
+        apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
+        apdu[OFFSET_P1] = Consts.CLASS_KEYBUILDER;   // 0x20
+        apdu[OFFSET_P2] = (byte)0x00;
+        apdu[OFFSET_LC] = (byte)0x03;
             
-        /* Creates message with class name and writes it in the output file and on the screen. */
+        // Creates message with class name and writes it in the output file and on the screen. 
         String message = "\n" + cardManager.GetAlgorithmName(KEYBUILDER_STR[0]) + "\r\n";
         System.out.println(message);
         file.write(message.getBytes());
 
         for (int i = 1; i < KEYBUILDER_STR.length; i++){
-            
-                // get starting time of communication cycle
-                elapsedCard = -System.currentTimeMillis();
-                // byte to choose subclass
-                apdu[OFFSET_DATA] = (byte)KEYBUILDER_CONST[i-1];    // (byte)3 => TYPE DES
-                // bytes to carry the length of tested key
-                apdu[OFFSET_DATA + 1] = KEYBUILDER_LENGTHS[(i*2)-1];
-                apdu[OFFSET_DATA + 2] = KEYBUILDER_LENGTHS[(i*2)];
-                
-                ResponseAPDU response = cardManager.sendAPDU(apdu);
-                byte[] resp = response.getBytes();
-            
-                
-                    // save time of card response
-                    elapsedCard += System.currentTimeMillis();
-                
-                /* Calls method CheckResult - should add to output error messages. */
-                CheckResult(file, cardManager.GetAlgorithmName(KEYBUILDER_STR[i]), resp[1], elapsedCard);
-            
+            // byte to choose subclass
+            apdu[OFFSET_DATA] = KEYBUILDER_CONST[i-1];    // (byte)3 => TYPE DES
+            // bytes to carry the length of tested key
+            apdu[OFFSET_DATA + 1] = KEYBUILDER_LENGTHS[(i*2)-1];
+            apdu[OFFSET_DATA + 2] = KEYBUILDER_LENGTHS[(i*2)];
+
+            // get starting time of communication cycle
+            elapsedCard = -System.currentTimeMillis();
+            ResponseAPDU response = cardManager.sendAPDU(apdu);
+            // save time of card response
+            elapsedCard += System.currentTimeMillis();
+            byte[] resp = response.getData();
+            // Calls method CheckResult - should add to output error messages. 
+            CheckResult(file, cardManager.GetAlgorithmName(KEYBUILDER_STR[i]), resp[1], elapsedCard, response.getSW());
         }
     }
     
@@ -718,32 +822,31 @@ public class SingleModeTest {
      * @throws IOException
      * @throws Exception
      */
-    public void TestClassKeyAgreement (FileOutputStream file) throws IOException, Exception{
+    public static void TestClassKeyAgreement (FileOutputStream file) throws IOException, Exception{
         long       elapsedCard = 0;
         byte[] apdu = new byte[6];
-            apdu[OFFSET_CLA] = (byte)0xB0;  // for AlgTest applet
-            apdu[OFFSET_INS] = (byte)0x75;  // for AlgTest applet switch to 'TestSupportedModeSingle'
-            apdu[OFFSET_P1] = CLASS_KEYAGREEMENT;   // 0x13
-            apdu[OFFSET_P2] = (byte)0x00;
-            apdu[OFFSET_LC] = (byte)0x01;
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
+        apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
+        apdu[OFFSET_P1] = Consts.CLASS_KEYAGREEMENT;   // 0x13
+        apdu[OFFSET_P2] = (byte)0x00;
+        apdu[OFFSET_LC] = (byte)0x01;
     
         /* Creates message with class name and writes it in the output file and on the screen. */
-        String message = "\n" + cardManager.GetAlgorithmName(CardMngr.KEYAGREEMENT_STR[0]) + "\r\n";
+        String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.KEYAGREEMENT_STR[0]) + "\r\n";
         System.out.println(message);
         file.write(message.getBytes());
         
-        for (int i=1; i<CardMngr.KEYAGREEMENT_STR.length; i++){    // i = 1 because KeyAgreement[0] is class name
+        for (int i=1; i<SingleModeTest.KEYAGREEMENT_STR.length; i++){    // i = 1 because KeyAgreement[0] is class name
+            apdu[OFFSET_DATA] = (byte)i;
             // get starting time of communication cycle
             elapsedCard = -System.currentTimeMillis();
-            apdu[OFFSET_DATA] = (byte)i;
             ResponseAPDU response = cardManager.sendAPDU(apdu);
-            byte[] resp = response.getBytes();
+            // save time of card response
+            elapsedCard += System.currentTimeMillis();
+            byte[] resp = response.getData();
             
-                // save time of card response
-                elapsedCard += System.currentTimeMillis();
-            
-            /* Calls method CheckResult - should add to output error messages. */
-            CheckResult(file, cardManager.GetAlgorithmName(CardMngr.KEYAGREEMENT_STR[i]), resp[1], elapsedCard);
+            // Calls method CheckResult - should add to output error messages. 
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYAGREEMENT_STR[i]), resp[1], elapsedCard, response.getSW());
         }
     }
     
@@ -753,32 +856,30 @@ public class SingleModeTest {
      * @throws IOException
      * @throws Exception
      */
-    public void TestClassChecksum (FileOutputStream file) throws IOException, Exception{
+    public static void TestClassChecksum (FileOutputStream file) throws IOException, Exception{
         long       elapsedCard = 0;
         byte[] apdu = new byte[6];
-            apdu[OFFSET_CLA] = (byte)0xB0;  // for AlgTest applet
-            apdu[OFFSET_INS] = (byte)0x75;  // for AlgTest applet switch to 'TestSupportedModeSingle'
-            apdu[OFFSET_P1] = CLASS_CHECKSUM;   // 0x17
-            apdu[OFFSET_P2] = (byte)0x00;
-            apdu[OFFSET_LC] = (byte)0x01;
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
+        apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
+        apdu[OFFSET_P1] = Consts.CLASS_CHECKSUM;   // 0x17
+        apdu[OFFSET_P2] = (byte)0x00;
+        apdu[OFFSET_LC] = (byte)0x01;
     
-        /* Creates message with class name and writes it in the output file and on the screen. */
-        String message = "\n" + cardManager.GetAlgorithmName(CardMngr.CHECKSUM_STR[0]) + "\r\n";
+        // Creates message with class name and writes it in the output file and on the screen. 
+        String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.CHECKSUM_STR[0]) + "\r\n";
         System.out.println(message);
         file.write(message.getBytes());
         
-        for (int i=1; i<CardMngr.CHECKSUM_STR.length; i++){    // i = 1 because Checksum[0] is class name
+        for (int i=1; i<SingleModeTest.CHECKSUM_STR.length; i++){    // i = 1 because Checksum[0] is class name
+            apdu[OFFSET_DATA] = (byte) i;
             // get starting time of communication cycle
             elapsedCard = -System.currentTimeMillis();
-            apdu[OFFSET_DATA] = (byte)i;
             ResponseAPDU response = cardManager.sendAPDU(apdu);
-            byte[] resp = response.getBytes();
-            
-                // save time of card response
-                elapsedCard += System.currentTimeMillis();
-            
+            // save time of card response
+            elapsedCard += System.currentTimeMillis();
+            byte[] resp = response.getData();
             /* Calls method CheckResult - should add to output error messages. */
-            CheckResult(file, cardManager.GetAlgorithmName(CardMngr.CHECKSUM_STR[i]), resp[1], elapsedCard);
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.CHECKSUM_STR[i]), resp[1], elapsedCard, response.getSW());
         }
     }
     
@@ -788,37 +889,36 @@ public class SingleModeTest {
      * @throws IOException
      * @throws Exception
      */
-    public void TestClassKeyPair_ALG_RSA (FileOutputStream file) throws IOException, Exception{
+    public static void TestClassKeyPair_ALG_RSA (FileOutputStream file) throws IOException, Exception{
         long       elapsedCard = 0;
         byte[] apdu = new byte[8];
-            apdu[OFFSET_CLA] = (byte)0xB0;      // for AlgTest applet
-            apdu[OFFSET_INS] = (byte)0x75;      // for AlgTest applet switch to 'TestSupportedModeSingle'
-            apdu[OFFSET_P1] = CLASS_KEYPAIR;    // 0x19
+            apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;      // for AlgTest applet
+            apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;      // for AlgTest applet switch to 'TestSupportedModeSingle'
+            apdu[OFFSET_P1] = Consts.CLASS_KEYPAIR;    // 0x19
             apdu[OFFSET_P2] = (byte)0x00;
             apdu[OFFSET_LC] = (byte)0x03;
             apdu[OFFSET_DATA] = ALG_RSA;        // 1
         
         /* Creates message with class name and writes it in the output file and on the screen. */
-        String message = "\n" + cardManager.GetAlgorithmName(CardMngr.KEYPAIR_RSA_STR[0]) + "\r\n";
+        String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_RSA_STR[0]) + "\r\n";
         System.out.println(message);
         file.write(message.getBytes());
         
         int counter = 24;
-        for (int i=1; i<CardMngr.KEYPAIR_RSA_STR.length; i++){    // i = 1 because KeyPair_RSA_STR[0] is class name
-            // get starting time of communication cycle
-            elapsedCard = -System.currentTimeMillis();
+        for (int i=1; i<SingleModeTest.KEYPAIR_RSA_STR.length; i++){    // i = 1 because KeyPair_RSA_STR[0] is class name
             apdu[OFFSET_DATA + 1] = KEY_LENGTHS_HEX[counter];
             apdu[OFFSET_DATA + 2] = KEY_LENGTHS_HEX[counter + 1];
             counter = counter + 2;
 
+            // get starting time of communication cycle
+            elapsedCard = -System.currentTimeMillis();
             ResponseAPDU response = cardManager.sendAPDU(apdu);
-            byte[] resp = response.getBytes();
+            // save time of card response
+            elapsedCard += System.currentTimeMillis();
+            byte[] resp = response.getData();
             
-                // save time of card response
-                elapsedCard += System.currentTimeMillis();
-            
-            /* Calls method CheckResult - should add to output error messages. */
-            CheckResult(file, cardManager.GetAlgorithmName(CardMngr.KEYPAIR_RSA_STR[i]), resp[1], elapsedCard);
+            // Calls method CheckResult - should add to output error messages. */
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_RSA_STR[i]), resp[1], elapsedCard, response.getSW());
         }
     }
     
@@ -828,38 +928,37 @@ public class SingleModeTest {
      * @throws IOException
      * @throws Exception
      */
-    public void TestClassKeyPair_ALG_RSA_CRT (FileOutputStream file) throws IOException, Exception{
+    public static void TestClassKeyPair_ALG_RSA_CRT (FileOutputStream file) throws IOException, Exception{
         long       elapsedCard = 0;
         byte[] apdu = new byte[8];
-        apdu[OFFSET_CLA] = (byte)0xB0;      // for AlgTest applet
-        apdu[OFFSET_INS] = (byte)0x75;      // for AlgTest applet switch to 'TestSupportedModeSingle'
-        apdu[OFFSET_P1] = CLASS_KEYPAIR;    // 0x19
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;      // for AlgTest applet
+        apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;      // for AlgTest applet switch to 'TestSupportedModeSingle'
+        apdu[OFFSET_P1] = Consts.CLASS_KEYPAIR;    // 0x19
         apdu[OFFSET_P2] = (byte)0x00;
         apdu[OFFSET_LC] = (byte)0x03;
         apdu[OFFSET_DATA] = ALG_RSA_CRT;    // 2
         
         /* Creates message with class name and writes it in the output file and on the screen. */
-        String message = "\n" + cardManager.GetAlgorithmName(CardMngr.KEYPAIR_RSACRT_STR[0]) + "\r\n";
+        String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_RSACRT_STR[0]) + "\r\n";
         System.out.println(message);
         file.write(message.getBytes());
         
         int counter = 24;
-        for (int i=1; i<CardMngr.KEYPAIR_RSACRT_STR.length; i++){    // i = 1 because KeyPair_RSACRT_STR[0] is class name
-            // get starting time of communication cycle
-            elapsedCard = -System.currentTimeMillis();
+        for (int i=1; i<SingleModeTest.KEYPAIR_RSACRT_STR.length; i++){    // i = 1 because KeyPair_RSACRT_STR[0] is class name
             
             apdu[OFFSET_DATA + 1] = KEY_LENGTHS_HEX[counter];
             apdu[OFFSET_DATA + 2] = KEY_LENGTHS_HEX[counter + 1];
             counter = counter + 2;
             
+            // get starting time of communication cycle
+            elapsedCard = -System.currentTimeMillis();
             ResponseAPDU response = cardManager.sendAPDU(apdu);
-            byte[] resp = response.getBytes();
-          
-                // save time of card response
-                elapsedCard += System.currentTimeMillis();
+            // save time of card response
+            elapsedCard += System.currentTimeMillis();
+            byte[] resp = response.getData();
             
-            /* Calls method CheckResult - should add to output error messages. */
-            CheckResult(file, cardManager.GetAlgorithmName(CardMngr.KEYPAIR_RSACRT_STR[i]), resp[1], elapsedCard);
+            // Calls method CheckResult - should add to output error messages.
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_RSACRT_STR[i]), resp[1], elapsedCard, response.getSW());
         }
     }
     
@@ -869,37 +968,36 @@ public class SingleModeTest {
      * @throws IOException
      * @throws Exception
      */
-    public void TestClassKeyPair_ALG_DSA (FileOutputStream file) throws IOException, Exception{
+    public static void TestClassKeyPair_ALG_DSA (FileOutputStream file) throws IOException, Exception{
         long       elapsedCard = 0;
         byte[] apdu = new byte[8];
-        apdu[OFFSET_CLA] = (byte)0xB0;      // for AlgTest applet
-        apdu[OFFSET_INS] = (byte)0x75;      // for AlgTest applet switch to 'TestSupportedModeSingle'
-        apdu[OFFSET_P1] = CLASS_KEYPAIR;    // 0x19
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;      // for AlgTest applet
+        apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;      // for AlgTest applet switch to 'TestSupportedModeSingle'
+        apdu[OFFSET_P1] = Consts.CLASS_KEYPAIR;    // 0x19
         apdu[OFFSET_P2] = (byte)0x00;
         apdu[OFFSET_LC] = (byte)0x03;
         apdu[OFFSET_DATA] = ALG_DSA;        // 3
         
         /* Creates message with class name and writes it in the output file and on the screen. */
-        String message = "\n" + cardManager.GetAlgorithmName(CardMngr.KEYPAIR_DSA_STR[0]) + "\r\n";
+        String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_DSA_STR[0]) + "\r\n";
         System.out.println(message);
         file.write(message.getBytes());
         
         int counter = 24;
-        for (int i=1; i<CardMngr.KEYPAIR_DSA_STR.length; i++){    // i = 1 because KeyPair_DSA_STR[0] is class name
-            // get starting time of communication cycle
-            elapsedCard = -System.currentTimeMillis();
+        for (int i=1; i<SingleModeTest.KEYPAIR_DSA_STR.length; i++){    // i = 1 because KeyPair_DSA_STR[0] is class name
             apdu[OFFSET_DATA + 1] = KEY_LENGTHS_HEX[counter];
             apdu[OFFSET_DATA + 2] = KEY_LENGTHS_HEX[counter + 1];
             counter = counter + 4;
             
+            // get starting time of communication cycle
+            elapsedCard = -System.currentTimeMillis();
             ResponseAPDU response = cardManager.sendAPDU(apdu);
-            byte[] resp = response.getBytes();
+            // save time of card response
+            elapsedCard += System.currentTimeMillis();
+            byte[] resp = response.getData();
             
-                // save time of card response
-                elapsedCard += System.currentTimeMillis();
-            
-            /* Calls method CheckResult - should add to output error messages. */
-            CheckResult(file, cardManager.GetAlgorithmName(CardMngr.KEYPAIR_DSA_STR[i]), resp[1], elapsedCard);
+            // Calls method CheckResult - should add to output error messages. 
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_DSA_STR[i]), resp[1], elapsedCard, response.getSW());
         }
     }
     
@@ -909,37 +1007,36 @@ public class SingleModeTest {
      * @throws IOException
      * @throws Exception
      */
-    public void TestClassKeyPair_ALG_EC_F2M (FileOutputStream file) throws IOException, Exception{
+    public static void TestClassKeyPair_ALG_EC_F2M (FileOutputStream file) throws IOException, Exception{
         long       elapsedCard = 0;
         byte[] apdu = new byte[8];
-        apdu[OFFSET_CLA] = (byte)0xB0;      // for AlgTest applet
-        apdu[OFFSET_INS] = (byte)0x75;      // for AlgTest applet switch to 'TestSupportedModeSingle'
-        apdu[OFFSET_P1] = CLASS_KEYPAIR;    // 0x19
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;      // for AlgTest applet
+        apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;      // for AlgTest applet switch to 'TestSupportedModeSingle'
+        apdu[OFFSET_P1] = Consts.CLASS_KEYPAIR;    // 0x19
         apdu[OFFSET_P2] = (byte)0x00;
         apdu[OFFSET_LC] = (byte)0x03;
         apdu[OFFSET_DATA] = ALG_EC_F2M;     // 4
         
         /* Creates message with class name and writes it in the output file and on the screen. */
-        String message = "\n" + cardManager.GetAlgorithmName(CardMngr.KEYPAIR_EC_F2M_STR[0]) + "\r\n";
+        String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_EC_F2M_STR[0]) + "\r\n";
         System.out.println(message);
         file.write(message.getBytes());
         
         int counter = 16;
-        for (int i=1; i<CardMngr.KEYPAIR_EC_F2M_STR.length; i++){    // i = 1 because KeyPair_EC_F2M_STR[0] is class name
-            // get starting time of communication cycle
-            elapsedCard = -System.currentTimeMillis();
+        for (int i=1; i<SingleModeTest.KEYPAIR_EC_F2M_STR.length; i++){    // i = 1 because KeyPair_EC_F2M_STR[0] is class name
             apdu[OFFSET_DATA + 1] = KEY_LENGTHS_HEX[counter];
             apdu[OFFSET_DATA + 2] = KEY_LENGTHS_HEX[counter + 1];
             counter = counter + 4;
             
+            // get starting time of communication cycle
+            elapsedCard = -System.currentTimeMillis();
             ResponseAPDU response = cardManager.sendAPDU(apdu);
-            byte[] resp = response.getBytes();
+            // save time of card response
+            elapsedCard += System.currentTimeMillis();
+            byte[] resp = response.getData();
             
-                // save time of card response
-                elapsedCard += System.currentTimeMillis();
-            
-            /* Calls method CheckResult - should add to output error messages. */
-            CheckResult(file, cardManager.GetAlgorithmName(CardMngr.KEYPAIR_EC_F2M_STR[i]), resp[1], elapsedCard);
+            // Calls method CheckResult - should add to output error messages.
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_EC_F2M_STR[i]), resp[1], elapsedCard, response.getSW());
         }
     }
     
@@ -949,37 +1046,36 @@ public class SingleModeTest {
      * @throws IOException
      * @throws Exception
      */
-    public void TestClassKeyPair_ALG_EC_FP (FileOutputStream file) throws IOException, Exception{
+    public static void TestClassKeyPair_ALG_EC_FP (FileOutputStream file) throws IOException, Exception{
         long       elapsedCard = 0;
         byte[] apdu = new byte[8];
-        apdu[OFFSET_CLA] = (byte)0xB0;      // for AlgTest applet
-        apdu[OFFSET_INS] = (byte)0x75;      // for AlgTest applet switch to 'TestSupportedModeSingle'
-        apdu[OFFSET_P1] = CLASS_KEYPAIR;    // 0x19
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;      // for AlgTest applet
+        apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;      // for AlgTest applet switch to 'TestSupportedModeSingle'
+        apdu[OFFSET_P1] = Consts.CLASS_KEYPAIR;    // 0x19
         apdu[OFFSET_P2] = (byte)0x00;
         apdu[OFFSET_LC] = (byte)0x03;
         apdu[OFFSET_DATA] = ALG_EC_FP;      // 5
         
-        /* Creates message with class name and writes it in the output file and on the screen */
-        String message = "\n" + cardManager.GetAlgorithmName(CardMngr.KEYPAIR_EC_FP_STR[0]) + "\r\n";
+        // Creates message with class name and writes it in the output file and on the screen 
+        String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_EC_FP_STR[0]) + "\r\n";
         System.out.println(message);
         file.write(message.getBytes());
         
         int counter = 0;
-        for (int i=1; i<CardMngr.KEYPAIR_EC_FP_STR.length; i++){    // i = 1 because KeyPair_EC_FP_STR[0] is class name
-            // get starting time of communication cycle
-            elapsedCard = -System.currentTimeMillis();
+        for (int i=1; i<SingleModeTest.KEYPAIR_EC_FP_STR.length; i++){    // i = 1 because KeyPair_EC_FP_STR[0] is class name
             apdu[OFFSET_DATA + 1] = KEY_LENGTHS_HEX[counter];
             apdu[OFFSET_DATA + 2] = KEY_LENGTHS_HEX[counter + 1];
             counter = counter + 2;
             
+            // get starting time of communication cycle
+            elapsedCard = -System.currentTimeMillis();
             ResponseAPDU response = cardManager.sendAPDU(apdu);
-            byte[] resp = response.getBytes();
+            // save time of card response
+            elapsedCard += System.currentTimeMillis();
+            byte[] resp = response.getData();
             
-                // save time of card response
-                elapsedCard += System.currentTimeMillis();
-            
-            /* Calls method CheckResult - should add to output error messages. */
-            CheckResult(file, cardManager.GetAlgorithmName(CardMngr.KEYPAIR_EC_FP_STR[i]), resp[1], elapsedCard);
+            // Calls method CheckResult - should add to output error messages. 
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_EC_FP_STR[i]), resp[1], elapsedCard, response.getSW());
         }
     }
     
@@ -988,25 +1084,23 @@ public class SingleModeTest {
      * @param file FileOutputStream object containing file for output data.
      * @throws Exception
      */
-    public void testAllAtOnce (FileOutputStream file) throws Exception{
+    public static void testAllAtOnce (FileOutputStream file) throws Exception{
         TestClassCipher(file);
-                TestClassSignature(file);
-                TestClassMessageDigest(file);
-                TestClassRandomData(file);
-                TestClassKeyBuilder(file);
-                TestClassKeyAgreement(file);
-                TestClassChecksum(file);
-                TestClassKeyPair_ALG_RSA(file);
-                TestClassKeyPair_ALG_RSA_CRT(file);
-                TestClassKeyPair_ALG_DSA(file);
-                TestClassKeyPair_ALG_EC_F2M(file);
-                TestClassKeyPair_ALG_EC_FP(file);
-                // test RSA exponent
-                StringBuilder value = new StringBuilder();
-                value.setLength(0);
-                cardManager.TestVariableRSAPublicExponentSupport(value, file, OFFSET_P2);
-                
-                CloseFile(file);
+        TestClassSignature(file);
+        TestClassMessageDigest(file);
+        TestClassRandomData(file);
+        TestClassKeyBuilder(file);
+        TestClassKeyAgreement(file);
+        TestClassChecksum(file);
+        TestClassKeyPair_ALG_RSA(file);
+        TestClassKeyPair_ALG_RSA_CRT(file);
+        TestClassKeyPair_ALG_DSA(file);
+        TestClassKeyPair_ALG_EC_F2M(file);
+        TestClassKeyPair_ALG_EC_FP(file);
+        // test RSA exponent
+        StringBuilder value = new StringBuilder();
+        value.setLength(0);
+        cardManager.TestVariableRSAPublicExponentSupport(value, file, OFFSET_P2);
     }
 }   // END OF CLASS 'SINGLEMODETEST'
 

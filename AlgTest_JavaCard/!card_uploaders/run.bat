@@ -1,1 +1,1 @@
-GPShell.exe installAlgTest_NXP_JCOP_CJ2A081.txt
+GPShell.exe installAlgTest_NXP_JCOP_CJ3A081.txt

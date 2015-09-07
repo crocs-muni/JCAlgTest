@@ -3,7 +3,9 @@
 /AlgTest_Process/nbproject/private/
 /AlgTest_JavaCard/build/
 /AlgTest_JClient/build/
+/AlgTest_JClient/test/*.jar
 /AlgTest_Process/build/
 /AlgTest_JClient/dist/README.TXT
 /AlgTest_Process/dist/README.TXT
 *.class
+/AlgTest_JavaCard/nbproject/project.properties

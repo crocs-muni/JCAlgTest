@@ -5,6 +5,7 @@ AlgTestJClient version; 1.1
 AlgTest applet version; 1.1
 Used reader; PC/SC terminal Gemplus USB SmartCard Reader 0
 Card ATR; 3b f6 18 00 ff 81 31 fe 45 4a 32 41 30 38 30 1b 
+Card name; NXP J2A080 80K
 Used protocol; T=1
 
 JCSystem.getVersion()[Major.Minor];2.2;
