@@ -1,4 +1,4 @@
-AlgTest
+JCAlgTest
 =======
 
 [![Build status](https://travis-ci.org/petrs/JCAlgTest.svg?branch=master)](https://travis-ci.org/petrs/JCAlgTest)
