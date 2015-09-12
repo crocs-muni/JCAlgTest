@@ -66,4 +66,5 @@ More detailed usage:
 
 See more details at http://www.fi.muni.cz/~xsvenda/jcsupport.html
 
-You can also download the complete java card project of full versions,  visit "http://javacardos.com/javacardforum/viewtopic.php?f=30&t=40"
+You can also download the complete java card project,  visit 
+"http://javacardos.com/javacardforum/viewtopic.php?f=30&t=40"
