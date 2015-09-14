@@ -1,37 +1,29 @@
+
 /*
     Copyright (c) 2004-2014  Petr Svenda <petr@svenda.com>
-
      LICENSE TERMS
-
      The free distribution and use of this software in both source and binary
      form is allowed (with or without changes) provided that:
-
        1. distributions of this source code include the above copyright
           notice, this list of conditions and the following disclaimer;
-
        2. distributions in binary form include the above copyright
           notice, this list of conditions and the following disclaimer
           in the documentation and/or other associated materials;
-
        3. the copyright holder's name is not used to endorse products
           built using this software without specific written permission.
-
      ALTERNATIVELY, provided that this notice is retained in full, this product
      may be distributed under the terms of the GNU General Public License (GPL),
      in which case the provisions of the GPL apply INSTEAD OF those given above.
-
      DISCLAIMER
-
      This software is provided 'as is' with no explicit or implied warranties
      in respect of its properties, including, but not limited to, correctness
      and/or fitness for purpose.
-
     Please, report any bugs to author <petr@svenda.com>
 */
 
 /**
  *
- * @author Petr Svenda, Lenka Kunikova, Lukas Srom
+ * @author Petr Svenda, Lenka Kunikova, Lukas Srom, Tolice
  */
 package AlgTest;
 
@@ -64,12 +56,48 @@ public class AlgStorageTest {
     TestSettings               m_testSettings = null;
     
     AlgStorageTest() { 
-        m_aesCipher = Cipher.getInstance(JCConsts.Cipher_ALG_AES_BLOCK_128_CBC_NOPAD, false);
-        m_desCipher = Cipher.getInstance(JCConsts.Cipher_ALG_DES_CBC_NOPAD, false);
+        try
+        {
+        	m_aesCipher = Cipher.getInstance(JCConsts.Cipher_ALG_AES_BLOCK_128_CBC_NOPAD, false);
+        }
+        catch (Exception e)
+        {
+	         ;
+        }
+        try
+        {
+        	m_desCipher = Cipher.getInstance(JCConsts.Cipher_ALG_DES_CBC_NOPAD, false);
+        }
+        catch (Exception e)
+        {
+	        ;
+        }
         
-        m_desKey = (DESKey) KeyBuilder.buildKey(KeyBuilder.TYPE_DES, KeyBuilder.LENGTH_DES3_3KEY, false);
-        m_aesKey = (AESKey) KeyBuilder.buildKey(KeyBuilder.TYPE_AES, KeyBuilder.LENGTH_AES_128, false);
-        m_testSettings = new TestSettings();
+        try
+        {
+        	m_desKey = (DESKey) KeyBuilder.buildKey(KeyBuilder.TYPE_DES, KeyBuilder.LENGTH_DES3_3KEY, false);
+        }
+        catch (Exception e)
+        {
+	        ;
+        }
+        try
+        {
+        	m_aesKey = (AESKey) KeyBuilder.buildKey(KeyBuilder.TYPE_AES, KeyBuilder.LENGTH_AES_128, false);
+        }
+        catch (Exception e) 
+        {
+        	;
+        }
+        try
+        {
+	        m_testSettings = new TestSettings();
+        }
+        catch (Exception e)
+        {
+	        ;
+        }
+        
         
         //m_ramArray = JCSystem.makeTransientByteArray((short) 600, JCSystem.CLEAR_ON_RESET);
     }
@@ -181,6 +209,7 @@ public class AlgStorageTest {
 /**/
        }
        apdu.setOutgoingAndSend((short) 0, offset);
+       JCSystem.requestObjectDeletion();
    }  
    
    
@@ -296,6 +325,7 @@ public class AlgStorageTest {
         }
 
         apdu.setOutgoingAndSend((short) 0, offset);
+        JCSystem.requestObjectDeletion();
    }
    
    
@@ -372,5 +402,6 @@ public class AlgStorageTest {
         }
 
         apdu.setOutgoingAndSend((short) 0, offset);   
+        JCSystem.requestObjectDeletion();
    }
 }

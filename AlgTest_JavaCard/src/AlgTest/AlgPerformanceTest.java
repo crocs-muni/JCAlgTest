@@ -1,37 +1,29 @@
+
 /*
     Copyright (c) 2004-2014  Petr Svenda <petr@svenda.com>
-
      LICENSE TERMS
-
      The free distribution and use of this software in both source and binary
      form is allowed (with or without changes) provided that:
-
        1. distributions of this source code include the above copyright
           notice, this list of conditions and the following disclaimer;
-
        2. distributions in binary form include the above copyright
           notice, this list of conditions and the following disclaimer
           in the documentation and/or other associated materials;
-
        3. the copyright holder's name is not used to endorse products
           built using this software without specific written permission.
-
      ALTERNATIVELY, provided that this notice is retained in full, this product
      may be distributed under the terms of the GNU General Public License (GPL),
      in which case the provisions of the GPL apply INSTEAD OF those given above.
-
      DISCLAIMER
-
      This software is provided 'as is' with no explicit or implied warranties
      in respect of its properties, including, but not limited to, correctness
      and/or fitness for purpose.
-
     Please, report any bugs to author <petr@svenda.com>
 */
 
 /**
  *
- * @author Petr Svenda, Lenka Kunikova, Lukas Srom
+ * @author Petr Svenda, Lenka Kunikova, Lukas Srom Tolice
  */
 package AlgTest;
 
@@ -129,13 +121,28 @@ import javacardx.crypto.*;
     JavaCardAES         m_aesCipher = null;    
 
     AlgPerformanceTest() {
-        m_testSettings = new TestSettings();
+    	try
+    	{
+	    	m_testSettings = new TestSettings();
+    	}
+    	catch (Exception e)
+    	{
+	    	;
+    	}
+        
         
         m_ram1 = JCSystem.makeTransientByteArray(RAM1_ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);
         m_ram2 = JCSystem.makeTransientByteArray(RAM2_ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);    
         m_eeprom1 = new byte[RAM1_ARRAY_LENGTH];
-        
-        m_trng = RandomData.getInstance(RandomData.ALG_SECURE_RANDOM);
+        try
+        {
+	         m_trng = RandomData.getInstance(RandomData.ALG_SECURE_RANDOM);
+        }
+        catch (Exception e)
+        {
+	       ;
+        }
+       
         
         m_aesCipher = new JavaCardAES();    // aes software cipher
     }
@@ -230,6 +237,7 @@ import javacardx.crypto.*;
     
         apdubuf[offset] = SUCCESS;
         apdu.setOutgoingAndSend(offset, (byte)1);
+        JCSystem.requestObjectDeletion();
     }
 
    void perftest_class_Util(APDU apdu) {  
@@ -328,7 +336,8 @@ import javacardx.crypto.*;
                 
 
         apdubuf[ISO7816.OFFSET_CDATA] = SUCCESS;
-        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);            
+        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);
+        JCSystem.requestObjectDeletion();            
     }  
    
    
@@ -342,7 +351,8 @@ import javacardx.crypto.*;
         
         short len = prepare_Key(apdu, m_testSettings, Consts.TRUE);
         
-        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, len);                
+        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, len);   
+        JCSystem.requestObjectDeletion();             
     }
     short prepare_Key(APDU apdu, TestSettings testSet, byte bSetKeyValue) {
         byte[] apdubuf = apdu.getBuffer();
@@ -515,6 +525,7 @@ import javacardx.crypto.*;
         catch (CryptoException e) { 
             apdubuf[offset] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); offset++;
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);
+            JCSystem.requestObjectDeletion();
         }
         
         return (short) (offset - ISO7816.OFFSET_CDATA);
@@ -825,7 +836,8 @@ import javacardx.crypto.*;
         }
 
         apdubuf[ISO7816.OFFSET_CDATA] = SUCCESS;
-        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);            
+        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);    
+        JCSystem.requestObjectDeletion();        
    }   
    
     void prepare_class_Cipher(APDU apdu) {
@@ -844,10 +856,12 @@ import javacardx.crypto.*;
             
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA,(byte)1);
+            JCSystem.requestObjectDeletion();
         }
         catch (CryptoException e) {
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte) e.getReason();
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
+            JCSystem.requestObjectDeletion();
         }  
     }
 
@@ -883,7 +897,8 @@ import javacardx.crypto.*;
         
         apdubuf[ISO7816.OFFSET_CDATA] = SUCCESS;
         
-        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);            
+        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);      
+        JCSystem.requestObjectDeletion();      
     }
     
     /**
@@ -930,7 +945,8 @@ import javacardx.crypto.*;
             default: ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
         }
         apdubuf[ISO7816.OFFSET_CDATA] = SUCCESS;
-        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);            
+        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1); 
+        JCSystem.requestObjectDeletion();           
     }      
     
     void prepare_class_Signature(APDU apdu) {
@@ -950,11 +966,13 @@ import javacardx.crypto.*;
             
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
+            JCSystem.requestObjectDeletion();
         }
         catch(CryptoException e)
         {
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte)e.getReason();
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
+            JCSystem.requestObjectDeletion();
         }  
     }    
     void perftest_class_Signature(APDU apdu) {  
@@ -987,7 +1005,8 @@ import javacardx.crypto.*;
         }
 
         apdubuf[ISO7816.OFFSET_CDATA] = SUCCESS;
-        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);            
+        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);     
+        JCSystem.requestObjectDeletion();       
     }    
     
     /**
@@ -1032,7 +1051,8 @@ import javacardx.crypto.*;
             default: ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
         }
         apdubuf[ISO7816.OFFSET_CDATA] = SUCCESS;
-        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);            
+        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);
+        JCSystem.requestObjectDeletion();            
     }       
     
     void prepare_class_RandomData(APDU apdu) {
@@ -1043,11 +1063,13 @@ import javacardx.crypto.*;
             m_random = RandomData.getInstance((byte) m_testSettings.algorithmSpecification);
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
+            JCSystem.requestObjectDeletion();
         }
         catch(CryptoException e)
         {
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte)e.getReason();
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
+            JCSystem.requestObjectDeletion();
         }  
     }      
     void perftest_class_RandomData(APDU apdu) {  
@@ -1064,7 +1086,8 @@ import javacardx.crypto.*;
         }
 
         apdubuf[ISO7816.OFFSET_CDATA] = SUCCESS;
-        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);            
+        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);   
+        JCSystem.requestObjectDeletion();         
     }    
     
     void prepare_class_MessageDigest(APDU apdu) {
@@ -1075,11 +1098,13 @@ import javacardx.crypto.*;
             m_digest = MessageDigest.getInstance((byte) m_testSettings.algorithmSpecification, false);
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
+            JCSystem.requestObjectDeletion();
         }
         catch(CryptoException e)
         {
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte)e.getReason();
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
+            JCSystem.requestObjectDeletion();
         }  
     }      
     void perftest_class_MessageDigest(APDU apdu) {  
@@ -1102,7 +1127,8 @@ import javacardx.crypto.*;
         }
 
         apdubuf[ISO7816.OFFSET_CDATA] = SUCCESS;
-        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);            
+        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);  
+        JCSystem.requestObjectDeletion();          
     }    
     
     void prepare_class_Checksum(APDU apdu) {
@@ -1113,10 +1139,12 @@ import javacardx.crypto.*;
             m_checksum = Checksum.getInstance((byte) m_testSettings.algorithmSpecification, false);
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
+            JCSystem.requestObjectDeletion();
         }
         catch(CryptoException e) {
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte)e.getReason(); 
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
+            JCSystem.requestObjectDeletion();
         }  
     }      
     void perftest_class_Checksum(APDU apdu) {  
@@ -1133,7 +1161,8 @@ import javacardx.crypto.*;
         }
 
         apdubuf[ISO7816.OFFSET_CDATA] = SUCCESS;
-        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);            
+        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);   
+        JCSystem.requestObjectDeletion();         
     }   
     
     void prepare_class_KeyPair(APDU apdu) {
@@ -1144,10 +1173,12 @@ import javacardx.crypto.*;
             m_keyPair1 = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
+            JCSystem.requestObjectDeletion();
         }
         catch(CryptoException e) {
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte)e.getReason(); 
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
+            JCSystem.requestObjectDeletion();
         }  
     }      
     void perftest_class_KeyPair(APDU apdu) {  
@@ -1161,7 +1192,8 @@ import javacardx.crypto.*;
         }
 
         apdubuf[ISO7816.OFFSET_CDATA] = SUCCESS;
-        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);            
+        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);
+        JCSystem.requestObjectDeletion();            
     }            
     
     void prepare_class_KeyAgreement(APDU apdu) {
@@ -1175,10 +1207,12 @@ import javacardx.crypto.*;
             m_keyAgreement = KeyAgreement.getInstance((byte) m_testSettings.algorithmSpecification, false);
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
+            JCSystem.requestObjectDeletion();
         }
         catch(CryptoException e) {
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte)e.getReason(); 
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
+            JCSystem.requestObjectDeletion();
         }  
     }      
     void perftest_class_KeyAgreement(APDU apdu) {  
@@ -1198,7 +1232,8 @@ import javacardx.crypto.*;
         }
 
         apdubuf[ISO7816.OFFSET_CDATA] = SUCCESS;
-        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);            
+        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);
+        JCSystem.requestObjectDeletion();            
     }  
     
     
@@ -1252,6 +1287,7 @@ import javacardx.crypto.*;
         
         apdubuf[offset] = SUCCESS;
         apdu.setOutgoingAndSend(offset, (short) 1);
+        JCSystem.requestObjectDeletion();
     }
 
     // HOTP 
@@ -1268,7 +1304,12 @@ import javacardx.crypto.*;
         short len = apdu.setIncomingAndReceive();
         short offset = ISO7816.OFFSET_CDATA;
         
-        if (apdubuf[ISO7816.OFFSET_P1] == (byte) 0x20) { apdubuf[(short) 0] = SUCCESS; apdu.setOutgoingAndSend((short) 0, (short) 1); ISOException.throwIt(ISO7816.SW_NO_ERROR);} // Interrupt to enable measurement of suboperation 
+        if (apdubuf[ISO7816.OFFSET_P1] == (byte) 0x20) 
+        { 
+        	apdubuf[(short) 0] = SUCCESS; 
+        	apdu.setOutgoingAndSend((short) 0, (short) 1); 
+        	ISOException.throwIt(ISO7816.SW_NO_ERROR);
+        } // Interrupt to enable measurement of suboperation 
         // Unwrap authentication server context -- use: $K_{authServerCtxEnc}$ and $K_{authServerCtxMAC}$
         // Note: no checking of padding
         m_swAlgsVerifySignature1.verify(apdubuf, HOTP_SERVER_CTX_OFFSET, HOTP_SERVER_CTX_LENGTH, apdubuf, (short) (HOTP_SERVER_CTX_OFFSET + HOTP_SERVER_CTX_LENGTH), Consts.AUTH_TAG_LENGTH);
@@ -1351,7 +1392,8 @@ import javacardx.crypto.*;
         len += Consts.AUTH_TAG_LENGTH;
         len += HOTP_USER_CODE_LENGTH;
         len += Consts.AUTH_TAG_LENGTH;
-        apdu.setOutgoingAndSend((short) (HOTP_USER_CTX_OFFSET - 1), len);            
+        apdu.setOutgoingAndSend((short) (HOTP_USER_CTX_OFFSET - 1), len); 
+        JCSystem.requestObjectDeletion();           
     }      
     
     
@@ -1372,11 +1414,13 @@ import javacardx.crypto.*;
                 default: ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
             }
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
-            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);            
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);   
+            JCSystem.requestObjectDeletion();         
         }
         catch(CryptoException e) {
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte)e.getReason();
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
+            JCSystem.requestObjectDeletion();
         }  
     }      
     void perftest_swalgs(APDU apdu) {  
@@ -1416,7 +1460,8 @@ import javacardx.crypto.*;
         }
 
         apdubuf[ISO7816.OFFSET_CDATA] = SUCCESS;
-        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);            
+        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);      
+        JCSystem.requestObjectDeletion();      
     }        
     
  }
