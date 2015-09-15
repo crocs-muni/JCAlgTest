@@ -16,8 +16,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  *
@@ -28,6 +26,7 @@ public class JCinfohtml {
     public static final String TABLE_HEAD = "<table cellspacing='0'> <!-- cellspacing='0' is important, must stay -->\n\t<tr><th style=\"width: 330px;\">Name of function</th><th><b>Operation average (ms/op)</b></th><th>Operation minimum (ms/op)</th><th>Operation maximum (ms/op)</th><th>Data length (bytes)</th><th>Prepare average (ms/op)</th><th>Prepare minimum (ms/op)</th><th>Prepare maximum (ms/op)</th><th>Iterations & Invocations</th></tr><!-- Table Header -->\n";
     public static final List<String> category = Arrays.asList("MESSAGE DIGEST", "RANDOM GENERATOR", "CIPHER", "SIGNATURE", "CHECKSUM", "AESKey", "DESKey", "KoreanSEEDKey", "DSAPrivateKey", "DSAPublicKey", "ECF2MPublicKey", "ECF2MPrivateKey", "ECFPPublicKey", "HMACKey", "RSAPrivateKey", "RSAPublicKey", "RSAPrivateCRTKey", "KEY PAIR", "UTIL", "SWALGS");
     public static final String topFunctionsFile = "top.txt";
+    public static final String descFunctionsFile = "desc.txt";
 
     public static List<String> initalize(String input, StringBuilder cardName) throws FileNotFoundException, IOException {
         BufferedReader reader = new BufferedReader(new FileReader(input));
@@ -654,6 +653,7 @@ public class JCinfohtml {
     public static void parseGraphsPage(List<String> lines, FileOutputStream file) throws FileNotFoundException, IOException {
         List<String> topFunctions = new ArrayList<>();
         List<String> usedFunctions = new ArrayList<>();
+        //List<String> dFunctions = new ArrayList<>();
         loadTopFunctions(topFunctions, null);
         StringBuilder toFile = new StringBuilder();
         StringBuilder chart = new StringBuilder();
@@ -669,7 +669,8 @@ public class JCinfohtml {
                 if (methodName.startsWith(" ")) {
                     methodName = methodName.substring(1);
                 }
-                // delete UTIL condition to generate UTIL algs charts
+                //dFunctions.add(methodName);
+                
                 if ((topFunctions.contains(methodName)) || (topFunctions.size() == 0)) {
                     chart.append("\t<script type=\"text/javascript\">\n"
                             + "\tgoogle.setOnLoadCallback(drawFancyVisualization);\n"
@@ -717,12 +718,34 @@ public class JCinfohtml {
             }
         }
 
+        
+        HashMap<String, String> descMap = loadDescription();
+        /*
+        FileOutputStream f = new FileOutputStream("desc.txt");
+        for(String a:dFunctions)
+            f.write((a+";\n").getBytes());
+        f.close();
+        */
+        
         BigDecimal sec = new BigDecimal(2 + usedFunctions.size()*0.15);
         sec = sec.setScale(2, BigDecimal.ROUND_HALF_UP);
         for (String usedFunction : usedFunctions) {
-            toFile.append("\t<div id=\"" + usedFunction.replaceAll(" ", "_") + "\" style=\" min-height:400px; max-height:1000px; min-width:600px; width:49%; height:60%; float:left;\">"
-                    + "</br><h3 style=\"text-align: center;\">" + usedFunction + "</br></br></h3><p style=\"text-align: center;\"><strong>GRAPH IS LOADING. </br></br> THIS MAY TAKE <u>"+ sec +"</u> SECONDS DEPENDING ON THE NUMBER OF GRAPHS.</strong></p>"
-                    + "</div>\n");
+            toFile.append("\t<div class=\"graph\">\n");
+            
+            if(descMap.containsKey(usedFunction))
+                toFile.append("\t<div id=\"" + usedFunction.replaceAll(" ", "_") + "\" style=\"min-height:400px;\">");
+            else
+                toFile.append("\t<div id=\"" + usedFunction.replaceAll(" ", "_") + "\" style=\"min-height:479px;\">");
+            
+            toFile.append("</br><h3 style=\"text-align: center;\">" + usedFunction + "</br></br></h3><p style=\"text-align: center;\"><strong>GRAPH IS LOADING. </br></br> THIS MAY TAKE <u>"+ sec +"</u> SECONDS DEPENDING ON THE NUMBER OF GRAPHS.</strong></p></div>\n");
+            
+            if(descMap.containsKey(usedFunction)){
+                toFile.append("\t<div class=\"description\">");
+                toFile.append(descMap.get(usedFunction));
+                toFile.append("\n\t</div>\n");
+            }
+            
+            toFile.append("\t</div>\n\n");
         }
 
         toFile.append("\t<script type=\"text/javascript\" src=\"https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['corechart']}]}\"></script>\n");
@@ -821,5 +844,29 @@ public class JCinfohtml {
         parseGraphsPage(lines, file);
         endOfHtml(file);
         System.out.println("Make sure that CSS file & JS files (\"Source\" folder) is present in output folder.");
+    }
+
+    private static HashMap<String, String> loadDescription() throws IOException {
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(descFunctionsFile));
+        } catch (IOException e) {
+            System.out.println("Description Functions file not found");
+        }
+
+        String[] lineArray;
+        String line;
+        HashMap<String, String> descMap = new HashMap<>();
+
+        if (reader != null) {
+            while ((line = reader.readLine()) != null) {
+                if (!(line.trim().isEmpty())) {
+                    lineArray = line.split(";", 2);
+                    if(!(lineArray[1].trim().isEmpty()))
+                        descMap.put(lineArray[0], lineArray[1].replaceAll(";", ";\n"));
+                    }
+            }
+        }
+        return descMap;        
     }
 }
