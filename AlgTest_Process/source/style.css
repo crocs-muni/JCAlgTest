@@ -132,7 +132,7 @@ div{
 	border:solid #ebebeb; 
 	border-width:.1em .1em .1em .1em; 
 	padding: .1em .3em; 
-	margin: 0px 40px;
+	margin: 0px 50px 0px 40px;
 }
 
 .graph{
@@ -141,6 +141,13 @@ div{
 	min-width:600px; 
 	width:49%; 
 	float:left;
+}
+
+.end{
+	margin:10px 20px 10px 20px;
+	text-align:center; 
+	float:left; 
+	width:99%;
 }
 
 
