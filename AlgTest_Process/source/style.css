@@ -128,6 +128,28 @@ div{
 	box-shadow: 0 1px 2px #d1d1d1;
 }
 
+.description{
+	border:solid #ebebeb; 
+	border-width:.1em .1em .1em .1em; 
+	padding: .1em .3em; 
+	margin: 0px 50px 0px 40px;
+}
+
+.graph{
+	min-height:480px; 
+	height:auto; 
+	min-width:600px; 
+	width:49%; 
+	float:left;
+}
+
+.end{
+	margin:20px 0px 10px;
+	text-align:center; 
+	float:left; 
+	width:99%;
+}
+
 
 /*
 Headers Style
@@ -174,6 +196,14 @@ p{
 	margin-left: 20px;
 	margin-bottom: 9px;
 }
+
+pre{
+	font-family:Monospace;
+	font-size:12px;
+	margin-left: 10px;
+}
+
+
 
 /*
 Table Style - This is what you want
@@ -278,17 +308,16 @@ table tr:hover td{
 
 .back-to-top {
     position: fixed;
-    bottom: 2em;
+    bottom: 20px;
     right: 20px;
-    text-decoration: none;
-    color: #000000;
-    background-color: rgba(200, 200, 200, 0.5);
-    font-size: 12px;
-    padding: 1em;
-    display: none;	
-	text-shadow: 1px 1px 0px #fff;
+    display: none;
+	width: 60px;
+	height: 60px;
+	background-image: url('up.png');
+	opacity: 0.7;	
 }
 
-.back-to-top:hover {    
-    background-color: rgba(135, 135, 135, 0.50);
+.back-to-top:hover {  
+	background-image: url('up-hover.png');
+	opacity: 0.9;
 }

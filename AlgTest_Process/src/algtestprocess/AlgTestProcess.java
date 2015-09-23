@@ -113,12 +113,11 @@ public class AlgTestProcess {
                         JCinfohtml.runGraphs(args[0]);}
                     else if (args[1].equals(GENERATE_GRAPHS_ONEPAGE)){
                         System.out.println("Generating gprahs page from input file.");
-                        if (args.length > 2){ 
+                        if (args.length > 2)
                             generateGraphsPages(args[0]);
-                        }else{
-                            JCinfohtml.runGraphsOnePage(args[0]);
+                        else
+                            JCinfohtml.runGraphsOnePage(args[0]);                        
                         }
-                        JCinfohtml.runGraphsOnePage(args[0]);}
                     else if (args[1].equals(GENERATE_JCINFO)){
                         System.out.println("Generating JC performance testing to HTML.");
                         if (args.length > 2){ 

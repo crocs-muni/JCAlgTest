@@ -16,8 +16,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  *
@@ -28,6 +26,7 @@ public class JCinfohtml {
     public static final String TABLE_HEAD = "<table cellspacing='0'> <!-- cellspacing='0' is important, must stay -->\n\t<tr><th style=\"width: 330px;\">Name of function</th><th><b>Operation average (ms/op)</b></th><th>Operation minimum (ms/op)</th><th>Operation maximum (ms/op)</th><th>Data length (bytes)</th><th>Prepare average (ms/op)</th><th>Prepare minimum (ms/op)</th><th>Prepare maximum (ms/op)</th><th>Iterations & Invocations</th></tr><!-- Table Header -->\n";
     public static final List<String> category = Arrays.asList("MESSAGE DIGEST", "RANDOM GENERATOR", "CIPHER", "SIGNATURE", "CHECKSUM", "AESKey", "DESKey", "KoreanSEEDKey", "DSAPrivateKey", "DSAPublicKey", "ECF2MPublicKey", "ECF2MPrivateKey", "ECFPPublicKey", "HMACKey", "RSAPrivateKey", "RSAPublicKey", "RSAPrivateCRTKey", "KEY PAIR", "UTIL", "SWALGS");
     public static final String topFunctionsFile = "top.txt";
+    public static final String descFunctionsFile = "desc.txt";
 
     public static List<String> initalize(String input, StringBuilder cardName) throws FileNotFoundException, IOException {
         BufferedReader reader = new BufferedReader(new FileReader(input));
@@ -654,6 +653,7 @@ public class JCinfohtml {
     public static void parseGraphsPage(List<String> lines, FileOutputStream file) throws FileNotFoundException, IOException {
         List<String> topFunctions = new ArrayList<>();
         List<String> usedFunctions = new ArrayList<>();
+        //List<String> dFunctions = new ArrayList<>();
         loadTopFunctions(topFunctions, null);
         StringBuilder toFile = new StringBuilder();
         StringBuilder chart = new StringBuilder();
@@ -669,7 +669,8 @@ public class JCinfohtml {
                 if (methodName.startsWith(" ")) {
                     methodName = methodName.substring(1);
                 }
-                // delete UTIL condition to generate UTIL algs charts
+                //dFunctions.add(methodName);
+                
                 if ((topFunctions.contains(methodName)) || (topFunctions.size() == 0)) {
                     chart.append("\t<script type=\"text/javascript\">\n"
                             + "\tgoogle.setOnLoadCallback(drawFancyVisualization);\n"
@@ -695,8 +696,9 @@ public class JCinfohtml {
 
                     chart.append("]);\n\n"
                             + "\tvar options = {\n"
-                            + "\t\ttitle: '" + methodName + "',\n"
-                            + "\t\ttitleTextStyle: {fontSize: 15},\n"
+                           // + "\t\ttitle: '" + methodName + "',\n"
+                            //+ "\t\ttitleTextStyle: {fontSize: 15},\n"
+                            + "\t\tbackgroundColor: \"transparent\",\n"
                             + "\t\thAxis: {title: 'length of data (bytes)', viewWindow: {min: 0, max: "+ (chart.toString().contains("512") ? "530" : "265") +"} },\n"
                             + "\t\tvAxis: {title: 'duration of operation (ms)' },\n"
                             + "\t\tlegend:'none',};\n\n"
@@ -717,15 +719,39 @@ public class JCinfohtml {
             }
         }
 
+        
+        HashMap<String, String> descMap = loadDescription();
+        /*
+        FileOutputStream f = new FileOutputStream("desc.txt");
+        for(String a:dFunctions)
+            f.write((a+";\n").getBytes());
+        f.close();
+        */
+        
         BigDecimal sec = new BigDecimal(2 + usedFunctions.size()*0.15);
         sec = sec.setScale(2, BigDecimal.ROUND_HALF_UP);
+        toFile.append("<div>\n");
         for (String usedFunction : usedFunctions) {
-            toFile.append("\t<div id=\"" + usedFunction.replaceAll(" ", "_") + "\" style=\" min-height:400px; max-height:1000px; min-width:600px; width:49%; height:60%; float:left;\">"
-                    + "</br><h3 style=\"text-align: center;\">" + usedFunction + "</br></br></h3><p style=\"text-align: center;\"><strong>GRAPH IS LOADING. </br></br> THIS MAY TAKE <u>"+ sec +"</u> SECONDS DEPENDING ON THE NUMBER OF GRAPHS.</strong></p>"
-                    + "</div>\n");
+            toFile.append("\t<div class=\"graph\">\n");
+            toFile.append("\t<h4 style=\"margin-left:40px\">"+usedFunction+"</h4>\n");
+            
+            if(descMap.containsKey(usedFunction)){
+                toFile.append("\t<div class=\"description\">");
+                toFile.append(descMap.get(usedFunction));
+                toFile.append("\n\t</div>\n");
+            }
+            
+            if(descMap.containsKey(usedFunction))
+                toFile.append("\t<div id=\"" + usedFunction.replaceAll(" ", "_") + "\" style=\"min-height:400px; margin-top:-50px;\">");
+            else
+                toFile.append("\t<div id=\"" + usedFunction.replaceAll(" ", "_") + "\" style=\"min-height:479px; margin-top:-50px;\">");
+            
+            // <h4 style=\"text-align: center;\">" + usedFunction + "</h4>
+            toFile.append("<p style=\"text-align: center; margin-top:70px\"><strong>GRAPH IS LOADING. </br></br> THIS MAY TAKE <u>"+ sec +"</u> SECONDS DEPENDING ON THE NUMBER OF GRAPHS.</strong></p></div>\n");
+            toFile.append("\t</div>\n\n");
         }
 
-        toFile.append("\t<script type=\"text/javascript\" src=\"https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['corechart']}]}\"></script>\n");
+        toFile.append("</div>\n<script type=\"text/javascript\" src=\"https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['corechart']}]}\"></script>\n");
 
         //quick links to generated charts at the beginning of html file
         String toFileBegin;
@@ -756,12 +782,11 @@ public class JCinfohtml {
 
     public static void endOfHtml(FileOutputStream file) throws FileNotFoundException, IOException {
         String toFile = "<script>/* <![CDATA[ */(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)\n"
-                + "[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');ga('create','UA-1931909-2','auto');ga('send','pageview');/* ]]> */</script>\n\n";
-        toFile += "</br></p>\n<a href=\"#\" class=\"back-to-top\">Back to Top</a>\n</body>\n" + "</html>";
-        toFile += "<div style=\"margin:10px 20px 10px 20px;\">\n" +
-                  "<center>\n" +
-                  "<p><a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\"><img alt=\"Creative Commons License\" style=\"border-width:0\" src=\"https://i.creativecommons.org/l/by/4.0/88x31.png\" /></a><br /><span xmlns:dct=\"http://purl.org/dc/terms/\" href=\"http://purl.org/dc/dcmitype/Dataset\" property=\"dct:title\" rel=\"dct:type\">JCAlgTest</span> by <span xmlns:cc=\"http://creativecommons.org/ns#\" property=\"cc:attributionName\">CRoCS MU</span> is licensed <br>under a <a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\">Creative Commons Attribution 4.0 International License</a>.</p>\n" +
-                  "</center>\n</div>";
+                + "[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');ga('create','UA-1931909-2','auto');ga('send','pageview');/* ]]> */</script>\n";
+        toFile += "\n<a href=\"#\" class=\"back-to-top\"></a>\n";
+        toFile += "<div class=\"end\">\n" +                  
+                  "<p><a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\"><img alt=\"Creative Commons License\" style=\"border-width:0\" src=\"https://i.creativecommons.org/l/by/4.0/88x31.png\" /></a><br /><span xmlns:dct=\"http://purl.org/dc/terms/\" href=\"http://purl.org/dc/dcmitype/Dataset\" property=\"dct:title\" rel=\"dct:type\">JCAlgTest</span> by <span xmlns:cc=\"http://creativecommons.org/ns#\" property=\"cc:attributionName\">CRoCS MU</span> is licensed under a <br><a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\">Creative Commons Attribution 4.0 International License</a>.</p>\n" +
+                  "</div>\n</body>\n</html>";
         file.write(toFile.getBytes());
         file.close();
     }
@@ -821,5 +846,30 @@ public class JCinfohtml {
         parseGraphsPage(lines, file);
         endOfHtml(file);
         System.out.println("Make sure that CSS file & JS files (\"Source\" folder) is present in output folder.");
+    }
+
+    private static HashMap<String, String> loadDescription() throws IOException {
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(descFunctionsFile));
+        } catch (IOException e) {
+            System.out.println("Description Functions file not found");
+        }
+
+        String[] lineArray;
+        String line;
+        HashMap<String, String> descMap = new HashMap<>();
+
+        if (reader != null) {
+            while ((line = reader.readLine()) != null) {
+                if (!(line.trim().isEmpty())) {
+                    lineArray = line.split(";", 2);
+                    if(!(lineArray[1].trim().isEmpty()))
+                        descMap.put(lineArray[0], lineArray[1].replaceAll(";", ";\n"));
+                        
+                    }
+            }
+        }
+        return descMap;        
     }
 }

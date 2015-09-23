@@ -43,7 +43,7 @@ public class KeyHarvestNGTest {
 
         String fileName = cardManager.getTerminalName() + "__" + cardManager.getATR() + "__" + Long.toString(System.currentTimeMillis()) + ".csv";
         fileName = fileName.replace(' ', '_');
-        cardManager.GenerateAndGetKeys(fileName, -1, -1, false, true);
+        cardManager.GenerateAndGetKeys(fileName, -1, -1, false, (short) 512, true);
         cardManager.DisconnectFromCard();
     }
 }
