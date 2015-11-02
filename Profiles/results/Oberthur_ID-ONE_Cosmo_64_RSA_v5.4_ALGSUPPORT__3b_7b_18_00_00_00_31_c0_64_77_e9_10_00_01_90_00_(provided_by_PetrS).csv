@@ -6,6 +6,7 @@ AlgTest applet version; error
 Used reader; PC/SC terminal Gemplus USB Smart Card Reader 2
 Card ATR; 3b 7b 18 00 00 00 31 c0 64 77 e9 10 00 01 90 00
 Card name; Oberthur ID-ONE Cosmo 64 RSA v5.4
+Performance; yes
 Used protocol; T=0
 
 JavaCard support version;2.2.1;

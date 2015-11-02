@@ -6,6 +6,7 @@ AlgTest applet version; 1.6.0
 Used reader; PC/SC terminal Gemplus USB Smart Card Reader 2
 Card ATR; 3b f8 18 00 00 80 31 fe 45 00 73 c8 40 13 00 90 00 92
 Card name; G+D Smart Cafe Expert 4.x V2
+Performance; yes
 Used protocol; T=1
 
 JavaCard support version;2.2.1;
