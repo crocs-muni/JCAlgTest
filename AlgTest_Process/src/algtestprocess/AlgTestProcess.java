@@ -248,11 +248,11 @@ public class AlgTestProcess {
                 cardIdentification = cardIdentification.replace("3b", ", ATR=3b");
                 cardList += "<b>c" + i + "</b>	" + cardIdentification + ",";
                 String cardName = "";
-                if (filesSupport[i].containsKey("Card name")) { 
+                if (filesSupport[i].containsKey("Performance")) { 
                     cardName = (String) filesSupport[i].get("Card name");
                     cardName = cardName.replace(" ", ""); cardName = cardName.replace("_", ""); 
-                    cardList += "&nbsp;<a target=\"_blank\" href=\".fixData/" + cardName + ".html\">PERFORMANCE</a>,&nbsp;";
-                    cardList += "<a target=\"_blank\" href=\".variableData/" + cardName + ".html\">GRAPHS</a>";
+                    cardList += "&nbsp;<a target=\"_blank\" href=\"jcalgtest/fixData/" + cardName + ".html\">PERFORMANCE</a>,&nbsp;";
+                    cardList += "<a target=\"_blank\" href=\"jcalgtest/variableData/" + cardName + ".html\">GRAPHS</a>";
                 }
                 cardList += "<br>\r\n";
             }
@@ -327,7 +327,7 @@ public class AlgTestProcess {
             file.close();            
         }
         else {
-            System.out.println("directory is empty");
+            System.out.println("directory '" + filesPath + "' is empty");
         }
     }
     
