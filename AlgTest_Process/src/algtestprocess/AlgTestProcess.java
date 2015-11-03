@@ -401,29 +401,29 @@ public class AlgTestProcess {
                         String secondToken = (String) fileSuppMap.get(algorithmName);
                         String title = "title='" + getShortCardName(filesArray[fileIndex]) + " : " + algorithmName + " : " + secondToken + "'";
                         switch (secondToken) {
-                            case "no": algorithm += "<td class='light_no' " + title + "'>no</td>\r\n"; break;
+                            case "no": algorithm += "<td class='light_no' " + title + ">no</td>\r\n"; break;
                             case "yes":
                                 if (java_card_version_array.size() > 0){
                                     if (algorithmVersion.compareTo(jcvArray[fileIndex]) == 1){
                                         // given algorithm is not present in JavaCard specification used to convert uploaded JCAlgTest applet
                                         // make warning
-                                        algorithm += "<td class='light_suspicious' " + title + "'>suspicious yes</td>\r\n";
+                                        algorithm += "<td class='light_suspicious' " + title + ">suspicious yes</td>\r\n";
                                     }
                                     else {
                                         if (jcvArray[fileIndex].compareTo("not supplied") == 0) {
                                             // version of JavaCard API information was not supplied, assuming valid response
                                         }
-                                        algorithm += "<td class='light_yes' " + title + "'>yes</td>\r\n";
+                                        algorithm += "<td class='light_yes' " + title + ">yes</td>\r\n";
                                     }
                                 }
                                 else{
-                                    algorithm += "<td class='light_yes' " + title + "'>yes</td>\r\n";
+                                    algorithm += "<td class='light_yes' " + title + ">yes</td>\r\n";
                                 }
                             break;
-                            case "error": algorithm += "<td class='light_error' " + title + "'>error</td>\r\n"; break;
-                            case "maybe": algorithm += "<td class='light_error' " + title + "'>maybe</td>\r\n"; break;
+                            case "error": algorithm += "<td class='light_error' " + title + ">error</td>\r\n"; break;
+                            case "maybe": algorithm += "<td class='light_error' " + title + ">maybe</td>\r\n"; break;
                             default: {
-                                algorithm += "<td class='light_info' " + title + "'>" + secondToken + "</td>\r\n";
+                                algorithm += "<td class='light_info' " + title + ">" + secondToken + "</td>\r\n";
                             }
                         }
                     }
