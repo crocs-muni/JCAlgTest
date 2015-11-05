@@ -1,0 +1,121 @@
+///// ALG_SECURE_RANDOM RandomData_generateData()
+// --- Preparation of objects
+key = (AESKey) KeyBuilder.buildKey(KeyBuilder.TYPE_AES, KeyBuilder.LENGTH_AES_128, false);
+key.setKey(KEY_VALUE, (byte) 0);
+cipher = Cipher.getInstance(Cipher.ALG_AES_BLOCK_128_CBC_NOPAD, false);
+cipher.init(key, Cipher.MODE_ENCRYPT);
+// ---> Measured operation
+cipher.doFinal(RAM_ARRAY, (short) 0, DATA_LENGTH, RAM_ARRAY, (short) 0);
+// <--- end of measurement
+
+
+///// ALG_SHA MessageDigest_doFinal()
+// --- Preparation of objects
+key = (AESKey) KeyBuilder.buildKey(KeyBuilder.TYPE_AES, KeyBuilder.LENGTH_AES_128, false);
+key.setKey(KEY_VALUE, (byte) 0);
+cipher = Cipher.getInstance(Cipher.ALG_AES_BLOCK_128_CBC_NOPAD, false);
+cipher.init(key, Cipher.MODE_ENCRYPT);
+// ---> Measured operation
+cipher.doFinal(RAM_ARRAY, (short) 0, DATA_LENGTH, RAM_ARRAY, (short) 0);
+// <--- end of measurement
+
+
+///// ALG_SHA_256 MessageDigest_doFinal()
+// --- Preparation of objects
+key = (AESKey) KeyBuilder.buildKey(KeyBuilder.TYPE_AES, KeyBuilder.LENGTH_AES_128, false);
+key.setKey(KEY_VALUE, (byte) 0);
+cipher = Cipher.getInstance(Cipher.ALG_AES_BLOCK_128_CBC_NOPAD, false);
+cipher.init(key, Cipher.MODE_ENCRYPT);
+// ---> Measured operation
+cipher.doFinal(RAM_ARRAY, (short) 0, DATA_LENGTH, RAM_ARRAY, (short) 0);
+// <--- end of measurement
+
+///// TYPE_DES LENGTH_DES3_3KEY ALG_DES_CBC_NOPAD Cipher_doFinal()
+// --- Preparation of objects
+key = (AESKey) KeyBuilder.buildKey(KeyBuilder.TYPE_AES, KeyBuilder.LENGTH_AES_128, false);
+key.setKey(KEY_VALUE, (byte) 0);
+cipher = Cipher.getInstance(Cipher.ALG_AES_BLOCK_128_CBC_NOPAD, false);
+cipher.init(key, Cipher.MODE_ENCRYPT);
+// ---> Measured operation
+cipher.doFinal(RAM_ARRAY, (short) 0, DATA_LENGTH, RAM_ARRAY, (short) 0);
+// <--- end of measurement
+
+///// TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_128_CBC_NOPAD Cipher_doFinal()
+// --- Preparation of objects
+key = (AESKey) KeyBuilder.buildKey(KeyBuilder.TYPE_AES, KeyBuilder.LENGTH_AES_128, false);
+key.setKey(KEY_VALUE, (byte) 0);
+cipher = Cipher.getInstance(Cipher.ALG_AES_BLOCK_128_CBC_NOPAD, false);
+cipher.init(key, Cipher.MODE_ENCRYPT);
+// ---> Measured operation
+cipher.doFinal(RAM_ARRAY, (short) 0, DATA_LENGTH, RAM_ARRAY, (short) 0);
+// <--- end of measurement
+
+///// TYPE_AES LENGTH_AES_256 ALG_AES_BLOCK_128_CBC_NOPAD Cipher_doFinal()
+// --- Preparation of objects
+key = (AESKey) KeyBuilder.buildKey(KeyBuilder.TYPE_AES, KeyBuilder.LENGTH_AES_128, false);
+key.setKey(KEY_VALUE, (byte) 0);
+cipher = Cipher.getInstance(Cipher.ALG_AES_BLOCK_128_CBC_NOPAD, false);
+cipher.init(key, Cipher.MODE_ENCRYPT);
+// ---> Measured operation
+cipher.doFinal(RAM_ARRAY, (short) 0, DATA_LENGTH, RAM_ARRAY, (short) 0);
+// <--- end of measurement
+
+///// TYPE_DES LENGTH_DES_192 setKey();3DES setKey(192b)
+// --- Preparation of objects
+key = (AESKey) KeyBuilder.buildKey(KeyBuilder.TYPE_AES, KeyBuilder.LENGTH_AES_128, false);
+key.setKey(KEY_VALUE, (byte) 0);
+cipher = Cipher.getInstance(Cipher.ALG_AES_BLOCK_128_CBC_NOPAD, false);
+cipher.init(key, Cipher.MODE_ENCRYPT);
+// ---> Measured operation
+cipher.doFinal(RAM_ARRAY, (short) 0, DATA_LENGTH, RAM_ARRAY, (short) 0);
+// <--- end of measurement
+
+///// TYPE_AES LENGTH_AES_128 setKey();AES setKey(128b)
+// --- Preparation of objects
+key = (AESKey) KeyBuilder.buildKey(KeyBuilder.TYPE_AES, KeyBuilder.LENGTH_AES_128, false);
+key.setKey(KEY_VALUE, (byte) 0);
+cipher = Cipher.getInstance(Cipher.ALG_AES_BLOCK_128_CBC_NOPAD, false);
+cipher.init(key, Cipher.MODE_ENCRYPT);
+// ---> Measured operation
+cipher.doFinal(RAM_ARRAY, (short) 0, DATA_LENGTH, RAM_ARRAY, (short) 0);
+// <--- end of measurement
+
+///// TYPE_AES LENGTH_AES_256 setKey();AES setKey(256b)
+// --- Preparation of objects
+key = (AESKey) KeyBuilder.buildKey(KeyBuilder.TYPE_AES, KeyBuilder.LENGTH_AES_128, false);
+key.setKey(KEY_VALUE, (byte) 0);
+cipher = Cipher.getInstance(Cipher.ALG_AES_BLOCK_128_CBC_NOPAD, false);
+cipher.init(key, Cipher.MODE_ENCRYPT);
+// ---> Measured operation
+cipher.doFinal(RAM_ARRAY, (short) 0, DATA_LENGTH, RAM_ARRAY, (short) 0);
+// <--- end of measurement
+
+///// SWALGS SWAlgs_AES()
+// --- Preparation of objects
+key = (AESKey) KeyBuilder.buildKey(KeyBuilder.TYPE_AES, KeyBuilder.LENGTH_AES_128, false);
+key.setKey(KEY_VALUE, (byte) 0);
+cipher = Cipher.getInstance(Cipher.ALG_AES_BLOCK_128_CBC_NOPAD, false);
+cipher.init(key, Cipher.MODE_ENCRYPT);
+// ---> Measured operation
+cipher.doFinal(RAM_ARRAY, (short) 0, DATA_LENGTH, RAM_ARRAY, (short) 0);
+// <--- end of measurement
+
+/////UTIL Util_arrayCopyNonAtomic_RAM()
+// --- Preparation of objects
+key = (AESKey) KeyBuilder.buildKey(KeyBuilder.TYPE_AES, KeyBuilder.LENGTH_AES_128, false);
+key.setKey(KEY_VALUE, (byte) 0);
+cipher = Cipher.getInstance(Cipher.ALG_AES_BLOCK_128_CBC_NOPAD, false);
+cipher.init(key, Cipher.MODE_ENCRYPT);
+// ---> Measured operation
+cipher.doFinal(RAM_ARRAY, (short) 0, DATA_LENGTH, RAM_ARRAY, (short) 0);
+// <--- end of measurement
+
+///// UTIL Util_arrayCopyNonAtomic_EEPROM()
+// --- Preparation of objects
+key = (AESKey) KeyBuilder.buildKey(KeyBuilder.TYPE_AES, KeyBuilder.LENGTH_AES_128, false);
+key.setKey(KEY_VALUE, (byte) 0);
+cipher = Cipher.getInstance(Cipher.ALG_AES_BLOCK_128_CBC_NOPAD, false);
+cipher.init(key, Cipher.MODE_ENCRYPT);
+// ---> Measured operation
+cipher.doFinal(RAM_ARRAY, (short) 0, DATA_LENGTH, RAM_ARRAY, (short) 0);
+// <--- end of measurement

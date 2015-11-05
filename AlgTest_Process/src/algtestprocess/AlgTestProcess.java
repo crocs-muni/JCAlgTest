@@ -52,15 +52,15 @@ import java.util.StringTokenizer;
 public class AlgTestProcess {
     /* Arguments for AlgTestProcess. */
     public static final String GENERATE_HTML = "HTML";
-    public static final String GENERATE_JCINFO = "JCINFO";
-    public static final String GENERATE_SORTABLE = "SORTABLE";
     public static final String COMPARE_CARDS = "COMPARE";
     public static final String GENERATE_JCCONSTANTS = "JCCONSTS";
-    public static final String GENERATE_GRAPHS = "GRAPHS";
-    public static final String GENERATE_GRAPHS_ONEPAGE = "GRAPHSPAGE";
     
-    
-    
+    public static final String GENERATE_JCINFO = "JCINFO";
+    public static final String GENERATE_SORTABLE = "SORTABLE";          //SORTABLE TABLE
+    public static final String GENERATE_GRAPHS = "GRAPHS";              //GENERATE SINGLE GRAPHS PAGE FOR JCINFO
+    public static final String GENERATE_GRAPHS_ONEPAGE = "GRAPHSPAGE";  //PAGE WITH VARIABLE PERFTEST GRAPHS
+    public static final String GENERATE_COMPARE_GRAPH = "COMPAREGRAPH"; //ONE BIG GRAPH FOR COMPARE CARDS
+      
     
     // if one card results are generated
     public static final String[] JAVA_CARD_VERSION = {"2.1.2", "2.2.1", "2.2.2"};
@@ -111,6 +111,9 @@ public class AlgTestProcess {
                     else if (args[1].equals(GENERATE_GRAPHS)){
                         System.out.println("Generating graphs from input file to new directory.");
                         JCinfohtml.runGraphs(args[0]);}
+                    else if (args[1].equals(GENERATE_COMPARE_GRAPH)){
+                        System.out.println("Generating compare graph from input dir.");
+                        JCinfohtml.runCompareGraph(args[0]);}
                     else if (args[1].equals(GENERATE_GRAPHS_ONEPAGE)){
                         System.out.println("Generating gprahs page from input file.");
                         if (args.length > 2)
