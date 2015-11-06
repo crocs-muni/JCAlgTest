@@ -768,7 +768,8 @@ public class JCinfohtml {
             lp += 3;
             operation = lines.get(lp).trim().split(";");
 
-            value = (Float.valueOf(operation[2].replace(",", "."))).toString();
+            Float avgTime = Float.valueOf(operation[2].replace(",", "."));
+            value = avgTime.toString();
             title += "min: " + Float.valueOf(operation[4].replace(",", ".")) + "; max: ";
             title += Float.valueOf(operation[6].replace(",", "."));
             lp++;

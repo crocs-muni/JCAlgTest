@@ -115,7 +115,7 @@ public class AlgTestProcess {
                         System.out.println("Generating compare graph from input dir.");
                         JCinfohtml.runCompareGraph(args[0]);}
                     else if (args[1].equals(GENERATE_GRAPHS_ONEPAGE)){
-                        System.out.println("Generating gprahs page from input file.");
+                        System.out.println("Generating graphs page from input file.");
                         if (args.length > 2)
                             generateGraphsPages(args[0]);
                         else
