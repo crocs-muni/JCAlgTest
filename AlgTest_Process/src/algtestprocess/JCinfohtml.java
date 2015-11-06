@@ -439,6 +439,89 @@ public class JCinfohtml {
         file.write(generateLegendHeader(topNames_asym, topAcronyms_asym).getBytes());
         generateSortableTable("sortable_asym", topAcronyms_asym, topNames_asym, files, file);
     }
+ 
+    
+    public static void compareTable(String dir, FileOutputStream file) throws IOException {
+        // prepare input data - topFunctions, perf results
+        List<String> topNames_sym = new ArrayList<>();
+        List<String> topAcronyms_sym = new ArrayList<>();
+        List<String> topNames_asym = new ArrayList<>();
+        List<String> topAcronyms_asym = new ArrayList<>();
+        loadTopFunctions(topNames_sym, topAcronyms_sym, topNames_asym, topAcronyms_asym);
+        List<String> files = listFilesForFolder(new File(dir));
+        List<String> namesOfCards = new ArrayList<>();
+        List<List<Float>> rowsData = new ArrayList<>();
+        
+        topNames_sym.addAll(topNames_asym);
+        topAcronyms_sym.addAll(topAcronyms_asym);
+        
+        //prepare rows - add first value - name of function (data added later)
+        for(String acr : topAcronyms_sym)            
+            rowsData.add(new ArrayList<Float>());
+        
+        
+        //beginning of graph table
+        StringBuilder toFile = new StringBuilder();        
+        toFile.append("\t<strong><table cellspacing=\"0\" style=\"background:#FEFEFE\"><tbody>\n" +
+                        "\t\t<tr>\n\t\t\t<th>"+"smaller number = more similar "+"</th>\n");
+       
+        //load data from input fixed-size files and store name of card
+        for(String fileName : files)
+            namesOfCards.add(addCard(topNames_sym, rowsData, fileName));
+           
+        //head of table with cards names
+        for(String name : namesOfCards)
+            toFile.append("\t\t\t<th>"+name+"</th>\n");
+        
+        //end of head of table
+        toFile.append("\t\t</tr>\n");
+         
+        //normalize data
+        for(int i=0; i<rowsData.size(); i++){
+            Float max = 0.0F;
+            for (Float value : rowsData.get(i)){
+                if (value>max)
+                    max=value;
+            }
+            
+            for(int j=0; j<rowsData.get(i).size(); j++){
+                if(rowsData.get(i).get(j) != 0.0F)
+                    rowsData.get(i).set(j, rowsData.get(i).get(j)/max);
+            }            
+        }
+        
+        for(int i=0; i<namesOfCards.size(); i++){
+            toFile.append("\t\t<tr>\n");
+            toFile.append("\t\t\t<th>"+namesOfCards.get(i)+"</th>\n");
+            int multip = 1000; // multiplier of values in table
+            int sim = 5; // similarity is highlighted by green, VALUES 1-100!, lower = more green
+            
+            for(int j=0; j<namesOfCards.size(); j++){
+                float sum = 0.0F;
+                int num = 0;
+                if(i==j) 
+                    toFile.append("\t\t\t<th></th>\n");
+                else {
+                    for(int k=0; k<topAcronyms_sym.size(); k++){
+                            if((rowsData.get(k).get(i) == 0.0F) || (rowsData.get(k).get(j) == 0.0F))
+                            {} else {   
+                                sum += (rowsData.get(k).get(i) - rowsData.get(k).get(j))*(rowsData.get(k).get(i) - rowsData.get(k).get(j));
+                                num++;
+                            }
+                        }
+                    //sum = sum/num;
+                    sum = sum*multip;
+                   // toFile.append("\t\t\t<td>"+String.format("%.0f", sum).replace(",", ".")+"</td>\n");
+                    toFile.append("\t\t\t<td style=\"background:rgba(140,200,120,"+String.format("%.2f", (1-((sum/multip)/num)*sim)).replace(",", ".")+");\">"+String.format("%.0f", sum).replace(",", ".")+"</td>\n");
+                    } 
+            }
+            toFile.append("\t\t</tr>\n");            
+        }
+        
+        toFile.append("\t\t</tbody></table></strong>\n");
+        file.write(toFile.toString().getBytes());
+    }
+    
     
     public static void compareGraph(String dir, FileOutputStream file) throws IOException {
         // prepare input data - topFunctions, perf results
@@ -544,9 +627,9 @@ public class JCinfohtml {
                         lp++;
                     }
                 }
-                // In case given algorithm (topname) is not present in measured file, put -
+                // In case given algorithm (topname) is not present in measured file, put: "0.0"
                 if (!bTopNameFound) 
-                rowsData.get(i).add(0.0F);
+                    rowsData.get(i).add(0.0F);
                 //rows.set(i, rows.get(i) + "0.0, ");                
                 lp = 15;                
             }
@@ -1024,7 +1107,7 @@ public class JCinfohtml {
         try {
             reader = new BufferedReader(new FileReader(descFunctionsFile));
         } catch (IOException e) {
-            System.out.println("Description Functions file not found");
+            System.out.println("Description of functions file not found");
         }
 
         String[] lineArray;
@@ -1052,9 +1135,11 @@ public class JCinfohtml {
     }
     
     public static void runCompareGraph(String dir) throws FileNotFoundException, IOException {
-        FileOutputStream file = new FileOutputStream(dir + "//" + "compareGraph.html");
+       // FileOutputStream file = new FileOutputStream(dir + "//" + "compareGraph.html");
+        FileOutputStream file = new FileOutputStream(dir + "//" + "compareTable.html");
         beginLite(file, "Card performance - comparative graph");
-        compareGraph(dir, file);
+        //compareGraph(dir, file);
+        compareTable(dir, file);
         endOfHtml(file);
         System.out.println("Make sure that CSS file & JS files (\"Source\" folder) is present in output folder.");
     }

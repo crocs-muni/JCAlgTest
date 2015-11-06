@@ -10,9 +10,6 @@ import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Snippet {
 
@@ -61,7 +58,7 @@ public class Snippet {
             try {
                 snippet = sendPost();
             } catch (Exception ex) {
-                return "Error during the generation.";
+                return "Error during snippet generation.";
             }
             snippet = snippet.substring(snippet.indexOf("<pre "),snippet.length()-6); 
             snippet = snippet.replaceAll("!nl!", "</br>"); 
