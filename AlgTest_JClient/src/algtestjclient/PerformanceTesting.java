@@ -691,7 +691,7 @@ public class PerformanceTesting {
         
         // Test settings
         byte[] settings = new byte[TestSettings.TEST_SETTINGS_LENGTH];  
-        testSet.serializeToApduBuff(settings, (short) 0);
+        CardMngr.serializeToApduBuff(testSet, settings, (short) 0);
         message = "measurement config:;" + "appletPrepareINS;" + CardMngr.byteToHex(appletPrepareINS) + ";appletMeasureINS;" + CardMngr.byteToHex(appletMeasureINS) + ";config;" + CardMngr.bytesToHex(settings) + "\n";
         System.out.print(message);
         result.append(message);

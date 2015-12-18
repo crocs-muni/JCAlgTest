@@ -81,6 +81,7 @@ public class SingleModeTest {
 
     
     /* Response values - send back by on card application as response to command APDU. */
+    public static final short   UNKNOWN_ERROR       = -1;
     public static final short   SUPP_ALG_SUPPORTED  = 0;
     public static final short 	ILLEGAL_USE         = 5;
     public static final short 	ILLEGAL_VALUE       = 1;
@@ -382,6 +383,8 @@ public class SingleModeTest {
     };
     
     public final static int CLOCKS_PER_SEC = 1000;
+    
+    public final static byte[] RESET_APDU = {(byte) 0xb0, (byte) 0x69, (byte) 0x00, (byte) 0x00, (byte) 0x00};
        
     /**
      * Method containing 'menu'.
@@ -583,9 +586,19 @@ public class SingleModeTest {
      * @param elapsedCard
      * @throws IOException
      */
-    public static void CheckResult (FileOutputStream file, String name, byte response, long elapsedCard, int swStatus) throws IOException{
+    public static void CheckResult (FileOutputStream file, String name, byte[] responseBuffer, long elapsedCard, int swStatus) throws IOException{
         String message = "";
         String elTimeStr = "";
+        
+        byte response = UNKNOWN_ERROR;
+        if (responseBuffer != null) {
+            if (responseBuffer.length > 0) {
+                System.out.println("RESPONSE: " + responseBuffer[0]);
+            }
+            if (responseBuffer.length > 1) {
+                response = responseBuffer[1];
+            }
+        }        
         
         if (swStatus == 0x9000) {
             switch (response){
@@ -620,7 +633,9 @@ public class SingleModeTest {
                 case UNINITIALIZED_KEY:
                     message += name + ";" + "error(UNINITIALIZED_KEY);" + "\r\n";
                 break;
-
+                case UNKNOWN_ERROR: 
+                    message += name + ";" + "error(UNKNOWN_ERROR);" + "\r\n";
+                    break;
                 case 0x6f:
                     message += name + ";" + "maybe;" + "\r\n";
                 break;
@@ -658,6 +673,9 @@ public class SingleModeTest {
         file.write(message.getBytes());
         
         for (int i=1; i< SingleModeTest.CIPHER_STR.length; i++){    // i = 1 because Cipher[0] is class name
+            // Reset applet before call
+            cardManager.sendAPDU(RESET_APDU);
+
             // get starting time of communication cycle
             apdu[OFFSET_DATA] = (byte) i;
 
@@ -667,12 +685,9 @@ public class SingleModeTest {
             elapsedCard += System.currentTimeMillis();
             
             byte[] resp = response.getData();
-            if (resp.length > 0) {
-                System.out.println("RESPONSE: " + resp[0]);
-            }
-            
+
             // Calls method CheckResult - should add to output error messages.
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.CIPHER_STR[i]), resp[1], elapsedCard, response.getSW());
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.CIPHER_STR[i]), resp, elapsedCard, response.getSW());
         }        
     }
     
@@ -697,6 +712,8 @@ public class SingleModeTest {
         file.write(message.getBytes());
         
         for (int i=1; i<SingleModeTest.SIGNATURE_STR.length; i++){    // i = 1 because Signature[0] is class name
+            // Reset applet before call
+            cardManager.sendAPDU(RESET_APDU);
             // get starting time of communication cycle
             apdu[OFFSET_DATA] = (byte)i;
             elapsedCard = -System.currentTimeMillis();
@@ -705,9 +722,9 @@ public class SingleModeTest {
             elapsedCard += System.currentTimeMillis();
 
             byte[] resp = response.getData();
-            
+       
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.SIGNATURE_STR[i]), resp[1], elapsedCard, response.getSW());
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.SIGNATURE_STR[i]), resp, elapsedCard, response.getSW());
         }        
     }
     
@@ -732,6 +749,8 @@ public class SingleModeTest {
         file.write(message.getBytes());
         
         for (int i=1; i<SingleModeTest.MESSAGEDIGEST_STR.length; i++){    // i = 1 because MessageDigest[0] is class name
+            // Reset applet before call
+            cardManager.sendAPDU(RESET_APDU);
             // get starting time of communication cycle
             apdu[OFFSET_DATA] = (byte)i;
             elapsedCard = -System.currentTimeMillis();
@@ -741,7 +760,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
             
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.MESSAGEDIGEST_STR[i]), resp[1], elapsedCard, response.getSW());
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.MESSAGEDIGEST_STR[i]), resp, elapsedCard, response.getSW());
         }
     }
     
@@ -766,6 +785,8 @@ public class SingleModeTest {
         file.write(message.getBytes());
         
         for (int i=1; i<SingleModeTest.RANDOMDATA_STR.length; i++){    // i = 1 because RandomData[0] is class name
+            // Reset applet before call
+            cardManager.sendAPDU(RESET_APDU);
             // get starting time of communication cycle
             apdu[OFFSET_DATA] = (byte)i;
             elapsedCard = -System.currentTimeMillis();
@@ -774,7 +795,7 @@ public class SingleModeTest {
             elapsedCard += System.currentTimeMillis();
             byte[] resp = response.getData();
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.RANDOMDATA_STR[i]), resp[1], elapsedCard, response.getSW());
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.RANDOMDATA_STR[i]), resp, elapsedCard, response.getSW());
         }
     }
     
@@ -799,6 +820,8 @@ public class SingleModeTest {
         file.write(message.getBytes());
 
         for (int i = 1; i < KEYBUILDER_STR.length; i++){
+            // Reset applet before call
+            cardManager.sendAPDU(RESET_APDU);
             // byte to choose subclass
             apdu[OFFSET_DATA] = KEYBUILDER_CONST[i-1];    // (byte)3 => TYPE DES
             // bytes to carry the length of tested key
@@ -811,8 +834,9 @@ public class SingleModeTest {
             // save time of card response
             elapsedCard += System.currentTimeMillis();
             byte[] resp = response.getData();
+
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, cardManager.GetAlgorithmName(KEYBUILDER_STR[i]), resp[1], elapsedCard, response.getSW());
+            CheckResult(file, cardManager.GetAlgorithmName(KEYBUILDER_STR[i]), resp, elapsedCard, response.getSW());
         }
     }
     
@@ -837,6 +861,8 @@ public class SingleModeTest {
         file.write(message.getBytes());
         
         for (int i=1; i<SingleModeTest.KEYAGREEMENT_STR.length; i++){    // i = 1 because KeyAgreement[0] is class name
+            // Reset applet before call
+            cardManager.sendAPDU(RESET_APDU);
             apdu[OFFSET_DATA] = (byte)i;
             // get starting time of communication cycle
             elapsedCard = -System.currentTimeMillis();
@@ -846,7 +872,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
             
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYAGREEMENT_STR[i]), resp[1], elapsedCard, response.getSW());
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYAGREEMENT_STR[i]), resp, elapsedCard, response.getSW());
         }
     }
     
@@ -871,6 +897,8 @@ public class SingleModeTest {
         file.write(message.getBytes());
         
         for (int i=1; i<SingleModeTest.CHECKSUM_STR.length; i++){    // i = 1 because Checksum[0] is class name
+            // Reset applet before call
+            cardManager.sendAPDU(RESET_APDU);
             apdu[OFFSET_DATA] = (byte) i;
             // get starting time of communication cycle
             elapsedCard = -System.currentTimeMillis();
@@ -879,7 +907,7 @@ public class SingleModeTest {
             elapsedCard += System.currentTimeMillis();
             byte[] resp = response.getData();
             /* Calls method CheckResult - should add to output error messages. */
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.CHECKSUM_STR[i]), resp[1], elapsedCard, response.getSW());
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.CHECKSUM_STR[i]), resp, elapsedCard, response.getSW());
         }
     }
     
@@ -906,6 +934,8 @@ public class SingleModeTest {
         
         int counter = 24;
         for (int i=1; i<SingleModeTest.KEYPAIR_RSA_STR.length; i++){    // i = 1 because KeyPair_RSA_STR[0] is class name
+            // Reset applet before call
+            cardManager.sendAPDU(RESET_APDU);
             apdu[OFFSET_DATA + 1] = KEY_LENGTHS_HEX[counter];
             apdu[OFFSET_DATA + 2] = KEY_LENGTHS_HEX[counter + 1];
             counter = counter + 2;
@@ -918,7 +948,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
             
             // Calls method CheckResult - should add to output error messages. */
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_RSA_STR[i]), resp[1], elapsedCard, response.getSW());
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_RSA_STR[i]), resp, elapsedCard, response.getSW());
         }
     }
     
@@ -945,7 +975,8 @@ public class SingleModeTest {
         
         int counter = 24;
         for (int i=1; i<SingleModeTest.KEYPAIR_RSACRT_STR.length; i++){    // i = 1 because KeyPair_RSACRT_STR[0] is class name
-            
+            // Reset applet before call
+            cardManager.sendAPDU(RESET_APDU);            
             apdu[OFFSET_DATA + 1] = KEY_LENGTHS_HEX[counter];
             apdu[OFFSET_DATA + 2] = KEY_LENGTHS_HEX[counter + 1];
             counter = counter + 2;
@@ -958,7 +989,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
             
             // Calls method CheckResult - should add to output error messages.
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_RSACRT_STR[i]), resp[1], elapsedCard, response.getSW());
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_RSACRT_STR[i]), resp, elapsedCard, response.getSW());
         }
     }
     
@@ -985,6 +1016,8 @@ public class SingleModeTest {
         
         int counter = 24;
         for (int i=1; i<SingleModeTest.KEYPAIR_DSA_STR.length; i++){    // i = 1 because KeyPair_DSA_STR[0] is class name
+            // Reset applet before call
+            cardManager.sendAPDU(RESET_APDU);
             apdu[OFFSET_DATA + 1] = KEY_LENGTHS_HEX[counter];
             apdu[OFFSET_DATA + 2] = KEY_LENGTHS_HEX[counter + 1];
             counter = counter + 4;
@@ -997,7 +1030,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
             
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_DSA_STR[i]), resp[1], elapsedCard, response.getSW());
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_DSA_STR[i]), resp, elapsedCard, response.getSW());
         }
     }
     
@@ -1024,6 +1057,8 @@ public class SingleModeTest {
         
         int counter = 16;
         for (int i=1; i<SingleModeTest.KEYPAIR_EC_F2M_STR.length; i++){    // i = 1 because KeyPair_EC_F2M_STR[0] is class name
+            // Reset applet before call
+            cardManager.sendAPDU(RESET_APDU);
             apdu[OFFSET_DATA + 1] = KEY_LENGTHS_HEX[counter];
             apdu[OFFSET_DATA + 2] = KEY_LENGTHS_HEX[counter + 1];
             counter = counter + 4;
@@ -1036,7 +1071,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
             
             // Calls method CheckResult - should add to output error messages.
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_EC_F2M_STR[i]), resp[1], elapsedCard, response.getSW());
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_EC_F2M_STR[i]), resp, elapsedCard, response.getSW());
         }
     }
     
@@ -1063,6 +1098,8 @@ public class SingleModeTest {
         
         int counter = 0;
         for (int i=1; i<SingleModeTest.KEYPAIR_EC_FP_STR.length; i++){    // i = 1 because KeyPair_EC_FP_STR[0] is class name
+            // Reset applet before call
+            cardManager.sendAPDU(RESET_APDU);
             apdu[OFFSET_DATA + 1] = KEY_LENGTHS_HEX[counter];
             apdu[OFFSET_DATA + 2] = KEY_LENGTHS_HEX[counter + 1];
             counter = counter + 2;
@@ -1075,7 +1112,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
             
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_EC_FP_STR[i]), resp[1], elapsedCard, response.getSW());
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_EC_FP_STR[i]), resp, elapsedCard, response.getSW());
         }
     }
     
