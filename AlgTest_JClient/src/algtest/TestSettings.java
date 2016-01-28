@@ -64,6 +64,7 @@ public class TestSettings {
         
         parse(apdubuf, ISO7816.OFFSET_CDATA, len);
     }
+ 
     public void parse(byte[] apdubuf, short offset, short len) {
         this.clear();
 
@@ -103,7 +104,8 @@ public class TestSettings {
     }
 
     public short serializeToApduBuff(byte[] apdubuf, short offset) {
-        Util.setShort(apdubuf, (short) (offset + OFFSET_ALGORITHM_CLASS), classType);                    
+        Util.setShort(apdubuf, (short) (offset + OFFSET_ALGORITHM_CLASS), classType);
+        Util.setShort(apdubuf, (short) (offset + OFFSET_ALGORITHM_CLASS), classType);
         Util.setShort(apdubuf, (short) (offset + OFFSET_ALGORITHM_SPECIFICATION), algorithmSpecification);                    
         Util.setShort(apdubuf, (short) (offset + OFFSET_ALGORITHM_PARAM1), keyClass);                  
         Util.setShort(apdubuf, (short) (offset + OFFSET_ALGORITHM_PARAM2), keyType);               
