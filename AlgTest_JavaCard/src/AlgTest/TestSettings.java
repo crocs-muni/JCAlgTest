@@ -64,15 +64,7 @@ public class TestSettings {
         
         parse(apdubuf, ISO7816.OFFSET_CDATA, len);
     }
-/*    
-    public short getShort(byte[] buffer, short offset) {
-        return (short) ((short) (buffer[offset] << 8) + buffer[(short) (offset + 1)]);
-    }
-    public void setShort(byte[] buffer, short offset, short value) {
-        buffer[offset] = (byte) ((short) (value >> 8) & 0xff);
-        buffer[(short) (offset + 1)] = (byte) (value & 0xff);
-    }
-*/    
+ 
     public void parse(byte[] apdubuf, short offset, short len) {
         this.clear();
 

@@ -86,7 +86,7 @@ public class AlgStorageTest {
                 case Consts.INS_CARD_TESTAVAILABLE_MEMORY: TestAvailableMemory(apdu); break;
                 case Consts.INS_CARD_ALLOWED_KEYS: TestAllowedKeys(apdu); break;
                 case Consts.INS_CARD_ALLOWED_ENGINES: TestAllowedEngines(apdu); break;
-                case Consts.INS_CARD_RESET: JCSystem.requestObjectDeletion(); break;
+                //case Consts.INS_CARD_RESET: JCSystem.requestObjectDeletion(); break;
                 default : {
                     bProcessed = 0;
                     break;
