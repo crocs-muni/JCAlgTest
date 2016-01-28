@@ -1,0 +1,786 @@
+<target name="clean_cref">
+    <!-- Delete the cref output directory-->
+    <delete dir="${basedir}/samples/cref"/>
+</target>
+
+<!-- Main Build_demos target -->
+<target name="build_demos" depends="initProps" description="The main target that starts building demos">
+    <!-- prepare samples -->
+    <antcall target="build_samples" />
+    <!-- extract classes from api.jar and installer.jar -->
+    <antcall target="prepare_for_32_bit_build" />
+    <antcall target="prepare_for_16_bit_build" />
+    <unzip src="${basedir}/lib/installer.jar"
+           dest="${CL_DIR}">
+    </unzip>
+    <!-- remove META-INF directory -->
+    <delete dir="${CL_DIR}/META-INF"/> 
+    <!-- prepare demos -->
+    <antcall target="prepare_demos" />
+    
+    <!-- build cref for demo1 and demo2 -->
+    <antcall target="build_demo1_cref" />    
+    <antcall target="build_demo2_cref" />
+</target>
+
+
+
+<target name="prepare_for_16_bit_build" if="is16Bit">
+    <unzip src="${basedir}/lib/api_16.jar"
+           dest="${CL_DIR}">
+    </unzip>
+</target>
+
+<target name="prepare_for_32_bit_build" if="is32Bit">
+    <unzip src="${basedir}/lib/api.jar"
+           dest="${CL_DIR}">
+    </unzip>
+</target>
+
+
+<target name="create_comsunjavacardimpl_EXP">
+    <!-- convert impl package -->
+    <convert
+        dir="${CL_DIR}"
+        EXP="true"
+        int="true"
+        Mask="true"
+        packagename="com.sun.javacard.impl"
+        packageaid="0xa0:0:0:0:0x62:3:1" 
+        majorminorversion="1.0">
+        <exportpath path="${CL_DIR}"/>
+        <classpath refid="classpath"/>
+    </convert>
+</target>
+
+<target name="create_comsunjavacardcrypto_EXP_JCA" if="isDomestic">
+    <!-- convert com.sun.javacard.crypto package -->
+    <convert
+        dir="${CL_DIR}"
+        EXP="true"
+        JCA="true"
+        int="true"
+        Mask="true"
+        packagename="com.sun.javacard.crypto"
+        packageaid="0xa0:0:0:0:0x62:3:1:0x0f" 
+        majorminorversion="1.0">
+        <exportpath path="${CL_DIR}"/>
+        <classpath refid="classpath"/>
+    </convert>
+</target>
+
+<target name="create_comsunjavacardimplBiometry_EXP_JCA">
+    <!-- convert implBiometry package -->
+    <convert
+        dir="${CL_DIR}"
+        EXP="true"
+        JCA="true"
+        int="true"
+        Mask="true"
+        packagename="com.sun.javacard.implBiometry"
+        packageaid="0xa0:0:0:0:0x62:3:1:0x0e"
+        majorminorversion="1.0">
+        <exportpath path="${CL_DIR}"/>
+        <classpath refid="classpath"/>
+    </convert>
+</target>
+
+<target name="create_javalang_JCA">
+    <!-- convert java.lang -->
+     <convert
+        dir="${CL_DIR}"
+        JCA="true"
+        packagename="java.lang"
+        packageaid="0xa0:0:0:0:0x62:0:1"
+        majorminorversion="1.0">
+        <exportpath path="${CL_DIR}"/>
+        <classpath refid="classpath"/>
+    </convert>
+</target>
+
+<target name="create_javacardframework_JCA">
+    <!-- convert javacard.framework -->
+     <convert
+        dir="${CL_DIR}"
+        JCA="true"
+        mask="true"
+        exportmap="true"
+        packagename="javacard.framework"
+        packageaid="0xa0:0:0:0:0x62:1:1"
+        majorminorversion="1.3">
+        <exportpath path="${CL_DIR}"/>
+        <classpath refid="classpath"/>
+    </convert>
+</target>
+
+<target name="create_javacardsecurity_JCA">
+    <!-- convert javacard.security -->
+     <convert
+        dir="${CL_DIR}"
+        JCA="true"
+        exportmap="true"
+        packagename="javacard.security"
+        packageaid="0xa0:0:0:0:0x62:1:2"
+        majorminorversion="1.3">
+        <exportpath path="${CL_DIR}"/>
+        <classpath refid="classpath"/>
+    </convert>
+</target>
+
+<target name="create_javacardxcrypto_JCA">
+    <!-- convert javacardx.crypto -->
+     <convert
+        dir="${CL_DIR}"
+        JCA="true"
+        exportmap="true"
+        packagename="javacardx.crypto"
+        packageaid="0xa0:0:0:0:0x62:2:1"
+        majorminorversion="1.3">
+        <exportpath path="${CL_DIR}"/>
+        <classpath refid="classpath"/>
+    </convert>
+</target>
+
+<target name="create_comsunjavacardimpl_JCA">
+    <!-- create JCA for impl package (We couldn't do it earlier because EXP for javacardx.crypto  was not available -->
+    <convert
+        dir="${CL_DIR}"
+        JCA="true"
+        int="true"
+        Mask="true"
+        packagename="com.sun.javacard.impl"
+        packageaid="0xa0:0:0:0:0x62:3:1" 
+        majorminorversion="1.0">
+        <exportpath path="${CL_DIR}"/>
+        <classpath refid="classpath"/>
+    </convert>
+</target>
+
+<target name="create_javacardxframeworkmath_JCA">
+    <!-- convert javacardx.framework.math -->
+     <convert
+        dir="${CL_DIR}"
+        JCA="true"
+        packagename="javacardx.framework.math"
+        packageaid="0xa0:0:0:0:0x62:2:8:2"
+        majorminorversion="1.0">
+        <exportpath path="${CL_DIR}"/>
+        <classpath refid="classpath"/>
+    </convert>
+</target>
+
+<target name="create_javacardxframeworkutil_JCA">
+    <!-- convert javacardx.framework.util -->
+     <convert
+        dir="${CL_DIR}"
+        JCA="true"
+        mask="true"
+        packagename="javacardx.framework.util"
+        packageaid="0xa0:0:0:0:0x62:2:8:1"
+        majorminorversion="1.0">
+        <exportpath path="${CL_DIR}"/>
+        <classpath refid="classpath"/>
+    </convert>
+</target>
+
+<target name="create_javacardxframeworkutilintx_JCA">
+    <!-- convert javacardx.framework.util.intx -->
+     <convert
+        dir="${CL_DIR}"
+        JCA="true"
+        mask="true"
+        int="true"
+        packagename="javacardx.framework.util.intx"
+        packageaid="0xa0:0:0:0:0x62:2:8:1:1"
+        majorminorversion="1.0">
+        <exportpath path="${CL_DIR}"/>
+        <classpath refid="classpath"/>
+    </convert>
+</target>
+
+<target name="create_javacardxframeworktlv_JCA">
+    <!-- convert javacardx.framework.tlv -->
+     <convert
+        dir="${CL_DIR}"
+        JCA="true"
+        packagename="javacardx.framework.tlv"
+        packageaid="0xa0:0:0:0:0x62:2:8:3"
+        majorminorversion="1.0">
+        <exportpath path="${CL_DIR}"/>
+        <classpath refid="classpath"/>
+    </convert>
+</target>
+
+<target name="create_javacardxapdu_JCA">
+    <!-- convert javacardx.framework.tlv -->
+     <convert
+        dir="${CL_DIR}"
+        JCA="true"
+        int="true"
+        mask="true"
+        packagename="javacardx.apdu"
+        packageaid="0xa0:0:0:0:0x62:2:9"
+        majorminorversion="1.0">
+        <exportpath path="${CL_DIR}"/>
+        <classpath refid="classpath"/>
+    </convert>
+</target>
+
+
+<target name="create_javacardxbiometry_JCA">
+    <!-- convert javacardx.biometry -->
+     <convert
+        dir="${CL_DIR}"
+        JCA="true"
+        exportmap="true"
+        packagename="javacardx.biometry"
+        packageaid="0xA0:0x0:0x0:0x0:0x62:0x2:0x2"
+        majorminorversion="1.2">
+        <exportpath path="${CL_DIR}"/>
+        <classpath refid="classpath"/>
+    </convert>
+</target>
+
+<target name="create_javaio_JCA">
+    <!-- convert java.io -->
+     <convert
+        dir="${CL_DIR}"
+        JCA="true"
+        packagename="java.io"
+        packageaid="0xa0:0:0:0:0x62:0:2"
+        majorminorversion="1.0">
+        <exportpath path="${CL_DIR}"/>
+        <classpath refid="classpath"/>
+    </convert>
+</target>
+
+<target name="create_javarmi_JCA">
+    <!-- convert java.rmi -->
+     <convert
+        dir="${CL_DIR}"
+        JCA="true"
+        packagename="java.rmi"
+        packageaid="0xa0:0:0:0:0x62:0:3"
+        majorminorversion="1.0">
+        <exportpath path="${CL_DIR}"/>
+        <classpath refid="classpath"/>
+    </convert>
+</target>
+
+<target name="create_javacardframeworkservice_JCA">
+    <!-- convert javacard.framework.service -->
+     <convert
+        dir="${CL_DIR}"
+        JCA="true"
+        mask="true"
+        int="true"
+        packagename="javacard.framework.service"
+        packageaid="0xa0:0:0:0:0x62:1:1:1"
+        majorminorversion="1.0">
+        <exportpath path="${CL_DIR}"/>
+        <classpath refid="classpath"/>
+    </convert>
+</target>
+
+<target name="create_comsunjavacardinstaller_JCA">
+    <!-- convert com.sun.javacard.installer -->
+    <convert
+        dir="${CL_DIR}"
+        Configfile="${source_home}/com/sun/javacard/installer/Installer.opt">
+        <classpath refid="classpath"/>
+    </convert>
+</target>
+
+<target name="prepare_demos" description="Convert required packages">
+    <antcall target="create_comsunjavacardimpl_EXP" />
+    <antcall target="create_comsunjavacardcrypto_EXP_JCA" />
+    <antcall target="create_comsunjavacardimplBiometry_EXP_JCA" />
+    <antcall target="create_javalang_JCA" />
+    <antcall target="create_javacardframework_JCA" />
+    <antcall target="create_javacardsecurity_JCA" />
+    <antcall target="create_javacardxcrypto_JCA" />
+    <antcall target="create_comsunjavacardimpl_JCA" />
+    <antcall target="create_javacardxframeworkmath_JCA" />
+    <antcall target="create_javacardxframeworkutil_JCA" />
+    <antcall target="create_javacardxframeworkutilintx_JCA" />
+    <antcall target="create_javacardxframeworktlv_JCA" />
+    <antcall target="create_javacardxapdu_JCA" />
+    <antcall target="create_javacardxbiometry_JCA" />
+    <antcall target="create_javaio_JCA" />
+    <antcall target="create_javarmi_JCA" />
+    <antcall target="create_javacardframeworkservice_JCA" />
+    <antcall target="create_comsunjavacardinstaller_JCA" />
+</target>
+
+
+<target name="create_cref_crypto_dir" if="isGlobal">
+    <mkdir dir="${cref_destination_dir}/src/cref/crypto"/>
+    <property name="crypto_flag" value="" />
+</target>
+
+<target name="build_demo1_mask">
+    <antcall target="build_demo1_mask_16" />
+    <antcall target="build_demo1_mask_32" />
+</target>
+
+<target name="build_demo2_mask">
+    <antcall target="build_demo2_mask_16" />
+    <antcall target="build_demo2_mask_32" />
+</target>
+
+
+<target name="build_demo1_mask_16" if="is16Bit">
+    <delete file="${demo_home}/demo1/demo1_16.c" />
+    <maskgen 
+        dir="${demo_home}/demo1"
+        generator="cref" 
+        MemRefSize="16"
+        configfile="${demo_home}/cref_mask16.cfg"
+        outfile="${demo_home}/demo1/demo1_16.c">
+        <jcainputfile inputfile="@${demo_home}/demo1/demo1.in" />
+        <classpath refid="classpath"/>
+    </maskgen>
+    <maskgen 
+        dir="${demo_home}/demo1"
+        generator="size" 
+        MemRefSize="16"
+        outfile="${demo_home}/demo1/demo1_16.txt">
+        <jcainputfile inputfile="@${demo_home}/demo1/demo1.in" />
+        <classpath refid="classpath"/>
+    </maskgen>
+</target>
+
+<target name="build_demo2_mask_16" if="is16Bit">
+    <delete file="${demo_home}/demo2/demo2_16.c" />
+    <maskgen 
+        dir="${demo_home}/demo2"
+        generator="cref" 
+        MemRefSize="16"
+        configfile="${demo_home}/cref_mask16.cfg"
+        outfile="${demo_home}/demo2/demo2_16.c">
+        <jcainputfile inputfile="@${demo_home}/demo2/demo2.in" />
+        <classpath refid="classpath"/>
+    </maskgen>
+    <maskgen 
+        dir="${demo_home}/demo2"
+        generator="size" 
+        MemRefSize="16"
+        outfile="${demo_home}/demo2/demo2_16.txt">
+        <jcainputfile inputfile="@${demo_home}/demo2/demo2.in" />
+        <classpath refid="classpath"/>
+    </maskgen>
+</target>
+
+<target name="build_demo1_mask_32" if="is32Bit">
+    <delete file="${demo_home}/demo1/demo1_32.c" />
+    <maskgen 
+        dir="${demo_home}/demo1"
+        generator="cref" 
+        MemRefSize="32"
+        configfile="${demo_home}/cref_mask.cfg"
+        outfile="${demo_home}/demo1/demo1_32.c">
+        <jcainputfile inputfile="@${demo_home}/demo1/demo1.in" />
+        <classpath refid="classpath"/>
+    </maskgen>
+    <maskgen 
+        dir="${demo_home}/demo1"
+        generator="size" 
+        MemRefSize="32"
+        outfile="${demo_home}/demo1/demo1_32.txt">
+        <jcainputfile inputfile="@${demo_home}/demo1/demo1.in" />
+        <classpath refid="classpath"/>
+    </maskgen>
+</target>
+
+<target name="build_demo2_mask_32" if="is32Bit">
+    <delete file="${demo_home}/demo2/demo2_32.c" />
+    <maskgen 
+        dir="${demo_home}/demo2"
+        generator="cref" 
+        MemRefSize="32"
+        configfile="${demo_home}/cref_mask.cfg"
+        outfile="${demo_home}/demo2/demo2_32.c">
+        <jcainputfile inputfile="@${demo_home}/demo2/demo2.in" />
+        <classpath refid="classpath"/>
+    </maskgen>
+    <maskgen 
+        dir="${demo_home}/demo2"
+        generator="size" 
+        MemRefSize="32"
+        outfile="${demo_home}/demo2/demo2_32.txt">
+        <jcainputfile inputfile="@${demo_home}/demo2/demo2.in" />
+        <classpath refid="classpath"/>
+    </maskgen>
+</target>
+
+<target name="build_demo1_cref" depends="initProps">
+    <antcall target="build_demo1_mask" />
+    <antcall target="build_demo1_cref_16" />
+    <antcall target="build_demo1_cref_32" />
+</target>
+
+<target name="build_demo2_cref" depends="initProps">
+    <antcall target="build_demo2_mask" />
+    <antcall target="build_demo2_cref_16" />
+    <antcall target="build_demo2_cref_32" />
+</target>
+
+<target name="build_demo1_cref_16" if="is16Bit">
+    <copy todir="${cref_output_home}/demo1/16/src/cref">
+        <fileset dir="${cref_src_home}">
+            <include name="**/*"/>
+            <exclude name="${cref_src_home}/masks/**/*" />
+        </fileset>
+    </copy>
+    <!-- copy the mask file in cref/common directory -->
+    <copy tofile="${cref_output_home}/demo1/16/src/cref/common/mask.c"
+          file="${demo_home}/demo1/demo1_16.c"
+          overwrite="true"/>
+    <antcall target="build_demo1_cref_16_win" >
+        <param name="cref_destination_dir" value="${cref_output_home}/demo1/16" />
+    </antcall>
+    <antcall target="build_demo1_cref_16_linux" >
+        <param name="cref_destination_dir" value="${cref_output_home}/demo1/16" />
+    </antcall>
+    <antcall target="build_demo1_cref_16_sunsparc" >
+        <param name="cref_destination_dir" value="${cref_output_home}/demo1/16" />
+    </antcall>
+    <antcall target="build_demo1_cref_16_sunx86" >
+        <param name="cref_destination_dir" value="${cref_output_home}/demo1/16" />
+    </antcall>
+    <delete>
+        <fileset dir="${cref_output_home}/demo1/16">
+            <include name="**/*.o"/>
+        </fileset>
+    </delete>
+</target>
+
+<target name="build_demo1_cref_16_win" if="isWindows">
+    <antcall target="build_cref_win32">
+        <param name="ref_size" value="-DBIT16=1" />
+    </antcall>
+</target>
+
+<target name="build_demo1_cref_16_linux" if="isx86Linux">
+    <antcall target="build_cref_linux">
+        <param name="ref_size" value="-DBIT16=1" />
+    </antcall>
+</target>
+
+<target name="build_demo1_cref_16_sunsparc" if="isSunOSonSparc">
+    <antcall target="build_cref_solaris">
+        <param name="ref_size" value="-DBIT16=1" />
+        <param name="platform_dir" value="unix" />
+    </antcall>
+</target>
+
+<target name="build_demo1_cref_16_sunx86" if="isSunOSonx86">
+    <antcall target="build_cref_solaris">
+        <param name="ref_size" value="-DBIT16=1" />
+        <param name="platform_dir" value="win32" />
+    </antcall>
+</target>
+
+
+<target name="build_demo2_cref_16" if="is16Bit">
+    <copy todir="${cref_output_home}/demo2/16/src/cref">
+        <fileset dir="${cref_src_home}">
+            <include name="**/*"/>
+            <exclude name="${cref_src_home}/masks/**/*" />
+        </fileset>
+    </copy>
+    <!-- copy the mask file in cref/common directory -->
+    <copy tofile="${cref_output_home}/demo2/16/src/cref/common/mask.c"
+          file="${demo_home}/demo2/demo2_16.c"
+          overwrite="true"/>
+    <antcall target="build_demo2_cref_16_win" >
+        <param name="cref_destination_dir" value="${cref_output_home}/demo2/16" />
+    </antcall>
+    <antcall target="build_demo2_cref_16_linux" >
+        <param name="cref_destination_dir" value="${cref_output_home}/demo2/16" />
+    </antcall>
+    <antcall target="build_demo2_cref_16_sunsparc" >
+        <param name="cref_destination_dir" value="${cref_output_home}/demo2/16" />
+    </antcall>
+    <antcall target="build_demo2_cref_16_sunx86" >
+        <param name="cref_destination_dir" value="${cref_output_home}/demo2/16" />
+    </antcall>
+    <delete>
+        <fileset dir="${cref_output_home}/demo2/16">
+            <include name="**/*.o"/>
+        </fileset>
+    </delete>
+</target>
+
+<target name="build_demo2_cref_16_win" if="isWindows">
+    <antcall target="build_cref_win32">
+        <param name="ref_size" value="-DBIT16=1" />
+    </antcall>
+</target>
+
+<target name="build_demo2_cref_16_linux" if="isx86Linux">
+    <antcall target="build_cref_linux">
+        <param name="ref_size" value="-DBIT16=1" />
+    </antcall>
+</target>
+
+<target name="build_demo2_cref_16_sunsparc" if="isSunOSonSparc">
+    <antcall target="build_cref_solaris">
+        <param name="ref_size" value="-DBIT16=1" />
+        <param name="platform_dir" value="unix" />
+    </antcall>
+</target>
+
+<target name="build_demo2_cref_16_sunx86" if="isSunOSonx86">
+    <antcall target="build_cref_solaris">
+        <param name="ref_size" value="-DBIT16=1" />
+        <param name="platform_dir" value="win32" />
+    </antcall>
+</target>
+
+
+<target name="build_demo1_cref_32" if="is32Bit">
+    <copy todir="${cref_output_home}/demo1/32/src/cref">
+        <fileset dir="${cref_src_home}">
+            <include name="**/*"/>
+            <exclude name="${cref_src_home}/masks/**/*" />
+        </fileset>
+    </copy>
+    <!-- copy the mask file in cref/common directory -->
+    <copy tofile="${cref_output_home}/demo1/32/src/cref/common/mask.c"
+          file="${demo_home}/demo1/demo1_32.c"
+          overwrite="true"/>
+    <antcall target="build_demo1_cref_32_win" >
+        <param name="cref_destination_dir" value="${cref_output_home}/demo1/32" />
+    </antcall>
+    <antcall target="build_demo1_cref_32_linux" >
+        <param name="cref_destination_dir" value="${cref_output_home}/demo1/32" />
+    </antcall>
+    <antcall target="build_demo1_cref_32_sunsparc" >
+        <param name="cref_destination_dir" value="${cref_output_home}/demo1/32" />
+    </antcall>
+    <antcall target="build_demo1_cref_32_sunx86" >
+        <param name="cref_destination_dir" value="${cref_output_home}/demo1/32" />
+    </antcall>
+    <delete>
+        <fileset dir="${cref_output_home}/demo1/32">
+            <include name="**/*.o"/>
+        </fileset>
+    </delete>
+</target>
+
+<target name="build_demo1_cref_32_win" if="isWindows">
+    <antcall target="build_cref_win32">
+        <param name="ref_size" value="-DBIT32=1" />
+    </antcall>
+</target>
+
+<target name="build_demo1_cref_32_linux" if="isx86Linux">
+    <antcall target="build_cref_linux">
+        <param name="ref_size" value="-DBIT32=1" />
+    </antcall>
+</target>
+
+<target name="build_demo1_cref_32_sunsparc" if="isSunOSonSparc">
+    <antcall target="build_cref_solaris">
+        <param name="ref_size" value="-DBIT32=1" />
+        <param name="platform_dir" value="unix" />
+    </antcall>
+</target>
+
+<target name="build_demo1_cref_32_sunx86" if="isSunOSonx86">
+    <antcall target="build_cref_solaris">
+        <param name="ref_size" value="-DBIT32=1" />
+        <param name="platform_dir" value="win32" />
+    </antcall>
+</target>
+
+<target name="build_demo2_cref_32" if="is32Bit">
+    <copy todir="${cref_output_home}/demo2/32/src/cref">
+        <fileset dir="${cref_src_home}">
+            <include name="**/*"/>
+            <exclude name="${cref_src_home}/masks/**/*" />
+        </fileset>
+    </copy>
+    <!-- copy the mask file in cref/common directory -->
+    <copy tofile="${cref_output_home}/demo2/32/src/cref/common/mask.c"
+          file="${demo_home}/demo2/demo2_32.c"
+          overwrite="true"/>
+    <antcall target="build_demo2_cref_32_win" >
+        <param name="cref_destination_dir" value="${cref_output_home}/demo2/32" />
+    </antcall>
+    <antcall target="build_demo2_cref_32_linux" >
+        <param name="cref_destination_dir" value="${cref_output_home}/demo2/32" />
+    </antcall>
+    <antcall target="build_demo2_cref_32_sunsparc" >
+        <param name="cref_destination_dir" value="${cref_output_home}/demo2/32" />
+    </antcall>
+    <antcall target="build_demo2_cref_32_sunx86" >
+        <param name="cref_destination_dir" value="${cref_output_home}/demo2/32" />
+    </antcall>
+    <delete>
+        <fileset dir="${cref_output_home}/demo2/32">
+            <include name="**/*.o"/>
+        </fileset>
+    </delete>
+</target>
+
+<target name="build_demo2_cref_32_win" if="isWindows">
+    <antcall target="build_cref_win32">
+        <param name="ref_size" value="-DBIT32=1" />
+    </antcall>
+</target>
+
+<target name="build_demo2_cref_32_linux" if="isx86Linux">
+    <antcall target="build_cref_linux">
+        <param name="ref_size" value="-DBIT32=1" />
+    </antcall>
+</target>
+
+<target name="build_demo2_cref_32_sunsparc" if="isSunOSonSparc">
+    <antcall target="build_cref_solaris">
+        <param name="ref_size" value="-DBIT32=1" />
+        <param name="platform_dir" value="unix" />
+    </antcall>
+</target>
+
+<target name="build_demo2_cref_32_sunx86" if="isSunOSonx86">
+    <antcall target="build_cref_solaris">
+        <param name="ref_size" value="-DBIT32=1" />
+        <param name="platform_dir" value="win32" />
+    </antcall>
+</target>
+
+<!--
+    =================================================
+        CREF Targets
+    =================================================
+-->
+
+<!-- Target to build cref on Solaris -->
+<target name="build_cref_solaris" depends="get_cpu_type">
+    <!-- Create an empty /cref/crypto directory if global build. We need this to simplify our cref build -->
+    <antcall target="create_cref_crypto_dir" />
+    <mkdir dir="${cref_destination_dir}/${COMM_INTERFACE_DIR}" />
+      <apply executable="gcc" 
+         dest="${cref_destination_dir}/${COMM_INTERFACE_DIR}" 
+         parallel="true"
+         skipemptyfilesets="true"
+         dir="${cref_destination_dir}/${COMM_INTERFACE_DIR}" >
+         <arg value="-mcpu=${mcpu_value}"/>
+         <arg value="-Wall" />
+         <arg value="-g" />
+         <arg value="${crypto_flag}"/>
+         <arg value="${COMM_INTERFACE}"/>
+         <arg value="${ref_size}"/>
+         <arg value="-o"/>
+         <arg value="cref"/>
+         <arg value="-I${cref_destination_dir}/src/cref/${platform_dir}/"/>
+         <arg value="-I${cref_destination_dir}/src/cref/big_num"/>         
+         <arg value="-I${cref_destination_dir}/src/cref/common"/>
+         <arg value="-I${cref_destination_dir}/src/cref/crypto"/>
+         <arg value="-I${cref_destination_dir}/src/cref/unix_win32"/>
+         <arg value="-I/usr/include/"/>
+         <arg value="-lm"/>
+         <arg value="-lsocket"/>
+         <arg value="-lnsl"/>
+         <srcfile />
+        <fileset dir="${cref_destination_dir}/src/cref" casesensitive="yes">
+          <include name="**/big_num/*.c"/>
+          <include name="**/common/*.c"/>
+          <include name="**/crypto/*.c"/>          
+          <include name="**/unix_win32/*.c"/>
+          <include name="**/${platform_dir}/*.c" />
+          <exclude name="**/*.txt" />
+        </fileset>
+        <mapper type="flatten" />
+       </apply>
+</target>
+
+<!-- Target to build cref on Linux -->
+<target name="build_cref_linux" >
+    <!-- Create an empty /cref/crypto directory if global build. We need this to simplify our cref build -->
+    <antcall target="create_cref_crypto_dir" />
+    <mkdir dir="${cref_destination_dir}/${COMM_INTERFACE_DIR}" />
+      <apply executable="gcc" 
+         dest="${cref_destination_dir}/${COMM_INTERFACE_DIR}" 
+         parallel="true"
+         skipemptyfilesets="true"
+         dir="${cref_destination_dir}/${COMM_INTERFACE_DIR}">
+         <arg value="-mcpu=i386"/>
+         <arg value="-Wall" />
+         <arg value="-g" />
+         <arg value="${crypto_flag}"/>
+         <arg value="${COMM_INTERFACE}"/>
+         <arg value="${ref_size}"/>
+         <arg value="-o"/>
+         <arg value="cref"/>
+         <arg value="-I${cref_destination_dir}/src/cref/big_num"/>         
+         <arg value="-I${cref_destination_dir}/src/cref/common"/>
+         <arg value="-I${cref_destination_dir}/src/cref/crypto"/>
+         <arg value="-I${cref_destination_dir}/src/cref/unix_win32"/>
+         <arg value="-I${cref_destination_dir}/src/cref/win32"/>
+         <arg value="-lm"/>
+         <srcfile />
+        <fileset dir="${cref_destination_dir}/src/cref" casesensitive="yes">
+          <include name="**/big_num/*.c"/>
+          <include name="**/common/*.c"/>
+          <include name="**/crypto/*.c"/>          
+          <include name="**/unix_win32/*.c"/>
+          <include name="**/win32/*.c" />
+          <exclude name="**/*.txt" />
+        </fileset>
+        <mapper type="flatten" />
+       </apply>
+</target>
+
+<!-- Target to build cref on windows -->
+<target name="build_cref_win32">
+    <!-- Create an empty /cref/crypto directory if global build. We need this to simplify our cref build -->
+    <antcall target="create_cref_crypto_dir" />
+    <mkdir dir="${cref_destination_dir}/${COMM_INTERFACE_DIR}" />
+      <apply executable="gcc" 
+         dest="${cref_destination_dir}/${COMM_INTERFACE_DIR}" 
+         parallel="true"
+         skipemptyfilesets="true"
+         dir="${cref_destination_dir}/${COMM_INTERFACE_DIR}" >
+         <arg value="-mno-cygwin"/>
+         <arg value="-march=i386"/>
+         <arg value="-Wall" />
+         <arg value="-D" />
+         <arg value="&quot;WIN32&quot;" />
+         <arg value="-D" />
+         <arg value="&quot;_WIN32&quot;" />
+         <arg value="-D" />
+         <arg value="&quot;_MBCS&quot;" />
+         <arg value="-D" />
+         <arg value="&quot;_CONSOLE&quot;" />
+         <arg value="-D" />
+         <arg value="&quot;_DEBUG&quot;"/> 
+         <arg value="${crypto_flag}"/>
+         <arg value="${COMM_INTERFACE}"/>
+         <arg value="${ref_size}"/>
+         <arg value="-o"/>
+         <arg value="cref.exe"/>
+         <arg value="-I${cref_destination_dir}/src/cref/win32"/>
+         <arg value="-I${cref_destination_dir}/src/cref/big_num"/>         
+         <arg value="-I${cref_destination_dir}/src/cref/common"/>
+         <arg value="-I${cref_destination_dir}/src/cref/crypto"/>
+         <arg value="-I${cref_destination_dir}/src/cref/unix_win32"/>
+         <srcfile />
+         <arg value="-luser32"/>
+         <arg value="-lgdi32"/>
+         <arg value="-lkernel32"/>
+         <arg value="-lmsvcrt"/>
+         <arg value="-lwsock32"/>
+        <fileset dir="${cref_destination_dir}/src/cref" casesensitive="yes">
+          <include name="**/big_num/*.c"/>
+          <include name="**/common/*.c"/>
+          <include name="**/crypto/*.c"/>          
+          <include name="**/unix_win32/*.c"/>
+          <include name="**/win32/*.c" />
+          <exclude name="**/*.txt" />
+        </fileset>
+        <mapper type="flatten" />
+       </apply>
+</target>

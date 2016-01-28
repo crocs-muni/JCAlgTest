@@ -1,0 +1,24 @@
+<target name="demos_usage">
+<!-- Usage -->
+    <echo>
+        Usage: build_demos [options]
+        Where options include:
+            -32bit_t1  produce a 32-bit mask and T=1 cref for demos
+            -32bit_t0  produce a 32-bit mask and T=0 cref for demos
+            -16bit_t0  produce a 16-bit mask and T=0 cref for demos
+            -help      print out this message
+            -clean     remove all produced files
+            
+    </echo>
+</target>
+
+<target name="samples_usage">
+<!-- Usage -->
+    <echo>
+        Usage: build_samples [options]"
+        Where options include:"
+            -help     print out this message"
+            -clean    remove all produced files"
+            
+    </echo>
+</target>

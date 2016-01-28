@@ -1,0 +1,94 @@
+// converted by version 1.2
+// on Mon Apr 09 13:40:44 PDT 2001
+
+.package com/sun/javacard/samples/NullApp {
+	.aid 0xA0:0x0:0x0:0x0:0x62:0x3:0x1:0xC:0x3;
+	.version 1.0;
+
+	.imports {
+		0xA0:0x0:0x0:0x0:0x62:0x1:0x1 1.0;		//javacard/framework
+	}
+
+	.applet {
+		0xA0:0x0:0x0:0x0:0x62:0x3:0x1:0xC:0x3:0x1 NullApp;
+	}
+
+	.constantPool {
+		// 0
+		staticMethodRef 0.3.0()V;		// javacard/framework/Applet.<init>()V
+		// 1
+		virtualMethodRef 0.3.1()V;		// javacard/framework/Applet.register()V
+		// 2
+		classRef NullApp;
+		// 3
+		staticMethodRef NullApp/<init>(Ljavacard/framework/APDU;)V;
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
+		// 4
+		virtualMethodRef 0.10.1()[B;		// javacard/framework/APDU.getBuffer()[B
+		// 5
+		staticMethodRef 0.16.5(BB)S;		// javacard/framework/Util.makeShort(BB)S
+		// 6
+		staticMethodRef 0.7.1(S)V;		// javacard/framework/ISOException.throwIt(S)V
+	}
+
+	.class public NullApp 0 extends 0.3 {		// extends javacard/framework/Applet
+
+		.publicMethodTable 7 {
+			equals(Ljava/lang/Object;)Z;
+			register()V;
+			register([BSB)V;
+			selectingApplet()Z;
+			deselect()V;
+			getShareableInterfaceObject(Ljavacard/framework/AID;B)Ljavacard/framework/Shareable;;
+			select()Z;
+			process(Ljavacard/framework/APDU;)V;
+		}
+
+		.packageMethodTable 0 {
+		}
+
+		.method protected <init>(Ljavacard/framework/APDU;)V 0 {
+			.stack 1;
+			.locals 0;
+
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
+				L0:	aload_0;
+					invokespecial 0;		// javacard/framework/Applet.<init>()V
+					aload_0;
+					invokevirtual 1;		// javacard/framework/Applet.register()V
+					return;
+		}
+
+		.method public static install([BSB)V 1 {
+			.stack 2;
+			.locals 0;
+
+				L0:	new 2;		// com/sun/javacard/samples/NullApp/NullApp
+					aconst_null;
+					invokespecial 3;		// com/sun/javacard/samples/NullApp/NullApp.<init>(Ljavacard/framework/APDU;)V
+					return;
+		}
+
+		.method public process(Ljavacard/framework/APDU;)V 7 {
+			.stack 3;
+			.locals 1;
+
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
+				L0:	aload_1;
+					invokevirtual 4;		// javacard/framework/APDU.getBuffer()[B
+					astore_2;
+					bspush 109;
+					aload_2;
+					sconst_1;
+					baload;
+					invokestatic 5;		// javacard/framework/Util.makeShort(BB)S
+					invokestatic 6;		// javacard/framework/ISOException.throwIt(S)V
+					return;
+		}
+
+	}
+
+}

@@ -1,0 +1,21 @@
+//+
+// Copyright © 2001 Sun Microsystems, Inc.  All rights reserved.
+// Use is subject to license terms.
+//-
+
+//+
+// Workfile:@(#)Header.scr	1.4
+// Version:1.4
+// Date:03/26/01
+// 
+// Archive:  /Products/Europa/demo/Header.scr 
+// Modified:03/26/01 13:37:44
+// Original author: <your name here>
+//-
+
+powerup;
+
+// Select the installer applet
+0x00 0xA4 0x04 0x00 0x09 0xa0 0x00 0x00 0x00 0x62 0x03 0x01 0x08 0x01 0x7F;
+// 90 00 = SW_NO_ERROR
+
