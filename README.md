@@ -1,7 +1,7 @@
 JCAlgTest
 =======
 
-[![Build status](https://travis-ci.org/petrs/JCAlgTest.svg?branch=master)](https://travis-ci.org/petrs/JCAlgTest)
+[![Build status](https://travis-ci.org/crocs-muni/JCAlgTest.svg?branch=master)](https://travis-ci.org/crocs-muni/JCAlgTest)  
 
 Automated testing tool for algorithms supported by particular smart card with JavaCard platform. 
 
