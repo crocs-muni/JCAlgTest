@@ -6,6 +6,7 @@ AlgTest applet version; error
 Used reader; PC/SC terminal Gemplus USB Smart Card Reader 2
 Card ATR; 3b 7d 94 00 00 80 31 80 65 b0 83 11 c0 a9 83 00 90 00
 Card name; Gemplus GXP R4 72K
+Performance; yes
 Used protocol; T=0
 
 JavaCard support version;2.2.1;

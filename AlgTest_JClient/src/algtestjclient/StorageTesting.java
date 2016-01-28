@@ -83,7 +83,7 @@ public class StorageTesting {
         apdu[OFFSET_P1] = testSet.P1;
         apdu[OFFSET_P2] = testSet.P2;
         apdu[OFFSET_LC] = (byte) (apdu.length - HEADER_LENGTH);
-        testSet.serializeToApduBuff(apdu, ISO7816.OFFSET_CDATA);
+        CardMngr.serializeToApduBuff(testSet, apdu, ISO7816.OFFSET_CDATA);
 
         elapsedCard -= System.currentTimeMillis();
         try {

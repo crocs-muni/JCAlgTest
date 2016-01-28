@@ -63,6 +63,8 @@ public class AlgStorageTest {
     
     TestSettings               m_testSettings = null;
     
+    
+    
     AlgStorageTest() { 
         m_aesCipher = Cipher.getInstance(JCConsts.Cipher_ALG_AES_BLOCK_128_CBC_NOPAD, false);
         m_desCipher = Cipher.getInstance(JCConsts.Cipher_ALG_DES_CBC_NOPAD, false);

@@ -131,8 +131,10 @@ div{
 .description{
 	border:solid #ebebeb; 
 	border-width:.1em .1em .1em .1em; 
-	padding: .1em .3em; 
+	padding: .1em .1em; 
 	margin: 0px 50px 0px 40px;
+	font-size: 12px;
+	font-family: Monospace;
 }
 
 .graph{

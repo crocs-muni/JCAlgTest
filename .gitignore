@@ -9,3 +9,6 @@
 /AlgTest_Process/dist/README.TXT
 *.class
 /AlgTest_JavaCard/nbproject/project.properties
+AlgTest_JavaCard/nbproject/project.properties
+AlgTest_JavaCard/!card_uploaders/AlgTest_possibly_uploaded_onGD.cap
+AlgTest_JavaCard/nbproject/project.properties

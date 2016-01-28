@@ -175,10 +175,10 @@ public class JCAlgTestApplet extends javacard.framework.Applet
         }
 
         if (bProcessed == 0) {
-            bProcessed = m_keyHarvest.process(apdu);
+            bProcessed = m_supportTest.process(apdu);
         }
         if (bProcessed == 0) {
-            bProcessed = m_supportTest.process(apdu);
+            bProcessed = m_keyHarvest.process(apdu);
         }
         if (bProcessed == 0) {
             bProcessed = m_perfTest.process(apdu);

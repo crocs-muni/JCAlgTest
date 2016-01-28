@@ -24,7 +24,8 @@ public class Consts {
     public final static byte INS_CARD_GETRSAKEY                = (byte) 0x77;    
     public final static byte INS_CARD_DATAINOUT                = (byte) 0x78;    
     public final static byte INS_CARD_ALLOWED_KEYS             = (byte) 0x79;    
-    public final static byte INS_CARD_ALLOWED_ENGINES          = (byte) 0x80;    
+    public final static byte INS_CARD_ALLOWED_ENGINES          = (byte) 0x80;
+    public final static byte INS_CARD_GETRANDOMDATA            = (byte) 0x81;
     
     
     
