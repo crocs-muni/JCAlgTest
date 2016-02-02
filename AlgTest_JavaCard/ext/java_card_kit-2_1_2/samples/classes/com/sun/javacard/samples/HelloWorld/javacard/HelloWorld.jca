@@ -1,0 +1,144 @@
+// converted by version 1.2
+// on Mon Apr 09 13:40:46 PDT 2001
+
+.package com/sun/javacard/samples/HelloWorld {
+	.aid 0xA0:0x0:0x0:0x0:0x62:0x3:0x1:0xC:0x1;
+	.version 1.0;
+
+	.imports {
+		0xA0:0x0:0x0:0x0:0x62:0x1:0x1 1.0;		//javacard/framework
+	}
+
+	.applet {
+		0xA0:0x0:0x0:0x0:0x62:0x3:0x1:0xC:0x1:0x1 HelloWorld;
+	}
+
+	.constantPool {
+		// 0
+		instanceFieldRef byte[] HelloWorld/echoBytes;
+		// 1
+		staticMethodRef 0.3.0()V;		// javacard/framework/Applet.<init>()V
+		// 2
+		virtualMethodRef 0.3.1()V;		// javacard/framework/Applet.register()V
+		// 3
+		classRef HelloWorld;
+		// 4
+		staticMethodRef HelloWorld/<init>()V;
+		// 5
+		virtualMethodRef 0.10.1()[B;		// javacard/framework/APDU.getBuffer()[B
+		// 6
+		virtualMethodRef 0.10.6()S;		// javacard/framework/APDU.setIncomingAndReceive()S
+		// 7
+		virtualMethodRef 0.10.7()S;		// javacard/framework/APDU.setOutgoing()S
+		// 8
+		virtualMethodRef 0.10.9(S)V;		// javacard/framework/APDU.setOutgoingLength(S)V
+		// 9
+		virtualMethodRef 0.10.4(SS)V;		// javacard/framework/APDU.sendBytes(SS)V
+		// 10
+		virtualMethodRef 0.10.5([BSS)V;		// javacard/framework/APDU.sendBytesLong([BSS)V
+		// 11
+		staticMethodRef 0.16.2([BS[BSS)S;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+		// 12
+		virtualMethodRef 0.10.3(S)S;		// javacard/framework/APDU.receiveBytes(S)S
+	}
+
+	.class public HelloWorld 0 extends 0.3 {		// extends javacard/framework/Applet
+
+		.fields {
+			private byte[] echoBytes 0;		// [B
+			private static final short LENGTH_ECHO_BYTES = 256;		// S
+		}
+
+		.publicMethodTable 7 {
+			equals(Ljava/lang/Object;)Z;
+			register()V;
+			register([BSB)V;
+			selectingApplet()Z;
+			deselect()V;
+			getShareableInterfaceObject(Ljavacard/framework/AID;B)Ljavacard/framework/Shareable;;
+			select()Z;
+			process(Ljavacard/framework/APDU;)V;
+		}
+
+		.packageMethodTable 0 {
+		}
+
+		.method protected <init>()V 0 {
+			.stack 2;
+			.locals 0;
+
+				L0:	aload_0;
+					invokespecial 1;		// javacard/framework/Applet.<init>()V
+					aload_0;
+					sspush 256;
+					newarray 11;
+					putfield_a 0;		// reference com/sun/javacard/samples/HelloWorld/HelloWorld.echoBytes
+					aload_0;
+					invokevirtual 2;		// javacard/framework/Applet.register()V
+					return;
+		}
+
+		.method public static install([BSB)V 1 {
+			.stack 1;
+			.locals 0;
+
+				L0:	new 3;		// com/sun/javacard/samples/HelloWorld/HelloWorld
+					invokespecial 4;		// com/sun/javacard/samples/HelloWorld/HelloWorld.<init>()V
+					return;
+		}
+
+		.method public process(Ljavacard/framework/APDU;)V 7 {
+			.stack 5;
+			.locals 3;
+
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
+				L0:	aload_1;
+					invokevirtual 5;		// javacard/framework/APDU.getBuffer()[B
+					astore_2;
+					aload_1;
+					invokevirtual 6;		// javacard/framework/APDU.setIncomingAndReceive()S
+					sstore_3;
+					sconst_0;
+					sstore 4;
+					goto L2;
+				L1:	aload_2;
+					sconst_5;
+					getfield_a_this 0;		// reference com/sun/javacard/samples/HelloWorld/HelloWorld.echoBytes
+					sload 4;
+					sload_3;
+					invokestatic 11;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					pop;
+					sload 4;
+					sload_3;
+					sadd;
+					sstore 4;
+					aload_1;
+					sconst_5;
+					invokevirtual 12;		// javacard/framework/APDU.receiveBytes(S)S
+					sstore_3;
+				L2:	sload_3;
+					ifgt L1;
+				L3:	aload_1;
+					invokevirtual 7;		// javacard/framework/APDU.setOutgoing()S
+					pop;
+					aload_1;
+					sload 4;
+					sconst_5;
+					sadd;
+					invokevirtual 8;		// javacard/framework/APDU.setOutgoingLength(S)V
+					aload_1;
+					sconst_0;
+					sconst_5;
+					invokevirtual 9;		// javacard/framework/APDU.sendBytes(SS)V
+					aload_1;
+					getfield_a_this 0;		// reference com/sun/javacard/samples/HelloWorld/HelloWorld.echoBytes
+					sconst_0;
+					sload 4;
+					invokevirtual 10;		// javacard/framework/APDU.sendBytesLong([BSS)V
+					return;
+		}
+
+	}
+
+}

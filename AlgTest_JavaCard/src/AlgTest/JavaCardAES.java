@@ -120,7 +120,7 @@ public class JavaCardAES {
 
       // Alogtable AND Logtable TABLES
       for (i=0; i<256; ++i) {
-          Alogtable[i]= (byte) p;
+          Alogtable[i]= p;
           Logtable[(p >= 0) ? p : (short) (256 + p)]= (byte) i;
           p=(byte) (p^(p<<1)^(((p&0x80) == 0) ? 0: 0x01b));
       }
@@ -136,7 +136,7 @@ public class JavaCardAES {
          q= (short) ((q>>7) | (q<<1)); p^= (byte) q;
          q= (short) ((q>>7) | (q<<1)); p^= (byte) q;
          p= (byte) (p^0x63);
-         SBox[i] = (byte) p;
+         SBox[i] = p;
          SiBox[(p >= 0) ? p : (short) (256 + p)] = (byte) i;
       }
 
@@ -148,9 +148,9 @@ public class JavaCardAES {
 /*// ALOG_MUL
       // PRE-COMPUTE Alogtable_mul2 and Alogtable_mul3
       Alogtable_mul2[0] = 0;
-      for (i=1; i < 256; i++) Alogtable_mul2[i] = (byte) Alogtable[(short) ((short) (Logtable[2] + Logtable[i]) % 255)];
+      for (i=1; i < 256; i++) Alogtable_mul2[i] = Alogtable[(short) ((short) (Logtable[2] + Logtable[i]) % 255)];
       Alogtable_mul3[0] = 0;
-      for (i=1; i < 256; i++) Alogtable_mul3[i] = (byte) Alogtable[(short) ((short) (Logtable[3] + Logtable[i]) % 255)];
+      for (i=1; i < 256; i++) Alogtable_mul3[i] = Alogtable[(short) ((short) (Logtable[3] + Logtable[i]) % 255)];
 /**/
     }
 
@@ -214,7 +214,7 @@ public class JavaCardAES {
     // MULTIPLY TWO ELEMENTS OF GF(2^m)
     private byte mul(short a, short b) {
       if ((a != 0) && (b != 0)) {
-        return (byte) Alogtable[(short) ((short) (Logtable[a] + Logtable[b]) % 255)];
+        return Alogtable[(short) ((short) (Logtable[a] + Logtable[b]) % 255)];
       }
       else return (byte) 0;
     }
@@ -287,36 +287,36 @@ public class JavaCardAES {
 
           // i == 0
           // tempBuffer[hlp2] = (byte) mul((byte) 2, a0);
-          tempBuffer[hlp2] = (a0 != 0) ? (byte) Alogtable[(short) ((short) (Logtable[2] + Logtable[a0]) % 255)] : (byte) 0;
+          tempBuffer[hlp2] = (a0 != 0) ? Alogtable[(short) ((short) (Logtable[2] + Logtable[a0]) % 255)] : (byte) 0;
           // tempBuffer[hlp2] ^= (byte) mul((byte) 3, a1);
-          if (a1 != 0) tempBuffer[hlp2] ^= (byte) Alogtable[(short) ((short) (Logtable[3] + Logtable[a1]) % 255)];
+          if (a1 != 0) tempBuffer[hlp2] ^= Alogtable[(short) ((short) (Logtable[3] + Logtable[a1]) % 255)];
           tempBuffer[hlp2] ^= a2;
           tempBuffer[hlp2] ^= a3;
 
           // i == 1
           hlp3 = (byte) (hlp2 + 1);
           //tempBuffer[hlp3] = (byte) mul((byte) 2, a1);
-          tempBuffer[hlp3] = (a1 != 0) ? (byte) Alogtable[(short) ((short) (Logtable[2] + Logtable[a1]) % 255)] : (byte) 0;
+          tempBuffer[hlp3] = (a1 != 0) ? Alogtable[(short) ((short) (Logtable[2] + Logtable[a1]) % 255)] : (byte) 0;
           //tempBuffer[hlp3] ^= (byte) mul((byte) 3, a2);
-          if (a2 != 0) tempBuffer[hlp3] ^= (byte) Alogtable[(short) ((short) (Logtable[3] + Logtable[a2]) % 255)];
+          if (a2 != 0) tempBuffer[hlp3] ^= Alogtable[(short) ((short) (Logtable[3] + Logtable[a2]) % 255)];
           tempBuffer[hlp3] ^= a3;
           tempBuffer[hlp3] ^= a0;
 
           // i == 2
           hlp3 = (byte) (hlp2 + 2);
           //tempBuffer[hlp3] = (byte) mul((byte) 2, a2);
-          tempBuffer[hlp3] = (a2 != 0) ? (byte) Alogtable[(short) ((short) (Logtable[2] + Logtable[a2]) % 255)] : (byte) 0;
+          tempBuffer[hlp3] = (a2 != 0) ? Alogtable[(short) ((short) (Logtable[2] + Logtable[a2]) % 255)] : (byte) 0;
           //tempBuffer[hlp3] ^= (byte) mul((byte) 3, a3);
-          if (a3 != 0) tempBuffer[hlp3] ^= (byte) Alogtable[(short) ((short) (Logtable[3] + Logtable[a3]) % 255)];
+          if (a3 != 0) tempBuffer[hlp3] ^= Alogtable[(short) ((short) (Logtable[3] + Logtable[a3]) % 255)];
           tempBuffer[hlp3] ^= a0;
           tempBuffer[hlp3] ^= a1;
 
           // i == 3
           hlp3 = (byte) (hlp2 + 3);
           //tempBuffer[hlp3] = (byte) mul((byte) 2, a3);
-          tempBuffer[hlp3] = (a3 != 0) ? (byte) Alogtable[(short) ((short) (Logtable[2] + Logtable[a3]) % 255)] : (byte) 0;
+          tempBuffer[hlp3] = (a3 != 0) ? Alogtable[(short) ((short) (Logtable[2] + Logtable[a3]) % 255)] : (byte) 0;
           //tempBuffer[hlp3] ^= (byte) mul((byte) 3, a0);
-          if (a0 != 0) tempBuffer[hlp3] ^= (byte) Alogtable[(short) ((short) (Logtable[3] + Logtable[a0]) % 255)];
+          if (a0 != 0) tempBuffer[hlp3] ^= Alogtable[(short) ((short) (Logtable[3] + Logtable[a0]) % 255)];
           tempBuffer[hlp3] ^= a1;
           tempBuffer[hlp3] ^= a2;
 
@@ -398,46 +398,46 @@ public class JavaCardAES {
 
           // i == 0
           //tempBuffer[hlp2] = (byte) mul((byte) 0xe, a0);
-          tempBuffer[hlp2] = (a0 != 0) ? (byte) Alogtable[(short) ((short) (Logtable[0xe] + Logtable[a0]) % 255)] : (byte) 0;
+          tempBuffer[hlp2] = (a0 != 0) ? Alogtable[(short) ((short) (Logtable[0xe] + Logtable[a0]) % 255)] : (byte) 0;
           //tempBuffer[hlp2] ^= (byte) mul((byte) 0xb, a1);
-          tempBuffer[hlp2] ^= (a1 != 0) ? (byte) Alogtable[(short) ((short) (Logtable[0xb] + Logtable[a1]) % 255)] : (byte) 0;
+          tempBuffer[hlp2] ^= (a1 != 0) ? Alogtable[(short) ((short) (Logtable[0xb] + Logtable[a1]) % 255)] : (byte) 0;
           //tempBuffer[hlp2] ^= (byte) mul((byte) 0xd, a2);
-          tempBuffer[hlp2] ^= (a2 != 0) ? (byte) Alogtable[(short) ((short) (Logtable[0xd] + Logtable[a2]) % 255)] : (byte) 0;
+          tempBuffer[hlp2] ^= (a2 != 0) ? Alogtable[(short) ((short) (Logtable[0xd] + Logtable[a2]) % 255)] : (byte) 0;
           //tempBuffer[hlp2] ^= (byte) mul((byte) 0x9, a3);
-          tempBuffer[hlp2] ^= (a3 != 0) ? (byte) Alogtable[(short) ((short) (Logtable[0x9] + Logtable[a3]) % 255)] : (byte) 0;
+          tempBuffer[hlp2] ^= (a3 != 0) ? Alogtable[(short) ((short) (Logtable[0x9] + Logtable[a3]) % 255)] : (byte) 0;
 
           // i == 1
           hlp3 = (byte) (hlp2 + 1);
           //tempBuffer[hlp3] = (byte) mul((byte) 0xe, a1);
-          tempBuffer[hlp3] = (a1 != 0) ? (byte) Alogtable[(short) ((short) (Logtable[0xe] + Logtable[a1]) % 255)] : (byte) 0;
+          tempBuffer[hlp3] = (a1 != 0) ? Alogtable[(short) ((short) (Logtable[0xe] + Logtable[a1]) % 255)] : (byte) 0;
           //tempBuffer[hlp3] ^= (byte) mul((byte) 0xb, a2);
-          tempBuffer[hlp3] ^= (a2 != 0) ? (byte) Alogtable[(short) ((short) (Logtable[0xb] + Logtable[a2]) % 255)] : (byte) 0;
+          tempBuffer[hlp3] ^= (a2 != 0) ? Alogtable[(short) ((short) (Logtable[0xb] + Logtable[a2]) % 255)] : (byte) 0;
           //tempBuffer[hlp3] ^= (byte) mul((byte) 0xd, a3);
-          tempBuffer[hlp3] ^= (a3 != 0) ? (byte) Alogtable[(short) ((short) (Logtable[0xd] + Logtable[a3]) % 255)] : (byte) 0;
+          tempBuffer[hlp3] ^= (a3 != 0) ? Alogtable[(short) ((short) (Logtable[0xd] + Logtable[a3]) % 255)] : (byte) 0;
           //tempBuffer[hlp3] ^= (byte) mul((byte) 0x9, a0);
-          tempBuffer[hlp3] ^= (a0 != 0) ? (byte) Alogtable[(short) ((short) (Logtable[0x9] + Logtable[a0]) % 255)] : (byte) 0;
+          tempBuffer[hlp3] ^= (a0 != 0) ? Alogtable[(short) ((short) (Logtable[0x9] + Logtable[a0]) % 255)] : (byte) 0;
 
           // i == 2
           hlp3 = (byte) (hlp2 + 2);
           //tempBuffer[hlp3] = (byte) mul((byte) 0xe, a2);
-          tempBuffer[hlp3] = (a2 != 0) ? (byte) Alogtable[(short) ((short) (Logtable[0xe] + Logtable[a2]) % 255)] : (byte) 0;
+          tempBuffer[hlp3] = (a2 != 0) ? Alogtable[(short) ((short) (Logtable[0xe] + Logtable[a2]) % 255)] : (byte) 0;
           //tempBuffer[hlp3] ^= (byte) mul((byte) 0xb, a3);
-          tempBuffer[hlp3] ^= (a3 != 0) ? (byte) Alogtable[(short) ((short) (Logtable[0xb] + Logtable[a3]) % 255)] : (byte) 0;
+          tempBuffer[hlp3] ^= (a3 != 0) ? Alogtable[(short) ((short) (Logtable[0xb] + Logtable[a3]) % 255)] : (byte) 0;
           //tempBuffer[hlp3] ^= (byte) mul((byte) 0xd, a0);
-          tempBuffer[hlp3] ^= (a0 != 0) ? (byte) Alogtable[(short) ((short) (Logtable[0xd] + Logtable[a0]) % 255)] : (byte) 0;
+          tempBuffer[hlp3] ^= (a0 != 0) ? Alogtable[(short) ((short) (Logtable[0xd] + Logtable[a0]) % 255)] : (byte) 0;
           //tempBuffer[hlp3] ^= (byte) mul((byte) 0x9, a1);
-          tempBuffer[hlp3] ^= (a1 != 0) ? (byte) Alogtable[(short) ((short) (Logtable[0x9] + Logtable[a1]) % 255)] : (byte) 0;
+          tempBuffer[hlp3] ^= (a1 != 0) ? Alogtable[(short) ((short) (Logtable[0x9] + Logtable[a1]) % 255)] : (byte) 0;
 
           // i == 3
           hlp3 = (byte) (hlp2 + 3);
           //tempBuffer[hlp3] = (byte) mul((byte) 0xe, a3);
-          tempBuffer[hlp3] = (a3 != 0) ? (byte) Alogtable[(short) ((short) (Logtable[0xe] + Logtable[a3]) % 255)] : (byte) 0;
+          tempBuffer[hlp3] = (a3 != 0) ? Alogtable[(short) ((short) (Logtable[0xe] + Logtable[a3]) % 255)] : (byte) 0;
           //tempBuffer[hlp3] ^= (byte) mul((byte) 0xb, a0);
-          tempBuffer[hlp3] ^= (a0 != 0) ? (byte) Alogtable[(short) ((short) (Logtable[0xb] + Logtable[a0]) % 255)] : (byte) 0;
+          tempBuffer[hlp3] ^= (a0 != 0) ? Alogtable[(short) ((short) (Logtable[0xb] + Logtable[a0]) % 255)] : (byte) 0;
           //tempBuffer[hlp3] ^= (byte) mul((byte) 0xd, a1);
-          tempBuffer[hlp3] ^= (a1 != 0) ? (byte) Alogtable[(short) ((short) (Logtable[0xd] + Logtable[a1]) % 255)] : (byte) 0;
+          tempBuffer[hlp3] ^= (a1 != 0) ? Alogtable[(short) ((short) (Logtable[0xd] + Logtable[a1]) % 255)] : (byte) 0;
           //tempBuffer[hlp3] ^= (byte) mul((byte) 0x9, a2);
-          tempBuffer[hlp3] ^= (a2 != 0) ? (byte) Alogtable[(short) ((short) (Logtable[0x9] + Logtable[a2]) % 255)] : (byte) 0;
+          tempBuffer[hlp3] ^= (a2 != 0) ? Alogtable[(short) ((short) (Logtable[0x9] + Logtable[a2]) % 255)] : (byte) 0;
         // END OF UNROLLED LOOP /**/
       }
 

@@ -1,0 +1,48 @@
+Issue the transit card (Initialize the transit card: load and create the transit applet)
+Java Card 2.2.2 APDU Tool, Version 1.3
+Copyright 2005 Sun Microsystems, Inc. All rights reserved. Use is subject to license terms.
+Opening connection to localhost on port 9025.
+Connected.
+Received ATR = 0x3b 0xf0 0x11 0x00 0xff 0x01 
+CLA: 00, INS: a4, P1: 04, P2: 00, Lc: 09, a0, 00, 00, 00, 62, 03, 01, 08, 01, Le: 00, SW1: 90, SW2: 00
+CAP file download section. Output suppressed.
+OUTPUT OFF;
+Credit the transit card account at a POS terminal
+This demo requires a cref with com.sun.javacard.samples.transit applet
+installed
+Start cref before running this demo
+CLA: 00, INS: a4, P1: 04, P2: 00, Lc: 0a, a0, 00, 00, 00, 62, 03, 01, 0c, 0d, 01, Le: 00, SW1: 00, SW2: 00
+CLA: 00, INS: a4, P1: 04, P2: 00, Lc: 0a, a0, 00, 00, 00, 62, 03, 01, 0c, 0d, 01, Le: 00, SW1: 90, SW2: 00
+OK
+CLA: 00, INS: 20, P1: 00, P2: 00, Lc: 05, 31, 32, 33, 34, 35, Le: 00, SW1: 00, SW2: 00
+CLA: 00, INS: 20, P1: 00, P2: 00, Lc: 05, 31, 32, 33, 34, 35, Le: 00, SW1: 90, SW2: 00
+OK
+credit: [99] => OK
+getBalance: [] => [ 99 ]
+Enter the transit system
+This demo requires a cref with com.sun.javacard.samples.transit applet
+installed
+Start cref before running this demo
+CLA: 00, INS: a4, P1: 04, P2: 00, Lc: 0a, a0, 00, 00, 00, 62, 03, 01, 0c, 0d, 01, Le: 00, SW1: 00, SW2: 00
+CLA: 00, INS: a4, P1: 04, P2: 00, Lc: 0a, a0, 00, 00, 00, 62, 03, 01, 0c, 0d, 01, Le: 00, SW1: 90, SW2: 00
+OK
+processEntry: [999] => [ TOTOBOZO, 21583]
+Exit the transit system
+This demo requires a cref with com.sun.javacard.samples.transit applet
+installed
+Start cref before running this demo
+CLA: 00, INS: a4, P1: 04, P2: 00, Lc: 0a, a0, 00, 00, 00, 62, 03, 01, 0c, 0d, 01, Le: 00, SW1: 00, SW2: 00
+CLA: 00, INS: a4, P1: 04, P2: 00, Lc: 0a, a0, 00, 00, 00, 62, 03, 01, 0c, 0d, 01, Le: 00, SW1: 90, SW2: 00
+OK
+processEntry: [10] => [ TOTOBOZO, 21583]
+Check the balance at a POS termminal
+This demo requires a cref with com.sun.javacard.samples.transit applet
+installed
+Start cref before running this demo
+CLA: 00, INS: a4, P1: 04, P2: 00, Lc: 0a, a0, 00, 00, 00, 62, 03, 01, 0c, 0d, 01, Le: 00, SW1: 00, SW2: 00
+CLA: 00, INS: a4, P1: 04, P2: 00, Lc: 0a, a0, 00, 00, 00, 62, 03, 01, 0c, 0d, 01, Le: 00, SW1: 90, SW2: 00
+OK
+CLA: 00, INS: 20, P1: 00, P2: 00, Lc: 05, 31, 32, 33, 34, 35, Le: 00, SW1: 00, SW2: 00
+CLA: 00, INS: 20, P1: 00, P2: 00, Lc: 05, 31, 32, 33, 34, 35, Le: 00, SW1: 90, SW2: 00
+OK
+getBalance: [] => [ 89 ]

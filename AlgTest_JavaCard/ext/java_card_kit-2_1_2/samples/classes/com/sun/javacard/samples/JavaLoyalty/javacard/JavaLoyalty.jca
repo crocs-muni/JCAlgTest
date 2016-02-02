@@ -1,0 +1,257 @@
+// converted by version 1.2
+// on Mon Apr 09 13:40:50 PDT 2001
+
+.package com/sun/javacard/samples/JavaLoyalty {
+	.aid 0xA0:0x0:0x0:0x0:0x62:0x3:0x1:0xC:0x5;
+	.version 1.0;
+
+	.imports {
+		0xA0:0x0:0x0:0x0:0x62:0x1:0x1 1.0;		//javacard/framework
+		0xA0:0x0:0x0:0x0:0x62:0x3:0x1:0xC:0x4 1.0;		//com/sun/javacard/samples/SampleLibrary
+	}
+
+	.applet {
+		0xA0:0x0:0x0:0x0:0x62:0x3:0x1:0xC:0x5:0x1 JavaLoyalty;
+	}
+
+	.constantPool {
+		// 0
+		instanceFieldRef short JavaLoyalty/balance;
+		// 1
+		staticMethodRef 0.3.0()V;		// javacard/framework/Applet.<init>()V
+		// 2
+		virtualMethodRef 0.3.1()V;		// javacard/framework/Applet.register()V
+		// 3
+		virtualMethodRef 0.3.2([BSB)V;		// javacard/framework/Applet.register([BSB)V
+		// 4
+		staticMethodRef 0.16.4([BS)S;		// javacard/framework/Util.getShort([BS)S
+		// 5
+		classRef JavaLoyalty;
+		// 6
+		staticMethodRef JavaLoyalty/<init>([BSB)V;
+		// 7
+		virtualMethodRef 0.10.1()[B;		// javacard/framework/APDU.getBuffer()[B
+		// 8
+		virtualMethodRef JavaLoyalty/processReadBalance(Ljavacard/framework/APDU;)V;
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
+		// 9
+		virtualMethodRef JavaLoyalty/processResetBalance()V;
+		// 10
+		staticMethodRef 0.7.1(S)V;		// javacard/framework/ISOException.throwIt(S)V
+		// 11
+		virtualMethodRef 0.3.3()Z;		// javacard/framework/Applet.selectingApplet()Z
+		// 12
+		staticMethodRef 0.16.6([BSS)S;		// javacard/framework/Util.setShort([BSS)S
+		// 13
+		virtualMethodRef 0.10.8(SS)V;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
+	}
+
+	.class public JavaLoyalty 0 extends 0.3 {		// extends javacard/framework/Applet
+
+		.shareable;
+
+		.fields {
+			 short balance 0;		// S
+			static final byte LOYALTY_CLA = -112;		// B
+			static final byte READ_BALANCE = 32;		// B
+			static final byte RESET_BALANCE = 34;		// B
+			static final byte CREDIT = 1;		// B
+			static final byte DEBIT = 2;		// B
+			static final short TRANSACTION_TYPE_OFFSET = 2;		// S
+			static final short TRANSACTION_AMOUNT_OFFSET = 3;		// S
+			static final short SCALE = 100;		// S
+			static final short BALANCE_MAX = 30000;		// S
+		}
+
+		.publicMethodTable 5 {
+			equals(Ljava/lang/Object;)Z;
+			register()V;
+			register([BSB)V;
+			selectingApplet()Z;
+			deselect()V;
+			getShareableInterfaceObject(Ljavacard/framework/AID;B)Ljavacard/framework/Shareable;;
+			select()Z;
+			process(Ljavacard/framework/APDU;)V;
+			grantPoints([B)V;
+		}
+
+		.packageMethodTable 0 {
+			processReadBalance(Ljavacard/framework/APDU;)V;
+			processResetBalance()V;
+		}
+
+		.implementedInterfaceInfoTable { 
+			.interface 0.2 { 		// javacard/framework/Shareable
+			}
+
+			.interface 1.0 { 		// com/sun/javacard/samples/SampleLibrary/JavaLoyaltyInterface
+				8;		// grantPoints([B)V
+			}
+
+		}
+
+		.method protected <init>([BSB)V 0 {
+			.stack 4;
+			.locals 0;
+
+				L0:	aload_0;
+					invokespecial 1;		// javacard/framework/Applet.<init>()V
+					aload_0;
+					sconst_0;
+					putfield_s 0;		// short com/sun/javacard/samples/JavaLoyalty/JavaLoyalty.balance
+					aload_1;
+					ifnull L2;
+				L1:	sload_3;
+					ifgt L3;
+				L2:	aload_0;
+					invokevirtual 2;		// javacard/framework/Applet.register()V
+					goto L4;
+				L3:	aload_0;
+					aload_1;
+					sload_2;
+					sload_3;
+					invokevirtual 3;		// javacard/framework/Applet.register([BSB)V
+				L4:	return;
+		}
+
+		.method public getShareableInterfaceObject(Ljavacard/framework/AID;B)Ljavacard/framework/Shareable; 5 {
+			.stack 1;
+			.locals 0;
+
+			.descriptor	Ljavacard/framework/AID;	0.6;
+			.descriptor	Ljavacard/framework/Shareable;	0.2;
+
+				L0:	sload_2;
+					ifne L2;
+				L1:	aload_0;
+					areturn;
+				L2:	aconst_null;
+					areturn;
+		}
+
+		.method public grantPoints([B)V 8 {
+			.stack 3;
+			.locals 1;
+
+				L0:	aload_1;
+					sconst_3;
+					invokestatic 4;		// javacard/framework/Util.getShort([BS)S
+					sstore_2;
+					sload_2;
+					bspush 100;
+					sdiv;
+					sstore_2;
+					aload_1;
+					sconst_2;
+					baload;
+					stableswitch L3 1 2 L2 L1;
+				L1:	aload_0;
+					getfield_s_this 0;		// short com/sun/javacard/samples/JavaLoyalty/JavaLoyalty.balance
+					sload_2;
+					sadd;
+					putfield_s 0;		// short com/sun/javacard/samples/JavaLoyalty/JavaLoyalty.balance
+					goto L3;
+				L2:	aload_0;
+					getfield_s_this 0;		// short com/sun/javacard/samples/JavaLoyalty/JavaLoyalty.balance
+					sload_2;
+					ssub;
+					putfield_s 0;		// short com/sun/javacard/samples/JavaLoyalty/JavaLoyalty.balance
+					goto L3;
+				L3:	getfield_s_this 0;		// short com/sun/javacard/samples/JavaLoyalty/JavaLoyalty.balance
+					ifge L5;
+				L4:	aload_0;
+					sconst_0;
+					putfield_s 0;		// short com/sun/javacard/samples/JavaLoyalty/JavaLoyalty.balance
+				L5:	getfield_s_this 0;		// short com/sun/javacard/samples/JavaLoyalty/JavaLoyalty.balance
+					sspush 30000;
+					if_scmple L7;
+				L6:	aload_0;
+					sspush 30000;
+					putfield_s 0;		// short com/sun/javacard/samples/JavaLoyalty/JavaLoyalty.balance
+				L7:	return;
+		}
+
+		.method public static install([BSB)V 1 {
+			.stack 4;
+			.locals 0;
+
+				L0:	new 5;		// com/sun/javacard/samples/JavaLoyalty/JavaLoyalty
+					aload_0;
+					sload_1;
+					sload_2;
+					invokespecial 6;		// com/sun/javacard/samples/JavaLoyalty/JavaLoyalty.<init>([BSB)V
+					return;
+		}
+
+		.method public process(Ljavacard/framework/APDU;)V 7 {
+			.stack 2;
+			.locals 1;
+
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
+				L0:	aload_1;
+					invokevirtual 7;		// javacard/framework/APDU.getBuffer()[B
+					astore_2;
+					aload_2;
+					sconst_0;
+					baload;
+					bspush -112;
+					if_scmpne L5;
+				L1:	aload_2;
+					sconst_1;
+					baload;
+					stableswitch L4 32 34 L2 L4 L3;
+				L2:	aload_0;
+					aload_1;
+					invokevirtual 8;		// com/sun/javacard/samples/JavaLoyalty/JavaLoyalty.processReadBalance(Ljavacard/framework/APDU;)V
+					goto L8;
+				L3:	aload_0;
+					invokevirtual 9;		// com/sun/javacard/samples/JavaLoyalty/JavaLoyalty.processResetBalance()V
+					goto L8;
+				L4:	sspush 27904;
+					invokestatic 10;		// javacard/framework/ISOException.throwIt(S)V
+					goto L8;
+				L5:	aload_0;
+					invokevirtual 11;		// javacard/framework/Applet.selectingApplet()Z
+					ifeq L7;
+				L6:	return;
+				L7:	sspush 28160;
+					invokestatic 10;		// javacard/framework/ISOException.throwIt(S)V
+				L8:	return;
+		}
+
+		.method  processReadBalance(Ljavacard/framework/APDU;)V 128 {
+			.stack 3;
+			.locals 1;
+
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
+				L0:	aload_1;
+					invokevirtual 7;		// javacard/framework/APDU.getBuffer()[B
+					astore_2;
+					aload_2;
+					sconst_0;
+					getfield_s_this 0;		// short com/sun/javacard/samples/JavaLoyalty/JavaLoyalty.balance
+					invokestatic 12;		// javacard/framework/Util.setShort([BSS)S
+					pop;
+					aload_1;
+					sconst_0;
+					sconst_2;
+					invokevirtual 13;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
+					return;
+		}
+
+		.method  processResetBalance()V 129 {
+			.stack 2;
+			.locals 0;
+
+				L0:	aload_0;
+					sconst_0;
+					putfield_s 0;		// short com/sun/javacard/samples/JavaLoyalty/JavaLoyalty.balance
+					return;
+		}
+
+	}
+
+}

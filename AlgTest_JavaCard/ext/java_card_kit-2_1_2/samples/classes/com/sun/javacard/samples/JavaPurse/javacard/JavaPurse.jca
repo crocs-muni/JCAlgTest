@@ -1,0 +1,2102 @@
+// converted by version 1.2
+// on Mon Apr 09 13:40:48 PDT 2001
+
+.package com/sun/javacard/samples/JavaPurse {
+	.aid 0xA0:0x0:0x0:0x0:0x62:0x3:0x1:0xC:0x2;
+	.version 1.0;
+
+	.imports {
+		0xA0:0x0:0x0:0x0:0x62:0x0:0x1 1.0;		//java/lang
+		0xA0:0x0:0x0:0x0:0x62:0x1:0x1 1.0;		//javacard/framework
+		0xA0:0x0:0x0:0x0:0x62:0x3:0x1:0xC:0x4 1.0;		//com/sun/javacard/samples/SampleLibrary
+	}
+
+	.applet {
+		0xA0:0x0:0x0:0x0:0x62:0x3:0x1:0xC:0x2:0x1 JavaPurse;
+	}
+
+	.constantPool {
+		// 0
+		instanceFieldRef byte CyclicFile/current_record;
+		// 1
+		instanceFieldRef byte CyclicFile/num_record;
+		// 2
+		instanceFieldRef Record[] CyclicFile/records;
+		// 3
+		instanceFieldRef byte CyclicFile/next_record;
+		// 4
+		instanceFieldRef byte[] Record/record;
+		// 5
+		instanceFieldRef byte[] JavaPurse/ID_Purse;
+		// 6
+		instanceFieldRef byte[] JavaPurse/ExpDate;
+		// 7
+		instanceFieldRef byte[] JavaPurse/balancesRecord;
+		// 8
+		instanceFieldRef short[] JavaPurse/loyaltyCAD;
+		// 9
+		instanceFieldRef 2.0[] JavaPurse/loyaltySIO;
+		// 10
+		instanceFieldRef short JavaPurse/TN;
+		// 11
+		instanceFieldRef short JavaPurse/PUN;
+		// 12
+		instanceFieldRef boolean JavaPurse/isPersonalized;
+		// 13
+		instanceFieldRef short[] JavaPurse/transientShorts;
+		// 14
+		instanceFieldRef boolean[] JavaPurse/transientBools;
+		// 15
+		instanceFieldRef byte[] JavaPurse/CAD_ID_array;
+		// 16
+		instanceFieldRef byte[] JavaPurse/byteArray8;
+		// 17
+		instanceFieldRef 1.9 JavaPurse/masterPIN;
+		// 18
+		instanceFieldRef 1.9 JavaPurse/userPIN;
+		// 19
+		instanceFieldRef ParametersFile JavaPurse/parametersFile;
+		// 20
+		instanceFieldRef CyclicFile JavaPurse/transactionLogFile;
+		// 21
+		instanceFieldRef Record[] ParametersFile/records;
+		// 22
+		instanceFieldRef byte ParametersFile/numRecords;
+		// 23
+		staticMethodRef 0.0.0()V;		// java/lang/Object.<init>()V
+		// 24
+		staticMethodRef 1.8.13(SB)[B;		// javacard/framework/JCSystem.makeTransientByteArray(SB)[B
+		// 25
+		classRef 2.0;		// com/sun/javacard/samples/SampleLibrary/JavaLoyaltyInterface
+		// 26
+		staticMethodRef 1.7.1(S)V;		// javacard/framework/ISOException.throwIt(S)V
+		// 27
+		classRef 1.9;		// javacard/framework/OwnerPIN
+		// 28
+		staticMethodRef 1.9.0(BB)V;		// javacard/framework/OwnerPIN.<init>(BB)V
+		// 29
+		staticMethodRef 1.3.0()V;		// javacard/framework/Applet.<init>()V
+		// 30
+		staticMethodRef Record/<init>(S)V;
+		// 31
+		classRef ParametersFile;
+		// 32
+		staticMethodRef ParametersFile/<init>(B)V;
+		// 33
+		virtualMethodRef CyclicFile/getRecord(B)[B;
+		// 34
+		classRef CyclicFile;
+		// 35
+		staticMethodRef CyclicFile/<init>(BB)V;
+		// 36
+		staticMethodRef 1.8.15(SB)[S;		// javacard/framework/JCSystem.makeTransientShortArray(SB)[S
+		// 37
+		staticMethodRef 1.16.6([BSS)S;		// javacard/framework/Util.setShort([BSS)S
+		// 38
+		virtualMethodRef 1.3.1()V;		// javacard/framework/Applet.register()V
+		// 39
+		virtualMethodRef 1.3.2([BSB)V;		// javacard/framework/Applet.register([BSB)V
+		// 40
+		staticMethodRef 1.16.4([BS)S;		// javacard/framework/Util.getShort([BS)S
+		// 41
+		virtualMethodRef 1.9.5()V;		// javacard/framework/OwnerPIN.reset()V
+		// 42
+		classRef JavaPurse;
+		// 43
+		staticMethodRef JavaPurse/<init>([BSB)V;
+		// 44
+		virtualMethodRef 1.10.1()[B;		// javacard/framework/APDU.getBuffer()[B
+		// 45
+		staticMethodRef JavaPurse/processInitializeTransaction(Ljavacard/framework/APDU;)V;
+			.descriptor	Ljavacard/framework/APDU;	1.10;
+
+		// 46
+		staticMethodRef JavaPurse/processCompleteTransaction(Ljavacard/framework/APDU;)V;
+			.descriptor	Ljavacard/framework/APDU;	1.10;
+
+		// 47
+		staticMethodRef JavaPurse/processInitializeUpdate(Ljavacard/framework/APDU;)V;
+			.descriptor	Ljavacard/framework/APDU;	1.10;
+
+		// 48
+		staticMethodRef JavaPurse/processCompleteUpdate(Ljavacard/framework/APDU;)V;
+			.descriptor	Ljavacard/framework/APDU;	1.10;
+
+		// 49
+		staticMethodRef JavaPurse/processVerifyPIN(Ljavacard/framework/APDU;)V;
+			.descriptor	Ljavacard/framework/APDU;	1.10;
+
+		// 50
+		virtualMethodRef 1.3.3()Z;		// javacard/framework/Applet.selectingApplet()Z
+		// 51
+		staticMethodRef JavaPurse/processSelectPurse(Ljavacard/framework/APDU;)V;
+			.descriptor	Ljavacard/framework/APDU;	1.10;
+
+		// 52
+		staticMethodRef JavaPurse/processSelectFile(Ljavacard/framework/APDU;)V;
+			.descriptor	Ljavacard/framework/APDU;	1.10;
+
+		// 53
+		staticMethodRef JavaPurse/processReadRecord(Ljavacard/framework/APDU;)V;
+			.descriptor	Ljavacard/framework/APDU;	1.10;
+
+		// 54
+		virtualMethodRef 1.10.6()S;		// javacard/framework/APDU.setIncomingAndReceive()S
+		// 55
+		staticMethodRef 1.16.3([BSSB)S;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
+		// 56
+		staticMethodRef 1.16.0([BS[BSS)B;		// javacard/framework/Util.arrayCompare([BS[BSS)B
+		// 57
+		staticMethodRef 1.16.2([BS[BSS)S;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+		// 58
+		virtualMethodRef CyclicFile/getNewLogRecord()[B;
+		// 59
+		staticMethodRef 1.8.1()V;		// javacard/framework/JCSystem.beginTransaction()V
+		// 60
+		staticMethodRef 1.16.1([BS[BSS)S;		// javacard/framework/Util.arrayCopy([BS[BSS)S
+		// 61
+		virtualMethodRef CyclicFile/updateNewLogRecord()V;
+		// 62
+		staticMethodRef 1.8.2()V;		// javacard/framework/JCSystem.commitTransaction()V
+		// 63
+		virtualMethodRef 1.10.8(SS)V;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
+		// 64
+		staticMethodRef JavaPurse/updatePIN(Ljavacard/framework/APDU;Ljavacard/framework/OwnerPIN;)V;
+			.descriptor	Ljavacard/framework/APDU;	1.10;
+			.descriptor	Ljavacard/framework/OwnerPIN;	1.9;
+
+		// 65
+		staticMethodRef JavaPurse/setIsPersonalized()V;
+		// 66
+		staticMethodRef JavaPurse/updateParameterValue(Ljavacard/framework/APDU;[B)V;
+			.descriptor	Ljavacard/framework/APDU;	1.10;
+
+		// 67
+		staticMethodRef JavaPurse/updateBalanceValue(Ljavacard/framework/APDU;S)V;
+			.descriptor	Ljavacard/framework/APDU;	1.10;
+
+		// 68
+		staticMethodRef JavaPurse/updateParametersFile(Ljavacard/framework/APDU;)V;
+			.descriptor	Ljavacard/framework/APDU;	1.10;
+
+		// 69
+		staticMethodRef JavaPurse/updateLoyaltyProgram(Ljavacard/framework/APDU;B)V;
+			.descriptor	Ljavacard/framework/APDU;	1.10;
+
+		// 70
+		virtualMethodRef 1.9.4()Z;		// javacard/framework/OwnerPIN.isValidated()Z
+		// 71
+		staticMethodRef JavaPurse/checkTransactionValues(BS)S;
+		// 72
+		staticMethodRef 1.16.5(BB)S;		// javacard/framework/Util.makeShort(BB)S
+		// 73
+		virtualMethodRef ParametersFile/getRecord(B)[B;
+		// 74
+		virtualMethodRef CyclicFile/findRecord(B)B;
+		// 75
+		virtualMethodRef ParametersFile/findRecord(B)B;
+		// 76
+		virtualMethodRef 1.10.7()S;		// javacard/framework/APDU.setOutgoing()S
+		// 77
+		virtualMethodRef 1.10.9(S)V;		// javacard/framework/APDU.setOutgoingLength(S)V
+		// 78
+		virtualMethodRef 1.10.5([BSS)V;		// javacard/framework/APDU.sendBytesLong([BSS)V
+		// 79
+		staticMethodRef 1.8.3()Ljavacard/framework/AID;;		// javacard/framework/JCSystem.getAID()Ljavacard/framework/AID;
+			.descriptor	Ljavacard/framework/AID;	1.6;
+
+		// 80
+		virtualMethodRef 1.6.3([BS)B;		// javacard/framework/AID.getBytes([BS)B
+		// 81
+		staticFieldRef byte[] JavaPurse/FCI_PROPERIETARY;
+		// 82
+		virtualMethodRef 1.9.1([BSB)Z;		// javacard/framework/OwnerPIN.check([BSB)Z
+		// 83
+		virtualMethodRef 1.9.2()B;		// javacard/framework/OwnerPIN.getTriesRemaining()B
+		// 84
+		staticMethodRef 1.8.11([BSB)Ljavacard/framework/AID;;		// javacard/framework/JCSystem.lookupAID([BSB)Ljavacard/framework/AID;
+			.descriptor	Ljavacard/framework/AID;	1.6;
+
+		// 85
+		staticMethodRef 1.8.4(Ljavacard/framework/AID;B)Ljavacard/framework/Shareable;;		// javacard/framework/JCSystem.getAppletShareableInterfaceObject(Ljavacard/framework/AID;B)Ljavacard/framework/Shareable;
+			.descriptor	Ljavacard/framework/AID;	1.6;
+			.descriptor	Ljavacard/framework/Shareable;	1.2;
+
+		// 86
+		virtualMethodRef 1.9.8([BSB)V;		// javacard/framework/OwnerPIN.update([BSB)V
+		// 87
+		virtualMethodRef ParametersFile/addRecord([B)V;
+		// 88
+		classRef Record;
+		// 89
+		staticMethodRef 1.8.12(SB)[Z;		// javacard/framework/JCSystem.makeTransientBooleanArray(SB)[Z
+		// 90
+		staticMethodRef Record/<init>([B)V;
+	}
+
+	.class  CyclicFile extends 0.0 {		// extends java/lang/Object
+
+		.fields {
+			private Record[] records 0;		// [Lcom/sun/javacard/samples/JavaPurse/Record;
+			private byte num_record 1;		// B
+			private byte current_record 2;		// B
+			private byte next_record 3;		// B
+		}
+
+		.publicMethodTable 1 {
+			equals(Ljava/lang/Object;)Z;
+		}
+
+		.packageMethodTable 0 {
+			findRecord(B)B;
+			getNewLogRecord()[B;
+			getRecord(B)[B;
+			updateNewLogRecord()V;
+		}
+
+		.method  <init>(BB)V {
+			.stack 5;
+			.locals 1;
+
+				L0:	aload_0;
+					invokespecial 23;		// java/lang/Object.<init>()V
+					aload_0;
+					sconst_m1;
+					putfield_b 0;		// byte com/sun/javacard/samples/JavaPurse/CyclicFile.current_record
+					aload_0;
+					sload_1;
+					sconst_1;
+					sadd;
+					s2b;
+					dup;
+					sstore_1;
+					putfield_b 1;		// byte com/sun/javacard/samples/JavaPurse/CyclicFile.num_record
+					aload_0;
+					getfield_b_this 1;		// byte com/sun/javacard/samples/JavaPurse/CyclicFile.num_record
+					anewarray 88;		// com/sun/javacard/samples/JavaPurse/Record
+					putfield_a 2;		// reference com/sun/javacard/samples/JavaPurse/CyclicFile.records
+					sconst_0;
+					sstore_3;
+					goto L2;
+				L1:	getfield_a_this 2;		// reference com/sun/javacard/samples/JavaPurse/CyclicFile.records
+					sload_3;
+					new 88;		// com/sun/javacard/samples/JavaPurse/Record
+					dup;
+					sload_2;
+					invokespecial 30;		// com/sun/javacard/samples/JavaPurse/Record.<init>(S)V
+					aastore;
+					sload_3;
+					sconst_1;
+					sadd;
+					s2b;
+					sstore_3;
+				L2:	sload_3;
+					getfield_b_this 1;		// byte com/sun/javacard/samples/JavaPurse/CyclicFile.num_record
+					if_scmplt L1;
+				L3:	return;
+		}
+
+		.method  findRecord(B)B 128 {
+			.stack 4;
+			.locals 3;
+
+				L0:	aload_0;
+					dup;
+					getfield_b 1;		// byte com/sun/javacard/samples/JavaPurse/CyclicFile.num_record
+					dup_x 18;
+					sconst_1;
+					ssub;
+					s2b;
+					putfield_b 1;		// byte com/sun/javacard/samples/JavaPurse/CyclicFile.num_record
+					sstore_2;
+					sconst_1;
+					sstore_3;
+				L1:	aload_0;
+					sload_3;
+					invokevirtual 33;		// com/sun/javacard/samples/JavaPurse/CyclicFile.getRecord(B)[B
+					astore 4;
+					sload_1;
+					ifne L3;
+				L2:	sload_3;
+					sreturn;
+				L3:	aload 4;
+					sconst_0;
+					baload;
+					sload_1;
+					if_scmpne L5;
+				L4:	sload_3;
+					sreturn;
+				L5:	sload_3;
+					sload_2;
+					if_scmpne L7;
+				L6:	sconst_0;
+					sreturn;
+				L7:	sload_3;
+					sconst_1;
+					sadd;
+					s2b;
+					sstore_3;
+					goto L1;
+		}
+
+		.method  getNewLogRecord()[B 129 {
+			.stack 2;
+			.locals 1;
+
+				L0:	getfield_a_this 2;		// reference com/sun/javacard/samples/JavaPurse/CyclicFile.records
+					getfield_b_this 3;		// byte com/sun/javacard/samples/JavaPurse/CyclicFile.next_record
+					aaload;
+					getfield_a 4;		// reference com/sun/javacard/samples/JavaPurse/Record.record
+					astore_1;
+					aload_1;
+					areturn;
+		}
+
+		.method  getRecord(B)[B 130 {
+			.stack 3;
+			.locals 0;
+
+				L0:	sload_1;
+					sconst_1;
+					if_scmplt L2;
+				L1:	sload_1;
+					getfield_b_this 1;		// byte com/sun/javacard/samples/JavaPurse/CyclicFile.num_record
+					sconst_1;
+					ssub;
+					s2b;
+					if_scmple L3;
+				L2:	sspush 27267;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+				L3:	getfield_b_this 0;		// byte com/sun/javacard/samples/JavaPurse/CyclicFile.current_record
+					sload_1;
+					ssub;
+					sconst_1;
+					sadd;
+					s2b;
+					dup;
+					sstore_1;
+					ifge L5;
+				L4:	sload_1;
+					getfield_b_this 1;		// byte com/sun/javacard/samples/JavaPurse/CyclicFile.num_record
+					sadd;
+					s2b;
+					sstore_1;
+				L5:	getfield_a_this 2;		// reference com/sun/javacard/samples/JavaPurse/CyclicFile.records
+					sload_1;
+					aaload;
+					getfield_a 4;		// reference com/sun/javacard/samples/JavaPurse/Record.record
+					areturn;
+		}
+
+		.method  updateNewLogRecord()V 131 {
+			.stack 3;
+			.locals 0;
+
+				L0:	aload_0;
+					dup;
+					getfield_b 0;		// byte com/sun/javacard/samples/JavaPurse/CyclicFile.current_record
+					sconst_1;
+					sadd;
+					s2b;
+					dup_x 18;
+					putfield_b 0;		// byte com/sun/javacard/samples/JavaPurse/CyclicFile.current_record
+					getfield_b_this 1;		// byte com/sun/javacard/samples/JavaPurse/CyclicFile.num_record
+					if_scmpne L2;
+				L1:	aload_0;
+					sconst_0;
+					putfield_b 0;		// byte com/sun/javacard/samples/JavaPurse/CyclicFile.current_record
+				L2:	aload_0;
+					dup;
+					getfield_b 3;		// byte com/sun/javacard/samples/JavaPurse/CyclicFile.next_record
+					sconst_1;
+					sadd;
+					s2b;
+					dup_x 18;
+					putfield_b 3;		// byte com/sun/javacard/samples/JavaPurse/CyclicFile.next_record
+					getfield_b_this 1;		// byte com/sun/javacard/samples/JavaPurse/CyclicFile.num_record
+					if_scmpne L4;
+				L3:	aload_0;
+					sconst_0;
+					putfield_b 3;		// byte com/sun/javacard/samples/JavaPurse/CyclicFile.next_record
+				L4:	return;
+		}
+
+	}
+
+	.class public JavaPurse 0 extends 1.3 {		// extends javacard/framework/Applet
+
+		.fields {
+			private ParametersFile parametersFile 0;		// Lcom/sun/javacard/samples/JavaPurse/ParametersFile;
+			private CyclicFile transactionLogFile 1;		// Lcom/sun/javacard/samples/JavaPurse/CyclicFile;
+			private 1.9 masterPIN 2;		// Ljavacard/framework/OwnerPIN;
+			private 1.9 userPIN 3;		// Ljavacard/framework/OwnerPIN;
+			private byte[] CAD_ID_array 4;		// [B
+			private byte[] byteArray8 5;		// [B
+			private short[] transientShorts 6;		// [S
+			private boolean[] transientBools 7;		// [Z
+			private byte[] ID_Purse 8;		// [B
+			private byte[] ExpDate 9;		// [B
+			private byte[] balancesRecord 10;		// [B
+			private short[] loyaltyCAD 11;		// [S
+			private 2.0[] loyaltySIO 12;		// [Lcom/sun/javacard/samples/SampleLibrary/JavaLoyaltyInterface;
+			private short TN 13;		// S
+			private short PUN 14;		// S
+			private boolean isPersonalized 15;		// Z
+			static final byte PURSE_CLA = -128;		// B
+			static final byte VERIFY = 32;		// B
+			static final byte READ = -78;		// B
+			static final byte INITIALIZE_TRANSACTION = 32;		// B
+			static final byte COMPLETE_TRANSACTION = 34;		// B
+			static final byte INITIALIZE_UPDATE = 36;		// B
+			static final byte COMPLETE_UPDATE = 38;		// B
+			static final byte CREDIT = 1;		// B
+			static final byte DEBIT = 2;		// B
+			static final byte MASTER_PIN = -127;		// B
+			static final byte USER_PIN = -126;		// B
+			static final short SW_CREDIT_TOO_HIGH = -28415;		// S
+			static final short SW_NOT_ENOUGH_FUNDS = -28414;		// S
+			static final short SW_AMOUNT_TOO_HIGH = -28413;		// S
+			static final short SW_COMMAND_OUT_OF_SEQUENCE = -28412;		// S
+			static final short SW_WRONG_SIGNATURE = -28411;		// S
+			static final short SW_PIN_FAILED = 27072;		// S
+			static final byte LC_IT = 10;		// B
+			static final byte LC_CT = 13;		// B
+			static final byte LC_CU_MIN = 18;		// B
+			static final byte CAD_ID_OFFSET = 7;		// B
+			static final short DATE_LENGTH = 3;		// S
+			static final short DATETIME_LENGTH = 5;		// S
+			static final short ID_LENGTH = 4;		// S
+			static final short SHORT_LENGTH = 2;		// S
+			static final short START = 0;		// S
+			static final short SIGNATURE_LENGTH = 8;		// S
+			static final short MAX_LOYALTY = 4;		// S
+			static final byte TN_IX = 0;		// B
+			static final byte NEW_BALANCE_IX = 1;		// B
+			static final byte CURRENT_BALANCE_IX = 2;		// B
+			static final byte AMOUNT_IX = 3;		// B
+			static final byte TRANSACTION_TYPE_IX = 4;		// B
+			static final byte SELECTED_FILE_IX = 5;		// B
+			static final byte NUM_TRANSIENT_SHORTS = 6;		// B
+			static final byte TRANSACTION_INITIALIZED = 0;		// B
+			static final byte UPDATE_INITIALIZED = 1;		// B
+			static final byte NUM_TRANSIENT_BOOLS = 2;		// B
+			private static final byte FCI_TEMPLATE_TAG = 111;		// B
+			private static final byte FCI_AID_TAG = -124;		// B
+			private static byte[] FCI_PROPERIETARY = {-91,1,66};		// [B
+			static final short PARAMETERS_FID = -28414;		// S
+			static final short TRANSACTION_LOG_FID = -28413;		// S
+			static final short BALANCES_FID = -28412;		// S
+			static final byte FID_BYTE = -111;		// B
+			static final byte TRANSACTION_RECORD_LENGTH = 18;		// B
+			static final byte TRANSACTION_RECORD_NUMBER = 10;		// B
+			static final byte BALANCES_RECORD_LENGTH = 6;		// B
+			static final byte BALANCES_RECORD_NUMBER = 1;		// B
+			static final byte PARAMETERS_RECORD_NUMBER = 11;		// B
+			static final byte OFFSET_BAL_CURRENT = 0;		// B
+			static final byte OFFSET_BAL_MAX = 2;		// B
+			static final byte OFFSET_AMOUNT_MAX = 4;		// B
+			static final byte NUMBER_OF_FILES = 3;		// B
+			static final byte MASTER_PIN_UPDATE = -63;		// B
+			static final byte USER_PIN_UPDATE = -62;		// B
+			static final byte EXP_DATE_UPDATE = -59;		// B
+			static final byte PURSE_ID_UPDATE = -58;		// B
+			static final byte MAX_BAL_UPDATE = -57;		// B
+			static final byte MAX_M_UPDATE = -56;		// B
+			static final byte VERSION_UPDATE = -55;		// B
+			static final byte LOYALTY1_UPDATE = -54;		// B
+			static final byte LOYALTY2_UPDATE = -53;		// B
+			static final byte LOYALTY3_UPDATE = -52;		// B
+			static final byte LOYALTY4_UPDATE = -51;		// B
+			static final short TLV_OFFSET = 13;		// S
+		}
+
+		.publicMethodTable 4 {
+			equals(Ljava/lang/Object;)Z;
+			register()V;
+			register([BSB)V;
+			selectingApplet()Z;
+			deselect()V;
+			getShareableInterfaceObject(Ljavacard/framework/AID;B)Ljavacard/framework/Shareable;;
+			select()Z;
+			process(Ljavacard/framework/APDU;)V;
+		}
+
+		.packageMethodTable 0 {
+		}
+
+		.method protected <init>([BSB)V 0 {
+			.stack 5;
+			.locals 0;
+
+				L0:	aload_0;
+					invokespecial 29;		// javacard/framework/Applet.<init>()V
+					aload_0;
+					sconst_4;
+					newarray 11;
+					putfield_a 5;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.ID_Purse
+					aload_0;
+					sconst_3;
+					newarray 11;
+					putfield_a 6;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.ExpDate
+					getfield_a_this 6;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.ExpDate
+					sconst_0;
+					bspush 12;
+					bastore;
+					getfield_a_this 6;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.ExpDate
+					sconst_1;
+					bspush 31;
+					bastore;
+					getfield_a_this 6;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.ExpDate
+					sconst_2;
+					bspush 99;
+					bastore;
+					aload_0;
+					bspush 6;
+					newarray 11;
+					putfield_a 7;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.balancesRecord
+					aload_0;
+					sconst_4;
+					newarray 12;
+					putfield_a 8;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.loyaltyCAD
+					aload_0;
+					sconst_4;
+					anewarray 25;		// com/sun/javacard/samples/SampleLibrary/JavaLoyaltyInterface
+					putfield_a 9;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.loyaltySIO
+					aload_0;
+					sconst_0;
+					putfield_s 10;		// short com/sun/javacard/samples/JavaPurse/JavaPurse.TN
+					aload_0;
+					sconst_0;
+					putfield_s 11;		// short com/sun/javacard/samples/JavaPurse/JavaPurse.PUN
+					aload_0;
+					sconst_0;
+					putfield_b 12;		// boolean com/sun/javacard/samples/JavaPurse/JavaPurse.isPersonalized
+					aload_0;
+					bspush 6;
+					sconst_2;
+					invokestatic 36;		// javacard/framework/JCSystem.makeTransientShortArray(SB)[S
+					putfield_a 13;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.transientShorts
+					aload_0;
+					sconst_2;
+					sconst_2;
+					invokestatic 89;		// javacard/framework/JCSystem.makeTransientBooleanArray(SB)[Z
+					putfield_a 14;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.transientBools
+					aload_0;
+					sconst_4;
+					sconst_2;
+					invokestatic 24;		// javacard/framework/JCSystem.makeTransientByteArray(SB)[B
+					putfield_a 15;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.CAD_ID_array
+					aload_0;
+					bspush 8;
+					sconst_2;
+					invokestatic 24;		// javacard/framework/JCSystem.makeTransientByteArray(SB)[B
+					putfield_a 16;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.byteArray8
+					aload_0;
+					new 27;		// javacard/framework/OwnerPIN
+					dup;
+					sconst_1;
+					bspush 8;
+					invokespecial 28;		// javacard/framework/OwnerPIN.<init>(BB)V
+					putfield_a 17;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.masterPIN
+					aload_0;
+					new 27;		// javacard/framework/OwnerPIN
+					dup;
+					sconst_5;
+					bspush 8;
+					invokespecial 28;		// javacard/framework/OwnerPIN.<init>(BB)V
+					putfield_a 18;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.userPIN
+					aload_0;
+					new 31;		// com/sun/javacard/samples/JavaPurse/ParametersFile
+					dup;
+					bspush 11;
+					invokespecial 32;		// com/sun/javacard/samples/JavaPurse/ParametersFile.<init>(B)V
+					putfield_a 19;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.parametersFile
+					aload_0;
+					new 34;		// com/sun/javacard/samples/JavaPurse/CyclicFile
+					dup;
+					bspush 10;
+					bspush 18;
+					invokespecial 35;		// com/sun/javacard/samples/JavaPurse/CyclicFile.<init>(BB)V
+					putfield_a 20;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.transactionLogFile
+					getfield_a_this 7;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.balancesRecord
+					sconst_0;
+					sconst_0;
+					invokestatic 37;		// javacard/framework/Util.setShort([BSS)S
+					pop;
+					aload_1;
+					ifnull L2;
+				L1:	sload_3;
+					ifgt L3;
+				L2:	aload_0;
+					invokevirtual 38;		// javacard/framework/Applet.register()V
+					goto L4;
+				L3:	aload_0;
+					aload_1;
+					sload_2;
+					sload_3;
+					invokevirtual 39;		// javacard/framework/Applet.register([BSB)V
+				L4:	return;
+		}
+
+		.method private checkTransactionValues(BS)S {
+			.stack 3;
+			.locals 4;
+
+				L0:	getfield_a_this 7;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.balancesRecord
+					sconst_0;
+					invokestatic 40;		// javacard/framework/Util.getShort([BS)S
+					sstore 4;
+					getfield_a_this 7;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.balancesRecord
+					sconst_2;
+					invokestatic 40;		// javacard/framework/Util.getShort([BS)S
+					sstore 5;
+					getfield_a_this 7;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.balancesRecord
+					sconst_4;
+					invokestatic 40;		// javacard/framework/Util.getShort([BS)S
+					sstore 6;
+					sload_1;
+					stableswitch L8 1 2 L1 L4;
+				L1:	sload 4;
+					sload_2;
+					sadd;
+					sstore_3;
+					getfield_a_this 13;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.transientShorts
+					sconst_1;
+					sload_3;
+					sastore;
+					sload_3;
+					sload 5;
+					if_scmpgt L3;
+				L2:	sload_3;
+					ifge L9;
+				L3:	sspush -28415;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+					goto L9;
+				L4:	sload_2;
+					sload 6;
+					if_scmple L6;
+				L5:	sspush -28413;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+				L6:	sload 4;
+					sload_2;
+					ssub;
+					sstore_3;
+					getfield_a_this 13;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.transientShorts
+					sconst_1;
+					sload_3;
+					sastore;
+					sload_3;
+					ifge L9;
+				L7:	sspush -28414;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+					goto L9;
+				L8:	sspush 27270;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+				L9:	getfield_a_this 13;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.transientShorts
+					sconst_2;
+					sload 4;
+					sastore;
+					sload 4;
+					sreturn;
+		}
+
+		.method public deselect()V 4 {
+			.stack 1;
+			.locals 0;
+
+				L0:	getfield_a_this 18;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.userPIN
+					invokevirtual 41;		// javacard/framework/OwnerPIN.reset()V
+					getfield_a_this 17;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.masterPIN
+					invokevirtual 41;		// javacard/framework/OwnerPIN.reset()V
+					return;
+		}
+
+		.method public static install([BSB)V 1 {
+			.stack 4;
+			.locals 0;
+
+				L0:	new 42;		// com/sun/javacard/samples/JavaPurse/JavaPurse
+					aload_0;
+					sload_1;
+					sload_2;
+					invokespecial 43;		// com/sun/javacard/samples/JavaPurse/JavaPurse.<init>([BSB)V
+					return;
+		}
+
+		.method public process(Ljavacard/framework/APDU;)V 7 {
+			.stack 2;
+			.locals 1;
+
+			.descriptor	Ljavacard/framework/APDU;	1.10;
+
+				L0:	aload_1;
+					invokevirtual 44;		// javacard/framework/APDU.getBuffer()[B
+					astore_2;
+					aload_2;
+					sconst_0;
+					baload;
+					bspush -128;
+					if_scmpne L7;
+				L1:	aload_2;
+					sconst_1;
+					baload;
+					stableswitch L6 32 38 L2 L6 L3 L6 L4 L6 L5;
+				L2:	aload_0;
+					aload_1;
+					invokespecial 45;		// com/sun/javacard/samples/JavaPurse/JavaPurse.processInitializeTransaction(Ljavacard/framework/APDU;)V
+					goto L18;
+				L3:	aload_0;
+					aload_1;
+					invokespecial 46;		// com/sun/javacard/samples/JavaPurse/JavaPurse.processCompleteTransaction(Ljavacard/framework/APDU;)V
+					goto L18;
+				L4:	aload_0;
+					aload_1;
+					invokespecial 47;		// com/sun/javacard/samples/JavaPurse/JavaPurse.processInitializeUpdate(Ljavacard/framework/APDU;)V
+					goto L18;
+				L5:	aload_0;
+					aload_1;
+					invokespecial 48;		// com/sun/javacard/samples/JavaPurse/JavaPurse.processCompleteUpdate(Ljavacard/framework/APDU;)V
+					goto L18;
+				L6:	sspush 27904;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+					goto L18;
+				L7:	aload_2;
+					sconst_0;
+					baload;
+					ifne L17;
+				L8:	aload_2;
+					sconst_1;
+					baload;
+					bspush 32;
+					if_scmpne L10;
+				L9:	aload_0;
+					aload_1;
+					invokespecial 49;		// com/sun/javacard/samples/JavaPurse/JavaPurse.processVerifyPIN(Ljavacard/framework/APDU;)V
+					goto L18;
+				L10:	aload_2;
+					sconst_1;
+					baload;
+					bspush -92;
+					if_scmpne L14;
+				L11:	aload_0;
+					invokevirtual 50;		// javacard/framework/Applet.selectingApplet()Z
+					ifeq L13;
+				L12:	aload_0;
+					aload_1;
+					invokespecial 51;		// com/sun/javacard/samples/JavaPurse/JavaPurse.processSelectPurse(Ljavacard/framework/APDU;)V
+					goto L18;
+				L13:	aload_0;
+					aload_1;
+					invokespecial 52;		// com/sun/javacard/samples/JavaPurse/JavaPurse.processSelectFile(Ljavacard/framework/APDU;)V
+					goto L18;
+				L14:	aload_2;
+					sconst_1;
+					baload;
+					bspush -78;
+					if_scmpne L16;
+				L15:	aload_0;
+					aload_1;
+					invokespecial 53;		// com/sun/javacard/samples/JavaPurse/JavaPurse.processReadRecord(Ljavacard/framework/APDU;)V
+					goto L18;
+				L16:	sspush 27904;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+					goto L18;
+				L17:	sspush 28160;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+				L18:	return;
+		}
+
+		.method private processCompleteTransaction(Ljavacard/framework/APDU;)V {
+			.stack 5;
+			.locals 9;
+
+			.descriptor	Ljavacard/framework/APDU;	1.10;
+
+				L0:	getfield_a_this 14;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.transientBools
+					sconst_0;
+					baload;
+					ifne L2;
+				L1:	sspush -28412;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+				L2:	aload_1;
+					invokevirtual 44;		// javacard/framework/APDU.getBuffer()[B
+					astore_2;
+					aload_2;
+					sconst_4;
+					baload;
+					bspush 13;
+					if_scmpeq L4;
+				L3:	sspush 26368;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+				L4:	aload_2;
+					sconst_2;
+					baload;
+					ifne L6;
+				L5:	aload_2;
+					sconst_3;
+					baload;
+					ifeq L7;
+				L6:	sspush 27270;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+				L7:	aload_1;
+					invokevirtual 54;		// javacard/framework/APDU.setIncomingAndReceive()S
+					pop;
+					getfield_a_this 13;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.transientShorts
+					sconst_0;
+					saload;
+					sstore_3;
+					getfield_a_this 13;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.transientShorts
+					sconst_3;
+					saload;
+					sstore 4;
+					getfield_a_this 13;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.transientShorts
+					sconst_1;
+					saload;
+					sstore 5;
+					getfield_a_this 16;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.byteArray8
+					sconst_0;
+					getfield_a_this 16;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.byteArray8
+					arraylength;
+					sconst_0;
+					invokestatic 55;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
+					pop;
+					aload_2;
+					sconst_5;
+					getfield_a_this 16;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.byteArray8
+					sconst_0;
+					bspush 8;
+					invokestatic 56;		// javacard/framework/Util.arrayCompare([BS[BSS)B
+					ifeq L9;
+				L8:	sconst_0;
+					goto L10;
+				L9:	sconst_1;
+				L10:	sstore 6;
+					aload_2;
+					sconst_0;
+					sload_3;
+					invokestatic 37;		// javacard/framework/Util.setShort([BSS)S
+					sstore 7;
+					aload_2;
+					sload 7;
+					getfield_a_this 13;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.transientShorts
+					sconst_4;
+					saload;
+					s2b;
+					bastore;
+					sinc 7 1;
+					aload_2;
+					sload 7;
+					sload 4;
+					invokestatic 37;		// javacard/framework/Util.setShort([BSS)S
+					sstore 7;
+					getfield_a_this 15;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.CAD_ID_array
+					sconst_0;
+					aload_2;
+					sload 7;
+					sconst_4;
+					invokestatic 57;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					sstore 7;
+					aload_2;
+					bspush 13;
+					aload_2;
+					sload 7;
+					sconst_5;
+					invokestatic 57;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					dup;
+					sstore 7;
+					sstore 8;
+					sload 6;
+					ifne L12;
+				L11:	aload_2;
+					sload 7;
+					getfield_a_this 13;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.transientShorts
+					sconst_2;
+					saload;
+					invokestatic 37;		// javacard/framework/Util.setShort([BSS)S
+					sstore 7;
+					aload_2;
+					sload 7;
+					sspush -28411;
+					invokestatic 37;		// javacard/framework/Util.setShort([BSS)S
+					pop;
+					getfield_a_this 20;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.transactionLogFile
+					invokevirtual 58;		// com/sun/javacard/samples/JavaPurse/CyclicFile.getNewLogRecord()[B
+					astore 9;
+					invokestatic 59;		// javacard/framework/JCSystem.beginTransaction()V
+					aload_0;
+					sload_3;
+					putfield_s 10;		// short com/sun/javacard/samples/JavaPurse/JavaPurse.TN
+					aload_2;
+					sconst_0;
+					aload 9;
+					sconst_0;
+					bspush 18;
+					invokestatic 60;		// javacard/framework/Util.arrayCopy([BS[BSS)S
+					pop;
+					getfield_a_this 20;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.transactionLogFile
+					invokevirtual 61;		// com/sun/javacard/samples/JavaPurse/CyclicFile.updateNewLogRecord()V
+					invokestatic 62;		// javacard/framework/JCSystem.commitTransaction()V
+					getfield_a_this 14;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.transientBools
+					sconst_0;
+					sconst_0;
+					bastore;
+					sspush -28411;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+					goto L13;
+				L12:	aload_2;
+					sload 7;
+					getfield_a_this 13;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.transientShorts
+					sconst_1;
+					saload;
+					invokestatic 37;		// javacard/framework/Util.setShort([BSS)S
+					sstore 7;
+					aload_2;
+					sload 7;
+					sspush -28672;
+					invokestatic 37;		// javacard/framework/Util.setShort([BSS)S
+					pop;
+					getfield_a_this 20;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.transactionLogFile
+					invokevirtual 58;		// com/sun/javacard/samples/JavaPurse/CyclicFile.getNewLogRecord()[B
+					astore 9;
+					invokestatic 59;		// javacard/framework/JCSystem.beginTransaction()V
+					aload_0;
+					getfield_a_this 13;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.transientShorts
+					sconst_0;
+					saload;
+					putfield_s 10;		// short com/sun/javacard/samples/JavaPurse/JavaPurse.TN
+					getfield_a_this 7;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.balancesRecord
+					sconst_0;
+					sload 5;
+					invokestatic 37;		// javacard/framework/Util.setShort([BSS)S
+					pop;
+					aload_2;
+					sconst_0;
+					aload 9;
+					sconst_0;
+					bspush 18;
+					invokestatic 60;		// javacard/framework/Util.arrayCopy([BS[BSS)S
+					pop;
+					getfield_a_this 20;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.transactionLogFile
+					invokevirtual 61;		// com/sun/javacard/samples/JavaPurse/CyclicFile.updateNewLogRecord()V
+					invokestatic 62;		// javacard/framework/JCSystem.commitTransaction()V
+				L13:	aload_2;
+					sconst_0;
+					sconst_0;
+					invokestatic 37;		// javacard/framework/Util.setShort([BSS)S
+					pop;
+					aload_2;
+					sload 8;
+					sconst_0;
+					invokestatic 37;		// javacard/framework/Util.setShort([BSS)S
+					pop;
+					getfield_a_this 15;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.CAD_ID_array
+					sconst_0;
+					invokestatic 40;		// javacard/framework/Util.getShort([BS)S
+					sstore 9;
+					sconst_0;
+					sstore 10;
+					goto L17;
+				L14:	getfield_a_this 8;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.loyaltyCAD
+					sload 10;
+					saload;
+					sload 9;
+					if_scmpne L16;
+				L15:	getfield_a_this 9;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.loyaltySIO
+					sload 10;
+					aaload;
+					aload_2;
+					invokeinterface 2 25 0;		// com/sun/javacard/samples/SampleLibrary/JavaLoyaltyInterface
+					goto L18;
+				L16:	sload 10;
+					sconst_1;
+					sadd;
+					s2b;
+					sstore 10;
+				L17:	sload 10;
+					sconst_4;
+					if_scmplt L14;
+				L18:	getfield_a_this 16;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.byteArray8
+					sconst_0;
+					getfield_a_this 16;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.byteArray8
+					arraylength;
+					sconst_0;
+					invokestatic 55;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
+					pop;
+					aload_2;
+					sconst_0;
+					sload 5;
+					invokestatic 37;		// javacard/framework/Util.setShort([BSS)S
+					sstore 7;
+					getfield_a_this 16;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.byteArray8
+					sconst_0;
+					aload_2;
+					sload 7;
+					bspush 8;
+					invokestatic 57;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					sstore 7;
+					aload_1;
+					sconst_0;
+					sload 7;
+					invokevirtual 63;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
+					getfield_a_this 14;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.transientBools
+					sconst_0;
+					sconst_0;
+					bastore;
+					return;
+		}
+
+		.method private processCompleteUpdate(Ljavacard/framework/APDU;)V {
+			.stack 5;
+			.locals 3;
+
+			.descriptor	Ljavacard/framework/APDU;	1.10;
+
+				L0:	getfield_a_this 14;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.transientBools
+					sconst_1;
+					baload;
+					ifne L2;
+				L1:	sspush -28412;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+				L2:	aload_1;
+					invokevirtual 44;		// javacard/framework/APDU.getBuffer()[B
+					astore_2;
+					aload_2;
+					sconst_2;
+					baload;
+					ifne L4;
+				L3:	aload_2;
+					sconst_3;
+					baload;
+					ifeq L5;
+				L4:	sspush 27270;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+				L5:	aload_1;
+					invokevirtual 54;		// javacard/framework/APDU.setIncomingAndReceive()S
+					sstore_3;
+					aload_2;
+					sconst_4;
+					baload;
+					sstore 4;
+					getfield_a_this 16;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.byteArray8
+					sconst_0;
+					getfield_a_this 16;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.byteArray8
+					arraylength;
+					sconst_0;
+					invokestatic 55;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
+					pop;
+					getfield_a_this 16;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.byteArray8
+					sconst_0;
+					aload_2;
+					sconst_5;
+					sload 4;
+					sadd;
+					bspush 8;
+					ssub;
+					bspush 8;
+					invokestatic 56;		// javacard/framework/Util.arrayCompare([BS[BSS)B
+					ifeq L7;
+				L6:	sspush -28411;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+				L7:	aload_2;
+					bspush 13;
+					baload;
+					stableswitch L19 -63 -51 L8 L9 L19 L19 L10 L11 L12 L13 L14 L15 L16 L17 L18;
+				L8:	aload_0;
+					aload_1;
+					getfield_a_this 17;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.masterPIN
+					invokespecial 64;		// com/sun/javacard/samples/JavaPurse/JavaPurse.updatePIN(Ljavacard/framework/APDU;Ljavacard/framework/OwnerPIN;)V
+					aload_0;
+					invokespecial 65;		// com/sun/javacard/samples/JavaPurse/JavaPurse.setIsPersonalized()V
+					goto L20;
+				L9:	aload_0;
+					aload_1;
+					getfield_a_this 18;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.userPIN
+					invokespecial 64;		// com/sun/javacard/samples/JavaPurse/JavaPurse.updatePIN(Ljavacard/framework/APDU;Ljavacard/framework/OwnerPIN;)V
+					goto L20;
+				L10:	aload_0;
+					aload_1;
+					getfield_a_this 6;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.ExpDate
+					invokespecial 66;		// com/sun/javacard/samples/JavaPurse/JavaPurse.updateParameterValue(Ljavacard/framework/APDU;[B)V
+					goto L20;
+				L11:	aload_0;
+					aload_1;
+					getfield_a_this 5;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.ID_Purse
+					invokespecial 66;		// com/sun/javacard/samples/JavaPurse/JavaPurse.updateParameterValue(Ljavacard/framework/APDU;[B)V
+					goto L20;
+				L12:	aload_0;
+					aload_1;
+					sconst_2;
+					invokespecial 67;		// com/sun/javacard/samples/JavaPurse/JavaPurse.updateBalanceValue(Ljavacard/framework/APDU;S)V
+					goto L20;
+				L13:	aload_0;
+					aload_1;
+					sconst_4;
+					invokespecial 67;		// com/sun/javacard/samples/JavaPurse/JavaPurse.updateBalanceValue(Ljavacard/framework/APDU;S)V
+					goto L20;
+				L14:	aload_0;
+					aload_1;
+					invokespecial 68;		// com/sun/javacard/samples/JavaPurse/JavaPurse.updateParametersFile(Ljavacard/framework/APDU;)V
+					goto L20;
+				L15:	aload_0;
+					aload_1;
+					sconst_0;
+					invokespecial 69;		// com/sun/javacard/samples/JavaPurse/JavaPurse.updateLoyaltyProgram(Ljavacard/framework/APDU;B)V
+					goto L20;
+				L16:	aload_0;
+					aload_1;
+					sconst_1;
+					invokespecial 69;		// com/sun/javacard/samples/JavaPurse/JavaPurse.updateLoyaltyProgram(Ljavacard/framework/APDU;B)V
+					goto L20;
+				L17:	aload_0;
+					aload_1;
+					sconst_2;
+					invokespecial 69;		// com/sun/javacard/samples/JavaPurse/JavaPurse.updateLoyaltyProgram(Ljavacard/framework/APDU;B)V
+					goto L20;
+				L18:	aload_0;
+					aload_1;
+					sconst_3;
+					invokespecial 69;		// com/sun/javacard/samples/JavaPurse/JavaPurse.updateLoyaltyProgram(Ljavacard/framework/APDU;B)V
+					goto L20;
+				L19:	sspush 27265;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+				L20:	getfield_a_this 16;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.byteArray8
+					sconst_0;
+					getfield_a_this 16;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.byteArray8
+					arraylength;
+					sconst_0;
+					invokestatic 55;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
+					pop;
+					getfield_a_this 16;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.byteArray8
+					sconst_0;
+					aload_2;
+					sconst_0;
+					bspush 8;
+					invokestatic 57;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					pop;
+					aload_1;
+					sconst_0;
+					bspush 8;
+					invokevirtual 63;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
+					getfield_a_this 14;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.transientBools
+					sconst_1;
+					sconst_0;
+					bastore;
+					return;
+		}
+
+		.method private processInitializeTransaction(Ljavacard/framework/APDU;)V {
+			.stack 5;
+			.locals 6;
+
+			.descriptor	Ljavacard/framework/APDU;	1.10;
+
+				L0:	getfield_a_this 14;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.transientBools
+					sconst_0;
+					baload;
+					ifeq L2;
+				L1:	sspush -28412;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+				L2:	getfield_a_this 18;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.userPIN
+					invokevirtual 70;		// javacard/framework/OwnerPIN.isValidated()Z
+					ifne L4;
+				L3:	sspush 27010;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+				L4:	aload_1;
+					invokevirtual 44;		// javacard/framework/APDU.getBuffer()[B
+					astore_2;
+					aload_2;
+					sconst_4;
+					baload;
+					bspush 10;
+					if_scmpeq L6;
+				L5:	sspush 26368;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+				L6:	aload_2;
+					sconst_3;
+					baload;
+					ifeq L8;
+				L7:	sspush 27270;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+				L8:	aload_1;
+					invokevirtual 54;		// javacard/framework/APDU.setIncomingAndReceive()S
+					pop;
+					aload_2;
+					sconst_2;
+					baload;
+					sstore_3;
+					getfield_a_this 13;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.transientShorts
+					sconst_4;
+					sload_3;
+					sastore;
+					aload_2;
+					sconst_5;
+					invokestatic 40;		// javacard/framework/Util.getShort([BS)S
+					sstore 4;
+					getfield_a_this 13;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.transientShorts
+					sconst_3;
+					sload 4;
+					sastore;
+					aload_0;
+					sload_3;
+					sload 4;
+					invokespecial 71;		// com/sun/javacard/samples/JavaPurse/JavaPurse.checkTransactionValues(BS)S
+					sstore 5;
+					getfield_s_this 10;		// short com/sun/javacard/samples/JavaPurse/JavaPurse.TN
+					sconst_1;
+					sadd;
+					sstore 6;
+					getfield_a_this 13;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.transientShorts
+					sconst_0;
+					sload 6;
+					sastore;
+					aload_2;
+					bspush 7;
+					getfield_a_this 15;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.CAD_ID_array
+					sconst_0;
+					sconst_4;
+					invokestatic 57;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					pop;
+					getfield_a_this 16;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.byteArray8
+					sconst_0;
+					getfield_a_this 16;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.byteArray8
+					arraylength;
+					sconst_0;
+					invokestatic 55;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
+					pop;
+					getfield_a_this 5;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.ID_Purse
+					sconst_0;
+					aload_2;
+					sconst_0;
+					sconst_4;
+					invokestatic 57;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					sstore 7;
+					getfield_a_this 6;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.ExpDate
+					sconst_0;
+					aload_2;
+					sload 7;
+					sconst_3;
+					invokestatic 57;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					sstore 7;
+					aload_2;
+					sload 7;
+					sload 5;
+					invokestatic 37;		// javacard/framework/Util.setShort([BSS)S
+					sstore 7;
+					aload_2;
+					sload 7;
+					sload 6;
+					invokestatic 37;		// javacard/framework/Util.setShort([BSS)S
+					sstore 7;
+					getfield_a_this 16;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.byteArray8
+					sconst_0;
+					aload_2;
+					sload 7;
+					bspush 8;
+					invokestatic 57;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					sstore 7;
+					aload_1;
+					sconst_0;
+					sload 7;
+					invokevirtual 63;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
+					getfield_a_this 14;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.transientBools
+					sconst_0;
+					sconst_1;
+					bastore;
+					return;
+		}
+
+		.method private processInitializeUpdate(Ljavacard/framework/APDU;)V {
+			.stack 5;
+			.locals 2;
+
+			.descriptor	Ljavacard/framework/APDU;	1.10;
+
+				L0:	getfield_a_this 14;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.transientBools
+					sconst_1;
+					baload;
+					ifeq L2;
+				L1:	sspush -28412;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+				L2:	getfield_a_this 17;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.masterPIN
+					invokevirtual 70;		// javacard/framework/OwnerPIN.isValidated()Z
+					ifne L5;
+				L3:	getfield_b_this 12;		// boolean com/sun/javacard/samples/JavaPurse/JavaPurse.isPersonalized
+					ifeq L5;
+				L4:	sspush 27010;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+				L5:	aload_1;
+					invokevirtual 44;		// javacard/framework/APDU.getBuffer()[B
+					astore_2;
+					aload_2;
+					sconst_2;
+					baload;
+					ifne L7;
+				L6:	aload_2;
+					sconst_3;
+					baload;
+					ifeq L8;
+				L7:	sspush 27270;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+				L8:	aload_0;
+					dup;
+					getfield_s 11;		// short com/sun/javacard/samples/JavaPurse/JavaPurse.PUN
+					sconst_1;
+					sadd;
+					putfield_s 11;		// short com/sun/javacard/samples/JavaPurse/JavaPurse.PUN
+					getfield_a_this 5;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.ID_Purse
+					sconst_0;
+					aload_2;
+					sconst_0;
+					sconst_4;
+					invokestatic 57;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					sstore_3;
+					getfield_a_this 6;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.ExpDate
+					sconst_0;
+					aload_2;
+					sload_3;
+					sconst_3;
+					invokestatic 57;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					sstore_3;
+					aload_2;
+					sload_3;
+					getfield_s_this 11;		// short com/sun/javacard/samples/JavaPurse/JavaPurse.PUN
+					invokestatic 37;		// javacard/framework/Util.setShort([BSS)S
+					sstore_3;
+					aload_1;
+					sconst_0;
+					sload_3;
+					invokevirtual 63;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
+					getfield_a_this 14;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.transientBools
+					sconst_1;
+					sconst_1;
+					bastore;
+					return;
+		}
+
+		.method private processReadRecord(Ljavacard/framework/APDU;)V {
+			.stack 4;
+			.locals 6;
+
+			.descriptor	Ljavacard/framework/APDU;	1.10;
+
+				L0:	aconst_null;
+					astore_2;
+					sconst_0;
+					sstore_3;
+					aload_1;
+					invokevirtual 44;		// javacard/framework/APDU.getBuffer()[B
+					astore 4;
+					aload 4;
+					sconst_2;
+					baload;
+					sstore 5;
+					aload 4;
+					sconst_3;
+					baload;
+					sstore 6;
+					sload 6;
+					sconst_3;
+					sshr;
+					ifne L4;
+				L1:	getfield_a_this 13;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.transientShorts
+					sconst_5;
+					saload;
+					ifne L3;
+				L2:	sspush 27014;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+					goto L7;
+				L3:	getfield_a_this 13;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.transientShorts
+					sconst_5;
+					saload;
+					sstore_3;
+					goto L7;
+				L4:	sload 6;
+					sconst_3;
+					sshr;
+					bspush 31;
+					sand;
+					sstore 7;
+					bspush -111;
+					sload 7;
+					invokestatic 72;		// javacard/framework/Util.makeShort(BB)S
+					sstore_3;
+					sload_3;
+					stableswitch L6 -28414 -28412 L5 L5 L5;
+				L5:	getfield_a_this 13;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.transientShorts
+					sconst_5;
+					sload_3;
+					sastore;
+					goto L7;
+				L6:	sspush 27266;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+				L7:	sload_3;
+					stableswitch L12 -28414 -28412 L10 L8 L8;
+				L8:	getfield_a_this 18;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.userPIN
+					invokevirtual 70;		// javacard/framework/OwnerPIN.isValidated()Z
+					ifne L12;
+				L9:	sspush 27010;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+					goto L12;
+				L10:	getfield_a_this 17;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.masterPIN
+					invokevirtual 70;		// javacard/framework/OwnerPIN.isValidated()Z
+					ifne L12;
+				L11:	sspush 27010;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+				L12:	sload 6;
+					bspush 7;
+					sand;
+					sstore 6;
+					sload 6;
+					sconst_4;
+					sand;
+					ifeq L25;
+				L13:	sload 6;
+					sconst_4;
+					if_scmpne L24;
+				L14:	sload 5;
+					ifne L16;
+				L15:	sspush 27267;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+				L16:	sload_3;
+					stableswitch L22 -28414 -28412 L21 L20 L17;
+				L17:	sload 5;
+					sconst_1;
+					if_scmpne L19;
+				L18:	getfield_a_this 7;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.balancesRecord
+					astore_2;
+					goto L22;
+				L19:	sspush 27267;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+					goto L22;
+				L20:	getfield_a_this 20;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.transactionLogFile
+					sload 5;
+					invokevirtual 33;		// com/sun/javacard/samples/JavaPurse/CyclicFile.getRecord(B)[B
+					astore_2;
+					goto L22;
+				L21:	getfield_a_this 19;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.parametersFile
+					sload 5;
+					invokevirtual 73;		// com/sun/javacard/samples/JavaPurse/ParametersFile.getRecord(B)[B
+					astore_2;
+				L22:	aload_2;
+					ifnonnull_w L37;
+				L23:	sspush 27266;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+					goto L37;
+				L24:	sspush 27265;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+					goto L37;
+				L25:	sload 6;
+					ifne L36;
+				L26:	sload_3;
+					stableswitch L37 -28414 -28412 L33 L30 L27;
+				L27:	getfield_a_this 7;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.balancesRecord
+					sconst_0;
+					baload;
+					sload 5;
+					if_scmpne L29;
+				L28:	getfield_a_this 7;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.balancesRecord
+					astore_2;
+					goto L37;
+				L29:	sspush 27267;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+					goto L37;
+				L30:	getfield_a_this 20;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.transactionLogFile
+					sload 5;
+					invokevirtual 74;		// com/sun/javacard/samples/JavaPurse/CyclicFile.findRecord(B)B
+					sstore 5;
+					sload 5;
+					ifne L32;
+				L31:	sspush 27267;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+					goto L37;
+				L32:	getfield_a_this 20;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.transactionLogFile
+					sload 5;
+					invokevirtual 33;		// com/sun/javacard/samples/JavaPurse/CyclicFile.getRecord(B)[B
+					astore_2;
+					goto L37;
+				L33:	getfield_a_this 19;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.parametersFile
+					sload 5;
+					invokevirtual 75;		// com/sun/javacard/samples/JavaPurse/ParametersFile.findRecord(B)B
+					sstore 5;
+					sload 5;
+					ifne L35;
+				L34:	sspush 27267;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+					goto L37;
+				L35:	getfield_a_this 19;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.parametersFile
+					sload 5;
+					invokevirtual 73;		// com/sun/javacard/samples/JavaPurse/ParametersFile.getRecord(B)[B
+					astore_2;
+					goto L37;
+				L36:	sspush 27265;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+				L37:	aload_1;
+					invokevirtual 76;		// javacard/framework/APDU.setOutgoing()S
+					sstore 7;
+					aload_2;
+					arraylength;
+					sload 7;
+					if_scmpge L39;
+				L38:	aload_2;
+					arraylength;
+					sstore 7;
+				L39:	aload_1;
+					sload 7;
+					invokevirtual 77;		// javacard/framework/APDU.setOutgoingLength(S)V
+					aload_1;
+					aload_2;
+					sconst_0;
+					sload 7;
+					invokevirtual 78;		// javacard/framework/APDU.sendBytesLong([BSS)V
+					return;
+		}
+
+		.method private processSelectFile(Ljavacard/framework/APDU;)V {
+			.stack 3;
+			.locals 2;
+
+			.descriptor	Ljavacard/framework/APDU;	1.10;
+
+				L0:	aload_1;
+					invokevirtual 44;		// javacard/framework/APDU.getBuffer()[B
+					astore_2;
+					aload_1;
+					invokevirtual 54;		// javacard/framework/APDU.setIncomingAndReceive()S
+					pop;
+					aload_2;
+					sconst_2;
+					baload;
+					sconst_2;
+					if_scmpne L6;
+				L1:	aload_2;
+					sconst_4;
+					baload;
+					sconst_2;
+					if_scmpeq L3;
+				L2:	sspush 26368;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+				L3:	aload_2;
+					sconst_5;
+					invokestatic 40;		// javacard/framework/Util.getShort([BS)S
+					sstore_3;
+					sload_3;
+					stableswitch L5 -28414 -28412 L4 L4 L4;
+				L4:	getfield_a_this 13;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.transientShorts
+					sconst_5;
+					sload_3;
+					sastore;
+					goto L7;
+				L5:	sspush 27266;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+					goto L7;
+				L6:	sspush 27265;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+				L7:	return;
+		}
+
+		.method private processSelectPurse(Ljavacard/framework/APDU;)V {
+			.stack 5;
+			.locals 2;
+
+			.descriptor	Ljavacard/framework/APDU;	1.10;
+
+				L0:	aload_1;
+					invokevirtual 44;		// javacard/framework/APDU.getBuffer()[B
+					astore_2;
+					aload_2;
+					sconst_0;
+					bspush 111;
+					bastore;
+					aload_2;
+					sconst_2;
+					bspush -124;
+					bastore;
+					aload_2;
+					sconst_3;
+					invokestatic 79;		// javacard/framework/JCSystem.getAID()Ljavacard/framework/AID;
+					aload_2;
+					sconst_4;
+					invokevirtual 80;		// javacard/framework/AID.getBytes([BS)B
+					bastore;
+					sconst_3;
+					aload_2;
+					sconst_3;
+					baload;
+					sadd;
+					sstore_3;
+					aload_2;
+					sload_3;
+					dup;
+					sconst_1;
+					sadd;
+					sstore_3;
+					getstatic_a 81;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.FCI_PROPERIETARY
+					arraylength;
+					s2b;
+					bastore;
+					getstatic_a 81;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.FCI_PROPERIETARY
+					sconst_0;
+					aload_2;
+					sload_3;
+					getstatic_a 81;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.FCI_PROPERIETARY
+					arraylength;
+					invokestatic 57;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					sstore_3;
+					aload_2;
+					sconst_1;
+					sload_3;
+					sconst_2;
+					ssub;
+					s2b;
+					bastore;
+					aload_1;
+					sconst_0;
+					sload_3;
+					invokevirtual 63;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
+					return;
+		}
+
+		.method private processVerifyPIN(Ljavacard/framework/APDU;)V {
+			.stack 4;
+			.locals 5;
+
+			.descriptor	Ljavacard/framework/APDU;	1.10;
+
+				L0:	aload_1;
+					invokevirtual 44;		// javacard/framework/APDU.getBuffer()[B
+					astore_2;
+					aload_2;
+					sconst_4;
+					baload;
+					sstore_3;
+					sconst_0;
+					sstore 4;
+					aload_1;
+					invokevirtual 54;		// javacard/framework/APDU.setIncomingAndReceive()S
+					sstore 5;
+					sload 5;
+					sload_3;
+					if_scmpge L2;
+				L1:	sspush 26368;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+				L2:	aload_2;
+					sconst_3;
+					baload;
+					sstore 6;
+					sload 6;
+					stableswitch L7 -127 -126 L3 L5;
+				L3:	getfield_a_this 17;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.masterPIN
+					aload_2;
+					sconst_5;
+					sload_3;
+					invokevirtual 82;		// javacard/framework/OwnerPIN.check([BSB)Z
+					ifne L8;
+				L4:	getfield_a_this 17;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.masterPIN
+					invokevirtual 83;		// javacard/framework/OwnerPIN.getTriesRemaining()B
+					sstore 4;
+					sspush 27072;
+					sload 4;
+					sadd;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+					goto L8;
+				L5:	getfield_a_this 18;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.userPIN
+					aload_2;
+					sconst_5;
+					sload_3;
+					invokevirtual 82;		// javacard/framework/OwnerPIN.check([BSB)Z
+					ifne L8;
+				L6:	getfield_a_this 18;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.userPIN
+					invokevirtual 83;		// javacard/framework/OwnerPIN.getTriesRemaining()B
+					sstore 4;
+					sspush 27072;
+					sload 4;
+					sadd;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+					goto L8;
+				L7:	sspush 27270;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+				L8:	return;
+		}
+
+		.method private setIsPersonalized()V {
+			.stack 2;
+			.locals 0;
+
+				L0:	getfield_b_this 12;		// boolean com/sun/javacard/samples/JavaPurse/JavaPurse.isPersonalized
+					ifne L2;
+				L1:	aload_0;
+					sconst_1;
+					putfield_b 12;		// boolean com/sun/javacard/samples/JavaPurse/JavaPurse.isPersonalized
+				L2:	return;
+		}
+
+		.method private updateBalanceValue(Ljavacard/framework/APDU;S)V {
+			.stack 5;
+			.locals 1;
+
+			.descriptor	Ljavacard/framework/APDU;	1.10;
+
+				L0:	aload_1;
+					invokevirtual 44;		// javacard/framework/APDU.getBuffer()[B
+					astore_3;
+					aload_3;
+					bspush 15;
+					getfield_a_this 7;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.balancesRecord
+					sload_2;
+					sconst_2;
+					invokestatic 57;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					pop;
+					return;
+		}
+
+		.method private updateLoyaltyProgram(Ljavacard/framework/APDU;B)V {
+			.stack 4;
+			.locals 2;
+
+			.descriptor	Ljavacard/framework/APDU;	1.10;
+
+				L0:	aload_1;
+					invokevirtual 44;		// javacard/framework/APDU.getBuffer()[B
+					astore_3;
+					getfield_a_this 8;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.loyaltyCAD
+					sload_2;
+					aload_3;
+					bspush 15;
+					invokestatic 40;		// javacard/framework/Util.getShort([BS)S
+					sastore;
+					getfield_a_this 8;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.loyaltyCAD
+					sload_2;
+					saload;
+					ifeq L5;
+				L1:	aload_3;
+					bspush 17;
+					aload_3;
+					bspush 14;
+					baload;
+					sconst_2;
+					ssub;
+					s2b;
+					invokestatic 84;		// javacard/framework/JCSystem.lookupAID([BSB)Ljavacard/framework/AID;
+					astore 4;
+					aload 4;
+					ifnull L4;
+				L2:	getfield_a_this 9;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.loyaltySIO
+					sload_2;
+					aload 4;
+					sconst_0;
+					invokestatic 85;		// javacard/framework/JCSystem.getAppletShareableInterfaceObject(Ljavacard/framework/AID;B)Ljavacard/framework/Shareable;
+					checkcast 0 25;		// T_CLASSORINTERFACE com/sun/javacard/samples/SampleLibrary/JavaLoyaltyInterface
+					aastore;
+					getfield_a_this 9;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.loyaltySIO
+					sload_2;
+					aaload;
+					ifnonnull L5;
+				L3:	getfield_a_this 8;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.loyaltyCAD
+					sload_2;
+					sconst_0;
+					sastore;
+					goto L5;
+				L4:	getfield_a_this 8;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.loyaltyCAD
+					sload_2;
+					sconst_0;
+					sastore;
+				L5:	getfield_a_this 8;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.loyaltyCAD
+					sload_2;
+					saload;
+					ifne L7;
+				L6:	aload_3;
+					bspush 14;
+					sconst_2;
+					bastore;
+					aload_3;
+					bspush 15;
+					aload_3;
+					arraylength;
+					bspush 13;
+					ssub;
+					sconst_2;
+					ssub;
+					sconst_0;
+					invokestatic 55;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
+					pop;
+				L7:	aload_0;
+					aload_1;
+					invokespecial 68;		// com/sun/javacard/samples/JavaPurse/JavaPurse.updateParametersFile(Ljavacard/framework/APDU;)V
+					return;
+		}
+
+		.method private updatePIN(Ljavacard/framework/APDU;Ljavacard/framework/OwnerPIN;)V {
+			.stack 5;
+			.locals 1;
+
+			.descriptor	Ljavacard/framework/APDU;	1.10;
+			.descriptor	Ljavacard/framework/OwnerPIN;	1.9;
+
+				L0:	aload_1;
+					invokevirtual 44;		// javacard/framework/APDU.getBuffer()[B
+					astore_3;
+					aload_2;
+					aload_3;
+					bspush 15;
+					aload_3;
+					bspush 14;
+					baload;
+					invokevirtual 86;		// javacard/framework/OwnerPIN.update([BSB)V
+					return;
+		}
+
+		.method private updateParameterValue(Ljavacard/framework/APDU;[B)V {
+			.stack 6;
+			.locals 1;
+
+			.descriptor	Ljavacard/framework/APDU;	1.10;
+
+				L0:	aload_1;
+					invokevirtual 44;		// javacard/framework/APDU.getBuffer()[B
+					astore_3;
+					aload_3;
+					bspush 15;
+					aload_2;
+					sconst_0;
+					aload_3;
+					bspush 14;
+					baload;
+					invokestatic 57;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					pop;
+					aload_0;
+					aload_1;
+					invokespecial 68;		// com/sun/javacard/samples/JavaPurse/JavaPurse.updateParametersFile(Ljavacard/framework/APDU;)V
+					return;
+		}
+
+		.method private updateParametersFile(Ljavacard/framework/APDU;)V {
+			.stack 6;
+			.locals 3;
+
+			.descriptor	Ljavacard/framework/APDU;	1.10;
+
+				L0:	aload_1;
+					invokevirtual 44;		// javacard/framework/APDU.getBuffer()[B
+					astore_2;
+					getfield_a_this 19;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.parametersFile
+					aload_2;
+					bspush 13;
+					baload;
+					invokevirtual 75;		// com/sun/javacard/samples/JavaPurse/ParametersFile.findRecord(B)B
+					sstore_3;
+					sload_3;
+					ifne L2;
+				L1:	aload_2;
+					bspush 14;
+					baload;
+					sconst_2;
+					sadd;
+					newarray 11;
+					astore 4;
+					aload_2;
+					bspush 13;
+					aload 4;
+					sconst_0;
+					aload_2;
+					bspush 14;
+					baload;
+					sconst_2;
+					sadd;
+					invokestatic 57;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					pop;
+					getfield_a_this 19;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.parametersFile
+					aload 4;
+					invokevirtual 87;		// com/sun/javacard/samples/JavaPurse/ParametersFile.addRecord([B)V
+					goto L3;
+				L2:	getfield_a_this 19;		// reference com/sun/javacard/samples/JavaPurse/JavaPurse.parametersFile
+					sload_3;
+					invokevirtual 73;		// com/sun/javacard/samples/JavaPurse/ParametersFile.getRecord(B)[B
+					astore 4;
+					aload_2;
+					bspush 13;
+					aload 4;
+					sconst_0;
+					aload_2;
+					bspush 14;
+					baload;
+					sconst_2;
+					sadd;
+					invokestatic 57;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					pop;
+				L3:	return;
+		}
+
+	}
+
+	.class  ParametersFile extends 0.0 {		// extends java/lang/Object
+
+		.fields {
+			 Record[] records 0;		// [Lcom/sun/javacard/samples/JavaPurse/Record;
+			 byte numRecords 1;		// B
+		}
+
+		.publicMethodTable 1 {
+			equals(Ljava/lang/Object;)Z;
+			addRecord([B)V;
+			findRecord(B)B;
+			getNumRecords()B;
+			getRecord(B)[B;
+		}
+
+		.packageMethodTable 0 {
+		}
+
+		.method public <init>(B)V 0 {
+			.stack 2;
+			.locals 0;
+
+				L0:	aload_0;
+					invokespecial 23;		// java/lang/Object.<init>()V
+					aload_0;
+					sload_1;
+					anewarray 88;		// com/sun/javacard/samples/JavaPurse/Record
+					putfield_a 21;		// reference com/sun/javacard/samples/JavaPurse/ParametersFile.records
+					aload_0;
+					sconst_0;
+					putfield_b 22;		// byte com/sun/javacard/samples/JavaPurse/ParametersFile.numRecords
+					return;
+		}
+
+		.method public addRecord([B)V 1 {
+			.stack 5;
+			.locals 0;
+
+				L0:	getfield_a_this 21;		// reference com/sun/javacard/samples/JavaPurse/ParametersFile.records
+					arraylength;
+					getfield_b_this 22;		// byte com/sun/javacard/samples/JavaPurse/ParametersFile.numRecords
+					if_scmpne L2;
+				L1:	sspush 27268;
+					invokestatic 26;		// javacard/framework/ISOException.throwIt(S)V
+				L2:	getfield_a_this 21;		// reference com/sun/javacard/samples/JavaPurse/ParametersFile.records
+					aload_0;
+					dup;
+					getfield_b 22;		// byte com/sun/javacard/samples/JavaPurse/ParametersFile.numRecords
+					dup_x 18;
+					sconst_1;
+					sadd;
+					s2b;
+					putfield_b 22;		// byte com/sun/javacard/samples/JavaPurse/ParametersFile.numRecords
+					new 88;		// com/sun/javacard/samples/JavaPurse/Record
+					dup;
+					aload_1;
+					invokespecial 90;		// com/sun/javacard/samples/JavaPurse/Record.<init>([B)V
+					aastore;
+					return;
+		}
+
+		.method public findRecord(B)B 2 {
+			.stack 2;
+			.locals 3;
+
+				L0:	getfield_b_this 22;		// byte com/sun/javacard/samples/JavaPurse/ParametersFile.numRecords
+					ifne L2;
+				L1:	sconst_0;
+					sreturn;
+				L2:	getfield_b_this 22;		// byte com/sun/javacard/samples/JavaPurse/ParametersFile.numRecords
+					sstore_2;
+					sconst_1;
+					sstore_3;
+				L3:	aload_0;
+					sload_3;
+					invokevirtual 73;		// com/sun/javacard/samples/JavaPurse/ParametersFile.getRecord(B)[B
+					astore 4;
+					sload_1;
+					ifne L5;
+				L4:	sload_3;
+					sreturn;
+				L5:	aload 4;
+					sconst_0;
+					baload;
+					sload_1;
+					if_scmpne L7;
+				L6:	sload_3;
+					sreturn;
+				L7:	sload_3;
+					sload_2;
+					if_scmpne L9;
+				L8:	sconst_0;
+					sreturn;
+				L9:	sload_3;
+					sconst_1;
+					sadd;
+					s2b;
+					sstore_3;
+					goto L3;
+		}
+
+		.method public getNumRecords()B 3 {
+			.stack 1;
+			.locals 0;
+
+				L0:	getfield_b_this 22;		// byte com/sun/javacard/samples/JavaPurse/ParametersFile.numRecords
+					sreturn;
+		}
+
+		.method public getRecord(B)[B 4 {
+			.stack 3;
+			.locals 0;
+
+				L0:	sload_1;
+					ifle L2;
+				L1:	sload_1;
+					getfield_b_this 22;		// byte com/sun/javacard/samples/JavaPurse/ParametersFile.numRecords
+					if_scmple L3;
+				L2:	aconst_null;
+					areturn;
+				L3:	getfield_a_this 21;		// reference com/sun/javacard/samples/JavaPurse/ParametersFile.records
+					sload_1;
+					sconst_1;
+					ssub;
+					aaload;
+					getfield_a 4;		// reference com/sun/javacard/samples/JavaPurse/Record.record
+					areturn;
+		}
+
+	}
+
+	.class  Record extends 0.0 {		// extends java/lang/Object
+
+		.fields {
+			 byte[] record 0;		// [B
+		}
+
+		.publicMethodTable 1 {
+			equals(Ljava/lang/Object;)Z;
+		}
+
+		.packageMethodTable 0 {
+		}
+
+		.method  <init>(S)V {
+			.stack 2;
+			.locals 0;
+
+				L0:	aload_0;
+					invokespecial 23;		// java/lang/Object.<init>()V
+					aload_0;
+					sload_1;
+					newarray 11;
+					putfield_a 4;		// reference com/sun/javacard/samples/JavaPurse/Record.record
+					return;
+		}
+
+		.method  <init>([B)V {
+			.stack 2;
+			.locals 0;
+
+				L0:	aload_0;
+					invokespecial 23;		// java/lang/Object.<init>()V
+					aload_0;
+					aload_1;
+					putfield_a 4;		// reference com/sun/javacard/samples/JavaPurse/Record.record
+					return;
+		}
+
+	}
+
+}

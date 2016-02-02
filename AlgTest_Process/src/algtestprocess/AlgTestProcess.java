@@ -249,7 +249,11 @@ public class AlgTestProcess {
                 cardIdentification = cardIdentification.replace(".csv", "");
                 cardIdentification = cardIdentification.replace("3B", ", ATR=3B");
                 cardIdentification = cardIdentification.replace("3b", ", ATR=3b");
-                cardList += "<b>c" + i + "</b>	" + cardIdentification + ",";
+                cardIdentification = cardIdentification.replace("ALGSUPPORT", "");
+                
+                String cardShortName = cardIdentification.substring(0, cardIdentification.indexOf("ATR"));
+                String cardRestName = cardIdentification.substring(cardIdentification.indexOf("ATR"));
+                cardList += "<b>c" + i + "</b>	" + "<a href=\"https://github.com/crocs-muni/JCAlgTest/tree/master/Profiles/results/" + filesArray[i] + "\">" + cardShortName + "</a>" + cardRestName + ",";
                 String cardName = "";
                 if (filesSupport[i].containsKey("Performance")) { 
                     cardName = (String) filesSupport[i].get("Card name");
