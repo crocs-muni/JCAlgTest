@@ -6,6 +6,7 @@ AlgTest applet version; 1.6.0
 Used reader; PC/SC terminal Gemplus USB Smart Card Reader 2
 Card ATR; 3b f8 13 00 00 81 31 fe 45 4a 43 4f 50 76 32 34 31 b7
 Card name; NXP JCOP31 v2.4.1 72K
+Performance; yes
 Used protocol; T=1
 
 JavaCard support version;2.2.2;

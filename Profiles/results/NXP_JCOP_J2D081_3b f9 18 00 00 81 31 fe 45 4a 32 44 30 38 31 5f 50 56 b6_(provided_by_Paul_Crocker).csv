@@ -6,6 +6,7 @@ AlgTest applet version; 1.2; 1.2
 Used reader; PC/SC terminal ACS CCID USB Reader 0; PC/SC terminal ACS CCID USB Reader 0
 Card ATR; 3b f9 18 00 00 81 31 fe 45 4a 32 44 30 38 31 5f 50 56 b6 ; 3b f9 18 00 00 81 31 fe 45 4a 32 44 30 38 31 5f 50 56 b6 
 Card name; NXP J2D081 80K
+Performance; yes
 
 Used protocol; T=1; T=1
 ;;
