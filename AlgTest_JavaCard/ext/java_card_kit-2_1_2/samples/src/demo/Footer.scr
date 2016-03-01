@@ -1,0 +1,17 @@
+//+
+// Copyright © 2001 Sun Microsystems, Inc.  All rights reserved.
+// Use is subject to license terms.
+//-
+
+//+
+// Workfile:@(#)Footer.scr	1.4
+// Version:1.4
+// Date:03/26/01
+// 
+// Archive:  /Products/Europa/demo/Footer.scr 
+// Modified:03/26/01 13:37:44
+// Original author: <your name here>
+//-
+
+powerdown;
+

@@ -63,6 +63,8 @@ public class AlgStorageTest {
     
     TestSettings               m_testSettings = null;
     
+    
+    
     AlgStorageTest() { 
         m_aesCipher = Cipher.getInstance(JCConsts.Cipher_ALG_AES_BLOCK_128_CBC_NOPAD, false);
         m_desCipher = Cipher.getInstance(JCConsts.Cipher_ALG_DES_CBC_NOPAD, false);
@@ -84,7 +86,7 @@ public class AlgStorageTest {
                 case Consts.INS_CARD_TESTAVAILABLE_MEMORY: TestAvailableMemory(apdu); break;
                 case Consts.INS_CARD_ALLOWED_KEYS: TestAllowedKeys(apdu); break;
                 case Consts.INS_CARD_ALLOWED_ENGINES: TestAllowedEngines(apdu); break;
-                case Consts.INS_CARD_RESET: JCSystem.requestObjectDeletion(); break;
+                //case Consts.INS_CARD_RESET: JCSystem.requestObjectDeletion(); break;
                 default : {
                     bProcessed = 0;
                     break;

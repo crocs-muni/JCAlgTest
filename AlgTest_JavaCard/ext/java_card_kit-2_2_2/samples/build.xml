@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE project [
+  <!ENTITY buildProperties SYSTEM "build.properties">
+  <!ENTITY usage SYSTEM "usage.xml">
+  <!ENTITY samples SYSTEM "build_samples.xml">
+  <!ENTITY demos SYSTEM "build_demos.xml">
+]>
+
+<project name="JC Samples and Demos" default="build_demos" basedir="..">
+    <description>
+      This buildfile is used to build samples and demos.
+    </description>
+
+    <!-- Definitions for tasks for javacard tools -->
+    <taskdef name="apdutool"  
+        classname="com.sun.javacard.ant.tasks.APDUToolTask"
+        classpath="${basedir}/ant-tasks/lib/jctasks.jar" /> 
+    <taskdef name="capgen"  
+        classname="com.sun.javacard.ant.tasks.CapgenTask"
+        classpath="${basedir}/ant-tasks/lib/jctasks.jar" /> 
+    <taskdef name="maskgen"  
+        classname="com.sun.javacard.ant.tasks.MaskgenTask"
+        classpath="${basedir}/ant-tasks/lib/jctasks.jar" /> 
+    <taskdef name="deploycap"  
+        classname="com.sun.javacard.ant.tasks.DeployCapTask"
+        classpath="${basedir}/ant-tasks/lib/jctasks.jar" /> 
+    <taskdef name="exp2text"  
+        classname="com.sun.javacard.ant.tasks.Exp2TextTask"
+        classpath="${basedir}/ant-tasks/lib/jctasks.jar" />
+    <taskdef name="convert" 
+        classname="com.sun.javacard.ant.tasks.ConverterTask"
+        classpath="${basedir}/ant-tasks/lib/jctasks.jar" />
+    <taskdef name="verifyexport" 
+        classname="com.sun.javacard.ant.tasks.VerifyExpTask"
+        classpath="${basedir}/ant-tasks/lib/jctasks.jar" />
+    <taskdef name="verifycap" 
+        classname="com.sun.javacard.ant.tasks.VerifyCapTask"
+        classpath="${basedir}/ant-tasks/lib/jctasks.jar" />
+    <taskdef name="verifyrevision" 
+        classname="com.sun.javacard.ant.tasks.VerifyRevTask"
+        classpath="${basedir}/ant-tasks/lib/jctasks.jar" />
+    <taskdef name="scriptgen" 
+        classname="com.sun.javacard.ant.tasks.ScriptgenTask"
+        classpath="${basedir}/ant-tasks/lib/jctasks.jar" />
+    <typedef name="appletnameaid" 
+        classname="com.sun.javacard.ant.types.AppletNameAID" 
+        classpath="${basedir}/ant-tasks/lib/jctasks.jar" />
+    <typedef name="jcainputfile" 
+        classname="com.sun.javacard.ant.types.JCAInputFile" 
+        classpath="${basedir}/ant-tasks/lib/jctasks.jar" />
+    <typedef name="exportfiles" 
+        classname="org.apache.tools.ant.types.FileSet" />
+
+    <path id="classpath" description="Sets the classpath to Java Card API and tools">
+        <pathelement path="${basedir}"/>
+        <pathelement path="${CL_DIR}"/>
+        <pathelement path="${basedir}/lib/api.jar"/>
+        <pathelement path="${basedir}/lib/javacardframework.jar"/>
+        <pathelement path="${basedir}/lib/converter.jar"/>
+        <pathelement path="${basedir}/lib/offcardverifier.jar"/>
+        <pathelement path="${basedir}/lib/scriptgen.jar"/>
+        <pathelement path="${basedir}/lib/apdutool.jar"/>
+        <pathelement path="${basedir}/lib/apduio.jar"/>
+        <pathelement path="."/>
+    </path>
+
+    <path id="CLIENT_CLASSPATH" description="Sets the classpath to compile client">
+        <pathelement path="${basedir}"/>
+        <pathelement path="${CL_DIR}"/>
+        <pathelement path="${basedir}/lib/javacardframework.jar"/>
+        <pathelement path="${basedir}/lib/jcrmiclientframework.jar"/>
+        <pathelement path="${basedir}/lib/base-core.jar"/>
+        <pathelement path="${basedir}/lib/base-opt.jar"/>
+        <pathelement path="${basedir}/lib/apduio.jar"/>
+        <pathelement path="."/>
+    </path>
+
+
+&usage;
+
+&buildProperties;
+
+&samples;
+
+&demos;
+
+<target name="initProps" description="Checks for OS, and also if crypto is inculded or not">
+    <!-- check if crypto samples are present and set appropriate property -->
+    <available file="${source_home}/com/sun/javacard/samples/JavaPurseCrypto" type="dir" property="javapursecrypto.exits" />
+    <available file="${source_home}/com/sun/javacard/samples/eccrmi" type="dir" property="eccrmi.exits" />
+    <available file="${source_home}/com/sun/javacard/samples/transit" type="dir" property="transitdemo.exits" />
+    <available file="${source_home}/com/sun/javacard/samples/sigMsgRec" type="dir" property="sigmsgrec.exits" />
+    
+    <condition property="isDomestic">
+        <and>
+            <isset property="javapursecrypto.exits"/>
+            <isset property="eccrmi.exits"/>
+        </and>
+    </condition>
+    
+    <condition property="isGlobal">
+        <not>
+            <isset property="isDomestic"/>
+        </not>
+    </condition>
+    
+    <condition property="crypto_flag" value="-DNON_CRYPTO">
+        <not>
+            <isset property="isDomestic"/>
+        </not>
+    </condition>
+
+    <condition property="crypto_flag" value="-DWITH_CRYPTO=1">
+        <and>
+            <isset property="isDomestic"/>
+        </and>
+    </condition>
+    
+    <condition property="isSunOSonSparc">
+        <and>
+            <os name="SunOS" arch="sparc" />
+        </and>
+    </condition>
+    
+    <condition property="isSunOSonx86">
+        <and>
+            <os name="SunOS" arch="x86" />
+        </and>
+    </condition>
+
+    <condition property="isWindows">
+        <and>
+            <os family="windows" />
+        </and>
+    </condition>
+    
+    <condition property="isx86Linux">
+        <and>
+            <os name="Linux" arch="i386" />
+        </and>
+    </condition>
+    
+    <condition property="is16Bit">     
+        <isset property="bit16"/>
+    </condition>    
+
+    <condition property="is32Bit">  
+        <not>
+            <isset property="bit16"/>    
+        </not>
+    </condition>
+    
+
+    <condition property="COMM_INTERFACE" value="-DINTERFACE_TCL_DUAL">
+        <or>
+            <and>
+                <not>
+                    <isset property="is16Bit"/>
+                </not>
+        <and>
+                    <not>
+                        <isset property="INTERFACE_T1"/>
+                    </not>
+                    <not>
+                        <isset property="INTERFACE_T0"/>
+                    </not>
+        </and>
+            </and>
+            <and>
+                <isset property="INTERFACE_TCL_DUAL"/>
+                <not>
+                    <isset property="is16Bit"/>
+                </not>
+            </and>
+        </or>
+    </condition>
+
+    <condition property="COMM_INTERFACE" value="-DINTERFACE_T1">
+    <and>
+        <isset property="INTERFACE_T1"/>
+            <not>
+                <isset property="is16Bit"/>
+            </not>
+    </and>
+    </condition>
+    
+    <condition property="COMM_INTERFACE" value="-DINTERFACE_T0">
+        <or>
+            <isset property="INTERFACE_T0"/>
+            <isset property="is16Bit"/>
+        </or>
+    </condition>
+
+    <condition property="COMM_INTERFACE_DIR" value="tdual">
+        <or>
+            <and>
+                <not>
+                    <isset property="is16Bit"/>
+                </not>
+        <and>
+                    <not>
+                        <isset property="INTERFACE_T1"/>
+                    </not>
+                    <not>
+                        <isset property="INTERFACE_T0"/>
+                    </not>
+        </and>
+            </and>
+            <and>
+                <isset property="INTERFACE_TCL_DUAL"/>
+                <not>
+                    <isset property="is16Bit"/>
+                </not>
+            </and>
+        </or>
+    </condition>
+    
+    <condition property="COMM_INTERFACE_DIR" value="t1">
+        <and>
+            <isset property="INTERFACE_T1"/>
+            <not>
+                <isset property="is16Bit"/>
+            </not>
+        </and>
+    </condition>
+
+
+    <condition property="COMM_INTERFACE_DIR" value="t0">
+        <or>
+            <isset property="INTERFACE_T0"/>
+            <isset property="is16Bit"/>
+        </or>
+    </condition>
+    
+</target>
+
+<!-- Target to get value for 'mcpu' parameter for gcc -->
+<target name="get_cpu_type">
+    <condition property="mcpu_value" value="ultrasparc">
+        <and>
+            <os name="SunOS" arch="sparc" />
+        </and>
+    </condition>
+    
+    <condition property="mcpu_value" value="i386">
+        <and>
+            <os name="SunOS" arch="x86" />
+        </and>
+    </condition>
+</target>
+
+</project>

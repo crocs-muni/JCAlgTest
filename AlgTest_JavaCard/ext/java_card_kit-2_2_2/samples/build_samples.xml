@@ -1,0 +1,471 @@
+<target name="clean" description="Remove output files">
+    <delete dir="${CL_DIR}" />
+    <delete file="${demo_home}/demo2/demo2.scr" />
+    <delete file="${demo_home}/demo2/demo2crypto.scr" />
+    <delete file="${demo_home}/demo2/javapurse/_tmp/JavaLoyalty.scr" />
+    <delete file="${demo_home}/demo2/javapurse/_tmp/JavaPurse.scr" />
+    <delete file="${demo_home}/demo2/javapurse/_tmp/JavaPurseCrypto.scr" />
+    <delete file="${demo_home}/demo2/javapurse/_tmp/SampleLibrary.scr" />
+    <delete file="${demo_home}/demo2/wallet/_tmp/Wallet.scr" />
+    <delete file="${demo_home}/demo2/rmi/_tmp/RMIDemo.scr" />
+    <delete file="${demo_home}/elliptic_curve_rmi/ECDemo.scr" />
+    <delete file="${demo_home}/demo2/rmi/_tmp/SecureRMIDemo.scr" />
+    <delete file="${demo_home}/photocard/_tmp/photocard.scr" />
+    <delete file="${demo_home}/object_deletion/odDemo1-1.scr" />
+    <delete file="${demo_home}/object_deletion/odDemo1-2.scr" />
+    <delete file="${demo_home}/object_deletion/odDemo1-3.scr" />
+    <delete file="${demo_home}/object_deletion/odDemo2.scr" />
+    <delete file="${demo_home}/object_deletion/_tmp/packageA.scr" />
+    <delete file="${demo_home}/object_deletion/_tmp/packageB.scr" />
+    <delete file="${demo_home}/object_deletion/_tmp/packageC.scr" />
+    <delete file="${demo_home}/logical_channels/channelDemo.scr" />
+    <delete file="${demo_home}/logical_channels/_tmp/ChnDemo.scr" />
+    <delete file="${demo_home}/biometry/_tmp/bioApplet.scr" />
+    <delete file="${demo_home}/biometry/_tmp/bioServer.scr" />
+    <delete file="${demo_home}/transit/_tmp/TransitDemo.scr" />
+    <delete file="${demo_home}/sigMsgRec/_tmp/sigMsgRec.scr" />
+    <delete file="${demo_home}/utilitydemo/utilitydemo.scr" />
+</target>
+
+<!--   Copy export files -->        
+<target name="copy_exports" description="Copy export files">
+    <copy todir="${CL_DIR}">
+        <fileset dir="${basedir}/api_export_files" includes="**/*.exp">
+        </fileset>
+    </copy>
+</target>
+
+
+<!--   Compile sources -->        
+<target name="compile_samples" description="compile sample classes" >
+     <javac debug="yes" destdir="${CL_DIR}" optimize="no" srcdir="${source_home}">
+        <classpath refid="classpath"/>
+      </javac>
+</target>
+
+<!--  Conversion Targets -->    
+<target name="convert_helloworld" description="converts HelloWorld sample"> 
+    <convert
+        dir="${CL_DIR}"
+        Configfile="${source_home}/com/sun/javacard/samples/HelloWorld/HelloWorld.opt">
+        <classpath refid="classpath"/>
+    </convert>
+</target>
+
+<target name="convert_samplelibrary" description="converts SampleLibrary package"> 
+    <convert
+        dir="${CL_DIR}"
+        Configfile="${source_home}/com/sun/javacard/samples/SampleLibrary/SampleLibrary.opt">
+        <classpath refid="classpath"/>
+    </convert>
+</target>
+
+<target name="convert_javaloyalty" description="converts JavaLoyalty package"> 
+    <convert
+        dir="${CL_DIR}"
+        Configfile="${source_home}/com/sun/javacard/samples/JavaLoyalty/JavaLoyalty.opt">
+        <classpath refid="classpath"/>
+    </convert>
+</target>
+
+<target name="convert_javapurse" description="converts JavaPurse package"> 
+    <convert
+        dir="${CL_DIR}"
+        Configfile="${source_home}/com/sun/javacard/samples/JavaPurse/JavaPurse.opt">
+        <classpath refid="classpath"/>
+    </convert>
+</target>
+
+<target name="convert_nullapp" description="converts NullApp package"> 
+    <convert
+        dir="${CL_DIR}"
+        Configfile="${source_home}/com/sun/javacard/samples/NullApp/NullApp.opt">
+        <classpath refid="classpath"/>
+    </convert>
+</target>
+
+<target name="convert_wallet" description="converts Wallet package"> 
+    <convert
+        dir="${CL_DIR}"
+        Configfile="${source_home}/com/sun/javacard/samples/wallet/Wallet.opt">
+        <classpath refid="classpath"/>
+    </convert>
+</target>
+
+<target name="convert_rmidemo" description="converts RMIDemo package"> 
+    <convert
+        dir="${CL_DIR}"
+        Configfile="${source_home}/com/sun/javacard/samples/RMIDemo/RMIDemo.opt">
+        <classpath refid="classpath"/>
+    </convert>
+</target>
+
+<target name="convert_securermidemo" description="converts SecureRMIDemo package"> 
+    <convert
+        dir="${CL_DIR}"
+        Configfile="${source_home}/com/sun/javacard/samples/SecureRMIDemo/SecureRMIDemo.opt">
+        <classpath refid="classpath"/>
+    </convert>
+</target>
+
+<target name="convert_photocard" description="converts photocard package"> 
+    <convert
+        dir="${CL_DIR}"
+        Configfile="${source_home}/com/sun/javacard/samples/photocard/photocard.opt">
+        <classpath refid="classpath"/>
+    </convert>
+</target>
+
+<target name="convert_odsample" description="converts packages for Object deletion sample"> 
+    <convert
+        dir="${CL_DIR}"
+        Configfile="${source_home}/com/sun/javacard/samples/odSample/packageA/packageA.opt">
+        <classpath refid="classpath"/>
+    </convert>
+    <convert
+        dir="${CL_DIR}"
+        Configfile="${source_home}/com/sun/javacard/samples/odSample/libPackageC/libPackageC.opt">
+        <classpath refid="classpath"/>
+    </convert>
+    <convert
+        dir="${CL_DIR}"
+        Configfile="${source_home}/com/sun/javacard/samples/odSample/packageB/packageB.opt">
+        <classpath refid="classpath"/>
+    </convert>
+</target>
+
+<target name="convert_channelsdemo" description="converts ChannelsDemo package"> 
+    <convert
+        dir="${CL_DIR}"
+        Configfile="${source_home}/com/sun/javacard/samples/ChannelsDemo/ChannelsDemo.opt">
+        <classpath refid="classpath"/>
+    </convert>
+</target>
+
+<target name="convert_javapursecrypto" if="javapursecrypto.exits" description="converts JavaPurseCrypto package"> 
+    <convert
+        dir="${CL_DIR}"
+        Configfile="${source_home}/com/sun/javacard/samples/JavaPurseCrypto/JavaPurseCrypto.opt">
+        <classpath refid="classpath"/>
+    </convert>
+</target>
+
+<target name="convert_ecpurse" if="eccrmi.exits" description="converts ECPurse package"> 
+    <convert
+        dir="${CL_DIR}"
+        Configfile="${source_home}/com/sun/javacard/samples/eccrmi/ECPurse.opt">
+        <classpath refid="classpath"/>
+    </convert>
+</target>
+
+<target name="convert_bioserver" description="converts BioServer package"> 
+    <convert
+        dir="${CL_DIR}"
+        Configfile="${source_home}/com/sun/javacard/samples/biometry/bioServer/bioServer.opt">
+        <classpath refid="classpath"/>
+    </convert>
+</target>
+
+<target name="convert_bioapplet" description="converts BioApplet package"> 
+    <convert
+        dir="${CL_DIR}"
+        Configfile="${source_home}/com/sun/javacard/samples/biometry/bioApplet/bioApplet.opt">
+        <classpath refid="classpath"/>
+    </convert>
+</target>
+
+<target name="convert_transitapplet" if="transitdemo.exits" description="converts TransitApplet package"> 
+    <convert
+        dir="${CL_DIR}"
+        Configfile="${source_home}/com/sun/javacard/samples/transit/TransitApplet.opt">
+        <classpath refid="classpath"/>
+    </convert>
+</target>
+
+<target name="convert_sigmsgrec" if="sigmsgrec.exits" description="converts sigMsgRec package"> 
+    <convert
+        dir="${CL_DIR}"
+        Configfile="${source_home}/com/sun/javacard/samples/sigMsgRec/sigMsgRec.opt">
+        <classpath refid="classpath"/>
+    </convert>
+</target>
+
+
+<target name="convert_utilitydemo" description="converts utilitydemo package"> 
+    <convert
+        dir="${CL_DIR}"
+        Configfile="${source_home}/com/sun/javacard/samples/utilitydemo/utilitydemo.opt">
+        <classpath refid="classpath"/>
+    </convert>
+</target>
+
+
+<target name="convert_samples" depends="compile_samples,copy_exports,convert_helloworld,convert_samplelibrary,convert_javaloyalty,convert_javapurse,convert_nullapp,convert_wallet,convert_rmidemo,convert_securermidemo,convert_photocard,convert_odsample,convert_channelsdemo,convert_javapursecrypto,convert_ecpurse,convert_bioserver,convert_bioapplet,convert_transitapplet,convert_sigmsgrec,convert_utilitydemo">
+</target>
+<!--  Demo2 Script being built here -->    
+<target name="build_demo2_script" description="Create SCR for demo2 in cref mode">
+    <scriptgen 
+        dir="${CL_DIR}"
+        CapFile="${CL_DIR}/com/sun/javacard/samples/JavaLoyalty/javacard/JavaLoyalty.cap"
+        outFile="${demo_home}/demo2/javapurse/_tmp/JavaLoyalty.scr" >
+        <classpath refid="classpath"/>
+    </scriptgen>
+    <scriptgen 
+        dir="${CL_DIR}"
+        CapFile="${CL_DIR}/com/sun/javacard/samples/JavaPurse/javacard/JavaPurse.cap"
+        outFile="${demo_home}/demo2/javapurse/_tmp/JavaPurse.scr" >
+        <classpath refid="classpath"/>
+    </scriptgen>
+    <scriptgen 
+        dir="${CL_DIR}"
+        CapFile="${CL_DIR}/com/sun/javacard/samples/SampleLibrary/javacard/SampleLibrary.cap"
+        outFile="${demo_home}/demo2/javapurse/_tmp/SampleLibrary.scr" >
+        <classpath refid="classpath"/>
+    </scriptgen>
+    <scriptgen 
+        dir="${CL_DIR}"
+        CapFile="${CL_DIR}/com/sun/javacard/samples/wallet/javacard/wallet.cap"
+        outFile="${demo_home}/demo2/wallet/_tmp/Wallet.scr" >
+        <classpath refid="classpath"/>
+    </scriptgen>
+    <scriptgen 
+        dir="${CL_DIR}"
+        CapFile="${CL_DIR}/com/sun/javacard/samples/RMIDemo/javacard/RMIDemo.cap"
+        outFile="${demo_home}/demo2/rmi/_tmp/RMIDemo.scr" >
+        <classpath refid="classpath"/>
+    </scriptgen>
+    <scriptgen 
+        dir="${CL_DIR}"
+        CapFile="${CL_DIR}/com/sun/javacard/samples/SecureRMIDemo/javacard/SecureRMIDemo.cap"
+        outFile="${demo_home}/demo2/rmi/_tmp/SecureRMIDemo.scr" >
+        <classpath refid="classpath"/>
+    </scriptgen>
+    <scriptgen 
+        dir="${CL_DIR}"
+        CapFile="${CL_DIR}/com/sun/javacard/samples/photocard/javacard/photocard.cap"
+        outFile="${demo_home}/demo2/photocard/_tmp/photocard.scr" >
+        <classpath refid="classpath"/>
+    </scriptgen>
+    <concat destfile="${demo_home}/demo2/demo2.scr" append="false">
+       <filelist dir="${demo_home}" files="misc/Header.scr,demo2/javapurse/_tmp/SampleLibrary.scr,demo2/javapurse/_tmp/JavaLoyalty.scr,demo2/javapurse/_tmp/JavaPurse.scr,demo2/wallet/_tmp/Wallet.scr,demo2/rmi/_tmp/RMIDemo.scr,demo2/rmi/_tmp/SecureRMIDemo.scr,demo2/photocard/_tmp/photocard.scr,demo2/javapurse/AppletTest.scr,misc/Footer.scr" />
+   </concat>
+</target>
+
+<!--  Object Deletion Demo scripts -->    
+<target name="build_oddemo_script" description="Create SCR for object deletion demo">
+    <scriptgen 
+        dir="${CL_DIR}"
+        CapFile="${CL_DIR}/com/sun/javacard/samples/odSample/packageA/javacard/packageA.cap"
+        outFile="${demo_home}/object_deletion/_tmp/packageA.scr" >
+        <classpath refid="classpath"/>
+    </scriptgen>
+    <scriptgen 
+        dir="${CL_DIR}"
+        CapFile="${CL_DIR}/com/sun/javacard/samples/odSample/packageB/javacard/packageB.cap"
+        outFile="${demo_home}/object_deletion/_tmp/packageB.scr" >
+        <classpath refid="classpath"/>
+    </scriptgen>
+    <scriptgen 
+        dir="${CL_DIR}"
+        CapFile="${CL_DIR}/com/sun/javacard/samples/odSample/libPackageC/javacard/libPackageC.cap"
+        outFile="${demo_home}/object_deletion/_tmp/packageC.scr" >
+        <classpath refid="classpath"/>
+    </scriptgen>
+    <scriptgen 
+        dir="${CL_DIR}"
+        CapFile="${CL_DIR}/com/sun/javacard/samples/ChannelsDemo/javacard/ChannelsDemo.cap"
+        outFile="${demo_home}/logical_channels/_tmp/ChnDemo.scr" >
+        <classpath refid="classpath"/>
+    </scriptgen>
+    <concat destfile="${demo_home}/object_deletion/odDemo1-1.scr" append="false">
+       <filelist dir="${demo_home}" files="misc/Header.scr,object_deletion/_tmp/packageA.scr,object_deletion/_tmp/packageC.scr,object_deletion/_tmp/packageB.scr,object_deletion/od1.scr,misc/Footer.scr" />
+   </concat>
+    <concat destfile="${demo_home}/object_deletion/odDemo1-2.scr" append="false">
+       <filelist dir="${demo_home}" files="misc/Header.scr,object_deletion/od2.scr,misc/Footer.scr" />
+   </concat>
+    <concat destfile="${demo_home}/object_deletion/odDemo1-3.scr" append="false">
+       <filelist dir="${demo_home}" files="misc/Header.scr,object_deletion/od2-2.scr,misc/Footer.scr" />
+   </concat>
+    <concat destfile="${demo_home}/object_deletion/odDemo2.scr" append="false">
+       <filelist dir="${demo_home}" files="misc/Header.scr,object_deletion/_tmp/packageA.scr,object_deletion/od3.scr,object_deletion/_tmp/packageC.scr,object_deletion/od3-2.scr,misc/Footer.scr" />
+   </concat>
+    <concat destfile="${demo_home}/logical_channels/channelDemo.scr" append="false">
+       <filelist dir="${demo_home}" files="misc/Header.scr,logical_channels/_tmp/ChnDemo.scr,logical_channels/channel.scr,misc/Footer.scr" />
+   </concat>
+</target>
+
+<!--  build crypto scripts -->
+<target name="build_javapursecrypto_script" if="javapursecrypto.exits" description="Create SCR files JavaPurseCrypto demos">
+    <scriptgen 
+        dir="${CL_DIR}"
+        CapFile="${CL_DIR}/com/sun/javacard/samples/JavaPurseCrypto/javacard/JavaPurseCrypto.cap"
+        outFile="${demo_home}/demo2/javapurse/_tmp/JavaPurseCrypto.scr" >
+        <classpath refid="classpath"/>
+    </scriptgen>
+    <concat destfile="${demo_home}/demo2/demo2crypto.scr" append="false">
+       <filelist dir="${demo_home}" files="misc/Header.scr,demo2/javapurse/_tmp/SampleLibrary.scr,demo2/javapurse/_tmp/JavaLoyalty.scr,demo2/javapurse/_tmp/JavaPurseCrypto.scr,demo2/wallet/_tmp/Wallet.scr,demo2/rmi/_tmp/RMIDemo.scr,demo2/rmi/_tmp/SecureRMIDemo.scr,demo2/javapurse/AppletTestCrypto.scr,misc/Footer.scr" />
+   </concat>
+</target>
+<target name="build_eccrmi_script" if="eccrmi.exits" description="Create SCR files EC crypto demo">
+   <scriptgen 
+        dir="${CL_DIR}"
+        CapFile="${CL_DIR}/com/sun/javacard/samples/eccrmi/javacard/eccrmi.cap"
+        outFile="${demo_home}/elliptic_curve_rmi/_tmp/ECRMIDemo.scr" >
+        <classpath refid="classpath"/>
+    </scriptgen>
+    <concat destfile="${demo_home}/elliptic_curve_rmi/ECDemo.scr" append="false">
+       <filelist dir="${demo_home}" files="misc/Header.scr,elliptic_curve_rmi/_tmp/ECRMIDemo.scr,elliptic_curve_rmi/ECFooter.scr" />
+   </concat>
+</target>
+<target name="build_cryptodemo_script" depends="build_javapursecrypto_script,build_eccrmi_script" description="Create SCR files for crypto demos">
+</target>
+
+<!--  build biometry demo scripts  -->
+<target name="build_biometrydemo_script" description="Create SCR files for biometry demo">
+    <mkdir dir="${demo_home}/biometry/_tmp"/>
+    <scriptgen 
+        dir="${CL_DIR}"
+        CapFile="${CL_DIR}/com/sun/javacard/samples/biometry/bioServer/javacard/bioServer.cap"
+        outFile="${demo_home}/biometry/_tmp/bioServer.scr" > 
+        <classpath refid="classpath"/>
+    </scriptgen>
+    <scriptgen 
+        dir="${CL_DIR}"
+        CapFile="${CL_DIR}/com/sun/javacard/samples/biometry/bioApplet/javacard/bioApplet.cap"
+        outFile="${demo_home}/biometry/_tmp/bioApplet.scr" > 
+        <classpath refid="classpath"/>
+    </scriptgen>
+    <concat destfile="${demo_home}/biometry/biometryDemo.scr" append="false">
+       <filelist dir="${demo_home}" files="misc/Header.scr,biometry/_tmp/bioServer.scr,biometry/_tmp/bioApplet.scr,biometry/biometryEnroll.scr,biometry/biometryMatch.scr" />
+   </concat>
+</target>
+
+<!--  build transit demo scripts  -->
+<target name="build_transitdemo_script" if="transitdemo.exits" description="Create SCR files for transit demo">
+    <mkdir dir="${demo_home}/transit/_tmp"/>
+    <scriptgen 
+        dir="${CL_DIR}"
+        CapFile="${CL_DIR}/com/sun/javacard/samples/transit/javacard/transit.cap"
+        outFile="${demo_home}/transit/_tmp/TransitDemo.scr" > 
+        <classpath refid="classpath"/>
+    </scriptgen>
+    <concat destfile="${demo_home}/transit/TransitDemo-TransientKey.scr" append="false">
+       <filelist dir="${demo_home}" files="misc/Header.scr,transit/_tmp/TransitDemo.scr,transit/TransitDemoFooter-TransientKey.scr" />
+   </concat>
+    <concat destfile="${demo_home}/transit/TransitDemo-NoTransientKey.scr" append="false">
+       <filelist dir="${demo_home}" files="misc/Header.scr,transit/_tmp/TransitDemo.scr,transit/TransitDemoFooter-NoTransientKey.scr" />
+   </concat>
+</target>
+
+<!--  build sigmsgrec demo scripts  -->
+<target name="build_sigmsgrec_script" if="sigmsgrec.exits" description="Create SCR files for signature message recovery demo">
+    <mkdir dir="${demo_home}/sigMsgRec/_tmp"/>
+    <scriptgen 
+        dir="${CL_DIR}"
+        CapFile="${CL_DIR}/com/sun/javacard/samples/sigMsgRec/javacard/sigMsgRec.cap"
+        outFile="${demo_home}/sigMsgRec/_tmp/sigMsgRec.scr" > 
+        <classpath refid="classpath"/>
+    </scriptgen>
+    <concat destfile="${demo_home}/sigMsgRec/sigMsgFullRec.scr" append="false">
+       <filelist dir="${demo_home}" files="misc/Header.scr,sigMsgRec/_tmp/sigMsgRec.scr,sigMsgRec/signAndFullRec.scr" />
+   </concat>
+    <concat destfile="${demo_home}/sigMsgRec/sigMsgPartRec.scr" append="false">
+       <filelist dir="${demo_home}" files="misc/Header.scr,sigMsgRec/_tmp/sigMsgRec.scr,sigMsgRec/signAndPartRec.scr" />
+   </concat>
+</target>
+
+
+<!--  build utility demo scripts  -->
+<target name="build_utilitydemo_script" description="Create SCR files for utility demo">
+    <mkdir dir="${demo_home}/utilitydemo/_tmp"/>
+    <scriptgen 
+        dir="${CL_DIR}"
+        CapFile="${CL_DIR}/com/sun/javacard/samples/utilitydemo/javacard/utilitydemo.cap"
+        outFile="${demo_home}/utilitydemo/_tmp/utilitydemo_install.scr" > 
+        <classpath refid="classpath"/>
+    </scriptgen>
+    <concat destfile="${demo_home}/utilitydemo/utilitydemo.scr" append="false">
+       <filelist dir="${demo_home}" files="misc/Header.scr,utilitydemo/_tmp/utilitydemo_install.scr,utilitydemo/UtilityDemoFooter.scr" />
+   </concat>
+   <delete dir="${demo_home}/utilitydemo/_tmp"/>
+</target>
+
+
+<!--  build client of JCRMI samples  -->
+<!-- Client part of JCRMI samples -->
+<target name="prepare_sample_clients" >
+    <rmic base="${CL_DIR}" 
+        stubversion="1.2"
+        classname="com.sun.javacard.samples.RMIDemo.PurseImpl"
+        > 
+        <classpath refid="CLIENT_CLASSPATH"/>
+    </rmic>
+    <rmic base="${CL_DIR}" 
+        stubversion="1.2"
+        classname="com.sun.javacard.samples.SecureRMIDemo.SecurePurseImpl"
+        > 
+        <classpath refid="CLIENT_CLASSPATH"/>
+    </rmic>
+    <rmic base="${CL_DIR}" 
+        stubversion="1.2"
+        classname="com.sun.javacard.samples.photocard.PhotoCardImpl"
+        > 
+        <classpath refid="CLIENT_CLASSPATH"/>
+    </rmic>
+</target>
+
+<target name="prepare_crypto_sample_clients" if="eccrmi.exits">
+    <rmic base="${CL_DIR}" 
+        stubversion="1.2"
+        classname="com.sun.javacard.samples.eccrmi.ECPurseImpl"
+        > 
+        <classpath refid="CLIENT_CLASSPATH"/>
+    </rmic>
+</target>
+<target name="compile_sample_clients" depends="prepare_sample_clients,prepare_crypto_sample_clients">
+    <javac debug="yes" destdir="${CL_DIR}" optimize="no" srcdir="${client_source_home}" failonerror="false">
+        <classpath refid="CLIENT_CLASSPATH"/>
+    </javac>
+    <copy todir="${CL_DIR}/com/sun/javacard/clientsamples/purseclient">
+        <fileset dir="${client_source_home}/com/sun/javacard/clientsamples/purseclient" includes="**/*.properties">
+        </fileset>
+    </copy>
+    <copy todir="${CL_DIR}/com/sun/javacard/clientsamples/securepurseclient">
+        <fileset dir="${client_source_home}/com/sun/javacard/clientsamples/securepurseclient" includes="**/*.properties">
+        </fileset>
+    </copy>
+    <copy todir="${CL_DIR}/com/sun/javacard/clientsamples/photocardclient">
+        <fileset dir="${client_source_home}/com/sun/javacard/clientsamples/photocardclient" includes="**/*.properties">
+        </fileset>
+    </copy>
+    <antcall target="copy_crypto_message_bundles" />
+</target>
+
+<target name="copy_crypto_message_bundles" if="eccrmi.exits">
+    <copy todir="${CL_DIR}/com/sun/javacard/clientsamples/ecpurseclient">
+        <fileset dir="${client_source_home}/com/sun/javacard/clientsamples/ecpurseclient" includes="**/*.properties">
+        </fileset>
+    </copy>
+</target>
+
+<!-- Main target to run -->
+<target name="build_samples" description="The main target that starts building samples" depends="clean,initProps">
+    <mkdir dir="${CL_DIR}"/>
+    <antcall target="convert_samples" />
+    <antcall target="build_demo2_script" />
+    <antcall target="build_oddemo_script" />
+    <antcall target="build_cryptodemo_script" />
+    <antcall target="build_biometrydemo_script" />
+    <antcall target="build_transitdemo_script" />
+    <antcall target="build_sigmsgrec_script" />
+    <antcall target="build_utilitydemo_script" />
+    <antcall target="compile_sample_clients" />
+    <mkdir dir="${CL_DIR}\tmp_client\com\sun\javacard\clientsamples"/>
+    <copy todir="${CL_DIR}\tmp_client\com\sun\javacard\clientsamples">
+        <fileset dir="${CL_DIR}\com\sun\javacard\clientsamples" includes="**/*">
+        </fileset>
+    </copy>
+    <jar destfile="${CL_JAR_NAME}" 
+        basedir="${CL_DIR}" />
+    <delete dir="${CL_DIR}\tmp_client"/> 
+</target>

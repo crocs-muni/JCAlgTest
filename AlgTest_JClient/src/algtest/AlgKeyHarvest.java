@@ -46,6 +46,7 @@ public class AlgKeyHarvest {
     private   RSAPublicKey     m_rsaPublicKey = null;
     private   RSAPrivateCrtKey m_rsaPrivateCrtKey = null; 
     private   RSAPrivateKey    m_rsaPrivateKey = null; 
+    private   RandomData       m_random = null;
     
     private static final byte KeyPair_ALG_RSA                       = 1;
     private static final byte KeyPair_ALG_RSA_CRT                   = 2;
@@ -56,6 +57,7 @@ public class AlgKeyHarvest {
 
     AlgKeyHarvest() { 
         m_testSettings = new AlgTest.TestSettings();
+        m_random = RandomData.getInstance(RandomData.ALG_SECURE_RANDOM);
     }
 
     public byte process(APDU apdu) throws ISOException {
@@ -66,6 +68,7 @@ public class AlgKeyHarvest {
             bProcessed = 1;
             switch ( apduBuffer[ISO7816.OFFSET_INS]) {
                 case AlgTest.Consts.INS_CARD_GETRSAKEY: GetRSAKey(apdu); break;
+                case AlgTest.Consts.INS_CARD_GETRANDOMDATA: GetRandomData(apdu); break;
                 default : {
                     bProcessed = 0;
                     break;
@@ -81,11 +84,12 @@ public class AlgKeyHarvest {
     * @param apdu 
     */
    void GetRSAKey(APDU apdu) {
-      byte[]    apdubuf = apdu.getBuffer();
-      m_testSettings.parse(apdu);
+       byte[]    apdubuf = apdu.getBuffer();
+       apdu.setIncomingAndReceive();
+       m_testSettings.parse(apdu);
 
-      // Generate new object if not before yet
-      if (m_keyPair == null) {
+       // Generate new object if not before yet
+       if (m_keyPair == null) {
           m_keyPair = new KeyPair((byte)m_testSettings.keyClass, m_testSettings.keyLength);
 //          m_keyPair = new KeyPair(KeyPair.ALG_RSA_CRT, KeyBuilder.LENGTH_RSA_512);
       }	       
@@ -147,4 +151,20 @@ public class AlgKeyHarvest {
          }
       }
     }
+   
+    /**
+     * Obtain random data of specified length
+     * @param apdu 
+     */
+    void GetRandomData(APDU apdu) {
+        byte[] apdubuf = apdu.getBuffer();
+        m_testSettings.parse(apdu);
+
+        short offset = 0;
+        
+        m_random.generateData(apdubuf, offset, m_testSettings.dataLength1);
+        offset += m_testSettings.dataLength1;
+        
+        apdu.setOutgoingAndSend((short) 0, offset);
+    }   
 }

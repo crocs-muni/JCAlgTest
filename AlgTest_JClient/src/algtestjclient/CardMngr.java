@@ -700,7 +700,6 @@ public class CardMngr {
         if (resp.getSW() == intCode(ISO7816.SW_CLA_NOT_SUPPORTED)) {
             resp = sendAPDU(FETCH_ISO_CPLC_APDU);
         }
-
         if (resp.getSW() == intCode(ISO7816.SW_NO_ERROR)) {
             return resp.getData();
         } 
@@ -830,6 +829,9 @@ public class CardMngr {
             byte[] cplcData = fetchCPLC();
             if (cplcData == null) {
                 System.out.println("Fail to obtain CPLC info");
+                String message = "CPLC; failed to obtain CPLC";
+                pFile.write(message.getBytes());
+                pValue.append(message);
             } 
             else {
                 PrintCPLCInfo(pValue, pFile, cplcData);
@@ -1352,7 +1354,7 @@ public class CardMngr {
         apdu[OFFSET_P1] = testSet.P1;
         apdu[OFFSET_P2] = testSet.P2;
         apdu[OFFSET_LC] = (byte) (apdu.length - HEADER_LENGTH);
-        testSet.serializeToApduBuff(apdu, ISO7816.OFFSET_CDATA);
+        CardMngr.serializeToApduBuff(testSet, apdu, ISO7816.OFFSET_CDATA);
 
         if (testSet.inData != null) {
             System.arraycopy(testSet.inData, 0, apdu, OFFSET_DATA + TestSettings.TEST_SETTINGS_LENGTH, (short) testSet.inData.length);
@@ -1568,7 +1570,7 @@ public class CardMngr {
         apdu[OFFSET_P1] = setting.P1;
         apdu[OFFSET_P2] = setting.P2;
         apdu[OFFSET_LC] = (byte) (apdu.length - HEADER_LENGTH);
-        setting.serializeToApduBuff(apdu, ISO7816.OFFSET_CDATA);
+        CardMngr.serializeToApduBuff(setting, apdu, ISO7816.OFFSET_CDATA);
         return apdu;
     }
       
@@ -1685,5 +1687,24 @@ public class CardMngr {
         return numKeysGenerated;
     }    
    
-    
+    public static short setShort(byte[] buffer, int offset, short value) {
+        buffer[offset] = (byte) (value >> 8 & 0xff);
+        buffer[offset + 1] = (byte) (value & 0xff);
+        return (short) (offset + 2); // size of short == 2
+    }    
+    public static short serializeToApduBuff(TestSettings testSet, byte[] apdubuf, short offset) {
+        setShort(apdubuf, (short) (offset + TestSettings.OFFSET_ALGORITHM_CLASS), testSet.classType);
+        setShort(apdubuf, (short) (offset + TestSettings.OFFSET_ALGORITHM_SPECIFICATION), testSet.algorithmSpecification);
+        setShort(apdubuf, (short) (offset + TestSettings.OFFSET_ALGORITHM_PARAM1), testSet.keyClass);
+        setShort(apdubuf, (short) (offset + TestSettings.OFFSET_ALGORITHM_PARAM2), testSet.keyType);
+        setShort(apdubuf, (short) (offset + TestSettings.OFFSET_ALGORITHM_PARAM3), testSet.keyLength);
+        setShort(apdubuf, (short) (offset + TestSettings.OFFSET_ALGORITHM_TESTED_OPS), testSet.algorithmMethod);
+        setShort(apdubuf, (short) (offset + TestSettings.OFFSET_DATA_LENGTH1), testSet.dataLength1);
+        setShort(apdubuf, (short) (offset + TestSettings.OFFSET_DATA_LENGTH2), testSet.dataLength2);
+        setShort(apdubuf, (short) (offset + TestSettings.OFFSET_DATA_INITMODE), testSet.initMode);
+        setShort(apdubuf, (short) (offset + TestSettings.OFFSET_NUM_REPEAT_WHOLE_OP), testSet.numRepeatWholeOperation);
+        setShort(apdubuf, (short) (offset + TestSettings.OFFSET_NUM_REPEAT_SUB_OP), testSet.numRepeatSubOperation);
+
+        return TestSettings.TEST_SETTINGS_LENGTH;
+    }    
 }

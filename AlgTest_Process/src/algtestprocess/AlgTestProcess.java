@@ -52,15 +52,15 @@ import java.util.StringTokenizer;
 public class AlgTestProcess {
     /* Arguments for AlgTestProcess. */
     public static final String GENERATE_HTML = "HTML";
-    public static final String GENERATE_JCINFO = "JCINFO";
-    public static final String GENERATE_SORTABLE = "SORTABLE";
     public static final String COMPARE_CARDS = "COMPARE";
     public static final String GENERATE_JCCONSTANTS = "JCCONSTS";
-    public static final String GENERATE_GRAPHS = "GRAPHS";
-    public static final String GENERATE_GRAPHS_ONEPAGE = "GRAPHSPAGE";
     
-    
-    
+    public static final String GENERATE_JCINFO = "JCINFO";
+    public static final String GENERATE_SORTABLE = "SORTABLE";          //SORTABLE TABLE
+    public static final String GENERATE_GRAPHS = "GRAPHS";              //GENERATE SINGLE GRAPHS PAGE FOR JCINFO
+    public static final String GENERATE_GRAPHS_ONEPAGE = "GRAPHSPAGE";  //PAGE WITH VARIABLE PERFTEST GRAPHS
+    public static final String GENERATE_COMPARE_GRAPH = "COMPAREGRAPH"; //ONE BIG GRAPH FOR COMPARE CARDS
+      
     
     // if one card results are generated
     public static final String[] JAVA_CARD_VERSION = {"2.1.2", "2.2.1", "2.2.2"};
@@ -111,8 +111,11 @@ public class AlgTestProcess {
                     else if (args[1].equals(GENERATE_GRAPHS)){
                         System.out.println("Generating graphs from input file to new directory.");
                         JCinfohtml.runGraphs(args[0]);}
+                    else if (args[1].equals(GENERATE_COMPARE_GRAPH)){
+                        System.out.println("Generating compare graph from input dir.");
+                        JCinfohtml.runCompareGraph(args[0]);}
                     else if (args[1].equals(GENERATE_GRAPHS_ONEPAGE)){
-                        System.out.println("Generating gprahs page from input file.");
+                        System.out.println("Generating graphs page from input file.");
                         if (args.length > 2)
                             generateGraphsPages(args[0]);
                         else
@@ -246,13 +249,17 @@ public class AlgTestProcess {
                 cardIdentification = cardIdentification.replace(".csv", "");
                 cardIdentification = cardIdentification.replace("3B", ", ATR=3B");
                 cardIdentification = cardIdentification.replace("3b", ", ATR=3b");
-                cardList += "<b>c" + i + "</b>	" + cardIdentification + ",";
+                cardIdentification = cardIdentification.replace("ALGSUPPORT", "");
+                
+                String cardShortName = cardIdentification.substring(0, cardIdentification.indexOf("ATR"));
+                String cardRestName = cardIdentification.substring(cardIdentification.indexOf("ATR"));
+                cardList += "<b>c" + i + "</b>	" + "<a href=\"https://github.com/crocs-muni/JCAlgTest/tree/master/Profiles/results/" + filesArray[i] + "\">" + cardShortName + "</a>" + cardRestName + ",";
                 String cardName = "";
-                if (filesSupport[i].containsKey("Card name")) { 
+                if (filesSupport[i].containsKey("Performance")) { 
                     cardName = (String) filesSupport[i].get("Card name");
                     cardName = cardName.replace(" ", ""); cardName = cardName.replace("_", ""); 
-                    cardList += "&nbsp;<a target=\"_blank\" href=\".fixData/" + cardName + ".html\">PERFORMANCE</a>,&nbsp;";
-                    cardList += "<a target=\"_blank\" href=\".variableData/" + cardName + ".html\">GRAPHS</a>";
+                    cardList += "&nbsp;<a target=\"_blank\" href=\"jcalgtest/fixData/" + cardName + ".html\">PERFORMANCE</a>,&nbsp;";
+                    cardList += "<a target=\"_blank\" href=\"jcalgtest/variableData/" + cardName + ".html\">GRAPHS</a>";
                 }
                 cardList += "<br>\r\n";
             }
@@ -327,7 +334,7 @@ public class AlgTestProcess {
             file.close();            
         }
         else {
-            System.out.println("directory is empty");
+            System.out.println("directory '" + filesPath + "' is empty");
         }
     }
     
@@ -401,29 +408,29 @@ public class AlgTestProcess {
                         String secondToken = (String) fileSuppMap.get(algorithmName);
                         String title = "title='" + getShortCardName(filesArray[fileIndex]) + " : " + algorithmName + " : " + secondToken + "'";
                         switch (secondToken) {
-                            case "no": algorithm += "<td class='light_no' " + title + "'>no</td>\r\n"; break;
+                            case "no": algorithm += "<td class='light_no' " + title + ">no</td>\r\n"; break;
                             case "yes":
                                 if (java_card_version_array.size() > 0){
                                     if (algorithmVersion.compareTo(jcvArray[fileIndex]) == 1){
                                         // given algorithm is not present in JavaCard specification used to convert uploaded JCAlgTest applet
                                         // make warning
-                                        algorithm += "<td class='light_suspicious' " + title + "'>suspicious yes</td>\r\n";
+                                        algorithm += "<td class='light_suspicious' " + title + ">suspicious yes</td>\r\n";
                                     }
                                     else {
                                         if (jcvArray[fileIndex].compareTo("not supplied") == 0) {
                                             // version of JavaCard API information was not supplied, assuming valid response
                                         }
-                                        algorithm += "<td class='light_yes' " + title + "'>yes</td>\r\n";
+                                        algorithm += "<td class='light_yes' " + title + ">yes</td>\r\n";
                                     }
                                 }
                                 else{
-                                    algorithm += "<td class='light_yes' " + title + "'>yes</td>\r\n";
+                                    algorithm += "<td class='light_yes' " + title + ">yes</td>\r\n";
                                 }
                             break;
-                            case "error": algorithm += "<td class='light_error' " + title + "'>error</td>\r\n"; break;
-                            case "maybe": algorithm += "<td class='light_error' " + title + "'>maybe</td>\r\n"; break;
+                            case "error": algorithm += "<td class='light_error' " + title + ">error</td>\r\n"; break;
+                            case "maybe": algorithm += "<td class='light_error' " + title + ">maybe</td>\r\n"; break;
                             default: {
-                                algorithm += "<td class='light_info' " + title + "'>" + secondToken + "</td>\r\n";
+                                algorithm += "<td class='light_info' " + title + ">" + secondToken + "</td>\r\n";
                             }
                         }
                     }

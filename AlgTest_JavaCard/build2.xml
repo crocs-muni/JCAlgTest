@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." default="algtest" name="JCAlgTest build">
+  <!-- Applet building dependencies -->
+  <property name="JC222" value="ext/java_card_kit-2_2_2"/>
+  <property name="JC212" value="ext/java_card_kit-2_1_2"/>
+  <property name="JC303" value="ext/java_card_kit-3_0_3"/>
+  <property name="OP20" value="ext/visa_openplatform-2_0"/>
+  <property name="GP211" value="ext/globalplatform-2_1_1"/>
+  
+  <!-- ant-javacard task from javacard.pro -->
+  <taskdef name="javacard" classname="pro.javacard.ant.JavaCard" classpath="ext/ant-javacard.jar"/>
+
+  <target name="algtest">
+    <javacard jckit="${JC222}">
+      <cap output="AlgTest.cap" sources="src/AlgTest" aid="6D797061636B616731">
+        <applet class="AlgTest.AlgTest" aid="6D7970616330303031"/>
+      </cap>
+	</javacard>  
+  </target>
+
+</project>

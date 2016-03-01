@@ -54,6 +54,11 @@ public class JCAlgTestApplet extends javacard.framework.Applet
 {
     // NOTE: when incrementing version, don't forget to update ALGTEST_JAVACARD_VERSION_CURRENT value
     /**
+     * Version 1.6.1 (28.1.2016) 
+     * Reset of applet moved directly into main JCAlgTestApplet
+     */
+    final static byte ALGTEST_JAVACARD_VERSION_1_6_1[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x36, (byte) 0x2e, (byte) 0x31};
+    /**
      * Version 1.6.0 (20.7.2015)
      * + source code split into AlgSupportTest and AlgPerformanceTest 
      * + support for RSA encryption in RSA and RSA_CRT (was only RSA)
@@ -168,17 +173,22 @@ public class JCAlgTestApplet extends javacard.framework.Applet
         byte bProcessed = (byte) 0;
         
         // Serve get version
-        if ((apduBuffer[ISO7816.OFFSET_CLA] == Consts.CLA_CARD_ALGTEST) && 
-            (apduBuffer[ISO7816.OFFSET_INS] == Consts.INS_CARD_GETVERSION)) {
+        if (apduBuffer[ISO7816.OFFSET_CLA] == Consts.CLA_CARD_ALGTEST) {
+            if (apduBuffer[ISO7816.OFFSET_INS] == Consts.INS_CARD_GETVERSION) {
                 GetVersion(apdu); 
                 bProcessed = (byte) 1;
+            }
+            if (apduBuffer[ISO7816.OFFSET_INS] == Consts.INS_CARD_RESET) {
+                JCSystem.requestObjectDeletion();
+                bProcessed = (byte) 1;
+            }
         }
 
         if (bProcessed == 0) {
-            bProcessed = m_keyHarvest.process(apdu);
+            bProcessed = m_supportTest.process(apdu);
         }
         if (bProcessed == 0) {
-            bProcessed = m_supportTest.process(apdu);
+            bProcessed = m_keyHarvest.process(apdu);
         }
         if (bProcessed == 0) {
             bProcessed = m_perfTest.process(apdu);

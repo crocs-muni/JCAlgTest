@@ -1,0 +1,26 @@
+// converted by version 1.2
+// on Mon Apr 09 13:40:42 PDT 2001
+
+.package com/sun/javacard/samples/SampleLibrary {
+	.aid 0xA0:0x0:0x0:0x0:0x62:0x3:0x1:0xC:0x4;
+	.version 1.0;
+
+	.imports {
+		0xA0:0x0:0x0:0x0:0x62:0x0:0x1 1.0;		//java/lang
+		0xA0:0x0:0x0:0x0:0x62:0x1:0x1 1.0;		//javacard/framework
+	}
+
+	.interface public abstract JavaLoyaltyInterface 0 {
+
+		.shareable;
+
+		.superInterfaces {
+			1.2;		// javacard/framework/Shareable
+		}
+
+		.method public abstract grantPoints([B)V 0 {
+		}
+
+	}
+
+}

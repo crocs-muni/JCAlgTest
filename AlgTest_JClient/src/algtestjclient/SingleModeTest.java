@@ -81,6 +81,7 @@ public class SingleModeTest {
 
     
     /* Response values - send back by on card application as response to command APDU. */
+    public static final short   UNKNOWN_ERROR       = -1;
     public static final short   SUPP_ALG_SUPPORTED  = 0;
     public static final short 	ILLEGAL_USE         = 5;
     public static final short 	ILLEGAL_VALUE       = 1;
@@ -90,11 +91,11 @@ public class SingleModeTest {
     
     
     public static final String SIGNATURE_STR[] = {"javacard.crypto.Signature", 
-        "ALG_DES_MAC4_NOPAD#<=2.1", "ALG_DES_MAC8_NOPAD#<=2.1", 
-        "ALG_DES_MAC4_ISO9797_M1#<=2.1", "ALG_DES_MAC8_ISO9797_M1#<=2.1", "ALG_DES_MAC4_ISO9797_M2#<=2.1", "ALG_DES_MAC8_ISO9797_M2#<=2.1", 
-        "ALG_DES_MAC4_PKCS5#<=2.1", "ALG_DES_MAC8_PKCS5#<=2.1", "ALG_RSA_SHA_ISO9796#<=2.1", "ALG_RSA_SHA_PKCS1#<=2.1", "ALG_RSA_MD5_PKCS1#<=2.1", 
-        "ALG_RSA_RIPEMD160_ISO9796#<=2.1", "ALG_RSA_RIPEMD160_PKCS1#<=2.1", "ALG_DSA_SHA#<=2.1", "ALG_RSA_SHA_RFC2409#<=2.1", 
-        "ALG_RSA_MD5_RFC2409#<=2.1", "ALG_ECDSA_SHA#2.2.0", "ALG_AES_MAC_128_NOPAD#2.2.0", "ALG_DES_MAC4_ISO9797_1_M2_ALG3#2.2.0", 
+        "ALG_DES_MAC4_NOPAD#&le;2.1", "ALG_DES_MAC8_NOPAD#&le;2.1", 
+        "ALG_DES_MAC4_ISO9797_M1#&le;2.1", "ALG_DES_MAC8_ISO9797_M1#&le;2.1", "ALG_DES_MAC4_ISO9797_M2#&le;2.1", "ALG_DES_MAC8_ISO9797_M2#&le;2.1", 
+        "ALG_DES_MAC4_PKCS5#&le;2.1", "ALG_DES_MAC8_PKCS5#&le;2.1", "ALG_RSA_SHA_ISO9796#&le;2.1", "ALG_RSA_SHA_PKCS1#&le;2.1", "ALG_RSA_MD5_PKCS1#&le;2.1", 
+        "ALG_RSA_RIPEMD160_ISO9796#&le;2.1", "ALG_RSA_RIPEMD160_PKCS1#&le;2.1", "ALG_DSA_SHA#&le;2.1", "ALG_RSA_SHA_RFC2409#&le;2.1", 
+        "ALG_RSA_MD5_RFC2409#&le;2.1", "ALG_ECDSA_SHA#2.2.0", "ALG_AES_MAC_128_NOPAD#2.2.0", "ALG_DES_MAC4_ISO9797_1_M2_ALG3#2.2.0", 
         "ALG_DES_MAC8_ISO9797_1_M2_ALG3#2.2.0", "ALG_RSA_SHA_PKCS1_PSS#2.2.0", "ALG_RSA_MD5_PKCS1_PSS#2.2.0", "ALG_RSA_RIPEMD160_PKCS1_PSS#2.2.0", 
         // 2.2.2
         "ALG_HMAC_SHA1#2.2.2", "ALG_HMAC_SHA_256#2.2.2", "ALG_HMAC_SHA_384#2.2.2", "ALG_HMAC_SHA_512#2.2.2", "ALG_HMAC_MD5#2.2.2", "ALG_HMAC_RIPEMD160#2.2.2", 
@@ -108,9 +109,9 @@ public class SingleModeTest {
     };
     
     public static final String CIPHER_STR[] = {"javacardx.crypto.Cipher", 
-        "ALG_DES_CBC_NOPAD#<=2.1", "ALG_DES_CBC_ISO9797_M1#<=2.1", "ALG_DES_CBC_ISO9797_M2#<=2.1", "ALG_DES_CBC_PKCS5#<=2.1", 
-        "ALG_DES_ECB_NOPAD#<=2.1", "ALG_DES_ECB_ISO9797_M1#<=2.1", "ALG_DES_ECB_ISO9797_M2#<=2.1", "ALG_DES_ECB_PKCS5#<=2.1",
-        "ALG_RSA_ISO14888#<=2.1", "ALG_RSA_PKCS1#<=2.1", "ALG_RSA_ISO9796#<=2.1", 
+        "ALG_DES_CBC_NOPAD#&le;2.1", "ALG_DES_CBC_ISO9797_M1#&le;2.1", "ALG_DES_CBC_ISO9797_M2#&le;2.1", "ALG_DES_CBC_PKCS5#&le;2.1", 
+        "ALG_DES_ECB_NOPAD#&le;2.1", "ALG_DES_ECB_ISO9797_M1#&le;2.1", "ALG_DES_ECB_ISO9797_M2#&le;2.1", "ALG_DES_ECB_PKCS5#&le;2.1",
+        "ALG_RSA_ISO14888#&le;2.1", "ALG_RSA_PKCS1#&le;2.1", "ALG_RSA_ISO9796#&le;2.1", 
         //2.1.1
         "ALG_RSA_NOPAD#2.1.1", 
         //2.2.0
@@ -131,19 +132,19 @@ public class SingleModeTest {
 /*
     public static final String KEYBUILDER_STR[] = {
         "javacard.security.KeyBuilder", 
-        "@@@DES_KEY@@@", "TYPE_DES_TRANSIENT_RESET#<=2.1", "TYPE_DES_TRANSIENT_DESELECT#<=2.1", "TYPE_DES LENGTH_DES#<=2.1", "TYPE_DES LENGTH_DES3_2KEY#<=2.1", "TYPE_DES LENGTH_DES3_3KEY#<=2.1",
+        "@@@DES_KEY@@@", "TYPE_DES_TRANSIENT_RESET#&le;2.1", "TYPE_DES_TRANSIENT_DESELECT#&le;2.1", "TYPE_DES LENGTH_DES#&le;2.1", "TYPE_DES LENGTH_DES3_2KEY#&le;2.1", "TYPE_DES LENGTH_DES3_3KEY#&le;2.1",
         //2.2.0
         "@@@AES_KEY@@@", "TYPE_AES_TRANSIENT_RESET#2.2.0", "TYPE_AES_TRANSIENT_DESELECT#2.2.0", "TYPE_AES LENGTH_AES_128#2.2.0", "TYPE_AES LENGTH_AES_192#2.2.0", "TYPE_AES LENGTH_AES_256#2.2.0",
-        "@@@RSA_PUBLIC_KEY@@@", "TYPE_RSA_PUBLIC LENGTH_RSA_512#<=2.1", "TYPE_RSA_PUBLIC LENGTH_RSA_736#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_768#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_896#2.2.0",
-            "TYPE_RSA_PUBLIC LENGTH_RSA_1024#<=2.1", "TYPE_RSA_PUBLIC LENGTH_RSA_1280#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_1536#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_1984#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_2048#<=2.1", "TYPE_RSA_PUBLIC LENGTH_RSA_3072#never#0", "TYPE_RSA_PUBLIC LENGTH_RSA_4096#3.0.1",
-        "@@@RSA_PRIVATE_KEY@@@", "TYPE_RSA_PRIVATE LENGTH_RSA_512#<=2.1", "TYPE_RSA_PRIVATE LENGTH_RSA_736#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_768#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_896#2.2.0",
-            "TYPE_RSA_PRIVATE LENGTH_RSA_1024#<=2.1", "TYPE_RSA_PRIVATE LENGTH_RSA_1280#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_1536#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_1984#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_2048#<=2.1", "TYPE_RSA_PRIVATE LENGTH_RSA_3072#never#0", "TYPE_RSA_PRIVATE LENGTH_RSA_4096#3.0.1", 
+        "@@@RSA_PUBLIC_KEY@@@", "TYPE_RSA_PUBLIC LENGTH_RSA_512#&le;2.1", "TYPE_RSA_PUBLIC LENGTH_RSA_736#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_768#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_896#2.2.0",
+            "TYPE_RSA_PUBLIC LENGTH_RSA_1024#&le;2.1", "TYPE_RSA_PUBLIC LENGTH_RSA_1280#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_1536#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_1984#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_2048#&le;2.1", "TYPE_RSA_PUBLIC LENGTH_RSA_3072#never#0", "TYPE_RSA_PUBLIC LENGTH_RSA_4096#3.0.1",
+        "@@@RSA_PRIVATE_KEY@@@", "TYPE_RSA_PRIVATE LENGTH_RSA_512#&le;2.1", "TYPE_RSA_PRIVATE LENGTH_RSA_736#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_768#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_896#2.2.0",
+            "TYPE_RSA_PRIVATE LENGTH_RSA_1024#&le;2.1", "TYPE_RSA_PRIVATE LENGTH_RSA_1280#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_1536#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_1984#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_2048#&le;2.1", "TYPE_RSA_PRIVATE LENGTH_RSA_3072#never#0", "TYPE_RSA_PRIVATE LENGTH_RSA_4096#3.0.1", 
             "TYPE_RSA_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_RSA_PRIVATE_TRANSIENT_DESELECT#3.0.1",
-        "@@@RSA_CRT_PRIVATE_KEY@@@", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_512#<=2.1", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_736#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_768#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_896#2.2.0",
-            "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1024#<=2.1", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1280#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1536#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1984#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_2048#<=2.1", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_3072#never#0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_4096#3.0.1",
+        "@@@RSA_CRT_PRIVATE_KEY@@@", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_512#&le;2.1", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_736#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_768#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_896#2.2.0",
+            "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1024#&le;2.1", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1280#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1536#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1984#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_2048#&le;2.1", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_3072#never#0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_4096#3.0.1",
             "TYPE_RSA_CRT_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_RSA_CRT_PRIVATE_TRANSIENT_DESELECT#3.0.1",
-        "@@@DSA_PRIVATE_KEY@@@", "TYPE_DSA_PRIVATE LENGTH_DSA_512#<=2.1", "TYPE_DSA_PRIVATE LENGTH_DSA_768#<=2.1", "TYPE_DSA_PRIVATE LENGTH_DSA_1024#<=2.1", "TYPE_DSA_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_DSA_PRIVATE_TRANSIENT_DESELECT#3.0.1", 
-        "@@@DSA_PUBLIC_KEY@@@", "TYPE_DSA_PUBLIC LENGTH_DSA_512#<=2.1", "TYPE_DSA_PUBLIC LENGTH_DSA_768#<=2.1", "TYPE_DSA_PUBLIC LENGTH_DSA_1024#<=2.1", 
+        "@@@DSA_PRIVATE_KEY@@@", "TYPE_DSA_PRIVATE LENGTH_DSA_512#&le;2.1", "TYPE_DSA_PRIVATE LENGTH_DSA_768#&le;2.1", "TYPE_DSA_PRIVATE LENGTH_DSA_1024#&le;2.1", "TYPE_DSA_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_DSA_PRIVATE_TRANSIENT_DESELECT#3.0.1", 
+        "@@@DSA_PUBLIC_KEY@@@", "TYPE_DSA_PUBLIC LENGTH_DSA_512#&le;2.1", "TYPE_DSA_PUBLIC LENGTH_DSA_768#&le;2.1", "TYPE_DSA_PUBLIC LENGTH_DSA_1024#&le;2.1", 
         "@@@EC_F2M_PRIVATE_KEY@@@", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_113#2.2.0", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_131#2.2.0", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_163#2.2.0", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_193#2.2.0", "TYPE_EC_F2M_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_EC_F2M_PRIVATE_TRANSIENT_DESELECT#3.0.1",
         "@@@EC_FP_PRIVATE_KEY@@@", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_112#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_128#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_160#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_192#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_224#3.0.1", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_256#3.0.1", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_384#3.0.1", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_521#3.0.4", "TYPE_EC_FP_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_EC_FP_PRIVATE_TRANSIENT_DESELECT#3.0.1",
         "@@@KOREAN_SEED_KEY@@@", "TYPE_KOREAN_SEED_TRANSIENT_RESET#2.2.2", "TYPE_KOREAN_SEED_TRANSIENT_DESELECT#2.2.2", "TYPE_KOREAN_SEED LENGTH_KOREAN_SEED_128#2.2.2", 
@@ -155,19 +156,19 @@ public class SingleModeTest {
      */
     public static final String KEYBUILDER_STR[] = {
         "javacard.security.KeyBuilder", 
-        "TYPE_DES_TRANSIENT_RESET#<=2.1", "TYPE_DES_TRANSIENT_DESELECT#<=2.1", "TYPE_DES LENGTH_DES#<=2.1", "TYPE_DES LENGTH_DES3_2KEY#<=2.1", "TYPE_DES LENGTH_DES3_3KEY#<=2.1",
+        "TYPE_DES_TRANSIENT_RESET#&le;2.1", "TYPE_DES_TRANSIENT_DESELECT#&le;2.1", "TYPE_DES LENGTH_DES#&le;2.1", "TYPE_DES LENGTH_DES3_2KEY#&le;2.1", "TYPE_DES LENGTH_DES3_3KEY#&le;2.1",
         //2.2.0
         "TYPE_AES_TRANSIENT_RESET#2.2.0", "TYPE_AES_TRANSIENT_DESELECT#2.2.0", "TYPE_AES LENGTH_AES_128#2.2.0", "TYPE_AES LENGTH_AES_192#2.2.0", "TYPE_AES LENGTH_AES_256#2.2.0",
-        "TYPE_RSA_PUBLIC LENGTH_RSA_512#<=2.1", "TYPE_RSA_PUBLIC LENGTH_RSA_736#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_768#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_896#2.2.0",
-            "TYPE_RSA_PUBLIC LENGTH_RSA_1024#<=2.1", "TYPE_RSA_PUBLIC LENGTH_RSA_1280#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_1536#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_1984#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_2048#<=2.1", "TYPE_RSA_PUBLIC LENGTH_RSA_3072#never#0", "TYPE_RSA_PUBLIC LENGTH_RSA_4096#3.0.1",
-        "TYPE_RSA_PRIVATE LENGTH_RSA_512#<=2.1", "TYPE_RSA_PRIVATE LENGTH_RSA_736#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_768#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_896#2.2.0",
-            "TYPE_RSA_PRIVATE LENGTH_RSA_1024#<=2.1", "TYPE_RSA_PRIVATE LENGTH_RSA_1280#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_1536#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_1984#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_2048#<=2.1", "TYPE_RSA_PRIVATE LENGTH_RSA_3072#never#0", "TYPE_RSA_PRIVATE LENGTH_RSA_4096#3.0.1", 
+        "TYPE_RSA_PUBLIC LENGTH_RSA_512#&le;2.1", "TYPE_RSA_PUBLIC LENGTH_RSA_736#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_768#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_896#2.2.0",
+            "TYPE_RSA_PUBLIC LENGTH_RSA_1024#&le;2.1", "TYPE_RSA_PUBLIC LENGTH_RSA_1280#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_1536#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_1984#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_2048#&le;2.1", "TYPE_RSA_PUBLIC LENGTH_RSA_3072#never#0", "TYPE_RSA_PUBLIC LENGTH_RSA_4096#3.0.1",
+        "TYPE_RSA_PRIVATE LENGTH_RSA_512#&le;2.1", "TYPE_RSA_PRIVATE LENGTH_RSA_736#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_768#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_896#2.2.0",
+            "TYPE_RSA_PRIVATE LENGTH_RSA_1024#&le;2.1", "TYPE_RSA_PRIVATE LENGTH_RSA_1280#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_1536#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_1984#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_2048#&le;2.1", "TYPE_RSA_PRIVATE LENGTH_RSA_3072#never#0", "TYPE_RSA_PRIVATE LENGTH_RSA_4096#3.0.1", 
             "TYPE_RSA_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_RSA_PRIVATE_TRANSIENT_DESELECT#3.0.1",
-        "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_512#<=2.1", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_736#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_768#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_896#2.2.0",
-            "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1024#<=2.1", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1280#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1536#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1984#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_2048#<=2.1", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_3072#never#0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_4096#3.0.1",
+        "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_512#&le;2.1", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_736#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_768#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_896#2.2.0",
+            "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1024#&le;2.1", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1280#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1536#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1984#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_2048#&le;2.1", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_3072#never#0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_4096#3.0.1",
             "TYPE_RSA_CRT_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_RSA_CRT_PRIVATE_TRANSIENT_DESELECT#3.0.1",
-        "TYPE_DSA_PRIVATE LENGTH_DSA_512#<=2.1", "TYPE_DSA_PRIVATE LENGTH_DSA_768#<=2.1", "TYPE_DSA_PRIVATE LENGTH_DSA_1024#<=2.1", "TYPE_DSA_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_DSA_PRIVATE_TRANSIENT_DESELECT#3.0.1", 
-        "TYPE_DSA_PUBLIC LENGTH_DSA_512#<=2.1", "TYPE_DSA_PUBLIC LENGTH_DSA_768#<=2.1", "TYPE_DSA_PUBLIC LENGTH_DSA_1024#<=2.1", 
+        "TYPE_DSA_PRIVATE LENGTH_DSA_512#&le;2.1", "TYPE_DSA_PRIVATE LENGTH_DSA_768#&le;2.1", "TYPE_DSA_PRIVATE LENGTH_DSA_1024#&le;2.1", "TYPE_DSA_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_DSA_PRIVATE_TRANSIENT_DESELECT#3.0.1", 
+        "TYPE_DSA_PUBLIC LENGTH_DSA_512#&le;2.1", "TYPE_DSA_PUBLIC LENGTH_DSA_768#&le;2.1", "TYPE_DSA_PUBLIC LENGTH_DSA_1024#&le;2.1", 
         "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_113#2.2.0", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_131#2.2.0", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_163#2.2.0", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_193#2.2.0", "TYPE_EC_F2M_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_EC_F2M_PRIVATE_TRANSIENT_DESELECT#3.0.1",
         "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_112#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_128#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_160#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_192#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_224#3.0.1", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_256#3.0.1", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_384#3.0.1", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_521#3.0.4", "TYPE_EC_FP_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_EC_FP_PRIVATE_TRANSIENT_DESELECT#3.0.1",
         "TYPE_KOREAN_SEED_TRANSIENT_RESET#2.2.2", "TYPE_KOREAN_SEED_TRANSIENT_DESELECT#2.2.2", "TYPE_KOREAN_SEED LENGTH_KOREAN_SEED_128#2.2.2", 
@@ -199,7 +200,7 @@ public class SingleModeTest {
     };
     
     public static final String MESSAGEDIGEST_STR[] = {"javacard.security.MessageDigest", 
-        "ALG_SHA#<=2.1", "ALG_MD5#<=2.1", "ALG_RIPEMD160#<=2.1", 
+        "ALG_SHA#&le;2.1", "ALG_MD5#&le;2.1", "ALG_RIPEMD160#&le;2.1", 
         //2.2.2
         "ALG_SHA_256#2.2.2", "ALG_SHA_384#2.2.2", "ALG_SHA_512#2.2.2", 
         //3.0.1
@@ -207,11 +208,11 @@ public class SingleModeTest {
     }; 
 
     public static final String RANDOMDATA_STR[] = {"javacard.security.RandomData", 
-        "ALG_PSEUDO_RANDOM#<=2.1", "ALG_SECURE_RANDOM#<=2.1"}; 
+        "ALG_PSEUDO_RANDOM#&le;2.1", "ALG_SECURE_RANDOM#&le;2.1"}; 
 
     public static final String CHECKSUM_STR[] = {"javacard.security.Checksum", "ALG_ISO3309_CRC16#2.2.1", "ALG_ISO3309_CRC32#2.2.1"}; 
     
-    public static final String JCSYSTEM_STR[] = {"javacard.framework.JCSystem", "JCSystem.getVersion()[Major.Minor]#<=2.1", 
+    public static final String JCSYSTEM_STR[] = {"javacard.framework.JCSystem", "JCSystem.getVersion()[Major.Minor]#&le;2.1", 
         "JCSystem.isObjectDeletionSupported#2.2.0", "JCSystem.MEMORY_TYPE_PERSISTENT#2.2.1", "JCSystem.MEMORY_TYPE_TRANSIENT_RESET#2.2.1", 
         "JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT#2.2.1", "JCSystem.getMaxCommitCapacity()#2.1"}; 
 
@@ -382,6 +383,8 @@ public class SingleModeTest {
     };
     
     public final static int CLOCKS_PER_SEC = 1000;
+    
+    public final static byte[] RESET_APDU = {(byte) 0xb0, (byte) 0x69, (byte) 0x00, (byte) 0x00, (byte) 0x00};
        
     /**
      * Method containing 'menu'.
@@ -583,9 +586,19 @@ public class SingleModeTest {
      * @param elapsedCard
      * @throws IOException
      */
-    public static void CheckResult (FileOutputStream file, String name, byte response, long elapsedCard, int swStatus) throws IOException{
+    public static void CheckResult (FileOutputStream file, String name, byte[] responseBuffer, long elapsedCard, int swStatus) throws IOException{
         String message = "";
         String elTimeStr = "";
+        
+        byte response = UNKNOWN_ERROR;
+        if (responseBuffer != null) {
+            if (responseBuffer.length > 0) {
+                System.out.println("RESPONSE: " + responseBuffer[0]);
+            }
+            if (responseBuffer.length > 1) {
+                response = responseBuffer[1];
+            }
+        }        
         
         if (swStatus == 0x9000) {
             switch (response){
@@ -620,7 +633,9 @@ public class SingleModeTest {
                 case UNINITIALIZED_KEY:
                     message += name + ";" + "error(UNINITIALIZED_KEY);" + "\r\n";
                 break;
-
+                case UNKNOWN_ERROR: 
+                    message += name + ";" + "error(UNKNOWN_ERROR);" + "\r\n";
+                    break;
                 case 0x6f:
                     message += name + ";" + "maybe;" + "\r\n";
                 break;
@@ -658,6 +673,9 @@ public class SingleModeTest {
         file.write(message.getBytes());
         
         for (int i=1; i< SingleModeTest.CIPHER_STR.length; i++){    // i = 1 because Cipher[0] is class name
+            // Reset applet before call
+            cardManager.sendAPDU(RESET_APDU);
+
             // get starting time of communication cycle
             apdu[OFFSET_DATA] = (byte) i;
 
@@ -667,12 +685,9 @@ public class SingleModeTest {
             elapsedCard += System.currentTimeMillis();
             
             byte[] resp = response.getData();
-            if (resp.length > 0) {
-                System.out.println("RESPONSE: " + resp[0]);
-            }
-            
+
             // Calls method CheckResult - should add to output error messages.
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.CIPHER_STR[i]), resp[1], elapsedCard, response.getSW());
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.CIPHER_STR[i]), resp, elapsedCard, response.getSW());
         }        
     }
     
@@ -697,6 +712,8 @@ public class SingleModeTest {
         file.write(message.getBytes());
         
         for (int i=1; i<SingleModeTest.SIGNATURE_STR.length; i++){    // i = 1 because Signature[0] is class name
+            // Reset applet before call
+            cardManager.sendAPDU(RESET_APDU);
             // get starting time of communication cycle
             apdu[OFFSET_DATA] = (byte)i;
             elapsedCard = -System.currentTimeMillis();
@@ -705,9 +722,9 @@ public class SingleModeTest {
             elapsedCard += System.currentTimeMillis();
 
             byte[] resp = response.getData();
-            
+       
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.SIGNATURE_STR[i]), resp[1], elapsedCard, response.getSW());
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.SIGNATURE_STR[i]), resp, elapsedCard, response.getSW());
         }        
     }
     
@@ -732,6 +749,8 @@ public class SingleModeTest {
         file.write(message.getBytes());
         
         for (int i=1; i<SingleModeTest.MESSAGEDIGEST_STR.length; i++){    // i = 1 because MessageDigest[0] is class name
+            // Reset applet before call
+            cardManager.sendAPDU(RESET_APDU);
             // get starting time of communication cycle
             apdu[OFFSET_DATA] = (byte)i;
             elapsedCard = -System.currentTimeMillis();
@@ -741,7 +760,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
             
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.MESSAGEDIGEST_STR[i]), resp[1], elapsedCard, response.getSW());
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.MESSAGEDIGEST_STR[i]), resp, elapsedCard, response.getSW());
         }
     }
     
@@ -766,6 +785,8 @@ public class SingleModeTest {
         file.write(message.getBytes());
         
         for (int i=1; i<SingleModeTest.RANDOMDATA_STR.length; i++){    // i = 1 because RandomData[0] is class name
+            // Reset applet before call
+            cardManager.sendAPDU(RESET_APDU);
             // get starting time of communication cycle
             apdu[OFFSET_DATA] = (byte)i;
             elapsedCard = -System.currentTimeMillis();
@@ -774,7 +795,7 @@ public class SingleModeTest {
             elapsedCard += System.currentTimeMillis();
             byte[] resp = response.getData();
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.RANDOMDATA_STR[i]), resp[1], elapsedCard, response.getSW());
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.RANDOMDATA_STR[i]), resp, elapsedCard, response.getSW());
         }
     }
     
@@ -799,6 +820,8 @@ public class SingleModeTest {
         file.write(message.getBytes());
 
         for (int i = 1; i < KEYBUILDER_STR.length; i++){
+            // Reset applet before call
+            cardManager.sendAPDU(RESET_APDU);
             // byte to choose subclass
             apdu[OFFSET_DATA] = KEYBUILDER_CONST[i-1];    // (byte)3 => TYPE DES
             // bytes to carry the length of tested key
@@ -811,8 +834,9 @@ public class SingleModeTest {
             // save time of card response
             elapsedCard += System.currentTimeMillis();
             byte[] resp = response.getData();
+
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, cardManager.GetAlgorithmName(KEYBUILDER_STR[i]), resp[1], elapsedCard, response.getSW());
+            CheckResult(file, cardManager.GetAlgorithmName(KEYBUILDER_STR[i]), resp, elapsedCard, response.getSW());
         }
     }
     
@@ -837,6 +861,8 @@ public class SingleModeTest {
         file.write(message.getBytes());
         
         for (int i=1; i<SingleModeTest.KEYAGREEMENT_STR.length; i++){    // i = 1 because KeyAgreement[0] is class name
+            // Reset applet before call
+            cardManager.sendAPDU(RESET_APDU);
             apdu[OFFSET_DATA] = (byte)i;
             // get starting time of communication cycle
             elapsedCard = -System.currentTimeMillis();
@@ -846,7 +872,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
             
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYAGREEMENT_STR[i]), resp[1], elapsedCard, response.getSW());
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYAGREEMENT_STR[i]), resp, elapsedCard, response.getSW());
         }
     }
     
@@ -871,6 +897,8 @@ public class SingleModeTest {
         file.write(message.getBytes());
         
         for (int i=1; i<SingleModeTest.CHECKSUM_STR.length; i++){    // i = 1 because Checksum[0] is class name
+            // Reset applet before call
+            cardManager.sendAPDU(RESET_APDU);
             apdu[OFFSET_DATA] = (byte) i;
             // get starting time of communication cycle
             elapsedCard = -System.currentTimeMillis();
@@ -879,7 +907,7 @@ public class SingleModeTest {
             elapsedCard += System.currentTimeMillis();
             byte[] resp = response.getData();
             /* Calls method CheckResult - should add to output error messages. */
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.CHECKSUM_STR[i]), resp[1], elapsedCard, response.getSW());
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.CHECKSUM_STR[i]), resp, elapsedCard, response.getSW());
         }
     }
     
@@ -906,6 +934,8 @@ public class SingleModeTest {
         
         int counter = 24;
         for (int i=1; i<SingleModeTest.KEYPAIR_RSA_STR.length; i++){    // i = 1 because KeyPair_RSA_STR[0] is class name
+            // Reset applet before call
+            cardManager.sendAPDU(RESET_APDU);
             apdu[OFFSET_DATA + 1] = KEY_LENGTHS_HEX[counter];
             apdu[OFFSET_DATA + 2] = KEY_LENGTHS_HEX[counter + 1];
             counter = counter + 2;
@@ -918,7 +948,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
             
             // Calls method CheckResult - should add to output error messages. */
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_RSA_STR[i]), resp[1], elapsedCard, response.getSW());
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_RSA_STR[i]), resp, elapsedCard, response.getSW());
         }
     }
     
@@ -945,7 +975,8 @@ public class SingleModeTest {
         
         int counter = 24;
         for (int i=1; i<SingleModeTest.KEYPAIR_RSACRT_STR.length; i++){    // i = 1 because KeyPair_RSACRT_STR[0] is class name
-            
+            // Reset applet before call
+            cardManager.sendAPDU(RESET_APDU);            
             apdu[OFFSET_DATA + 1] = KEY_LENGTHS_HEX[counter];
             apdu[OFFSET_DATA + 2] = KEY_LENGTHS_HEX[counter + 1];
             counter = counter + 2;
@@ -958,7 +989,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
             
             // Calls method CheckResult - should add to output error messages.
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_RSACRT_STR[i]), resp[1], elapsedCard, response.getSW());
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_RSACRT_STR[i]), resp, elapsedCard, response.getSW());
         }
     }
     
@@ -985,6 +1016,8 @@ public class SingleModeTest {
         
         int counter = 24;
         for (int i=1; i<SingleModeTest.KEYPAIR_DSA_STR.length; i++){    // i = 1 because KeyPair_DSA_STR[0] is class name
+            // Reset applet before call
+            cardManager.sendAPDU(RESET_APDU);
             apdu[OFFSET_DATA + 1] = KEY_LENGTHS_HEX[counter];
             apdu[OFFSET_DATA + 2] = KEY_LENGTHS_HEX[counter + 1];
             counter = counter + 4;
@@ -997,7 +1030,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
             
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_DSA_STR[i]), resp[1], elapsedCard, response.getSW());
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_DSA_STR[i]), resp, elapsedCard, response.getSW());
         }
     }
     
@@ -1024,6 +1057,8 @@ public class SingleModeTest {
         
         int counter = 16;
         for (int i=1; i<SingleModeTest.KEYPAIR_EC_F2M_STR.length; i++){    // i = 1 because KeyPair_EC_F2M_STR[0] is class name
+            // Reset applet before call
+            cardManager.sendAPDU(RESET_APDU);
             apdu[OFFSET_DATA + 1] = KEY_LENGTHS_HEX[counter];
             apdu[OFFSET_DATA + 2] = KEY_LENGTHS_HEX[counter + 1];
             counter = counter + 4;
@@ -1036,7 +1071,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
             
             // Calls method CheckResult - should add to output error messages.
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_EC_F2M_STR[i]), resp[1], elapsedCard, response.getSW());
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_EC_F2M_STR[i]), resp, elapsedCard, response.getSW());
         }
     }
     
@@ -1063,6 +1098,8 @@ public class SingleModeTest {
         
         int counter = 0;
         for (int i=1; i<SingleModeTest.KEYPAIR_EC_FP_STR.length; i++){    // i = 1 because KeyPair_EC_FP_STR[0] is class name
+            // Reset applet before call
+            cardManager.sendAPDU(RESET_APDU);
             apdu[OFFSET_DATA + 1] = KEY_LENGTHS_HEX[counter];
             apdu[OFFSET_DATA + 2] = KEY_LENGTHS_HEX[counter + 1];
             counter = counter + 2;
@@ -1075,7 +1112,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
             
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_EC_FP_STR[i]), resp[1], elapsedCard, response.getSW());
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_EC_FP_STR[i]), resp, elapsedCard, response.getSW());
         }
     }
     

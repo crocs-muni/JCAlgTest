@@ -213,6 +213,7 @@ import javacardx.crypto.*;
             case JCConsts.Util_arrayCompare_RAM: {
                 m_trng.generateData(m_ram1, (short) 0, chunkDataLen); 
                 Util.arrayCopyNonAtomic(m_ram1, (short) 0, m_ram1, chunkDataLen, chunkDataLen);    // prepare same second part to measure full operation
+                break;
             }
             case JCConsts.Util_arrayCompare_EEPROM: {
                 m_trng.generateData(m_eeprom1, (short) 0, chunkDataLen); 
@@ -968,11 +969,11 @@ import javacardx.crypto.*;
         short chunkDataLen = (short) (m_testSettings.dataLength1 / m_testSettings.numRepeatSubOperation);
         switch (m_testSettings.algorithmMethod) {
             case JCConsts.Signature_update:   for (short i = 0; i < repeats; i++) { m_signatureSign.update(m_ram1, (short) 0, chunkDataLen); } break;
-            case JCConsts.Signature_sign:     for (short i = 0; i < repeats; i++) { m_signatureSign.sign(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) chunkDataLen); } break;
+            case JCConsts.Signature_sign:     for (short i = 0; i < repeats; i++) { m_signatureSign.sign(m_ram1, (short) 0, chunkDataLen, m_ram1, chunkDataLen); } break;
             case JCConsts.Signature_verify:   
                 // Compute valid signature once (used later for verification)
-                m_signatureSign.sign(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) chunkDataLen);                 
-                for (short i = 0; i < repeats; i++) { m_signatureVerify.verify(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) chunkDataLen, m_signatureSign.getLength()); } 
+                m_signatureSign.sign(m_ram1, (short) 0, chunkDataLen, m_ram1, chunkDataLen);                 
+                for (short i = 0; i < repeats; i++) { m_signatureVerify.verify(m_ram1, (short) 0, chunkDataLen, m_ram1, chunkDataLen, m_signatureSign.getLength()); } 
                 break;
             case JCConsts.Signature_init:     
                 for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 
@@ -1011,9 +1012,9 @@ import javacardx.crypto.*;
                     }
                     else {
                         m_des_key2.setKey(m_ram1, (byte) 1);
-                        m_signatureSign.init(m_des_key2, (byte) Signature.MODE_SIGN);
+                        m_signatureSign.init(m_des_key2, Signature.MODE_SIGN);
                     } 
-                    m_signatureSign.sign(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) chunkDataLen);  
+                    m_signatureSign.sign(m_ram1, (short) 0, chunkDataLen, m_ram1, chunkDataLen);  
                 } 
                 break;
             case JCConsts.KeyBuilder_TYPE_AES:  
@@ -1026,7 +1027,7 @@ import javacardx.crypto.*;
                         m_aes_key2.setKey(m_ram1, (byte) 1);
                         m_signatureSign.init(m_aes_key2, Signature.MODE_SIGN);
                     } 
-                    m_signatureSign.sign(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) chunkDataLen);   
+                    m_signatureSign.sign(m_ram1, (short) 0, chunkDataLen, m_ram1, chunkDataLen);   
                 } 
                 break;
             default: ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
