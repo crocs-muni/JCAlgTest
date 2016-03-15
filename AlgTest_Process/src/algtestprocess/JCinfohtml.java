@@ -692,7 +692,7 @@ public class JCinfohtml {
 
         if (!topNames.isEmpty()) {
             toFile = "<h3 id=\"TOP\">TOP FUNCTIONS</h3>\n";                              //name of table
-            toFile += "<p>In the table below you can find results of performance testing for frequently used functions.</p>";
+            toFile += "<p>In the table below you can find results of performance testing for frequently used functions.</p>\n";
             toFile += TABLE_HEAD;
             file.write(toFile.getBytes());
             toFile = "";

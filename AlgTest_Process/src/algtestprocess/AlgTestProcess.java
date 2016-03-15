@@ -130,7 +130,7 @@ public class AlgTestProcess {
                         if (args.length > 2){ 
                             generateJCInfoHTMLTable(args[0]);
                         }else{
-                            JCinfohtml.run(args[0],args[1]);
+                            JCinfohtml.run(args[0],"noname");
                         }
                     }
                     else {System.err.println("Incorrect arguments!");}
