@@ -60,6 +60,7 @@ public class AlgTestProcess {
     public static final String GENERATE_GRAPHS = "GRAPHS";              //GENERATE SINGLE GRAPHS PAGE FOR JCINFO
     public static final String GENERATE_GRAPHS_ONEPAGE = "GRAPHSPAGE";  //PAGE WITH VARIABLE PERFTEST GRAPHS
     public static final String GENERATE_COMPARE_GRAPH = "COMPAREGRAPH"; //ONE BIG GRAPH FOR COMPARE CARDS
+    public static final String GENERATE_COMPARE_TABLE = "COMPARETABLE"; //ONE BIG TABLE FOR COMPARE CARDS
       
     
     // if one card results are generated
@@ -114,8 +115,11 @@ public class AlgTestProcess {
                     else if (args[1].equals(GENERATE_COMPARE_GRAPH)){
                         System.out.println("Generating compare graph from input dir.");
                         JCinfohtml.runCompareGraph(args[0]);}
+                    else if (args[1].equals(GENERATE_COMPARE_TABLE)){
+                        System.out.println("Generating compare table from input dir.");
+                        JCinfohtml.runCompareTable(args[0]);}
                     else if (args[1].equals(GENERATE_GRAPHS_ONEPAGE)){
-                        System.out.println("Generating graphs page from input file.");
+                        System.out.println("Generating gprahs page from input file.");
                         if (args.length > 2)
                             generateGraphsPages(args[0]);
                         else
@@ -242,7 +246,7 @@ public class AlgTestProcess {
                     + "</head>\r\n"
                     + "<body>\r\n\r\n"; 
 
-            String cardList = "<b id=\"LIST\">Tested cards abbreviations:</b><br>\r\n";
+			String cardList = "<b id=\"LIST\">Tested cards abbreviations:</b><br>\r\n";
             for (int i = 0; i < filesArray.length; i++) {
                 String cardIdentification = filesArray[i];
                 cardIdentification = cardIdentification.replace('_', ' ');
@@ -254,6 +258,7 @@ public class AlgTestProcess {
                 String cardShortName = cardIdentification.substring(0, cardIdentification.indexOf("ATR"));
                 String cardRestName = cardIdentification.substring(cardIdentification.indexOf("ATR"));
                 cardList += "<b>c" + i + "</b>	" + "<a href=\"https://github.com/crocs-muni/JCAlgTest/tree/master/Profiles/results/" + filesArray[i] + "\">" + cardShortName + "</a>" + cardRestName + ",";
+
                 String cardName = "";
                 if (filesSupport[i].containsKey("Performance")) { 
                     cardName = (String) filesSupport[i].get("Card name");
@@ -267,7 +272,7 @@ public class AlgTestProcess {
             
             file.write(header.getBytes());
             file.write(cardList.getBytes());
-            file.flush();        
+            file.flush();               
             
             String note = "Note: Some cards in the table come without full identification and ATR (\'undisclosed\') as submitters prefered not to disclose it at the momment. I'm publishing it anyway as the information that some card supporting particular algorithm exists is still interesting. Full identification might be added in future.<br><br>\r\n\r\n"; 
             file.write(note.getBytes());
@@ -656,7 +661,8 @@ public class AlgTestProcess {
             
             for (int i = 0; i < filesArray.length; i++) {
                 filesSupport[i] = new HashMap();
-                JCinfohtml.run(basePath + filesArray[i], filesArray[i]);
+                if(filesArray[i].contains("csv"))
+                    JCinfohtml.run(basePath + filesArray[i], filesArray[i]);
             }   
         }
     }
@@ -671,7 +677,8 @@ public class AlgTestProcess {
             
             for (int i = 0; i < filesArray.length; i++) {
                 filesSupport[i] = new HashMap();
-                JCinfohtml.runGraphsOnePage(basePath + filesArray[i]);
+                if(filesArray[i].contains("csv"))
+                    JCinfohtml.runGraphsOnePage(basePath + filesArray[i]);
             }   
         }
     }
