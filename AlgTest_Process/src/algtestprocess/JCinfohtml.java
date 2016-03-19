@@ -308,7 +308,7 @@ public class JCinfohtml {
         try {
             reader = new BufferedReader(new FileReader(topFunctionsFile));
         } catch (IOException e) {
-            System.out.println("Top Functions file not found");
+            System.out.println("INFO: Top Functions file not found");
         }
 
         String[] lineArray;
@@ -925,11 +925,13 @@ public class JCinfohtml {
         return lp;
     }
 
-    public static void parseGraphsPage(List<String> lines, FileOutputStream file) throws FileNotFoundException, IOException {
+    public static void parseGraphsPage(List<String> lines, FileOutputStream file, Boolean toponly) throws FileNotFoundException, IOException {
         List<String> topFunctions = new ArrayList<>();
         List<String> usedFunctions = new ArrayList<>();
         //List<String> dFunctions = new ArrayList<>();
-        loadTopFunctions(topFunctions, null);
+        if(toponly)
+            loadTopFunctions(topFunctions, null);
+        
         StringBuilder toFile = new StringBuilder();
         StringBuilder chart = new StringBuilder();
         //end of test details (1st div), end of beginning (2nd div)
@@ -1033,7 +1035,7 @@ public class JCinfohtml {
 
         //test details generated at the beginning of html file
         detailsBasic(lines, file);                      //details written
-        toFile.append("<\\div>");
+        //toFile.append("</div>");
         file.write(toFile.toString().getBytes());       //charts written
     }
 
@@ -1066,11 +1068,13 @@ public class JCinfohtml {
         String cardNameFile = name;
         
         List<String> lines = initalize(input, cardName);                            //load lines to from file to List
-        if (!(cardName.toString().equals("")) && !(cardName.toString().equals(" ")))
+        String resultsDir = new File(input).getAbsolutePath();
+        resultsDir = resultsDir.substring(0, resultsDir.lastIndexOf("\\"));
+        if (!(cardName.toString().equals("")) && !(cardName.toString().equals(" "))){
             cardNameFile = cardName.toString().replaceAll(" ", "");
-  
-        cardNameFile = cardNameFile.replaceAll("_", "");
-        FileOutputStream file = new FileOutputStream(cardNameFile + ".html");
+            cardNameFile = cardNameFile.replaceAll("_", "");
+        } 
+        FileOutputStream file = new FileOutputStream(resultsDir + "\\" + cardNameFile + ".html");       
         begin(file, "Test results card: " + cardName.toString());                     //logo + headline
         quickLinks(lines, file);
         details(lines, file);                                                       //test details + CPLC info
@@ -1102,9 +1106,9 @@ public class JCinfohtml {
         System.out.println("Make sure that CSS file & JS files (\"Source\" folder) is present in output folder.");
     }
 
-    public static void runGraphsOnePage(String input) throws IOException {
+    public static void runGraphsOnePage(String input, Boolean toponly) throws IOException {
         StringBuilder cardName = new StringBuilder();
-        String cardNameFile = "graphspage";
+        String cardNameFile = "noname_graphspage";
         List<String> lines = initalize(input, cardName);
         String resultsDir = new File(input).getAbsolutePath();
         resultsDir = resultsDir.substring(0, resultsDir.lastIndexOf("\\"));
@@ -1114,7 +1118,7 @@ public class JCinfohtml {
         } 
         FileOutputStream file = new FileOutputStream(resultsDir + "\\" + cardNameFile + ".html");
         beginLite(file, "Graphs results card: " + cardName.toString());
-        parseGraphsPage(lines, file);
+        parseGraphsPage(lines, file, toponly);
         endOfHtml(file);
         System.out.println("Make sure that CSS file & JS files (\"Source\" folder) is present in output folder.");
     }
@@ -1124,7 +1128,7 @@ public class JCinfohtml {
         try {
             reader = new BufferedReader(new FileReader(descFunctionsFile));
         } catch (IOException e) {
-            System.out.println("Description of functions file not found");
+           // System.out.println("INFO: Description of functions file not found");
         }
 
         String[] lineArray;

@@ -119,19 +119,30 @@ public class AlgTestProcess {
                         System.out.println("Generating compare table from input dir.");
                         JCinfohtml.runCompareTable(args[0]);}
                     else if (args[1].equals(GENERATE_GRAPHS_ONEPAGE)){
-                        System.out.println("Generating gprahs page from input file.");
-                        if (args.length > 2)
-                            generateGraphsPages(args[0]);
+                        System.out.println("Generating graphs page from input file / folder.");
+                        File file = new File(args[0]);                        
+                        if (file.exists() && file.isDirectory())
+                            if((args.length>2) && (args[2].toLowerCase().equals("toponly")))
+                                generateGraphsPages(args[0], true);
+                            else
+                                generateGraphsPages(args[0], false);
+                        else if (file.exists() && file.isFile())
+                            if((args.length>2) && (args[2].toLowerCase().equals("toponly")))
+                                JCinfohtml.runGraphsOnePage(args[0], true); 
+                            else
+                                JCinfohtml.runGraphsOnePage(args[0], false);                        
                         else
-                            JCinfohtml.runGraphsOnePage(args[0]);                        
-                        }
+                            System.out.println("ERR: Wrong path to the source file / folder.");                        
+                    }
                     else if (args[1].equals(GENERATE_JCINFO)){
-                        System.out.println("Generating JC performance testing to HTML.");
-                        if (args.length > 2){ 
+                        System.out.println("Generating JC performance testing to HTML from input file / folder.");
+                        File file = new File(args[0]);
+                        if (file.exists() && file.isDirectory())
                             generateJCInfoHTMLTable(args[0]);
-                        }else{
+                        else if (file.exists() && file.isFile())
                             JCinfohtml.run(args[0],"noname");
-                        }
+                        else
+                            System.out.println("ERR: Wrong path to the source file / folder.");
                     }
                     else {System.err.println("Incorrect arguments!");}
                 }
@@ -667,7 +678,7 @@ public class AlgTestProcess {
         }
     }
     
-    private static void generateGraphsPages(String basePath) throws IOException {        
+    private static void generateGraphsPages(String basePath, Boolean toponly) throws IOException {        
         File dir = new File(basePath);
         String[] filesArray = dir.list();
         
@@ -678,7 +689,7 @@ public class AlgTestProcess {
             for (int i = 0; i < filesArray.length; i++) {
                 filesSupport[i] = new HashMap();
                 if(filesArray[i].contains("csv"))
-                    JCinfohtml.runGraphsOnePage(basePath + filesArray[i]);
+                    JCinfohtml.runGraphsOnePage(basePath + filesArray[i], toponly);
             }   
         }
     }
