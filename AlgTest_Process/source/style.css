@@ -89,6 +89,7 @@ div{
 	-moz-border-radius:3px;
 	-webkit-border-radius:3px;
 	border-radius:3px;
+	max-width:50%;
 
 	-moz-box-shadow: 0 1px 2px #d1d1d1;
 	-webkit-box-shadow: 0 1px 2px #d1d1d1;
@@ -143,6 +144,10 @@ div{
 	margin: 0px 50px 0px 40px;
 	font-size: 12px;
 	font-family: Monospace;
+	margin: 0;
+    line-height: 120%;
+    max-height: 90px;
+    overflow: auto;
 }
 
 .graph{

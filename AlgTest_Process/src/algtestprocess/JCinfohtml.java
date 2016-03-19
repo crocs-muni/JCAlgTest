@@ -1004,7 +1004,7 @@ public class JCinfohtml {
             toFile.append("\t<h4 style=\"margin-left:40px\">"+usedFunction+"</h4>\n");
             
             if(descMap.containsKey(usedFunction)){
-                toFile.append("\t<div class=\"description\">");
+                toFile.append("\t<div style=\"margin-left: 40px;\">");
                 toFile.append(descMap.get(usedFunction));
                 toFile.append("\n\t</div>\n");
             }
@@ -1023,7 +1023,7 @@ public class JCinfohtml {
 
         //quick links to generated charts at the beginning of html file
         String toFileBegin;
-        toFileBegin = "<div class=\"pageColumnQuickLinks\" style=\"max-width:50%;\">\n";        
+        toFileBegin = "<div class=\"main\">\n<div class=\"pageColumnQuickLinks\">\n";        
         toFileBegin += "<h3>Quick links | number of graphs: "+usedFunctions.size()+" | est. load time: "+ sec +" s</h3>\n<ul style=\"list-style-type: circle;\">\n";
         for (String usedFunction : usedFunctions) {
             toFileBegin += "\t<li>" + "<a href=\"#" + usedFunction.replaceAll(" ", "_") + "\">" + usedFunction + "</a>" + "</li>\n";
@@ -1033,6 +1033,7 @@ public class JCinfohtml {
 
         //test details generated at the beginning of html file
         detailsBasic(lines, file);                      //details written
+        toFile.append("<\\div>");
         file.write(toFile.toString().getBytes());       //charts written
     }
 
