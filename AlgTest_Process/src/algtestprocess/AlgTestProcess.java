@@ -60,6 +60,7 @@ public class AlgTestProcess {
     public static final String GENERATE_GRAPHS = "GRAPHS";              //GENERATE SINGLE GRAPHS PAGE FOR JCINFO
     public static final String GENERATE_GRAPHS_ONEPAGE = "GRAPHSPAGE";  //PAGE WITH VARIABLE PERFTEST GRAPHS
     public static final String GENERATE_COMPARE_GRAPH = "COMPAREGRAPH"; //ONE BIG GRAPH FOR COMPARE CARDS
+    public static final String GENERATE_COMPARE_TABLE = "COMPARETABLE"; //ONE BIG TABLE FOR COMPARE CARDS
       
     
     // if one card results are generated
@@ -114,20 +115,34 @@ public class AlgTestProcess {
                     else if (args[1].equals(GENERATE_COMPARE_GRAPH)){
                         System.out.println("Generating compare graph from input dir.");
                         JCinfohtml.runCompareGraph(args[0]);}
+                    else if (args[1].equals(GENERATE_COMPARE_TABLE)){
+                        System.out.println("Generating compare table from input dir.");
+                        JCinfohtml.runCompareTable(args[0]);}
                     else if (args[1].equals(GENERATE_GRAPHS_ONEPAGE)){
-                        System.out.println("Generating graphs page from input file.");
-                        if (args.length > 2)
-                            generateGraphsPages(args[0]);
+                        System.out.println("Generating graphs page from input file / folder.");
+                        File file = new File(args[0]);                        
+                        if (file.exists() && file.isDirectory())
+                            if((args.length>2) && (args[2].toLowerCase().equals("toponly")))
+                                generateGraphsPages(args[0], true);
+                            else
+                                generateGraphsPages(args[0], false);
+                        else if (file.exists() && file.isFile())
+                            if((args.length>2) && (args[2].toLowerCase().equals("toponly")))
+                                JCinfohtml.runGraphsOnePage(args[0], true); 
+                            else
+                                JCinfohtml.runGraphsOnePage(args[0], false);                        
                         else
-                            JCinfohtml.runGraphsOnePage(args[0]);                        
-                        }
+                            System.out.println("ERR: Wrong path to the source file / folder.");                        
+                    }
                     else if (args[1].equals(GENERATE_JCINFO)){
-                        System.out.println("Generating JC performance testing to HTML.");
-                        if (args.length > 2){ 
+                        System.out.println("Generating JC performance testing to HTML from input file / folder.");
+                        File file = new File(args[0]);
+                        if (file.exists() && file.isDirectory())
                             generateJCInfoHTMLTable(args[0]);
-                        }else{
-                            JCinfohtml.run(args[0],args[1]);
-                        }
+                        else if (file.exists() && file.isFile())
+                            JCinfohtml.run(args[0],"noname");
+                        else
+                            System.out.println("ERR: Wrong path to the source file / folder.");
                     }
                     else {System.err.println("Incorrect arguments!");}
                 }
@@ -242,7 +257,7 @@ public class AlgTestProcess {
                     + "</head>\r\n"
                     + "<body>\r\n\r\n"; 
 
-            String cardList = "<b id=\"LIST\">Tested cards abbreviations:</b><br>\r\n";
+			String cardList = "<b id=\"LIST\">Tested cards abbreviations:</b><br>\r\n";
             for (int i = 0; i < filesArray.length; i++) {
                 String cardIdentification = filesArray[i];
                 cardIdentification = cardIdentification.replace('_', ' ');
@@ -254,6 +269,7 @@ public class AlgTestProcess {
                 String cardShortName = cardIdentification.substring(0, cardIdentification.indexOf("ATR"));
                 String cardRestName = cardIdentification.substring(cardIdentification.indexOf("ATR"));
                 cardList += "<b>c" + i + "</b>	" + "<a href=\"https://github.com/crocs-muni/JCAlgTest/tree/master/Profiles/results/" + filesArray[i] + "\">" + cardShortName + "</a>" + cardRestName + ",";
+
                 String cardName = "";
                 if (filesSupport[i].containsKey("Performance")) { 
                     cardName = (String) filesSupport[i].get("Card name");
@@ -267,7 +283,7 @@ public class AlgTestProcess {
             
             file.write(header.getBytes());
             file.write(cardList.getBytes());
-            file.flush();        
+            file.flush();               
             
             String note = "Note: Some cards in the table come without full identification and ATR (\'undisclosed\') as submitters prefered not to disclose it at the momment. I'm publishing it anyway as the information that some card supporting particular algorithm exists is still interesting. Full identification might be added in future.<br><br>\r\n\r\n"; 
             file.write(note.getBytes());
@@ -656,12 +672,13 @@ public class AlgTestProcess {
             
             for (int i = 0; i < filesArray.length; i++) {
                 filesSupport[i] = new HashMap();
-                JCinfohtml.run(basePath + filesArray[i], filesArray[i]);
+                if(filesArray[i].contains("csv"))
+                    JCinfohtml.run(basePath + filesArray[i], filesArray[i]);
             }   
         }
     }
     
-    private static void generateGraphsPages(String basePath) throws IOException {        
+    private static void generateGraphsPages(String basePath, Boolean toponly) throws IOException {        
         File dir = new File(basePath);
         String[] filesArray = dir.list();
         
@@ -671,7 +688,8 @@ public class AlgTestProcess {
             
             for (int i = 0; i < filesArray.length; i++) {
                 filesSupport[i] = new HashMap();
-                JCinfohtml.runGraphsOnePage(basePath + filesArray[i]);
+                if(filesArray[i].contains("csv"))
+                    JCinfohtml.runGraphsOnePage(basePath + filesArray[i], toponly);
             }   
         }
     }

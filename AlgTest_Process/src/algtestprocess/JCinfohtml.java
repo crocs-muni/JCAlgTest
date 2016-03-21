@@ -174,23 +174,25 @@ public class JCinfohtml {
         toFile += "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n";
         toFile += "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n";
         toFile += "<head>\n" + "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\n";
-        toFile += "<title>JCAlgTest Performance test</title>\n";
+        toFile += "<title>JCAlgTest Performance test</title>\n";        
+        toFile += "<link rel=\"stylesheet\" href=\"http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css\">\n";        
+        toFile += "<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js\"></script>\n";        
+        toFile += "<script src=\"http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js\"></script>\n";
         toFile += "<link rel=\"stylesheet\" type=\"text/css\" href=\"./source/style.css\">\n";
-        toFile += "<script src=\"http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js\"></script>\n";
         toFile += "<script>\n" + "\tjQuery(document).ready(function(){\n\tvar offset = 220;var duration = 500;\n"
                 + "\t\tjQuery(window).scroll(function(){\n\tif (jQuery(this).scrollTop()>offset){jQuery('.back-to-top').fadeIn(duration);\n"
                 + "\t}else{jQuery('.back-to-top').fadeOut(duration);}});\n"
                 + "\t\tjQuery('.back-to-top').click(function(event){event.preventDefault();\n"
                 + "\t\tjQuery('html, body').animate({scrollTop: 0}, duration);\n"
                 + "\treturn false;})});\n</script>\n"
-                + "\t<script type=\"text/javascript\" src=\"https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['corechart']}]}\"></script>";
+                + "\t<script type=\"text/javascript\" src=\"https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['corechart']}]}\"></script>\n";
         toFile += "</head>\n";
         toFile += "<body>\n</br>\n<div class=\"main\">\n";
         toFile += "<div style=\"margin:15px 20px 10px 20px;\">\n";
         toFile += "\t<a target=\"_blank\" href=\"https://github.com/crocs-muni/JCAlgTest\"><img  src=\"data:image/png;base64,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\" alt=\"logo\" border=\"0\" align=\"left\"></a>\n</div>\n";
         toFile += "<div style=\"margin:10px 20px 10px 150px;\">\n" + "\t<h1>" + headline + "</h1>\n";
         toFile += "\t<p style=\"margin-left:20px;\"><strong>This file was generated by AlgTest utility. See <u><a target=\"_blank\" href=\"http://www.fi.muni.cz/~xsvenda/jcsupport.html\">this website</a></u>  for more results, source codes and other details. </strong><u><a href=\"http://www.fi.muni.cz/~xsvenda/jcsupport.html#LIST\">List of all measured cards.</a></u></p>\n";
-        toFile += "</div>\n</br>\n";
+        toFile += "</div>\n</br>\n</div>\n";
         file.write(toFile.getBytes());
     }
 
@@ -200,6 +202,7 @@ public class JCinfohtml {
         toFile += "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n";
         toFile += "<head>\n" + "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\n";
         toFile += "<title>JCAlgTest Performance test</title>\n";
+
         toFile += "<link rel=\"stylesheet\" type=\"text/css\" href=\"./source/style.css\">\n";
         toFile += "<script src=\"http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js\"></script>\n";
         toFile += "<script type=\"text/javascript\" src=\"./source/jquery-1.10.1.min.js\"></script>\n"
@@ -255,7 +258,7 @@ public class JCinfohtml {
         toFile += "\t<a target=\"_blank\" href=\"https://github.com/crocs-muni/JCAlgTest\"><img  src=\"data:image/png;base64,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\" alt=\"logo\" border=\"0\" align=\"left\"></a>\n</div>\n";
         toFile += "<div style=\"margin:10px 20px 10px 150px;\">\n" + "\t<h1>" + headline + "</h1>\n";
         toFile += "\t<p style=\"margin-left:20px;\"><strong>This file was generated by AlgTest utility. See <u><a target=\"_blank\" href=\"http://www.fi.muni.cz/~xsvenda/jcsupport.html\">this website</a></u> for more results, source codes and other details. </strong><u><a href=\"http://www.fi.muni.cz/~xsvenda/jcsupport.html#LIST\">List of all measured cards.</a></u></p>\n";
-        toFile += "</div>\n </br>\n";
+        toFile += "</div>\n </br>\n</div>\n";
 
         file.write(toFile.getBytes());
     }
@@ -305,7 +308,7 @@ public class JCinfohtml {
         try {
             reader = new BufferedReader(new FileReader(topFunctionsFile));
         } catch (IOException e) {
-            System.out.println("Top Functions file not found");
+            System.out.println("INFO: Top Functions file not found");
         }
 
         String[] lineArray;
@@ -428,7 +431,7 @@ public class JCinfohtml {
         loadTopFunctions(topNames_sym, topAcronyms_sym, topNames_asym, topAcronyms_asym);
         List<String> files = listFilesForFolder(new File(dir));
         lp = 0;
-        file.write("</div><h3>Note: Sortable tables - click on column name to sort ascendingly/descendingly</h3>".getBytes());
+        file.write("<h3>Note: Sortable tables - click on column name to sort ascendingly/descendingly</h3>".getBytes());
         //
         // Sortable table for symmetric algorithms
         //
@@ -462,7 +465,7 @@ public class JCinfohtml {
         
         //beginning of graph table
         StringBuilder toFile = new StringBuilder();        
-        toFile.append("\t<strong><table cellspacing=\"0\" style=\"background:#FEFEFE\"><tbody>\n" +
+        toFile.append("\t<strong><table class=\"compare\" cellspacing=\"0\" style=\"background:#FEFEFE\"><tbody>\n" +
                         "\t\t<tr>\n\t\t\t<th>"+"smaller number = more similar "+"</th>\n");
        
         //load data from input fixed-size files and store name of card
@@ -497,28 +500,45 @@ public class JCinfohtml {
             int sim = 5; // similarity is highlighted by green, VALUES 1-100!, lower = more green
             
             for(int j=0; j<namesOfCards.size(); j++){
+                List<String> notSupp = new ArrayList<>();
                 float sum = 0.0F;
                 int num = 0;
                 if(i==j) 
                     toFile.append("\t\t\t<th></th>\n");
                 else {
-                    for(int k=0; k<topAcronyms_sym.size(); k++){
-                            if((rowsData.get(k).get(i) == 0.0F) || (rowsData.get(k).get(j) == 0.0F))
-                            {} else {   
+                    for(int k=0; k<topNames_sym.size(); k++){
+                        if((rowsData.get(k).get(i) == 0.0F) && (rowsData.get(k).get(j) == 0.0F))
+                            {} else {
+                                if((rowsData.get(k).get(i) == 0.0F) || (rowsData.get(k).get(j) == 0.0F)){
+                                    notSupp.add(topNames_sym.get(k));  
+                            } else {   
                                 sum += (rowsData.get(k).get(i) - rowsData.get(k).get(j))*(rowsData.get(k).get(i) - rowsData.get(k).get(j));
                                 num++;
                             }
                         }
-                    //sum = sum/num;
-                    sum = sum*multip;
+                    }
+                     sum = sum/num;
+                     sum = (float)Math.sqrt(sum);
+                    //sum = sum*multip;
                    // toFile.append("\t\t\t<td>"+String.format("%.0f", sum).replace(",", ".")+"</td>\n");
-                    toFile.append("\t\t\t<td style=\"background:rgba(140,200,120,"+String.format("%.2f", (1-((sum/multip)/num)*sim)).replace(",", ".")+");\">"+String.format("%.0f", sum).replace(",", ".")+"</td>\n");
+                    toFile.append("\t\t\t<td data-toggle=\"tooltip\" class=\"table-tooltip\" data-html=\"true\" data-original-title=\"");
+                    toFile.append("Difference in num. of supported algs: <b>"+notSupp.size()+"/"+topNames_sym.size()+"</b></br>");
+                    for(String ns:notSupp)
+                        toFile.append(ns+"</br>");
+                    
+                    toFile.append("\" style=\"background:rgba(140,200,120,"+String.format("%.2f", (1-sum*sim)).replace(",", ".")+");\">"+String.format("%.3f", sum).replace(",", ".")+"</td>\n");
                     } 
             }
             toFile.append("\t\t</tr>\n");            
         }
         
         toFile.append("\t\t</tbody></table></strong>\n");
+        toFile.append("<script>\n$(document).ready(function () {\n" +
+            "  $(\"body\").tooltip({   \n" +
+            "    selector: \"[data-toggle='tooltip']\",\n" +
+            "    container: \"body\"\n" +
+            "  })\n" +
+            "});\n</script>\n");
         file.write(toFile.toString().getBytes());
     }
     
@@ -568,10 +588,10 @@ public class JCinfohtml {
             
             for(int j=0; j<rowsData.get(i).size(); j++){
                 if(rowsData.get(i).get(j) != 0.0F)
-                    rowsData.get(i).set(j, rowsData.get(i).get(j)/max);
+                    rowsData.get(i).set(j, 1.0F - rowsData.get(i).get(j)/max);
                 
                 if(rowsData.get(i).get(j) == 0.0F)
-                    rowsData.get(i).set(j, 1.25F);
+                    rowsData.get(i).set(j, -0.1F);
                 
                // rowsData.get(i).set(j, (-rowsData.get(i).get(j)+1)*100);
             }            
@@ -589,14 +609,15 @@ public class JCinfohtml {
         toFile.append("\t\t]);\n\n");
         toFile.append("\t\tvar options = {\n" +
                         "\t\ttitle: 'Card compare',\n" +
-                        "\t\tcurveType: 'function',\n" +
+                        "\t\tlineWidth: 1,\n" +
+                        //"\t\tcurveType: 'function',\n" +
                         "\t\thAxis: {title: 'Name of function' },\n" +
-                        "\t\tvAxis: {title: 'Speed | lower=faster | 1.25=N/A', viewWindow: {min: -0.2, max: 1.5} },\n" +
+                        "\t\tvAxis: {title: 'Speed | higher=faster | -0.1=Not Supported', viewWindow: {min: -0.15, max: 1.0} },\n" +
                         "\t\tlegend: { position: 'right' }};\n" +
                         "\t\tvar chart = new google.visualization.LineChart(document.getElementById('card_compare'));\n" +
                         "\t\tchart.draw(data, options);}\n" +
                         "\t</script>\n\n" +
-                        "\t<div id=\"card_compare\" style=\"width: 100%; height: 100%; min-width:1900px; min-height:700px; margin-left:-50px;\"></div>\n");
+                        "\t<div id=\"card_compare\" style=\"width: 100%; height: 100%; min-width:1300px; min-height:700px; margin-left:-50px;\"></div>\n");
                 
         file.write(toFile.toString().getBytes());
        }
@@ -671,7 +692,7 @@ public class JCinfohtml {
 
         if (!topNames.isEmpty()) {
             toFile = "<h3 id=\"TOP\">TOP FUNCTIONS</h3>\n";                              //name of table
-            toFile += "<p>In the table below you can find results of performance testing for frequently used functions.</p>";
+            toFile += "<p>In the table below you can find results of performance testing for frequently used functions.</p>\n";
             toFile += TABLE_HEAD;
             file.write(toFile.getBytes());
             toFile = "";
@@ -768,8 +789,7 @@ public class JCinfohtml {
             lp += 3;
             operation = lines.get(lp).trim().split(";");
 
-            Float avgTime = Float.valueOf(operation[2].replace(",", "."));
-            value = avgTime.toString();
+            value = (Float.valueOf(operation[2].replace(",", "."))).toString();
             title += "min: " + Float.valueOf(operation[4].replace(",", ".")) + "; max: ";
             title += Float.valueOf(operation[6].replace(",", "."));
             lp++;
@@ -905,11 +925,13 @@ public class JCinfohtml {
         return lp;
     }
 
-    public static void parseGraphsPage(List<String> lines, FileOutputStream file) throws FileNotFoundException, IOException {
+    public static void parseGraphsPage(List<String> lines, FileOutputStream file, Boolean toponly) throws FileNotFoundException, IOException {
         List<String> topFunctions = new ArrayList<>();
         List<String> usedFunctions = new ArrayList<>();
         //List<String> dFunctions = new ArrayList<>();
-        loadTopFunctions(topFunctions, null);
+        if(toponly)
+            loadTopFunctions(topFunctions, null);
+        
         StringBuilder toFile = new StringBuilder();
         StringBuilder chart = new StringBuilder();
         //end of test details (1st div), end of beginning (2nd div)
@@ -973,16 +995,9 @@ public class JCinfohtml {
                 lp++;
             }
         }
-
         
         HashMap<String, String> descMap = loadDescription();
-        /*
-        FileOutputStream f = new FileOutputStream("desc.txt");
-        for(String a:dFunctions)
-            f.write((a+";\n").getBytes());
-        f.close();
-        */
-        
+
         BigDecimal sec = new BigDecimal(2 + usedFunctions.size()*0.15);
         sec = sec.setScale(2, BigDecimal.ROUND_HALF_UP);
         toFile.append("<div>\n");
@@ -991,7 +1006,7 @@ public class JCinfohtml {
             toFile.append("\t<h4 style=\"margin-left:40px\">"+usedFunction+"</h4>\n");
             
             if(descMap.containsKey(usedFunction)){
-                toFile.append("\t<div class=\"description\">");
+                toFile.append("\t<div style=\"margin-left: 40px;\">");
                 toFile.append(descMap.get(usedFunction));
                 toFile.append("\n\t</div>\n");
             }
@@ -1010,7 +1025,7 @@ public class JCinfohtml {
 
         //quick links to generated charts at the beginning of html file
         String toFileBegin;
-        toFileBegin = "<div class=\"pageColumnQuickLinks\" style=\"max-width:50%;\">\n";        
+        toFileBegin = "<div class=\"main\">\n<div class=\"pageColumnQuickLinks\">\n";        
         toFileBegin += "<h3>Quick links | number of graphs: "+usedFunctions.size()+" | est. load time: "+ sec +" s</h3>\n<ul style=\"list-style-type: circle;\">\n";
         for (String usedFunction : usedFunctions) {
             toFileBegin += "\t<li>" + "<a href=\"#" + usedFunction.replaceAll(" ", "_") + "\">" + usedFunction + "</a>" + "</li>\n";
@@ -1020,6 +1035,7 @@ public class JCinfohtml {
 
         //test details generated at the beginning of html file
         detailsBasic(lines, file);                      //details written
+        //toFile.append("</div>");
         file.write(toFile.toString().getBytes());       //charts written
     }
 
@@ -1052,16 +1068,20 @@ public class JCinfohtml {
         String cardNameFile = name;
         
         List<String> lines = initalize(input, cardName);                            //load lines to from file to List
-        if (!(cardName.toString().equals("")) && !(cardName.toString().equals(" ")))
+        String resultsDir = new File(input).getAbsolutePath();
+        resultsDir = resultsDir.substring(0, resultsDir.lastIndexOf("\\"));
+        if (!(cardName.toString().equals("")) && !(cardName.toString().equals(" "))){
             cardNameFile = cardName.toString().replaceAll(" ", "");
-  
-        cardNameFile = cardNameFile.replaceAll("_", "");
-        FileOutputStream file = new FileOutputStream(cardNameFile + ".html");
+            cardNameFile = cardNameFile.replaceAll("_", "");
+        } 
+        FileOutputStream file = new FileOutputStream(resultsDir + "\\" + cardNameFile + ".html");       
         begin(file, "Test results card: " + cardName.toString());                     //logo + headline
         quickLinks(lines, file);
         details(lines, file);                                                       //test details + CPLC info
+        file.write("<div style=\"float: left;\">".getBytes());
         topFunction(lines, file, linePosition);
         tableGenerator(lines, file, linePosition);                                  //all tables generator
+        file.write("</div>".getBytes());
         endOfHtml(file);
         System.out.println("Make sure that CSS file & JS files (\"Source\" folder) is present in output folder.");
     }
@@ -1086,9 +1106,9 @@ public class JCinfohtml {
         System.out.println("Make sure that CSS file & JS files (\"Source\" folder) is present in output folder.");
     }
 
-    public static void runGraphsOnePage(String input) throws IOException {
+    public static void runGraphsOnePage(String input, Boolean toponly) throws IOException {
         StringBuilder cardName = new StringBuilder();
-        String cardNameFile = "graphspage";
+        String cardNameFile = "noname_graphspage";
         List<String> lines = initalize(input, cardName);
         String resultsDir = new File(input).getAbsolutePath();
         resultsDir = resultsDir.substring(0, resultsDir.lastIndexOf("\\"));
@@ -1098,7 +1118,7 @@ public class JCinfohtml {
         } 
         FileOutputStream file = new FileOutputStream(resultsDir + "\\" + cardNameFile + ".html");
         beginLite(file, "Graphs results card: " + cardName.toString());
-        parseGraphsPage(lines, file);
+        parseGraphsPage(lines, file, toponly);
         endOfHtml(file);
         System.out.println("Make sure that CSS file & JS files (\"Source\" folder) is present in output folder.");
     }
@@ -1108,7 +1128,7 @@ public class JCinfohtml {
         try {
             reader = new BufferedReader(new FileReader(descFunctionsFile));
         } catch (IOException e) {
-            System.out.println("Description of functions file not found");
+           // System.out.println("INFO: Description of functions file not found");
         }
 
         String[] lineArray;
@@ -1136,10 +1156,16 @@ public class JCinfohtml {
     }
     
     public static void runCompareGraph(String dir) throws FileNotFoundException, IOException {
-       // FileOutputStream file = new FileOutputStream(dir + "//" + "compareGraph.html");
-        FileOutputStream file = new FileOutputStream(dir + "//" + "compareTable.html");
+        FileOutputStream file = new FileOutputStream(dir + "//" + "compareGraph.html");        
         beginLite(file, "Card performance - comparative graph");
-        //compareGraph(dir, file);
+        compareGraph(dir, file);
+        endOfHtml(file);
+        System.out.println("Make sure that CSS file & JS files (\"Source\" folder) is present in output folder.");
+    }
+    
+    public static void runCompareTable(String dir) throws FileNotFoundException, IOException {
+        FileOutputStream file = new FileOutputStream(dir + "//" + "compareTable.html");
+        beginLite(file, "Card performance - comparative table");
         compareTable(dir, file);
         endOfHtml(file);
         System.out.println("Make sure that CSS file & JS files (\"Source\" folder) is present in output folder.");
