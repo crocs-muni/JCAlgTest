@@ -24,7 +24,7 @@ import java.util.List;
  */
 public class JCinfohtml {
 
-    public static final String TABLE_HEAD = "<table cellspacing='0'> <!-- cellspacing='0' is important, must stay -->\n\t<tr><th style=\"width: 330px;\">Name of function</th><th><b>Operation average (ms/op)</b></th><th>Operation minimum (ms/op)</th><th>Operation maximum (ms/op)</th><th>Data length (bytes)</th><th>Prepare average (ms/op)</th><th>Prepare minimum (ms/op)</th><th>Prepare maximum (ms/op)</th><th>Iterations & Invocations</th></tr><!-- Table Header -->\n";
+    public static final String TABLE_HEAD = "<table cellspacing='0'> <!-- cellspacing='0' is important, must stay -->\n\t<tr><th style=\"width: 330px;\">Name of function</th><th><b>Operation average (ms/op)</b></th><th>Operation minimum (ms/op)</th><th>Operation maximum (ms/op)</th><th>Data length (bytes)</th><th class=\"minor\">Prepare average (ms/op)</th><th class=\"minor\">Prepare minimum (ms/op)</th><th class=\"minor\">Prepare maximum (ms/op)</th><th class=\"minor\">Iterations & Invocations</th></tr><!-- Table Header -->\n";
     public static final List<String> category = Arrays.asList("MESSAGE DIGEST", "RANDOM GENERATOR", "CIPHER", "SIGNATURE", "CHECKSUM", "AESKey", "DESKey", "KoreanSEEDKey", "DSAPrivateKey", "DSAPublicKey", "ECF2MPublicKey", "ECF2MPrivateKey", "ECFPPublicKey", "HMACKey", "RSAPrivateKey", "RSAPublicKey", "RSAPrivateCRTKey", "KEY PAIR", "UTIL", "SWALGS");
     public static final String topFunctionsFile = "top.txt";
     public static final String descFunctionsFile = "desc.txt";
@@ -743,11 +743,11 @@ public class JCinfohtml {
             toFile += "<td>" + Float.valueOf(operation[4].replace(",", ".")) + "</td>";
             toFile += "<td>" + Float.valueOf(operation[6].replace(",", ".")) + "</td>";
             toFile += "<td>" + Integer.parseInt(other[2]) + "</td>";
-            toFile += "<td>" + Float.valueOf(prepare[2].replace(",", ".")) + "</td>";
-            toFile += "<td>" + Float.valueOf(prepare[4].replace(",", ".")) + "</td>";
-            toFile += "<td>" + Float.valueOf(prepare[6].replace(",", ".")) + "</td>";
+            toFile += "<td class=\"minor\">" + Float.valueOf(prepare[2].replace(",", ".")) + "</td>";
+            toFile += "<td class=\"minor\">" + Float.valueOf(prepare[4].replace(",", ".")) + "</td>";
+            toFile += "<td class=\"minor\">" + Float.valueOf(prepare[6].replace(",", ".")) + "</td>";
                        
-            toFile += "<td>" + Integer.parseInt(other[4]) + "/" + Integer.parseInt(other[6]) + "</td>";
+            toFile += "<td class=\"minor\">" + Integer.parseInt(other[4]) + "/" + Integer.parseInt(other[6]) + "</td>";
         } else {
             if (lines.get(lp).contains("baseline") && !(lines.get(lp).contains("error"))) {
                 lp++;
