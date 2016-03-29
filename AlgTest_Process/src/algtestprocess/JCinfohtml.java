@@ -24,7 +24,7 @@ import java.util.List;
  */
 public class JCinfohtml {
 
-    public static final String TABLE_HEAD = "<table cellspacing='0'> <!-- cellspacing='0' is important, must stay -->\n\t<tr><th style=\"width: 330px;\">Name of function</th><th><b>Operation average (ms/op)</b></th><th>Operation minimum (ms/op)</th><th>Operation maximum (ms/op)</th><th>Data length (bytes)</th><th class=\"minor\">Prepare average (ms/op)</th><th class=\"minor\">Prepare minimum (ms/op)</th><th class=\"minor\">Prepare maximum (ms/op)</th><th class=\"minor\">Iterations & Invocations</th></tr><!-- Table Header -->\n";
+    public static final String TABLE_HEAD = "<table cellspacing='0'> <!-- cellspacing='0' is important, must stay -->\n\t<tr><th style=\"width: 330px;\">Name of function</th><th><b>Operation average (ms/op)</b></th><th>Operation minimum (ms/op)</th><th>Operation maximum (ms/op)</th><th>Data length (bytes)</th><th></th><th class=\"minor\">Prepare average (ms/op)</th><th class=\"minor\">Prepare minimum (ms/op)</th><th class=\"minor\">Prepare maximum (ms/op)</th><th class=\"minor\">Iterations & Invocations</th></tr><!-- Table Header -->\n";
     public static final List<String> category = Arrays.asList("MESSAGE DIGEST", "RANDOM GENERATOR", "CIPHER", "SIGNATURE", "CHECKSUM", "AESKey", "DESKey", "KoreanSEEDKey", "DSAPrivateKey", "DSAPublicKey", "ECF2MPublicKey", "ECF2MPrivateKey", "ECFPPublicKey", "HMACKey", "RSAPrivateKey", "RSAPublicKey", "RSAPrivateCRTKey", "KEY PAIR", "UTIL", "SWALGS");
     public static final String topFunctionsFile = "top.txt";
     public static final String descFunctionsFile = "desc.txt";
@@ -91,7 +91,7 @@ public class JCinfohtml {
         toFile = "";
         toFile += "<div class=\"pageColumnDetails\">\n";
         toFile += "<h3>Test details</h3>\n";
-        toFile += "<p>Execution date/time: <strong>" + infoMap.get("Execution date/time") + "</strong></p>\n";
+        toFile += "<p>Execution date/time: <strong>" + infoMap.get("Execution date/time") + ", <a href=\"https://github.com/crocs-muni/JCAlgTest/tree/master/Profiles/performance\" target=\"_blank\">CSV source data</a></strong></p>\n";
         toFile += "<p>AlgTestJClient version: <strong>" + infoMap.get("AlgTestJClient version") + "</strong></p>\n";
         toFile += "<p>AlgTest applet version: <strong>" + infoMap.get("AlgTest applet version") + "</strong></p>\n";
         toFile += "<p>Used reader: <strong>" + infoMap.get("Used reader") + "</strong></p>\n";
@@ -743,7 +743,7 @@ public class JCinfohtml {
             toFile += "<td>" + Float.valueOf(operation[4].replace(",", ".")) + "</td>";
             toFile += "<td>" + Float.valueOf(operation[6].replace(",", ".")) + "</td>";
             toFile += "<td>" + Integer.parseInt(other[2]) + "</td>";
-            toFile += "<td class=\"minor\">" + Float.valueOf(prepare[2].replace(",", ".")) + "</td>";
+            toFile += "<td class=\"minor\"></td><td class=\"minor\">" + Float.valueOf(prepare[2].replace(",", ".")) + "</td>";
             toFile += "<td class=\"minor\">" + Float.valueOf(prepare[4].replace(",", ".")) + "</td>";
             toFile += "<td class=\"minor\">" + Float.valueOf(prepare[6].replace(",", ".")) + "</td>";
                        
@@ -753,10 +753,10 @@ public class JCinfohtml {
                 lp++;
                 prepare = lines.get(lp).trim().split(";");
                 lp++;
-                toFile += "<td colspan=\"3\">" + lines.get(lp) + "</td><td> </td>";
-                toFile += "<td>" + Float.valueOf(prepare[2].replace(",", ".")) + "</td>";
-                toFile += "<td>" + Float.valueOf(prepare[4].replace(",", ".")) + "</td>";
-                toFile += "<td>" + Float.valueOf(prepare[6].replace(",", ".")) + "</td>";
+                toFile += "<td colspan=\"3\">" + lines.get(lp) + "</td><td> </td><td class=\"minor\"></td>";
+                toFile += "<td class=\"minor\">" + Float.valueOf(prepare[2].replace(",", ".")) + "</td>";
+                toFile += "<td class=\"minor\">" + Float.valueOf(prepare[4].replace(",", ".")) + "</td>";
+                toFile += "<td class=\"minor\">" + Float.valueOf(prepare[6].replace(",", ".")) + "</td>";
 
             } else if (lines.get(lp).contains("error")) {
                 prepare = lines.get(lp).trim().split(";");
