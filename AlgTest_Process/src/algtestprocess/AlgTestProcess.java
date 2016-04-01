@@ -343,8 +343,18 @@ public class AlgTestProcess {
         
         String shortCardName = "";
         String cardName = fileName;
-        if (cardName.indexOf("_3B ") != -1) shortCardName = cardName.substring(0, cardName.indexOf("_3B "));
-        if (cardName.indexOf("_3b ") != -1) shortCardName = cardName.substring(0, cardName.indexOf("_3b "));
+        if (cardName.indexOf("_3B ") != -1) {
+            shortCardName = cardName.substring(0, cardName.indexOf("_3B "));
+        }
+        if (cardName.indexOf("_3B_") != -1) {
+            shortCardName = cardName.substring(0, cardName.indexOf("_3B_"));
+        }
+        if (cardName.indexOf("_3b ") != -1) {
+            shortCardName = cardName.substring(0, cardName.indexOf("_3b "));
+        }
+        if (cardName.indexOf("_3b_") != -1) {
+            shortCardName = cardName.substring(0, cardName.indexOf("_3b_"));
+        }
         shortCardName = shortCardName.replace('_', ' ');
         cardName = cardName.replace('_', ' ');   
         if (cardName.indexOf("(provided") != -1) cardName = cardName.substring(0, cardName.indexOf("(provided"));
