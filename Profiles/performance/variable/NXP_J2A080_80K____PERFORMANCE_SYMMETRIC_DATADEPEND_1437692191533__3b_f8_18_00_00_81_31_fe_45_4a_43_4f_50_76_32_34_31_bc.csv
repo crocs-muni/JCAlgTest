@@ -470,51 +470,51 @@ operation info:;data length;512;total iterations;25;total invocations;25;
 
 method name:; TYPE_DES LENGTH_DES ALG_DES_CBC_NOPAD Cipher_setKeyInitDoFinal()
 measurement config:;appletPrepareINS;31;appletMeasureINS;a3;config;00 11 00 01 ff ff 00 03 00 40 00 07 00 10 ff ff 00 02 00 05 00 01
-baseline measurements (ms):;152,00;142,00;141,00;143,00;143,00;
-baseline stats (ms):;avg:;144,20;min:;141,00;max:;152,00;;;CHECK
-operation raw measurements (ms):;173,80;183,80;182,80;183,80;182,80;
-operation stats (ms/op):;avg op:;36,28;min op:;34,76;max op:;36,76;
+baseline measurements (ms):;155,00;142,00;142,00;143,00;145,00;
+baseline stats (ms):;avg:;145,40;min:;142,00;max:;155,00;;;CHECK
+operation raw measurements (ms):;174,60;185,60;185,60;186,60;185,60;
+operation stats (ms/op):;avg op:;36,72;min op:;34,92;max op:;37,32;
 operation info:;data length;16;total iterations;25;total invocations;25;
 
 method name:; TYPE_DES LENGTH_DES ALG_DES_CBC_NOPAD Cipher_setKeyInitDoFinal()
 measurement config:;appletPrepareINS;31;appletMeasureINS;a3;config;00 11 00 01 ff ff 00 03 00 40 00 07 00 20 ff ff 00 02 00 05 00 01
-baseline measurements (ms):;153,00;142,00;143,00;143,00;142,00;
-baseline stats (ms):;avg:;144,60;min:;142,00;max:;153,00;;;CHECK
-operation raw measurements (ms):;176,40;188,40;186,40;186,40;188,40;
-operation stats (ms/op):;avg op:;37,04;min op:;35,28;max op:;37,68;
+baseline measurements (ms):;153,00;143,00;143,00;142,00;143,00;
+baseline stats (ms):;avg:;144,80;min:;142,00;max:;153,00;;;CHECK
+operation raw measurements (ms):;179,20;189,20;186,20;189,20;191,20;
+operation stats (ms/op):;avg op:;37,40;min op:;35,84;max op:;38,24;
 operation info:;data length;32;total iterations;25;total invocations;25;
 
 method name:; TYPE_DES LENGTH_DES ALG_DES_CBC_NOPAD Cipher_setKeyInitDoFinal()
 measurement config:;appletPrepareINS;31;appletMeasureINS;a3;config;00 11 00 01 ff ff 00 03 00 40 00 07 00 40 ff ff 00 02 00 05 00 01
-baseline measurements (ms):;154,00;142,00;142,00;142,00;142,00;
-baseline stats (ms):;avg:;144,40;min:;142,00;max:;154,00;;;CHECK
-operation raw measurements (ms):;183,60;193,60;194,60;194,60;194,60;
-operation stats (ms/op):;avg op:;38,44;min op:;36,72;max op:;38,92;
+baseline measurements (ms):;152,00;143,00;143,00;144,00;143,00;
+baseline stats (ms):;avg:;145,00;min:;143,00;max:;152,00;
+operation raw measurements (ms):;185,00;196,00;196,00;199,00;197,00;
+operation stats (ms/op):;avg op:;38,92;min op:;37,00;max op:;39,80;
 operation info:;data length;64;total iterations;25;total invocations;25;
 
 method name:; TYPE_DES LENGTH_DES ALG_DES_CBC_NOPAD Cipher_setKeyInitDoFinal()
-measurement config:;appletPrepareINS;31;appletMeasureINS;a3;config;00 11 00 01 ff ff 00 03 00 40 00 07 00 80 ff ff 00 02 00 00 00 01
-baseline measurements (ms):;203,00;194,00;193,00;195,00;193,00;
-baseline stats (ms):;avg:;195,60;min:;193,00;max:;203,00;
-operation raw measurements (ms):;-0,60;-0,60;-1,60;-0,60;-2,60;
-operation stats (ms/op):;avg op:;0,00;min op:;0,00;max op:;0,00;
-operation info:;data length;128;total iterations;0;total invocations;0;
+measurement config:;appletPrepareINS;31;appletMeasureINS;a3;config;00 11 00 01 ff ff 00 03 00 40 00 07 00 80 ff ff 00 02 00 05 00 01
+baseline measurements (ms):;154,00;143,00;143,00;143,00;142,00;
+baseline stats (ms):;avg:;145,00;min:;142,00;max:;154,00;;;CHECK
+operation raw measurements (ms):;200,00;211,00;210,00;211,00;210,00;
+operation stats (ms/op):;avg op:;41,68;min op:;40,00;max op:;42,20;
+operation info:;data length;128;total iterations;25;total invocations;25;
 
 method name:; TYPE_DES LENGTH_DES ALG_DES_CBC_NOPAD Cipher_setKeyInitDoFinal()
-measurement config:;appletPrepareINS;31;appletMeasureINS;a3;config;00 11 00 01 ff ff 00 03 00 40 00 07 01 00 ff ff 00 02 00 00 00 01
-baseline measurements (ms):;204,00;193,00;191,00;195,00;194,00;
-baseline stats (ms):;avg:;195,40;min:;191,00;max:;204,00;
-operation raw measurements (ms):;-3,40;-1,40;-2,40;-1,40;-1,40;
-operation stats (ms/op):;avg op:;0,00;min op:;0,00;max op:;0,00;
-operation info:;data length;256;total iterations;0;total invocations;0;
+measurement config:;appletPrepareINS;31;appletMeasureINS;a3;config;00 11 00 01 ff ff 00 03 00 40 00 07 01 00 ff ff 00 02 00 05 00 01
+baseline measurements (ms):;153,00;143,00;145,00;143,00;142,00;
+baseline stats (ms):;avg:;145,20;min:;142,00;max:;153,00;;;CHECK
+operation raw measurements (ms):;227,80;238,80;238,80;237,80;238,80;
+operation stats (ms/op):;avg op:;47,28;min op:;45,56;max op:;47,76;
+operation info:;data length;256;total iterations;25;total invocations;25;
 
 method name:; TYPE_DES LENGTH_DES ALG_DES_CBC_NOPAD Cipher_setKeyInitDoFinal()
-measurement config:;appletPrepareINS;31;appletMeasureINS;a3;config;00 11 00 01 ff ff 00 03 00 40 00 07 02 00 ff ff 00 02 00 00 00 01
-baseline measurements (ms):;202,00;195,00;193,00;195,00;192,00;
-baseline stats (ms):;avg:;195,40;min:;192,00;max:;202,00;
-operation raw measurements (ms):;-0,40;-2,40;-0,40;-2,40;-3,40;
-operation stats (ms/op):;avg op:;0,00;min op:;0,00;max op:;0,00;
-operation info:;data length;512;total iterations;0;total invocations;0;
+measurement config:;appletPrepareINS;31;appletMeasureINS;a3;config;00 11 00 01 ff ff 00 03 00 40 00 07 02 00 ff ff 00 02 00 05 00 01
+baseline measurements (ms):;153,00;142,00;143,00;143,00;143,00;
+baseline stats (ms):;avg:;144,80;min:;142,00;max:;153,00;;;CHECK
+operation raw measurements (ms):;284,20;296,20;295,20;295,20;295,20;
+operation stats (ms/op):;avg op:;58,64;min op:;56,84;max op:;59,24;
+operation info:;data length;512;total iterations;25;total invocations;25;
 
 
 CIPHER - TYPE_DES LENGTH_DES ALG_DES_CBC_NOPAD - variable data - END
@@ -2738,50 +2738,50 @@ operation info:;data length;512;total iterations;25;total invocations;25;
 
 method name:; TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_128_CBC_NOPAD Cipher_setKeyInitDoFinal()
 measurement config:;appletPrepareINS;31;appletMeasureINS;a3;config;00 11 00 0d ff ff 00 0f 00 80 00 07 00 10 ff ff 00 02 00 05 00 01
-baseline measurements (ms):;203,00;193,00;201,00;192,00;191,00;
-baseline stats (ms):;avg:;196,00;min:;191,00;max:;203,00;
-operation raw measurements (ms):;181,00;195,00;194,00;216,00;229,00;
-operation stats (ms/op):;avg op:;40,60;min op:;36,20;max op:;45,80;;CHECK
+baseline measurements (ms):;154,00;143,00;142,00;144,00;143,00;
+baseline stats (ms):;avg:;145,20;min:;142,00;max:;154,00;;;CHECK
+operation raw measurements (ms):;174,80;184,80;185,80;185,80;185,80;
+operation stats (ms/op):;avg op:;36,68;min op:;34,96;max op:;37,16;
 operation info:;data length;16;total iterations;25;total invocations;25;
 
 method name:; TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_128_CBC_NOPAD Cipher_setKeyInitDoFinal()
 measurement config:;appletPrepareINS;31;appletMeasureINS;a3;config;00 11 00 0d ff ff 00 0f 00 80 00 07 00 20 ff ff 00 02 00 05 00 01
-baseline measurements (ms):;203,00;195,00;195,00;194,00;193,00;
-baseline stats (ms):;avg:;196,00;min:;193,00;max:;203,00;
-operation raw measurements (ms):;186,00;214,00;195,00;196,00;196,00;
-operation stats (ms/op):;avg op:;39,48;min op:;37,20;max op:;42,80;;CHECK
+baseline measurements (ms):;157,00;142,00;143,00;142,00;143,00;
+baseline stats (ms):;avg:;145,40;min:;142,00;max:;157,00;;;CHECK
+operation raw measurements (ms):;177,60;186,60;188,60;189,60;188,60;
+operation stats (ms/op):;avg op:;37,24;min op:;35,52;max op:;37,92;
 operation info:;data length;32;total iterations;25;total invocations;25;
 
 method name:; TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_128_CBC_NOPAD Cipher_setKeyInitDoFinal()
 measurement config:;appletPrepareINS;31;appletMeasureINS;a3;config;00 11 00 0d ff ff 00 0f 00 80 00 07 00 40 ff ff 00 02 00 05 00 01
-baseline measurements (ms):;203,00;192,00;192,00;192,00;192,00;
-baseline stats (ms):;avg:;194,20;min:;192,00;max:;203,00;
-operation raw measurements (ms):;194,80;216,80;240,80;337,80;204,80;
-operation stats (ms/op):;avg op:;47,80;min op:;38,96;max op:;67,56;;CHECK
+baseline measurements (ms):;154,00;142,00;143,00;143,00;143,00;
+baseline stats (ms):;avg:;145,00;min:;142,00;max:;154,00;;;CHECK
+operation raw measurements (ms):;186,00;197,00;198,00;197,00;197,00;
+operation stats (ms/op):;avg op:;39,00;min op:;37,20;max op:;39,60;
 operation info:;data length;64;total iterations;25;total invocations;25;
 
 method name:; TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_128_CBC_NOPAD Cipher_setKeyInitDoFinal()
 measurement config:;appletPrepareINS;31;appletMeasureINS;a3;config;00 11 00 0d ff ff 00 0f 00 80 00 07 00 80 ff ff 00 02 00 05 00 01
-baseline measurements (ms):;203,00;192,00;192,00;193,00;192,00;
-baseline stats (ms):;avg:;194,40;min:;192,00;max:;203,00;
-operation raw measurements (ms):;208,60;220,60;219,60;221,60;220,60;
-operation stats (ms/op):;avg op:;43,64;min op:;41,72;max op:;44,32;
+baseline measurements (ms):;153,00;142,00;143,00;143,00;142,00;
+baseline stats (ms):;avg:;144,60;min:;142,00;max:;153,00;;;CHECK
+operation raw measurements (ms):;201,40;212,40;214,40;213,40;213,40;
+operation stats (ms/op):;avg op:;42,20;min op:;40,28;max op:;42,88;
 operation info:;data length;128;total iterations;25;total invocations;25;
 
 method name:; TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_128_CBC_NOPAD Cipher_setKeyInitDoFinal()
 measurement config:;appletPrepareINS;31;appletMeasureINS;a3;config;00 11 00 0d ff ff 00 0f 00 80 00 07 01 00 ff ff 00 02 00 05 00 01
-baseline measurements (ms):;226,00;738,00;193,00;263,00;192,00;
-baseline stats (ms):;avg:;322,40;min:;192,00;max:;738,00;;;CHECK
-operation raw measurements (ms):;160,60;122,60;122,60;122,60;122,60;
-operation stats (ms/op):;avg op:;26,04;min op:;24,52;max op:;32,12;;CHECK
+baseline measurements (ms):;154,00;143,00;143,00;143,00;143,00;
+baseline stats (ms):;avg:;145,20;min:;143,00;max:;154,00;;;CHECK
+operation raw measurements (ms):;231,80;243,80;244,80;243,80;243,80;
+operation stats (ms/op):;avg op:;48,32;min op:;46,36;max op:;48,96;
 operation info:;data length;256;total iterations;25;total invocations;25;
 
 method name:; TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_128_CBC_NOPAD Cipher_setKeyInitDoFinal()
 measurement config:;appletPrepareINS;31;appletMeasureINS;a3;config;00 11 00 0d ff ff 00 0f 00 80 00 07 02 00 ff ff 00 02 00 05 00 01
-baseline measurements (ms):;203,00;192,00;192,00;192,00;191,00;
-baseline stats (ms):;avg:;194,00;min:;191,00;max:;203,00;
-operation raw measurements (ms):;302,00;313,00;313,00;315,00;314,00;
-operation stats (ms/op):;avg op:;62,28;min op:;60,40;max op:;63,00;
+baseline measurements (ms):;154,00;143,00;143,00;143,00;143,00;
+baseline stats (ms):;avg:;145,20;min:;143,00;max:;154,00;;;CHECK
+operation raw measurements (ms):;293,80;303,80;305,80;304,80;305,80;
+operation stats (ms/op):;avg op:;60,56;min op:;58,76;max op:;61,16;
 operation info:;data length;512;total iterations;25;total invocations;25;
 
 
@@ -2840,50 +2840,50 @@ operation info:;data length;512;total iterations;25;total invocations;25;
 
 method name:; TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_128_ECB_NOPAD Cipher_setKeyInitDoFinal()
 measurement config:;appletPrepareINS;31;appletMeasureINS;a3;config;00 11 00 0e ff ff 00 0f 00 80 00 07 00 10 ff ff 00 02 00 05 00 01
-baseline measurements (ms):;205,00;194,00;192,00;193,00;195,00;
-baseline stats (ms):;avg:;195,80;min:;192,00;max:;205,00;
-operation raw measurements (ms):;184,20;195,20;192,20;192,20;193,20;
-operation stats (ms/op):;avg op:;38,28;min op:;36,84;max op:;39,04;
+baseline measurements (ms):;153,00;143,00;142,00;142,00;143,00;
+baseline stats (ms):;avg:;144,60;min:;142,00;max:;153,00;;;CHECK
+operation raw measurements (ms):;174,40;184,40;184,40;186,40;184,40;
+operation stats (ms/op):;avg op:;36,56;min op:;34,88;max op:;37,28;
 operation info:;data length;16;total iterations;25;total invocations;25;
 
 method name:; TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_128_ECB_NOPAD Cipher_setKeyInitDoFinal()
 measurement config:;appletPrepareINS;31;appletMeasureINS;a3;config;00 11 00 0e ff ff 00 0f 00 80 00 07 00 20 ff ff 00 02 00 05 00 01
-baseline measurements (ms):;205,00;194,00;195,00;195,00;192,00;
-baseline stats (ms):;avg:;196,20;min:;192,00;max:;205,00;
-operation raw measurements (ms):;183,80;198,80;196,80;196,80;196,80;
-operation stats (ms/op):;avg op:;38,92;min op:;36,76;max op:;39,76;;CHECK
+baseline measurements (ms):;156,00;144,00;142,00;143,00;143,00;
+baseline stats (ms):;avg:;145,60;min:;142,00;max:;156,00;;;CHECK
+operation raw measurements (ms):;177,40;187,40;187,40;188,40;189,40;
+operation stats (ms/op):;avg op:;37,20;min op:;35,48;max op:;37,88;
 operation info:;data length;32;total iterations;25;total invocations;25;
 
 method name:; TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_128_ECB_NOPAD Cipher_setKeyInitDoFinal()
 measurement config:;appletPrepareINS;31;appletMeasureINS;a3;config;00 11 00 0e ff ff 00 0f 00 80 00 07 00 40 ff ff 00 02 00 05 00 01
-baseline measurements (ms):;203,00;192,00;194,00;194,00;194,00;
-baseline stats (ms):;avg:;195,40;min:;192,00;max:;203,00;
-operation raw measurements (ms):;193,60;203,60;206,60;205,60;205,60;
-operation stats (ms/op):;avg op:;40,60;min op:;38,72;max op:;41,32;
+baseline measurements (ms):;155,00;142,00;143,00;144,00;143,00;
+baseline stats (ms):;avg:;145,40;min:;142,00;max:;155,00;;;CHECK
+operation raw measurements (ms):;185,60;194,60;196,60;194,60;195,60;
+operation stats (ms/op):;avg op:;38,68;min op:;37,12;max op:;39,32;
 operation info:;data length;64;total iterations;25;total invocations;25;
 
 method name:; TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_128_ECB_NOPAD Cipher_setKeyInitDoFinal()
 measurement config:;appletPrepareINS;31;appletMeasureINS;a3;config;00 11 00 0e ff ff 00 0f 00 80 00 07 00 80 ff ff 00 02 00 05 00 01
-baseline measurements (ms):;202,00;191,00;194,00;192,00;212,00;
-baseline stats (ms):;avg:;198,20;min:;191,00;max:;212,00;;;CHECK
-operation raw measurements (ms):;220,80;332,80;214,80;216,80;229,80;
-operation stats (ms/op):;avg op:;48,60;min op:;42,96;max op:;66,56;;CHECK
+baseline measurements (ms):;153,00;143,00;143,00;143,00;143,00;
+baseline stats (ms):;avg:;145,00;min:;143,00;max:;153,00;;;CHECK
+operation raw measurements (ms):;200,00;210,00;209,00;210,00;209,00;
+operation stats (ms/op):;avg op:;41,52;min op:;40,00;max op:;42,00;
 operation info:;data length;128;total iterations;25;total invocations;25;
 
 method name:; TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_128_ECB_NOPAD Cipher_setKeyInitDoFinal()
 measurement config:;appletPrepareINS;31;appletMeasureINS;a3;config;00 11 00 0e ff ff 00 0f 00 80 00 07 01 00 ff ff 00 02 00 05 00 01
-baseline measurements (ms):;203,00;193,00;192,00;198,00;191,00;
-baseline stats (ms):;avg:;195,40;min:;191,00;max:;203,00;
-operation raw measurements (ms):;478,60;243,60;286,60;244,60;326,60;
-operation stats (ms/op):;avg op:;63,20;min op:;48,72;max op:;95,72;;CHECK
+baseline measurements (ms):;154,00;143,00;144,00;142,00;143,00;
+baseline stats (ms):;avg:;145,20;min:;142,00;max:;154,00;;;CHECK
+operation raw measurements (ms):;224,80;236,80;236,80;236,80;236,80;
+operation stats (ms/op):;avg op:;46,88;min op:;44,96;max op:;47,36;
 operation info:;data length;256;total iterations;25;total invocations;25;
 
 method name:; TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_128_ECB_NOPAD Cipher_setKeyInitDoFinal()
 measurement config:;appletPrepareINS;31;appletMeasureINS;a3;config;00 11 00 0e ff ff 00 0f 00 80 00 07 02 00 ff ff 00 02 00 05 00 01
-baseline measurements (ms):;205,00;194,00;192,00;194,00;193,00;
-baseline stats (ms):;avg:;195,60;min:;192,00;max:;205,00;
-operation raw measurements (ms):;290,40;300,40;301,40;302,40;300,40;
-operation stats (ms/op):;avg op:;59,80;min op:;58,08;max op:;60,48;
+baseline measurements (ms):;154,00;143,00;142,00;143,00;143,00;
+baseline stats (ms):;avg:;145,00;min:;142,00;max:;154,00;;;CHECK
+operation raw measurements (ms):;282,00;295,00;293,00;293,00;293,00;
+operation stats (ms/op):;avg op:;58,24;min op:;56,40;max op:;59,00;
 operation info:;data length;512;total iterations;25;total invocations;25;
 
 
@@ -4672,50 +4672,50 @@ SIGNATURE - TYPE_AES LENGTH_AES_192 ALG_AES_MAC_128_NOPAD - variable data - BEGI
 
 method name:; TYPE_AES LENGTH_AES_192 ALG_AES_MAC_128_NOPAD Signature_sign()
 measurement config:;appletPrepareINS;32;appletMeasureINS;49;config;00 12 00 12 ff ff 00 0f 00 c0 00 0a 00 10 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;193,00;190,00;192,00;191,00;190,00;
-baseline stats (ms):;avg:;191,20;min:;190,00;max:;193,00;
-operation raw measurements (ms):;43,80;47,80;47,80;49,80;46,80;
-operation stats (ms/op):;avg op:;9,44;min op:;8,76;max op:;9,96;;CHECK
+baseline measurements (ms):;142,00;140,00;140,00;139,00;140,00;
+baseline stats (ms):;avg:;140,20;min:;139,00;max:;142,00;
+operation raw measurements (ms):;44,80;46,80;46,80;46,80;46,80;
+operation stats (ms/op):;avg op:;9,28;min op:;8,96;max op:;9,36;
 operation info:;data length;16;total iterations;25;total invocations;25;
 
 method name:; TYPE_AES LENGTH_AES_192 ALG_AES_MAC_128_NOPAD Signature_sign()
 measurement config:;appletPrepareINS;32;appletMeasureINS;49;config;00 12 00 12 ff ff 00 0f 00 c0 00 0a 00 20 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;192,00;190,00;188,00;189,00;189,00;
-baseline stats (ms):;avg:;189,60;min:;188,00;max:;192,00;
-operation raw measurements (ms):;49,40;50,40;50,40;51,40;51,40;
-operation stats (ms/op):;avg op:;10,12;min op:;9,88;max op:;10,28;
+baseline measurements (ms):;142,00;140,00;141,00;139,00;140,00;
+baseline stats (ms):;avg:;140,40;min:;139,00;max:;142,00;
+operation raw measurements (ms):;47,60;50,60;50,60;50,60;49,60;
+operation stats (ms/op):;avg op:;9,96;min op:;9,52;max op:;10,12;
 operation info:;data length;32;total iterations;25;total invocations;25;
 
 method name:; TYPE_AES LENGTH_AES_192 ALG_AES_MAC_128_NOPAD Signature_sign()
 measurement config:;appletPrepareINS;32;appletMeasureINS;49;config;00 12 00 12 ff ff 00 0f 00 c0 00 0a 00 40 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;192,00;190,00;190,00;191,00;192,00;
-baseline stats (ms):;avg:;191,00;min:;190,00;max:;192,00;
-operation raw measurements (ms):;56,00;58,00;55,00;61,00;56,00;
-operation stats (ms/op):;avg op:;11,44;min op:;11,00;max op:;12,20;;CHECK
+baseline measurements (ms):;143,00;139,00;141,00;140,00;143,00;
+baseline stats (ms):;avg:;141,20;min:;139,00;max:;143,00;
+operation raw measurements (ms):;53,80;55,80;55,80;55,80;57,80;
+operation stats (ms/op):;avg op:;11,16;min op:;10,76;max op:;11,56;
 operation info:;data length;64;total iterations;25;total invocations;25;
 
 method name:; TYPE_AES LENGTH_AES_192 ALG_AES_MAC_128_NOPAD Signature_sign()
 measurement config:;appletPrepareINS;32;appletMeasureINS;49;config;00 12 00 12 ff ff 00 0f 00 c0 00 0a 00 80 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;193,00;189,00;190,00;190,00;191,00;
-baseline stats (ms):;avg:;190,60;min:;189,00;max:;193,00;
-operation raw measurements (ms):;68,40;70,40;70,40;73,40;75,40;
-operation stats (ms/op):;avg op:;14,32;min op:;13,68;max op:;15,08;;CHECK
+baseline measurements (ms):;144,00;139,00;140,00;140,00;141,00;
+baseline stats (ms):;avg:;140,80;min:;139,00;max:;144,00;
+operation raw measurements (ms):;69,20;75,20;71,20;71,20;71,20;
+operation stats (ms/op):;avg op:;14,32;min op:;13,84;max op:;15,04;;CHECK
 operation info:;data length;128;total iterations;25;total invocations;25;
 
 method name:; TYPE_AES LENGTH_AES_192 ALG_AES_MAC_128_NOPAD Signature_sign()
 measurement config:;appletPrepareINS;32;appletMeasureINS;49;config;00 12 00 12 ff ff 00 0f 00 c0 00 0a 01 00 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;411,00;227,00;647,00;189,00;189,00;
-baseline stats (ms):;avg:;332,60;min:;189,00;max:;647,00;;;CHECK
-operation raw measurements (ms):;-44,60;-43,60;-44,60;-43,60;-44,60;
-operation stats (ms/op):;avg op:;-8,84;min op:;-8,92;max op:;-8,72;
+baseline measurements (ms):;142,00;140,00;140,00;140,00;140,00;
+baseline stats (ms):;avg:;140,40;min:;140,00;max:;142,00;
+operation raw measurements (ms):;96,60;98,60;99,60;98,60;98,60;
+operation stats (ms/op):;avg op:;19,68;min op:;19,32;max op:;19,92;
 operation info:;data length;256;total iterations;25;total invocations;25;
 
 method name:; TYPE_AES LENGTH_AES_192 ALG_AES_MAC_128_NOPAD Signature_sign()
 measurement config:;appletPrepareINS;32;appletMeasureINS;49;config;00 12 00 12 ff ff 00 0f 00 c0 00 0a 02 00 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;191,00;189,00;192,00;189,00;189,00;
-baseline stats (ms):;avg:;190,00;min:;189,00;max:;192,00;
-operation raw measurements (ms):;151,00;185,00;154,00;155,00;154,00;
-operation stats (ms/op):;avg op:;31,96;min op:;30,20;max op:;37,00;;CHECK
+baseline measurements (ms):;144,00;141,00;140,00;141,00;140,00;
+baseline stats (ms):;avg:;141,20;min:;140,00;max:;144,00;
+operation raw measurements (ms):;151,80;154,80;154,80;152,80;152,80;
+operation stats (ms/op):;avg op:;30,68;min op:;30,36;max op:;30,96;
 operation info:;data length;512;total iterations;25;total invocations;25;
 
 method name:; TYPE_AES LENGTH_AES_192 ALG_AES_MAC_128_NOPAD Signature_setKeyInitSign()
@@ -6576,50 +6576,50 @@ CHECKSUM - ALG_ISO3309_CRC16 - variable data - BEGIN
 
 method name:; ALG_ISO3309_CRC16 Checksum_doFinal()
 measurement config:;appletPrepareINS;35;appletMeasureINS;46;config;00 17 00 01 ff ff ff ff ff ff 00 05 00 10 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;156,00;195,00;154,00;153,00;155,00;
-baseline stats (ms):;avg:;162,60;min:;153,00;max:;195,00;;;CHECK
-operation raw measurements (ms):;2,40;2,40;2,40;4,40;3,40;
-operation stats (ms/op):;avg op:;0,60;min op:;0,48;max op:;0,88;;CHECK
+baseline measurements (ms):;105,00;104,00;106,00;103,00;103,00;
+baseline stats (ms):;avg:;104,20;min:;103,00;max:;106,00;
+operation raw measurements (ms):;9,80;11,80;11,80;12,80;11,80;
+operation stats (ms/op):;avg op:;2,32;min op:;1,96;max op:;2,56;;CHECK
 operation info:;data length;16;total iterations;25;total invocations;25;
 
 method name:; ALG_ISO3309_CRC16 Checksum_doFinal()
 measurement config:;appletPrepareINS;35;appletMeasureINS;46;config;00 17 00 01 ff ff ff ff ff ff 00 05 00 20 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;155,00;154,00;154,00;153,00;153,00;
-baseline stats (ms):;avg:;153,80;min:;153,00;max:;155,00;
-operation raw measurements (ms):;9,20;13,20;11,20;13,20;11,20;
-operation stats (ms/op):;avg op:;2,32;min op:;1,84;max op:;2,64;;CHECK
+baseline measurements (ms):;105,00;104,00;104,00;104,00;105,00;
+baseline stats (ms):;avg:;104,40;min:;104,00;max:;105,00;
+operation raw measurements (ms):;11,60;11,60;11,60;12,60;11,60;
+operation stats (ms/op):;avg op:;2,36;min op:;2,32;max op:;2,52;;CHECK
 operation info:;data length;32;total iterations;25;total invocations;25;
 
 method name:; ALG_ISO3309_CRC16 Checksum_doFinal()
 measurement config:;appletPrepareINS;35;appletMeasureINS;46;config;00 17 00 01 ff ff ff ff ff ff 00 05 00 40 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;154,00;154,00;160,00;154,00;154,00;
-baseline stats (ms):;avg:;155,20;min:;154,00;max:;160,00;
-operation raw measurements (ms):;11,80;9,80;9,80;19,80;25,80;
-operation stats (ms/op):;avg op:;3,08;min op:;1,96;max op:;5,16;;CHECK
+baseline measurements (ms):;106,00;103,00;103,00;104,00;105,00;
+baseline stats (ms):;avg:;104,20;min:;103,00;max:;106,00;
+operation raw measurements (ms):;10,80;11,80;11,80;12,80;12,80;
+operation stats (ms/op):;avg op:;2,40;min op:;2,16;max op:;2,56;;CHECK
 operation info:;data length;64;total iterations;25;total invocations;25;
 
 method name:; ALG_ISO3309_CRC16 Checksum_doFinal()
 measurement config:;appletPrepareINS;35;appletMeasureINS;46;config;00 17 00 01 ff ff ff ff ff ff 00 05 00 80 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;155,00;156,00;155,00;157,00;156,00;
-baseline stats (ms):;avg:;155,80;min:;155,00;max:;157,00;
-operation raw measurements (ms):;14,20;11,20;10,20;11,20;9,20;
-operation stats (ms/op):;avg op:;2,24;min op:;1,84;max op:;2,84;;CHECK
+baseline measurements (ms):;106,00;108,00;104,00;104,00;103,00;
+baseline stats (ms):;avg:;105,00;min:;103,00;max:;108,00;
+operation raw measurements (ms):;10,00;13,00;12,00;12,00;11,00;
+operation stats (ms/op):;avg op:;2,32;min op:;2,00;max op:;2,60;;CHECK
 operation info:;data length;128;total iterations;25;total invocations;25;
 
 method name:; ALG_ISO3309_CRC16 Checksum_doFinal()
 measurement config:;appletPrepareINS;35;appletMeasureINS;46;config;00 17 00 01 ff ff ff ff ff ff 00 05 01 00 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;155,00;153,00;153,00;153,00;152,00;
-baseline stats (ms):;avg:;153,20;min:;152,00;max:;155,00;
-operation raw measurements (ms):;11,80;13,80;16,80;13,80;13,80;
-operation stats (ms/op):;avg op:;2,80;min op:;2,36;max op:;3,36;;CHECK
+baseline measurements (ms):;105,00;104,00;103,00;104,00;104,00;
+baseline stats (ms):;avg:;104,00;min:;103,00;max:;105,00;
+operation raw measurements (ms):;12,00;14,00;14,00;14,00;14,00;
+operation stats (ms/op):;avg op:;2,72;min op:;2,40;max op:;2,80;;CHECK
 operation info:;data length;256;total iterations;25;total invocations;25;
 
 method name:; ALG_ISO3309_CRC16 Checksum_doFinal()
 measurement config:;appletPrepareINS;35;appletMeasureINS;46;config;00 17 00 01 ff ff ff ff ff ff 00 05 02 00 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;154,00;152,00;153,00;153,00;152,00;
-baseline stats (ms):;avg:;152,80;min:;152,00;max:;154,00;
-operation raw measurements (ms):;16,20;16,20;16,20;17,20;16,20;
-operation stats (ms/op):;avg op:;3,28;min op:;3,24;max op:;3,44;
+baseline measurements (ms):;105,00;106,00;104,00;105,00;104,00;
+baseline stats (ms):;avg:;104,80;min:;104,00;max:;106,00;
+operation raw measurements (ms):;13,20;15,20;15,20;18,20;16,20;
+operation stats (ms/op):;avg op:;3,12;min op:;2,64;max op:;3,64;;CHECK
 operation info:;data length;512;total iterations;25;total invocations;25;
 
 
@@ -6755,283 +6755,323 @@ UTIL - UTIL - variable data - BEGIN
 
 method name:; UTIL Util_arrayCopy_RAM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 01 00 10 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;137,00;134,00;151,00;135,00;135,00;
-baseline stats (ms):;avg:;138,40;min:;134,00;max:;151,00;;;CHECK
-operation raw measurements (ms):;-1,40;2,60;1,60;2,60;1,60;
-operation stats (ms/op):;avg op:;0,28;min op:;-0,28;max op:;0,52;;CHECK
+baseline measurements (ms):;87,00;85,00;86,00;85,00;86,00;
+baseline stats (ms):;avg:;85,80;min:;85,00;max:;87,00;
+operation raw measurements (ms):;3,20;6,20;5,20;5,20;4,20;
+operation stats (ms/op):;avg op:;0,96;min op:;0,64;max op:;1,24;;CHECK
 operation info:;data length;16;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopy_RAM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 01 00 20 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;139,00;136,00;134,00;137,00;135,00;
-baseline stats (ms):;avg:;136,20;min:;134,00;max:;139,00;
-operation raw measurements (ms):;3,80;73,80;4,80;5,80;4,80;
-operation stats (ms/op):;avg op:;3,72;min op:;0,76;max op:;14,76;;CHECK
+baseline measurements (ms):;87,00;85,00;85,00;85,00;87,00;
+baseline stats (ms):;avg:;85,80;min:;85,00;max:;87,00;
+operation raw measurements (ms):;3,20;4,20;5,20;5,20;6,20;
+operation stats (ms/op):;avg op:;0,96;min op:;0,64;max op:;1,24;;CHECK
 operation info:;data length;32;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopy_RAM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 01 00 40 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;138,00;137,00;136,00;138,00;136,00;
-baseline stats (ms):;avg:;137,00;min:;136,00;max:;138,00;
-operation raw measurements (ms):;2,00;6,00;7,00;5,00;5,00;
-operation stats (ms/op):;avg op:;1,00;min op:;0,40;max op:;1,40;;CHECK
+baseline measurements (ms):;87,00;86,00;85,00;88,00;86,00;
+baseline stats (ms):;avg:;86,40;min:;85,00;max:;88,00;
+operation raw measurements (ms):;2,60;5,60;4,60;4,60;4,60;
+operation stats (ms/op):;avg op:;0,88;min op:;0,52;max op:;1,12;;CHECK
 operation info:;data length;64;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopy_RAM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 01 00 80 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;136,00;137,00;138,00;134,00;134,00;
-baseline stats (ms):;avg:;135,80;min:;134,00;max:;138,00;
-operation raw measurements (ms):;4,20;5,20;5,20;6,20;4,20;
-operation stats (ms/op):;avg op:;1,00;min op:;0,84;max op:;1,24;;CHECK
+baseline measurements (ms):;87,00;86,00;86,00;85,00;91,00;
+baseline stats (ms):;avg:;87,00;min:;85,00;max:;91,00;
+operation raw measurements (ms):;2,00;4,00;4,00;7,00;5,00;
+operation stats (ms/op):;avg op:;0,88;min op:;0,40;max op:;1,40;;CHECK
 operation info:;data length;128;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopy_RAM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 01 01 00 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;138,00;135,00;136,00;136,00;136,00;
-baseline stats (ms):;avg:;136,20;min:;135,00;max:;138,00;
-operation raw measurements (ms):;5,80;6,80;3,80;6,80;5,80;
-operation stats (ms/op):;avg op:;1,16;min op:;0,76;max op:;1,36;;CHECK
+baseline measurements (ms):;87,00;86,00;85,00;86,00;86,00;
+baseline stats (ms):;avg:;86,00;min:;85,00;max:;87,00;
+operation raw measurements (ms):;6,00;5,00;6,00;6,00;6,00;
+operation stats (ms/op):;avg op:;1,16;min op:;1,00;max op:;1,20;;CHECK
 operation info:;data length;256;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopy_EEPROM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 02 00 10 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;289,00;145,00;134,00;134,00;134,00;
-baseline stats (ms):;avg:;167,20;min:;134,00;max:;289,00;;;CHECK
-operation raw measurements (ms):;2,80;-1,20;-1,20;-1,20;-1,20;
-operation stats (ms/op):;avg op:;-0,08;min op:;-0,24;max op:;0,56;
+baseline measurements (ms):;87,00;86,00;86,00;86,00;85,00;
+baseline stats (ms):;avg:;86,00;min:;85,00;max:;87,00;
+operation raw measurements (ms):;35,00;31,00;32,00;31,00;31,00;
+operation stats (ms/op):;avg op:;6,40;min op:;6,20;max op:;7,00;;CHECK
 operation info:;data length;16;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopy_EEPROM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 02 00 20 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;139,00;134,00;136,00;135,00;135,00;
-baseline stats (ms):;avg:;135,80;min:;134,00;max:;139,00;
-operation raw measurements (ms):;59,20;34,20;31,20;33,20;32,20;
-operation stats (ms/op):;avg op:;7,60;min op:;6,24;max op:;11,84;;CHECK
+baseline measurements (ms):;88,00;85,00;86,00;85,00;86,00;
+baseline stats (ms):;avg:;86,00;min:;85,00;max:;88,00;
+operation raw measurements (ms):;39,00;32,00;33,00;33,00;32,00;
+operation stats (ms/op):;avg op:;6,76;min op:;6,40;max op:;7,80;;CHECK
 operation info:;data length;32;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopy_EEPROM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 02 00 40 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;137,00;137,00;138,00;136,00;135,00;
-baseline stats (ms):;avg:;136,60;min:;135,00;max:;138,00;
-operation raw measurements (ms):;61,40;53,40;55,40;57,40;55,40;
-operation stats (ms/op):;avg op:;11,32;min op:;10,68;max op:;12,28;;CHECK
+baseline measurements (ms):;88,00;85,00;85,00;85,00;85,00;
+baseline stats (ms):;avg:;85,60;min:;85,00;max:;88,00;
+operation raw measurements (ms):;63,40;57,40;57,40;55,40;56,40;
+operation stats (ms/op):;avg op:;11,60;min op:;11,08;max op:;12,68;;CHECK
 operation info:;data length;64;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopy_EEPROM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 02 00 80 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;138,00;135,00;138,00;136,00;136,00;
-baseline stats (ms):;avg:;136,60;min:;135,00;max:;138,00;
-operation raw measurements (ms):;90,40;80,40;79,40;79,40;78,40;
-operation stats (ms/op):;avg op:;16,32;min op:;15,68;max op:;18,08;;CHECK
+baseline measurements (ms):;88,00;85,00;86,00;85,00;85,00;
+baseline stats (ms):;avg:;85,80;min:;85,00;max:;88,00;
+operation raw measurements (ms):;90,20;80,20;81,20;80,20;80,20;
+operation stats (ms/op):;avg op:;16,48;min op:;16,04;max op:;18,04;;CHECK
 operation info:;data length;128;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopy_EEPROM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 02 01 00 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;137,00;136,00;135,00;138,00;139,00;
-baseline stats (ms):;avg:;137,00;min:;135,00;max:;139,00;
-operation raw measurements (ms):;145,00;129,00;126,00;127,00;129,00;
-operation stats (ms/op):;avg op:;26,24;min op:;25,20;max op:;29,00;;CHECK
+baseline measurements (ms):;88,00;87,00;86,00;85,00;86,00;
+baseline stats (ms):;avg:;86,40;min:;85,00;max:;88,00;
+operation raw measurements (ms):;143,60;129,60;127,60;128,60;127,60;
+operation stats (ms/op):;avg op:;26,28;min op:;25,52;max op:;28,72;;CHECK
 operation info:;data length;256;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopy_RAM2EEPROM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 03 00 10 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;136,00;134,00;334,00;134,00;134,00;
-baseline stats (ms):;avg:;174,40;min:;134,00;max:;334,00;;;CHECK
-operation raw measurements (ms):;-4,40;-8,40;-8,40;-9,40;-8,40;
-operation stats (ms/op):;avg op:;-1,56;min op:;-1,88;max op:;-0,88;
+baseline measurements (ms):;87,00;86,00;85,00;85,00;85,00;
+baseline stats (ms):;avg:;85,60;min:;85,00;max:;87,00;
+operation raw measurements (ms):;34,40;31,40;31,40;31,40;31,40;
+operation stats (ms/op):;avg op:;6,40;min op:;6,28;max op:;6,88;;CHECK
 operation info:;data length;16;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopy_RAM2EEPROM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 03 00 20 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;139,00;137,00;138,00;137,00;136,00;
-baseline stats (ms):;avg:;137,40;min:;136,00;max:;139,00;
-operation raw measurements (ms):;36,60;31,60;31,60;31,60;31,60;
-operation stats (ms/op):;avg op:;6,52;min op:;6,32;max op:;7,32;;CHECK
+baseline measurements (ms):;88,00;85,00;85,00;86,00;86,00;
+baseline stats (ms):;avg:;86,00;min:;85,00;max:;88,00;
+operation raw measurements (ms):;37,00;34,00;32,00;34,00;33,00;
+operation stats (ms/op):;avg op:;6,80;min op:;6,40;max op:;7,40;;CHECK
 operation info:;data length;32;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopy_RAM2EEPROM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 03 00 40 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;137,00;137,00;134,00;134,00;136,00;
-baseline stats (ms):;avg:;135,60;min:;134,00;max:;137,00;
-operation raw measurements (ms):;63,40;55,40;55,40;55,40;54,40;
-operation stats (ms/op):;avg op:;11,36;min op:;10,88;max op:;12,68;;CHECK
+baseline measurements (ms):;88,00;87,00;85,00;85,00;85,00;
+baseline stats (ms):;avg:;86,00;min:;85,00;max:;88,00;
+operation raw measurements (ms):;63,00;56,00;56,00;55,00;55,00;
+operation stats (ms/op):;avg op:;11,40;min op:;11,00;max op:;12,60;;CHECK
 operation info:;data length;64;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopy_RAM2EEPROM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 03 00 80 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;140,00;134,00;135,00;134,00;135,00;
-baseline stats (ms):;avg:;135,60;min:;134,00;max:;140,00;
-operation raw measurements (ms):;89,40;78,40;79,40;78,40;78,40;
-operation stats (ms/op):;avg op:;16,16;min op:;15,68;max op:;17,88;;CHECK
+baseline measurements (ms):;87,00;86,00;85,00;85,00;85,00;
+baseline stats (ms):;avg:;85,60;min:;85,00;max:;87,00;
+operation raw measurements (ms):;90,40;79,40;80,40;80,40;79,40;
+operation stats (ms/op):;avg op:;16,40;min op:;15,88;max op:;18,08;;CHECK
 operation info:;data length;128;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopy_RAM2EEPROM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 03 01 00 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;137,00;136,00;137,00;134,00;135,00;
-baseline stats (ms):;avg:;135,80;min:;134,00;max:;137,00;
-operation raw measurements (ms):;145,20;129,20;127,20;128,20;127,20;
-operation stats (ms/op):;avg op:;26,28;min op:;25,44;max op:;29,04;;CHECK
+baseline measurements (ms):;89,00;86,00;86,00;86,00;85,00;
+baseline stats (ms):;avg:;86,40;min:;85,00;max:;89,00;
+operation raw measurements (ms):;143,60;127,60;126,60;126,60;128,60;
+operation stats (ms/op):;avg op:;26,12;min op:;25,32;max op:;28,72;;CHECK
 operation info:;data length;256;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopy_EEPROM2RAM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 04 00 10 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;137,00;135,00;135,00;136,00;167,00;
-baseline stats (ms):;avg:;142,00;min:;135,00;max:;167,00;;;CHECK
-operation raw measurements (ms):;-4,00;-2,00;-3,00;-2,00;-1,00;
-operation stats (ms/op):;avg op:;-0,48;min op:;-0,80;max op:;-0,20;
+baseline measurements (ms):;90,00;85,00;85,00;85,00;86,00;
+baseline stats (ms):;avg:;86,20;min:;85,00;max:;90,00;
+operation raw measurements (ms):;4,80;4,80;4,80;4,80;3,80;
+operation stats (ms/op):;avg op:;0,92;min op:;0,76;max op:;0,96;;CHECK
 operation info:;data length;16;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopy_EEPROM2RAM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 04 00 20 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;137,00;135,00;134,00;134,00;136,00;
-baseline stats (ms):;avg:;135,20;min:;134,00;max:;137,00;
-operation raw measurements (ms):;20,80;5,80;6,80;3,80;4,80;
-operation stats (ms/op):;avg op:;1,68;min op:;0,76;max op:;4,16;;CHECK
+baseline measurements (ms):;87,00;85,00;87,00;86,00;85,00;
+baseline stats (ms):;avg:;86,00;min:;85,00;max:;87,00;
+operation raw measurements (ms):;2,00;6,00;5,00;5,00;5,00;
+operation stats (ms/op):;avg op:;0,92;min op:;0,40;max op:;1,20;;CHECK
 operation info:;data length;32;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopy_EEPROM2RAM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 04 00 40 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;139,00;136,00;136,00;137,00;135,00;
-baseline stats (ms):;avg:;136,60;min:;135,00;max:;139,00;
-operation raw measurements (ms):;3,40;4,40;6,40;6,40;4,40;
-operation stats (ms/op):;avg op:;1,00;min op:;0,68;max op:;1,28;;CHECK
+baseline measurements (ms):;89,00;86,00;85,00;85,00;85,00;
+baseline stats (ms):;avg:;86,00;min:;85,00;max:;89,00;
+operation raw measurements (ms):;3,00;5,00;5,00;21,00;6,00;
+operation stats (ms/op):;avg op:;1,60;min op:;0,60;max op:;4,20;;CHECK
 operation info:;data length;64;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopy_EEPROM2RAM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 04 00 80 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;136,00;134,00;135,00;135,00;135,00;
-baseline stats (ms):;avg:;135,00;min:;134,00;max:;136,00;
-operation raw measurements (ms):;3,00;5,00;6,00;5,00;5,00;
-operation stats (ms/op):;avg op:;0,96;min op:;0,60;max op:;1,20;;CHECK
+baseline measurements (ms):;87,00;86,00;85,00;86,00;86,00;
+baseline stats (ms):;avg:;86,00;min:;85,00;max:;87,00;
+operation raw measurements (ms):;6,00;5,00;5,00;5,00;5,00;
+operation stats (ms/op):;avg op:;1,04;min op:;1,00;max op:;1,20;;CHECK
 operation info:;data length;128;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopy_EEPROM2RAM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 04 01 00 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;138,00;134,00;134,00;135,00;134,00;
-baseline stats (ms):;avg:;135,00;min:;134,00;max:;138,00;
-operation raw measurements (ms):;4,00;6,00;8,00;8,00;7,00;
-operation stats (ms/op):;avg op:;1,32;min op:;0,80;max op:;1,60;;CHECK
+baseline measurements (ms):;87,00;86,00;86,00;86,00;87,00;
+baseline stats (ms):;avg:;86,40;min:;86,00;max:;87,00;
+operation raw measurements (ms):;3,60;6,60;5,60;5,60;5,60;
+operation stats (ms/op):;avg op:;1,08;min op:;0,72;max op:;1,32;;CHECK
 operation info:;data length;256;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopyNonAtomic_RAM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 05 00 10 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;137,00;140,00;160,00;135,00;135,00;
-baseline stats (ms):;avg:;141,40;min:;135,00;max:;160,00;;;CHECK
-operation raw measurements (ms):;-2,40;-2,40;-2,40;-2,40;-1,40;
-operation stats (ms/op):;avg op:;-0,44;min op:;-0,48;max op:;-0,28;
+baseline measurements (ms):;88,00;87,00;87,00;85,00;86,00;
+baseline stats (ms):;avg:;86,60;min:;85,00;max:;88,00;
+operation raw measurements (ms):;2,40;4,40;3,40;4,40;3,40;
+operation stats (ms/op):;avg op:;0,72;min op:;0,48;max op:;0,88;;CHECK
 operation info:;data length;16;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopyNonAtomic_RAM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 05 00 20 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;137,00;136,00;137,00;136,00;136,00;
-baseline stats (ms):;avg:;136,40;min:;136,00;max:;137,00;
-operation raw measurements (ms):;4,60;4,60;5,60;6,60;6,60;
-operation stats (ms/op):;avg op:;1,12;min op:;0,92;max op:;1,32;;CHECK
+baseline measurements (ms):;88,00;85,00;86,00;85,00;85,00;
+baseline stats (ms):;avg:;85,80;min:;85,00;max:;88,00;
+operation raw measurements (ms):;3,20;5,20;5,20;5,20;5,20;
+operation stats (ms/op):;avg op:;0,96;min op:;0,64;max op:;1,04;;CHECK
 operation info:;data length;32;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopyNonAtomic_RAM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 05 00 40 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;137,00;137,00;135,00;136,00;136,00;
-baseline stats (ms):;avg:;136,20;min:;135,00;max:;137,00;
-operation raw measurements (ms):;2,80;3,80;4,80;4,80;3,80;
-operation stats (ms/op):;avg op:;0,80;min op:;0,56;max op:;0,96;;CHECK
+baseline measurements (ms):;87,00;86,00;85,00;85,00;86,00;
+baseline stats (ms):;avg:;85,80;min:;85,00;max:;87,00;
+operation raw measurements (ms):;4,20;5,20;5,20;4,20;6,20;
+operation stats (ms/op):;avg op:;1,00;min op:;0,84;max op:;1,24;;CHECK
 operation info:;data length;64;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopyNonAtomic_RAM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 05 00 80 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;137,00;134,00;134,00;135,00;134,00;
-baseline stats (ms):;avg:;134,80;min:;134,00;max:;137,00;
-operation raw measurements (ms):;3,20;5,20;5,20;5,20;6,20;
-operation stats (ms/op):;avg op:;1,00;min op:;0,64;max op:;1,24;;CHECK
+baseline measurements (ms):;89,00;86,00;87,00;85,00;85,00;
+baseline stats (ms):;avg:;86,40;min:;85,00;max:;89,00;
+operation raw measurements (ms):;3,60;4,60;7,60;5,60;6,60;
+operation stats (ms/op):;avg op:;1,12;min op:;0,72;max op:;1,52;;CHECK
 operation info:;data length;128;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopyNonAtomic_RAM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 05 01 00 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;138,00;137,00;134,00;134,00;141,00;
-baseline stats (ms):;avg:;136,80;min:;134,00;max:;141,00;
-operation raw measurements (ms):;2,20;6,20;6,20;4,20;5,20;
-operation stats (ms/op):;avg op:;0,96;min op:;0,44;max op:;1,24;;CHECK
+baseline measurements (ms):;87,00;86,00;86,00;85,00;85,00;
+baseline stats (ms):;avg:;85,80;min:;85,00;max:;87,00;
+operation raw measurements (ms):;4,20;6,20;6,20;6,20;5,20;
+operation stats (ms/op):;avg op:;1,12;min op:;0,84;max op:;1,24;;CHECK
 operation info:;data length;256;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopyNonAtomic_EEPROM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 06 00 10 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;136,00;135,00;135,00;134,00;135,00;
-baseline stats (ms):;avg:;135,00;min:;134,00;max:;136,00;
-operation raw measurements (ms):;8,00;5,00;5,00;5,00;6,00;
-operation stats (ms/op):;avg op:;1,16;min op:;1,00;max op:;1,60;;CHECK
+baseline measurements (ms):;88,00;86,00;86,00;85,00;89,00;
+baseline stats (ms):;avg:;86,80;min:;85,00;max:;89,00;
+operation raw measurements (ms):;5,20;5,20;5,20;4,20;6,20;
+operation stats (ms/op):;avg op:;1,04;min op:;0,84;max op:;1,24;;CHECK
 operation info:;data length;16;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopyNonAtomic_EEPROM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 06 00 20 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;137,00;135,00;135,00;136,00;137,00;
-baseline stats (ms):;avg:;136,00;min:;135,00;max:;137,00;
-operation raw measurements (ms):;12,00;8,00;6,00;6,00;6,00;
-operation stats (ms/op):;avg op:;1,52;min op:;1,20;max op:;2,40;;CHECK
+baseline measurements (ms):;87,00;85,00;87,00;86,00;85,00;
+baseline stats (ms):;avg:;86,00;min:;85,00;max:;87,00;
+operation raw measurements (ms):;11,00;7,00;6,00;6,00;7,00;
+operation stats (ms/op):;avg op:;1,48;min op:;1,20;max op:;2,20;;CHECK
 operation info:;data length;32;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopyNonAtomic_EEPROM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 06 00 40 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;137,00;134,00;137,00;135,00;135,00;
-baseline stats (ms):;avg:;135,60;min:;134,00;max:;137,00;
-operation raw measurements (ms):;11,40;8,40;10,40;7,40;7,40;
-operation stats (ms/op):;avg op:;1,80;min op:;1,48;max op:;2,28;;CHECK
+baseline measurements (ms):;87,00;86,00;86,00;87,00;85,00;
+baseline stats (ms):;avg:;86,20;min:;85,00;max:;87,00;
+operation raw measurements (ms):;12,80;7,80;7,80;8,80;7,80;
+operation stats (ms/op):;avg op:;1,80;min op:;1,56;max op:;2,56;;CHECK
 operation info:;data length;64;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopyNonAtomic_EEPROM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 06 00 80 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;136,00;134,00;134,00;135,00;134,00;
-baseline stats (ms):;avg:;134,60;min:;134,00;max:;136,00;
-operation raw measurements (ms):;18,40;12,40;11,40;11,40;11,40;
-operation stats (ms/op):;avg op:;2,60;min op:;2,28;max op:;3,68;;CHECK
+baseline measurements (ms):;87,00;85,00;86,00;85,00;86,00;
+baseline stats (ms):;avg:;85,80;min:;85,00;max:;87,00;
+operation raw measurements (ms):;18,20;12,20;11,20;12,20;11,20;
+operation stats (ms/op):;avg op:;2,60;min op:;2,24;max op:;3,64;;CHECK
 operation info:;data length;128;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopyNonAtomic_EEPROM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 06 01 00 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;137,00;138,00;136,00;137,00;136,00;
-baseline stats (ms):;avg:;136,80;min:;136,00;max:;138,00;
-operation raw measurements (ms):;99,20;18,20;18,20;50,20;17,20;
-operation stats (ms/op):;avg op:;8,12;min op:;3,44;max op:;19,84;;CHECK
+baseline measurements (ms):;87,00;85,00;85,00;87,00;85,00;
+baseline stats (ms):;avg:;85,80;min:;85,00;max:;87,00;
+operation raw measurements (ms):;31,20;19,20;17,20;19,20;18,20;
+operation stats (ms/op):;avg op:;4,20;min op:;3,44;max op:;6,24;;CHECK
 operation info:;data length;256;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopyNonAtomic_RAM2EEPROM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 07 00 10 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;136,00;134,00;135,00;135,00;134,00;
-baseline stats (ms):;avg:;134,80;min:;134,00;max:;136,00;
-operation raw measurements (ms):;7,20;5,20;6,20;6,20;6,20;
-operation stats (ms/op):;avg op:;1,24;min op:;1,04;max op:;1,44;;CHECK
+baseline measurements (ms):;87,00;85,00;85,00;85,00;85,00;
+baseline stats (ms):;avg:;85,40;min:;85,00;max:;87,00;
+operation raw measurements (ms):;6,60;5,60;6,60;5,60;6,60;
+operation stats (ms/op):;avg op:;1,24;min op:;1,12;max op:;1,32;;CHECK
 operation info:;data length;16;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopyNonAtomic_RAM2EEPROM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 07 00 20 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;140,00;136,00;135,00;135,00;135,00;
-baseline stats (ms):;avg:;136,20;min:;135,00;max:;140,00;
-operation raw measurements (ms):;8,80;7,80;7,80;4,80;6,80;
-operation stats (ms/op):;avg op:;1,44;min op:;0,96;max op:;1,76;;CHECK
+baseline measurements (ms):;87,00;86,00;86,00;85,00;86,00;
+baseline stats (ms):;avg:;86,00;min:;85,00;max:;87,00;
+operation raw measurements (ms):;8,00;6,00;6,00;8,00;6,00;
+operation stats (ms/op):;avg op:;1,36;min op:;1,20;max op:;1,60;;CHECK
 operation info:;data length;32;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopyNonAtomic_RAM2EEPROM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 07 00 40 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;138,00;137,00;136,00;136,00;136,00;
-baseline stats (ms):;avg:;136,60;min:;136,00;max:;138,00;
-operation raw measurements (ms):;11,40;6,40;6,40;5,40;7,40;
-operation stats (ms/op):;avg op:;1,48;min op:;1,08;max op:;2,28;;CHECK
+baseline measurements (ms):;88,00;85,00;89,00;86,00;86,00;
+baseline stats (ms):;avg:;86,80;min:;85,00;max:;89,00;
+operation raw measurements (ms):;10,20;7,20;7,20;7,20;7,20;
+operation stats (ms/op):;avg op:;1,56;min op:;1,44;max op:;2,04;;CHECK
 operation info:;data length;64;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopyNonAtomic_RAM2EEPROM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 07 00 80 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;136,00;134,00;135,00;135,00;134,00;
-baseline stats (ms):;avg:;134,80;min:;134,00;max:;136,00;
-operation raw measurements (ms):;17,20;10,20;10,20;10,20;10,20;
-operation stats (ms/op):;avg op:;2,32;min op:;2,04;max op:;3,44;;CHECK
+baseline measurements (ms):;88,00;85,00;85,00;85,00;86,00;
+baseline stats (ms):;avg:;85,80;min:;85,00;max:;88,00;
+operation raw measurements (ms):;18,20;10,20;11,20;11,20;13,20;
+operation stats (ms/op):;avg op:;2,56;min op:;2,04;max op:;3,64;;CHECK
 operation info:;data length;128;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopyNonAtomic_RAM2EEPROM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 07 01 00 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;136,00;135,00;136,00;138,00;136,00;
-baseline stats (ms):;avg:;136,20;min:;135,00;max:;138,00;
-operation raw measurements (ms):;30,80;16,80;16,80;21,80;16,80;
-operation stats (ms/op):;avg op:;4,12;min op:;3,36;max op:;6,16;;CHECK
+baseline measurements (ms):;87,00;85,00;85,00;86,00;86,00;
+baseline stats (ms):;avg:;85,80;min:;85,00;max:;87,00;
+operation raw measurements (ms):;30,20;16,20;17,20;17,20;16,20;
+operation stats (ms/op):;avg op:;3,88;min op:;3,24;max op:;6,04;;CHECK
 operation info:;data length;256;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopyNonAtomic_EEPROM2RAM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 08 00 10 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;137,00;135,00;135,00;135,00;134,00;
-baseline stats (ms):;avg:;135,20;min:;134,00;max:;137,00;
-operation raw measurements (ms):;2,80;4,80;4,80;4,80;220,80;
-operation stats (ms/op):;avg op:;9,52;min op:;0,56;max op:;44,16;;CHECK
+baseline measurements (ms):;87,00;85,00;85,00;85,00;85,00;
+baseline stats (ms):;avg:;85,40;min:;85,00;max:;87,00;
+operation raw measurements (ms):;3,60;5,60;6,60;5,60;5,60;
+operation stats (ms/op):;avg op:;1,08;min op:;0,72;max op:;1,32;;CHECK
 operation info:;data length;16;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopyNonAtomic_EEPROM2RAM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 08 00 20 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;138,00;135,00;137,00;135,00;134,00;
-baseline stats (ms):;avg:;135,80;min:;134,00;max:;138,00;
-operation raw measurements (ms):;2,20;5,20;6,20;4,20;4,20;
-operation stats (ms/op):;avg op:;0,88;min op:;0,44;max op:;1,24;;CHECK
+baseline measurements (ms):;87,00;86,00;85,00;87,00;86,00;
+baseline stats (ms):;avg:;86,20;min:;85,00;max:;87,00;
+operation raw measurements (ms):;2,80;3,80;3,80;3,80;3,80;
+operation stats (ms/op):;avg op:;0,72;min op:;0,56;max op:;0,76;;CHECK
 operation info:;data length;32;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopyNonAtomic_EEPROM2RAM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 08 00 40 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;138,00;138,00;134,00;138,00;136,00;
-baseline stats (ms):;avg:;136,80;min:;134,00;max:;138,00;
-operation raw measurements (ms):;4,20;5,20;6,20;6,20;4,20;
-operation stats (ms/op):;avg op:;1,04;min op:;0,84;max op:;1,24;;CHECK
+baseline measurements (ms):;87,00;85,00;86,00;86,00;88,00;
+baseline stats (ms):;avg:;86,40;min:;85,00;max:;88,00;
+operation raw measurements (ms):;4,60;4,60;4,60;4,60;5,60;
+operation stats (ms/op):;avg op:;0,96;min op:;0,92;max op:;1,12;;CHECK
 operation info:;data length;64;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopyNonAtomic_EEPROM2RAM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 08 00 80 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;136,00;135,00;136,00;137,00;136,00;
-baseline stats (ms):;avg:;136,00;min:;135,00;max:;137,00;
-operation raw measurements (ms):;2,00;4,00;6,00;7,00;5,00;
-operation stats (ms/op):;avg op:;0,96;min op:;0,40;max op:;1,40;;CHECK
+baseline measurements (ms):;88,00;86,00;86,00;85,00;85,00;
+baseline stats (ms):;avg:;86,00;min:;85,00;max:;88,00;
+operation raw measurements (ms):;4,00;6,00;6,00;5,00;8,00;
+operation stats (ms/op):;avg op:;1,16;min op:;0,80;max op:;1,60;;CHECK
 operation info:;data length;128;total iterations;25;total invocations;25;
+
 method name:; UTIL Util_arrayCopyNonAtomic_EEPROM2RAM()
 measurement config:;appletPrepareINS;38;appletMeasureINS;50;config;00 21 ff ff ff ff ff ff ff ff 00 08 01 00 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;137,00;137,00;137,00;137,00;137,00;
-baseline stats (ms):;avg:;137,00;min:;137,00;max:;137,00;
-operation raw measurements (ms):;6,00;6,00;5,00;5,00;5,00;
-operation stats (ms/op):;avg op:;1,08;min op:;1,00;max op:;1,20;;CHECK
+baseline measurements (ms):;87,00;87,00;87,00;86,00;94,00;
+baseline stats (ms):;avg:;88,20;min:;86,00;max:;94,00;;;CHECK
+operation raw measurements (ms):;1,80;4,80;3,80;5,80;3,80;
+operation stats (ms/op):;avg op:;0,80;min op:;0,36;max op:;1,16;;CHECK
+operation info:;data length;256;total iterations;25;total invocations;25;
 operation info:;data length;256;total iterations;25;total invocations;25;
 
 

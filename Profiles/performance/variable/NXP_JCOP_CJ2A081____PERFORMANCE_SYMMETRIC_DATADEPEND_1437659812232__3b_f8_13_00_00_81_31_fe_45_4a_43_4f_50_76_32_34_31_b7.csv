@@ -776,42 +776,52 @@ operation info:;data length;512;total iterations;25;total invocations;25;
 
 method name:; TYPE_DES LENGTH_DES ALG_DES_CBC_PKCS5 Cipher_setKeyInitDoFinal()
 measurement config:;appletPrepareINS;31;appletMeasureINS;a3;config;00 11 00 04 ff ff 00 03 00 40 00 07 00 10 ff ff 00 02 00 05 00 01
-baseline measurements (ms):;157,00;148,00;146,00;146,00;147,00;
-baseline stats (ms):;avg:;148,80;min:;146,00;max:;157,00;;;CHECK
-operation raw measurements (ms):;162,20;168,20;166,20;165,20;166,20;
-operation stats (ms/op):;avg op:;33,12;min op:;32,44;max op:;33,64;
+baseline measurements (ms):;160,00;146,00;147,00;150,00;145,00;
+baseline stats (ms):;avg:;149,60;min:;145,00;max:;160,00;;;CHECK
+operation raw measurements (ms):;160,40;170,40;170,40;170,40;170,40;
+operation stats (ms/op):;avg op:;33,68;min op:;32,08;max op:;34,08;
 operation info:;data length;16;total iterations;25;total invocations;25;
 
 method name:; TYPE_DES LENGTH_DES ALG_DES_CBC_PKCS5 Cipher_setKeyInitDoFinal()
 measurement config:;appletPrepareINS;31;appletMeasureINS;a3;config;00 11 00 04 ff ff 00 03 00 40 00 07 00 20 ff ff 00 02 00 05 00 01
-baseline measurements (ms):;157,00;147,00;147,00;146,00;146,00;
-baseline stats (ms):;avg:;148,60;min:;146,00;max:;157,00;;;CHECK
-operation raw measurements (ms):;160,40;163,40;164,40;164,40;163,40;
-operation stats (ms/op):;avg op:;32,64;min op:;32,08;max op:;32,88;
+baseline measurements (ms):;151,00;150,00;150,00;140,00;140,00;
+baseline stats (ms):;avg:;146,20;min:;140,00;max:;151,00;
+operation raw measurements (ms):;173,80;183,80;182,80;173,80;183,80;
+operation stats (ms/op):;avg op:;35,92;min op:;34,76;max op:;36,76;
 operation info:;data length;32;total iterations;25;total invocations;25;
 
 method name:; TYPE_DES LENGTH_DES ALG_DES_CBC_PKCS5 Cipher_setKeyInitDoFinal()
 measurement config:;appletPrepareINS;31;appletMeasureINS;a3;config;00 11 00 04 ff ff 00 03 00 40 00 07 00 40 ff ff 00 02 00 05 00 01
-baseline measurements (ms):;159,00;147,00;148,00;147,00;147,00;
-baseline stats (ms):;avg:;149,60;min:;147,00;max:;159,00;;;CHECK
-operation raw measurements (ms):;162,40;169,40;170,40;168,40;168,40;
-operation stats (ms/op):;avg op:;33,56;min op:;32,48;max op:;34,08;
+baseline measurements (ms):;150,00;150,00;140,00;140,00;144,00;
+baseline stats (ms):;avg:;144,80;min:;140,00;max:;150,00;
+operation raw measurements (ms):;175,20;186,20;184,20;178,20;176,20;
+operation stats (ms/op):;avg op:;36,00;min op:;35,04;max op:;37,24;
 operation info:;data length;64;total iterations;25;total invocations;25;
 
 method name:; TYPE_DES LENGTH_DES ALG_DES_CBC_PKCS5 Cipher_setKeyInitDoFinal()
 measurement config:;appletPrepareINS;31;appletMeasureINS;a3;config;00 11 00 04 ff ff 00 03 00 40 00 07 00 80 ff ff 00 02 00 05 00 01
-baseline measurements (ms):;156,00;146,00;147,00;146,00;145,00;
-baseline stats (ms):;avg:;148,00;min:;145,00;max:;156,00;;;CHECK
-operation raw measurements (ms):;183,00;190,00;188,00;186,00;188,00;
-operation stats (ms/op):;avg op:;37,40;min op:;36,60;max op:;38,00;
+baseline measurements (ms):;162,00;141,00;144,00;145,00;144,00;
+baseline stats (ms):;avg:;147,20;min:;141,00;max:;162,00;;;CHECK
+operation raw measurements (ms):;182,80;193,80;192,80;193,80;192,80;
+operation stats (ms/op):;avg op:;38,24;min op:;36,56;max op:;38,76;
 operation info:;data length;128;total iterations;25;total invocations;25;
 
 method name:; TYPE_DES LENGTH_DES ALG_DES_CBC_PKCS5 Cipher_setKeyInitDoFinal()
 measurement config:;appletPrepareINS;31;appletMeasureINS;a3;config;00 11 00 04 ff ff 00 03 00 40 00 07 01 00 ff ff 00 02 00 05 00 01
-UNKONWN_ERROR-card_has_return_value_6f00
+baseline measurements (ms):;155,00;144,00;144,00;144,00;146,00;
+baseline stats (ms):;avg:;146,60;min:;144,00;max:;155,00;;;CHECK
+operation raw measurements (ms):;778,40;787,40;787,40;787,40;787,40;
+operation stats (ms/op):;avg op:;157,12;min op:;155,68;max op:;157,48;
+operation info:;data length;256;total iterations;25;total invocations;25;
+
 method name:; TYPE_DES LENGTH_DES ALG_DES_CBC_PKCS5 Cipher_setKeyInitDoFinal()
 measurement config:;appletPrepareINS;31;appletMeasureINS;a3;config;00 11 00 04 ff ff 00 03 00 40 00 07 02 00 ff ff 00 02 00 05 00 01
-UNKONWN_ERROR-card_has_return_value_6f00
+baseline measurements (ms):;155,00;144,00;144,00;145,00;144,00;
+baseline stats (ms):;avg:;146,40;min:;144,00;max:;155,00;;;CHECK
+operation raw measurements (ms):;1416,60;1428,60;1426,60;1427,60;1426,60;
+operation stats (ms/op):;avg op:;285,04;min op:;283,32;max op:;285,72;
+operation info:;data length;512;total iterations;25;total invocations;25;
+
 
 CIPHER - TYPE_DES LENGTH_DES ALG_DES_CBC_PKCS5 - variable data - END
 
@@ -820,27 +830,52 @@ CIPHER - TYPE_DES LENGTH_DES ALG_DES_ECB_NOPAD - variable data - BEGIN
 
 method name:; TYPE_DES LENGTH_DES ALG_DES_ECB_NOPAD Cipher_doFinal()
 measurement config:;appletPrepareINS;31;appletMeasureINS;43;config;00 11 00 05 ff ff 00 03 00 40 00 07 00 10 ff ff 00 02 00 05 00 01
-baseline measurements (ms):;145,00;142,00;142,00;143,00;143,00;
-baseline stats (ms):;avg:;143,00;min:;142,00;max:;145,00;
-operation raw measurements (ms):;30,00;31,00;32,00;32,00;32,00;
-operation stats (ms/op):;avg op:;6,28;min op:;6,00;max op:;6,40;
+baseline measurements (ms):;144,00;143,00;143,00;142,00;143,00;
+baseline stats (ms):;avg:;143,00;min:;142,00;max:;144,00;
+operation raw measurements (ms):;27,00;29,00;30,00;33,00;31,00;
+operation stats (ms/op):;avg op:;6,00;min op:;5,40;max op:;6,60;;CHECK
 operation info:;data length;16;total iterations;25;total invocations;25;
 
 method name:; TYPE_DES LENGTH_DES ALG_DES_ECB_NOPAD Cipher_doFinal()
 measurement config:;appletPrepareINS;31;appletMeasureINS;43;config;00 11 00 05 ff ff 00 03 00 40 00 07 00 20 ff ff 00 02 00 05 00 01
-UNKONWN_ERROR-card_has_return_value_6f00
+baseline measurements (ms):;144,00;142,00;142,00;142,00;143,00;
+baseline stats (ms):;avg:;142,60;min:;142,00;max:;144,00;
+operation raw measurements (ms):;29,40;31,40;32,40;31,40;31,40;
+operation stats (ms/op):;avg op:;6,24;min op:;5,88;max op:;6,48;;CHECK
+operation info:;data length;32;total iterations;25;total invocations;25;
+
 method name:; TYPE_DES LENGTH_DES ALG_DES_ECB_NOPAD Cipher_doFinal()
 measurement config:;appletPrepareINS;31;appletMeasureINS;43;config;00 11 00 05 ff ff 00 03 00 40 00 07 00 40 ff ff 00 02 00 05 00 01
-UNKONWN_ERROR-card_has_return_value_6f00
+baseline measurements (ms):;144,00;142,00;142,00;142,00;142,00;
+baseline stats (ms):;avg:;142,40;min:;142,00;max:;144,00;
+operation raw measurements (ms):;35,60;36,60;36,60;36,60;36,60;
+operation stats (ms/op):;avg op:;7,28;min op:;7,12;max op:;7,32;
+operation info:;data length;64;total iterations;25;total invocations;25;
+
 method name:; TYPE_DES LENGTH_DES ALG_DES_ECB_NOPAD Cipher_doFinal()
 measurement config:;appletPrepareINS;31;appletMeasureINS;43;config;00 11 00 05 ff ff 00 03 00 40 00 07 00 80 ff ff 00 02 00 05 00 01
-UNKONWN_ERROR-card_has_return_value_6f00
+baseline measurements (ms):;145,00;142,00;142,00;142,00;142,00;
+baseline stats (ms):;avg:;142,60;min:;142,00;max:;145,00;
+operation raw measurements (ms):;43,40;45,40;46,40;46,40;45,40;
+operation stats (ms/op):;avg op:;9,08;min op:;8,68;max op:;9,28;
+operation info:;data length;128;total iterations;25;total invocations;25;
+
 method name:; TYPE_DES LENGTH_DES ALG_DES_ECB_NOPAD Cipher_doFinal()
 measurement config:;appletPrepareINS;31;appletMeasureINS;43;config;00 11 00 05 ff ff 00 03 00 40 00 07 01 00 ff ff 00 02 00 05 00 01
-UNKONWN_ERROR-card_has_return_value_6f00
+baseline measurements (ms):;144,00;142,00;142,00;142,00;142,00;
+baseline stats (ms):;avg:;142,40;min:;142,00;max:;144,00;
+operation raw measurements (ms):;64,60;66,60;65,60;64,60;66,60;
+operation stats (ms/op):;avg op:;13,12;min op:;12,92;max op:;13,32;
+operation info:;data length;256;total iterations;25;total invocations;25;
+
 method name:; TYPE_DES LENGTH_DES ALG_DES_ECB_NOPAD Cipher_doFinal()
 measurement config:;appletPrepareINS;31;appletMeasureINS;43;config;00 11 00 05 ff ff 00 03 00 40 00 07 02 00 ff ff 00 02 00 05 00 01
-UNKONWN_ERROR-card_has_return_value_6f00
+baseline measurements (ms):;144,00;142,00;142,00;143,00;142,00;
+baseline stats (ms):;avg:;142,60;min:;142,00;max:;144,00;
+operation raw measurements (ms):;103,40;104,40;105,40;104,40;104,40;
+operation stats (ms/op):;avg op:;20,88;min op:;20,68;max op:;21,08;
+operation info:;data length;512;total iterations;25;total invocations;25;
+
 method name:; TYPE_DES LENGTH_DES ALG_DES_ECB_NOPAD Cipher_setKeyInitDoFinal()
 measurement config:;appletPrepareINS;31;appletMeasureINS;a3;config;00 11 00 05 ff ff 00 03 00 40 00 07 00 10 ff ff 00 02 00 05 00 01
 UNKONWN_ERROR-card_has_return_value_6f00
