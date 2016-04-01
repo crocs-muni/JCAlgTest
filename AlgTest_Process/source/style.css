@@ -20,6 +20,7 @@ th{
 cursor: pointer; 
 }
 
+
 body { line-height: 1; }
 
 blockquote, q { quotes: none; }
@@ -33,6 +34,14 @@ table {border-spacing: 0; } /* IMPORTANT, I REMOVED border-collapse: collapse; F
 /*This is not important*/
 body{
 	font-family:Arial, Helvetica, sans-serif;
+}
+.table-tooltip {
+  cursor: pointer;  
+} 
+
+.tooltip > .tooltip-inner {
+  font-size: 1.0em; 
+  min-width:150%;
 }
 a:link {
 	color: #444;
@@ -81,6 +90,7 @@ div{
 	-moz-border-radius:3px;
 	-webkit-border-radius:3px;
 	border-radius:3px;
+	max-width:50%;
 
 	-moz-box-shadow: 0 1px 2px #d1d1d1;
 	-webkit-box-shadow: 0 1px 2px #d1d1d1;
@@ -135,6 +145,10 @@ div{
 	margin: 0px 50px 0px 40px;
 	font-size: 12px;
 	font-family: Monospace;
+	margin: 0;
+    line-height: 120%;
+    max-height: 90px;
+    overflow: auto;
 }
 
 .graph{
@@ -157,16 +171,20 @@ div{
 Headers Style
 ------------------------------------------------------------------ */
 h1{
-	font-family:Arial, Helvetica, sans-serif;
-	color:#003366;
-	font-size:32px;
-	margin:20px;
+	font-family: Arial, Helvetica, sans-serif;
+    color: #003366;
+    font-size: 32px;
+    margin: 20px;
+	font-weight: 600;
+    line-height: 1.1;
 }
 h2{
 	font-family:Arial, Helvetica, sans-serif;
 	color:#003366;
 	font-size:24px;
 	margin:20px;
+	font-weight: 600;
+    line-height: 1.1;
 }
 
 
@@ -175,6 +193,8 @@ h3{
 	color:#003366;
 	font-size:18px;
 	margin:20px;
+	font-weight: 600;
+    line-height: 1.1;
 }
 
 h4{
@@ -183,12 +203,16 @@ h4{
 	font-size:16px;
 	margin:10px;
 	margin-left: 20px
+	font-weight: 600;
+    line-height: 1.1;
 }
 
 h5{
 	font-family:Arial, Helvetica, sans-serif;
 	color:#003366;
 	font-size:12px;
+	font-weight: 600;
+    line-height: 1.1;
 }
 
 p{
@@ -243,7 +267,7 @@ table {
 	box-shadow: 0 1px 2px #d1d1d1;
 }
 table th {
-	padding:15px 20px 15px 20px;
+	padding:15px 15px 15px 15px;
 	border-top:1px solid #fafafa;
 	border-bottom:1px solid #e0e0e0;
 
@@ -251,6 +275,27 @@ table th {
 	background: -webkit-gradient(linear, left top, left bottom, from(#ededed), to(#ebebeb));
 	background: -moz-linear-gradient(top,  #ededed,  #ebebeb);
 }
+
+table th.minor {
+	padding:5px 8px 5px 8px;
+	border-top:1px solid #fafafa;
+	border-bottom:1px solid #e0e0e0;
+	font-size: 10px;
+	background: #ededed;
+	background: -webkit-gradient(linear, left top, left bottom, from(#ededed), to(#ebebeb));
+	background: -moz-linear-gradient(top,  #ededed,  #ebebeb);
+}
+
+table.compare th {
+	padding:5px 10px 5px 10px;
+	border-top:1px solid #fafafa;
+	border-bottom:1px solid #e0e0e0;
+
+	background: #ededed;
+	background: -webkit-gradient(linear, left top, left bottom, from(#ededed), to(#ebebeb));
+	background: -moz-linear-gradient(top,  #ededed,  #ebebeb);
+}
+
 table th:first-child{
 	text-align: left;
 	padding-left:20px;
@@ -284,11 +329,39 @@ table tr td {
 	background: -webkit-gradient(linear, left top, left bottom, from(#fbfbfb), to(#fafafa));
 	background: -moz-linear-gradient(top,  #fbfbfb,  #fafafa);
 }
+
+table tr td.minor {
+	padding:5px;
+	border-top: 1px solid #ffffff;
+	border-bottom:1px solid #e0e0e0;
+	border-left: 1px solid #e0e0e0;
+	
+	background: transparent;
+    font-size: 10px;
+}
+
 table tr.even td{
 	background: #f6f6f6;
 	background: -webkit-gradient(linear, left top, left bottom, from(#f8f8f8), to(#f6f6f6));
 	background: -moz-linear-gradient(top,  #f8f8f8,  #f6f6f6);
 }
+
+table tr.even td.minor {
+	padding:5px;
+	border-top: 1px solid #ffffff;
+	border-bottom:1px solid #e0e0e0;
+	border-left: 1px solid #e0e0e0;
+	
+	background: transparent;
+    font-size: 10px;
+}
+
+table tr.even:hover td{
+	background: #f2f2f2;
+	background: -webkit-gradient(linear, left top, left bottom, from(#f2f2f2), to(#f0f0f0));
+	background: -moz-linear-gradient(top,  #f2f2f2,  #f0f0f0);	
+}
+
 table tr:last-child td{
 	border-bottom:0;
 }
@@ -323,3 +396,4 @@ table tr:hover td{
 	background-image: url('up-hover.png');
 	opacity: 0.9;
 }
+
