@@ -4978,98 +4978,98 @@ SIGNATURE - TYPE_DES LENGTH_DES3_3KEY ALG_DES_MAC8_ISO9797_M1 - variable data - 
 
 method name:; TYPE_DES LENGTH_DES3_3KEY ALG_DES_MAC8_ISO9797_M1 Signature_sign()
 measurement config:;appletPrepareINS;32;appletMeasureINS;49;config;00 12 00 04 ff ff 00 03 00 c0 00 0a 00 10 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;244,00;243,00;243,00;242,00;243,00;
-baseline stats (ms):;avg:;243,00;min:;242,00;max:;244,00;
-operation raw measurements (ms):;21,00;24,00;25,00;25,00;25,00;
-operation stats (ms/op):;avg op:;4,80;min op:;4,20;max op:;5,00;;CHECK
+baseline measurements (ms):;243,00;240,00;240,00;240,00;240,00;
+baseline stats (ms):;avg:;240,60;min:;240,00;max:;243,00;
+operation raw measurements (ms):;21,40;24,40;24,40;24,40;24,40;
+operation stats (ms/op):;avg op:;4,76;min op:;4,28;max op:;4,88;;CHECK
 operation info:;data length;16;total iterations;25;total invocations;25;
 
 method name:; TYPE_DES LENGTH_DES3_3KEY ALG_DES_MAC8_ISO9797_M1 Signature_sign()
 measurement config:;appletPrepareINS;32;appletMeasureINS;49;config;00 12 00 04 ff ff 00 03 00 c0 00 0a 00 20 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;246,00;242,00;244,00;243,00;244,00;
-baseline stats (ms):;avg:;243,80;min:;242,00;max:;246,00;
-operation raw measurements (ms):;22,20;24,20;25,20;26,20;25,20;
-operation stats (ms/op):;avg op:;4,92;min op:;4,44;max op:;5,24;;CHECK
+baseline measurements (ms):;243,00;241,00;240,00;240,00;240,00;
+baseline stats (ms):;avg:;240,80;min:;240,00;max:;243,00;
+operation raw measurements (ms):;23,20;25,20;25,20;25,20;25,20;
+operation stats (ms/op):;avg op:;4,96;min op:;4,64;max op:;5,04;;CHECK
 operation info:;data length;32;total iterations;25;total invocations;25;
 
 method name:; TYPE_DES LENGTH_DES3_3KEY ALG_DES_MAC8_ISO9797_M1 Signature_sign()
 measurement config:;appletPrepareINS;32;appletMeasureINS;49;config;00 12 00 04 ff ff 00 03 00 c0 00 0a 00 40 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;245,00;242,00;242,00;242,00;241,00;
-baseline stats (ms):;avg:;242,40;min:;241,00;max:;245,00;
-operation raw measurements (ms):;25,60;28,60;27,60;28,60;27,60;
-operation stats (ms/op):;avg op:;5,52;min op:;5,12;max op:;5,72;;CHECK
+baseline measurements (ms):;243,00;240,00;239,00;240,00;240,00;
+baseline stats (ms):;avg:;240,40;min:;239,00;max:;243,00;
+operation raw measurements (ms):;24,60;27,60;27,60;26,60;27,60;
+operation stats (ms/op):;avg op:;5,36;min op:;4,92;max op:;5,52;;CHECK
 operation info:;data length;64;total iterations;25;total invocations;25;
 
 method name:; TYPE_DES LENGTH_DES3_3KEY ALG_DES_MAC8_ISO9797_M1 Signature_sign()
 measurement config:;appletPrepareINS;32;appletMeasureINS;49;config;00 12 00 04 ff ff 00 03 00 c0 00 0a 00 80 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;246,00;240,00;243,00;242,00;242,00;
-baseline stats (ms):;avg:;242,60;min:;240,00;max:;246,00;
-operation raw measurements (ms):;27,40;31,40;29,40;178,40;30,40;
-operation stats (ms/op):;avg op:;11,88;min op:;5,48;max op:;35,68;;CHECK
+baseline measurements (ms):;243,00;240,00;239,00;271,00;241,00;
+baseline stats (ms):;avg:;246,80;min:;239,00;max:;271,00;;;CHECK
+operation raw measurements (ms):;32,20;36,20;26,20;25,20;27,20;
+operation stats (ms/op):;avg op:;5,88;min op:;5,04;max op:;7,24;;CHECK
 operation info:;data length;128;total iterations;25;total invocations;25;
 
 method name:; TYPE_DES LENGTH_DES3_3KEY ALG_DES_MAC8_ISO9797_M1 Signature_sign()
 measurement config:;appletPrepareINS;32;appletMeasureINS;49;config;00 12 00 04 ff ff 00 03 00 c0 00 0a 01 00 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;245,00;243,00;240,00;243,00;242,00;
-baseline stats (ms):;avg:;242,60;min:;240,00;max:;245,00;
-operation raw measurements (ms):;35,40;39,40;38,40;40,40;39,40;
-operation stats (ms/op):;avg op:;7,72;min op:;7,08;max op:;8,08;;CHECK
+baseline measurements (ms):;242,00;240,00;240,00;240,00;240,00;
+baseline stats (ms):;avg:;240,40;min:;240,00;max:;242,00;
+operation raw measurements (ms):;36,60;38,60;44,60;38,60;38,60;
+operation stats (ms/op):;avg op:;7,88;min op:;7,32;max op:;8,92;;CHECK
 operation info:;data length;256;total iterations;25;total invocations;25;
 
 method name:; TYPE_DES LENGTH_DES3_3KEY ALG_DES_MAC8_ISO9797_M1 Signature_sign()
 measurement config:;appletPrepareINS;32;appletMeasureINS;49;config;00 12 00 04 ff ff 00 03 00 c0 00 0a 02 00 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;243,00;242,00;241,00;242,00;243,00;
-baseline stats (ms):;avg:;242,20;min:;241,00;max:;243,00;
-operation raw measurements (ms):;52,80;54,80;55,80;53,80;55,80;
-operation stats (ms/op):;avg op:;10,92;min op:;10,56;max op:;11,16;
+baseline measurements (ms):;242,00;240,00;240,00;240,00;240,00;
+baseline stats (ms):;avg:;240,40;min:;240,00;max:;242,00;
+operation raw measurements (ms):;52,60;54,60;61,60;64,60;54,60;
+operation stats (ms/op):;avg op:;11,52;min op:;10,52;max op:;12,92;;CHECK
 operation info:;data length;512;total iterations;25;total invocations;25;
 
 method name:; TYPE_DES LENGTH_DES3_3KEY ALG_DES_MAC8_ISO9797_M1 Signature_setKeyInitSign()
 measurement config:;appletPrepareINS;32;appletMeasureINS;a9;config;00 12 00 04 ff ff 00 03 00 c0 00 0a 00 10 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;244,00;242,00;244,00;241,00;241,00;
-baseline stats (ms):;avg:;242,40;min:;241,00;max:;244,00;
-operation raw measurements (ms):;209,60;212,60;210,60;213,60;213,60;
-operation stats (ms/op):;avg op:;42,40;min op:;41,92;max op:;42,72;
+baseline measurements (ms):;242,00;240,00;241,00;240,00;240,00;
+baseline stats (ms):;avg:;240,60;min:;240,00;max:;242,00;
+operation raw measurements (ms):;210,40;212,40;213,40;212,40;212,40;
+operation stats (ms/op):;avg op:;42,44;min op:;42,08;max op:;42,68;
 operation info:;data length;16;total iterations;25;total invocations;25;
 
 method name:; TYPE_DES LENGTH_DES3_3KEY ALG_DES_MAC8_ISO9797_M1 Signature_setKeyInitSign()
 measurement config:;appletPrepareINS;32;appletMeasureINS;a9;config;00 12 00 04 ff ff 00 03 00 c0 00 0a 00 20 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;246,00;241,00;240,00;241,00;242,00;
-baseline stats (ms):;avg:;242,00;min:;240,00;max:;246,00;
-operation raw measurements (ms):;198,00;192,00;193,00;194,00;192,00;
-operation stats (ms/op):;avg op:;38,76;min op:;38,40;max op:;39,60;
+baseline measurements (ms):;242,00;246,00;247,00;240,00;240,00;
+baseline stats (ms):;avg:;243,00;min:;240,00;max:;247,00;
+operation raw measurements (ms):;200,00;199,00;189,00;183,00;182,00;
+operation stats (ms/op):;avg op:;38,12;min op:;36,40;max op:;40,00;
 operation info:;data length;32;total iterations;25;total invocations;25;
 
 method name:; TYPE_DES LENGTH_DES3_3KEY ALG_DES_MAC8_ISO9797_M1 Signature_setKeyInitSign()
 measurement config:;appletPrepareINS;32;appletMeasureINS;a9;config;00 12 00 04 ff ff 00 03 00 c0 00 0a 00 40 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;245,00;242,00;243,00;244,00;242,00;
-baseline stats (ms):;avg:;243,20;min:;242,00;max:;245,00;
-operation raw measurements (ms):;198,80;190,80;192,80;192,80;192,80;
-operation stats (ms/op):;avg op:;38,72;min op:;38,16;max op:;39,76;
+baseline measurements (ms):;241,00;240,00;240,00;242,00;239,00;
+baseline stats (ms):;avg:;240,40;min:;239,00;max:;242,00;
+operation raw measurements (ms):;204,60;188,60;189,60;197,60;188,60;
+operation stats (ms/op):;avg op:;38,76;min op:;37,72;max op:;40,92;;CHECK
 operation info:;data length;64;total iterations;25;total invocations;25;
 
 method name:; TYPE_DES LENGTH_DES3_3KEY ALG_DES_MAC8_ISO9797_M1 Signature_setKeyInitSign()
 measurement config:;appletPrepareINS;32;appletMeasureINS;a9;config;00 12 00 04 ff ff 00 03 00 c0 00 0a 00 80 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;245,00;242,00;243,00;243,00;242,00;
-baseline stats (ms):;avg:;243,00;min:;242,00;max:;245,00;
-operation raw measurements (ms):;203,00;198,00;198,00;201,00;209,00;
-operation stats (ms/op):;avg op:;40,36;min op:;39,60;max op:;41,80;
+baseline measurements (ms):;249,00;245,00;241,00;240,00;241,00;
+baseline stats (ms):;avg:;243,20;min:;240,00;max:;249,00;
+operation raw measurements (ms):;196,80;195,80;200,80;203,80;196,80;
+operation stats (ms/op):;avg op:;39,76;min op:;39,16;max op:;40,76;
 operation info:;data length;128;total iterations;25;total invocations;25;
 
 method name:; TYPE_DES LENGTH_DES3_3KEY ALG_DES_MAC8_ISO9797_M1 Signature_setKeyInitSign()
 measurement config:;appletPrepareINS;32;appletMeasureINS;a9;config;00 12 00 04 ff ff 00 03 00 c0 00 0a 01 00 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;245,00;384,00;242,00;240,00;241,00;
-baseline stats (ms):;avg:;270,40;min:;240,00;max:;384,00;;;CHECK
-operation raw measurements (ms):;182,60;176,60;177,60;178,60;177,60;
-operation stats (ms/op):;avg op:;35,72;min op:;35,32;max op:;36,52;
+baseline measurements (ms):;241,00;240,00;240,00;240,00;240,00;
+baseline stats (ms):;avg:;240,20;min:;240,00;max:;241,00;
+operation raw measurements (ms):;209,80;209,80;199,80;209,80;199,80;
+operation stats (ms/op):;avg op:;41,16;min op:;39,96;max op:;41,96;
 operation info:;data length;256;total iterations;25;total invocations;25;
 
 method name:; TYPE_DES LENGTH_DES3_3KEY ALG_DES_MAC8_ISO9797_M1 Signature_setKeyInitSign()
 measurement config:;appletPrepareINS;32;appletMeasureINS;a9;config;00 12 00 04 ff ff 00 03 00 c0 00 0a 02 00 ff ff ff ff 00 05 00 01
-baseline measurements (ms):;242,00;243,00;242,00;242,00;240,00;
-baseline stats (ms):;avg:;241,80;min:;240,00;max:;243,00;
-operation raw measurements (ms):;228,20;221,20;222,20;222,20;223,20;
-operation stats (ms/op):;avg op:;44,68;min op:;44,24;max op:;45,64;
+baseline measurements (ms):;240,00;240,00;240,00;240,00;240,00;
+baseline stats (ms):;avg:;240,00;min:;240,00;max:;240,00;
+operation raw measurements (ms):;221,00;220,00;220,00;220,00;220,00;
+operation stats (ms/op):;avg op:;44,04;min op:;44,00;max op:;44,20;
 operation info:;data length;512;total iterations;25;total invocations;25;
 
 
