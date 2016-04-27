@@ -47,7 +47,7 @@ import java.util.StringTokenizer;
 
 /**
  *
- * @author petr
+ * @author petr 
  */
 public class AlgTestProcess {
     /* Arguments for AlgTestProcess. */
@@ -55,13 +55,12 @@ public class AlgTestProcess {
     public static final String COMPARE_CARDS = "COMPARE";
     public static final String GENERATE_JCCONSTANTS = "JCCONSTS";
     
-    public static final String GENERATE_JCINFO = "JCINFO";
+    public static final String GENERATE_JCINFO = "JCINFO";              //TABLE WITH PERF RESULTS
     public static final String GENERATE_SORTABLE = "SORTABLE";          //SORTABLE TABLE
     public static final String GENERATE_GRAPHS = "GRAPHS";              //GENERATE SINGLE GRAPHS PAGE FOR JCINFO
     public static final String GENERATE_GRAPHS_ONEPAGE = "GRAPHSPAGE";  //PAGE WITH VARIABLE PERFTEST GRAPHS
     public static final String GENERATE_COMPARE_GRAPH = "COMPAREGRAPH"; //ONE BIG GRAPH FOR COMPARE CARDS
-    public static final String GENERATE_COMPARE_TABLE = "COMPARETABLE"; //ONE BIG TABLE FOR COMPARE CARDS
-      
+    public static final String GENERATE_COMPARE_TABLE = "COMPARETABLE"; //ONE BIG TABLE FOR COMPARE CARDS      
     
     // if one card results are generated
     public static final String[] JAVA_CARD_VERSION = {"2.1.2", "2.2.1", "2.2.2"};
@@ -184,9 +183,9 @@ public class AlgTestProcess {
         /* String containing output file path. */
         String outputFileName = basePath + "AlgTest_html_table_comparison.html";
         /* String containing line to search for in HTML file. */
-        String lineToSearch = "<tr style='height:12.75pt'>";
+        String lineToSearch = "<tr>";
         /* String containing style information for not matching algorithms in HTML file. */
-        String styleInfo = "<tr style='height:12.75pt;outline: solid'>";
+        String styleInfo = "<tr style='outline: solid'>";
         
         /* String array for loaded file. */
         ArrayList<String> loadedFile = new ArrayList<>();
@@ -253,11 +252,11 @@ public class AlgTestProcess {
                     + "<link type=\"text/css\" href=\"style.css\" rel=\"stylesheet\">\r\n"
                     + "<script class=\"jsbin\" src=\"http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js\"></script>\r\n"
                     + "<title>JavaCard support test</title>\r\n"
-                    + "<script>$(function(){ $(\"#tab td\").hover(function(){$(\"#tab col\").eq($(this).index()).css({\"border\":\" 3px solid red\"});$(this).closest(\"tr\").css({\"border\":\" 3px solid red\"});},function(){$(\"#tab col\").eq($(this).index()).css({\"border\":\" 0px\"}); $(this).closest(\"tr\").css({\"border\":\" 0px\"});});});</script>\r\n"
+                    + "<script>$(function(){ $(\"#tab td\").hover(function(){$(\"#tab col\").eq($(this).index()).css({\"border\":\" 2px solid #74828F\"});$(this).closest(\"tr\").css({\"border\":\" 2px solid #74828F\"});},function(){$(\"#tab col\").eq($(this).index()).css({\"border\":\" 0px\"}); $(this).closest(\"tr\").css({\"border\":\" 0px\"});});});</script>\r\n"
                     + "</head>\r\n"
                     + "<body>\r\n\r\n"; 
 
-			String cardList = "<b id=\"LIST\">Tested cards abbreviations:</b><br>\r\n";
+			String cardList = "<div class=\"container-fluid\">\n<h3 id=\"LIST\">Tested cards abbreviations</h3>\r\n";
             for (int i = 0; i < filesArray.length; i++) {
                 String cardIdentification = filesArray[i];
                 cardIdentification = cardIdentification.replace('_', ' ');
@@ -291,32 +290,32 @@ public class AlgTestProcess {
             note = "Note: If you have card of unknown type, try to obtain ATR and take a look at smartcard list available here: <a href=\"http://smartcard-atr.appspot.com/\"> http://smartcard-atr.appspot.com/</a><br><br>\r\n\r\n"; 
             file.write(note.getBytes());
 
-            String explain = "<table id=\"explanation\" width=\"1000\" border=\"0\" cellspacing=\"2\" cellpadding=\"4\" >\r\n" 
-                    + "<tr style='height:12.75pt'>\r\n"
-                    + "  <td class='dark_index'>Symbol</td>\r\n"
+            String explain = "<table id=\"explanation\" min-width=\"1000\" border=\"0\" cellspacing=\"2\" cellpadding=\"4\" >\r\n" 
+                    + "<tr>\r\n"
+                    + "  <td class='dark_index' style=\"min-width:100px\">Symbol</td>\r\n"
                     + "  <td class='dark_index'>Meaning</td>\r\n"
                     + "</tr>\r\n"
-                    + "<tr style='height:12.75pt'>\r\n"
+                    + "<tr>\r\n"
                     + "  <td class='light_yes'>yes</td>\r\n"
                     + "  <td class='light_info_left'>This particular algorithm was tested and IS supported by given card.</td>\r\n"
                     + "</tr>\r\n"
-                    + "<tr style='height:12.75pt'>\r\n"
+                    + "<tr>\r\n"
                     + "  <td class='light_no'>no</td>\r\n"
                     + "  <td class='light_info_left'>This particular algorithm was tested and is NOT supported by given card.</td>\r\n"
                     + "</tr>\r\n"
-                    + "<tr style='height:12.75pt'>\r\n"
+                    + "<tr>\r\n"
                     + "  <td class='light_suspicious'>suspicious yes</td>\r\n"
                     + "  <td class='light_info_left'>This particular algorithm was tested and is REPORTED as supported by given card. However, given algorithm was introduced in later version of JavaCard specification than version declared by the card as supported one. Mostly, algorithm is really supported. But it might be possible, that given algorithm is NOT actually supported by card as some cards may create object for requested algorithm and fail only later when object is actually used. Future version of the JCAlgTest will make more thorough tests regarding this behaviour.</td>\r\n"
                     + "</tr>\r\n"
-                    + "<tr style='height:12.75pt'>\r\n"
+                    + "<tr>\r\n"
                     + "  <td class='light_info'>error(ERROR_CODE)</td>\r\n"
                     + "  <td class='light_info_left'>Card returned specific error other then raising CryptoException.NO_SUCH_ALGORITHM. Most probably, algorithm is NOT supported by given card.</td>\r\n"
                     + "</tr>\r\n"
-                    + "<tr style='height:12.75pt'>\r\n"
+                    + "<tr>\r\n"
                     + "  <td class='light_info'>?</td>\r\n"
                     + "  <td class='light_info_left'>Card returned unspecific error. Most probably, algorithm is NOT supported by given card.</td>\r\n"
                     + "</tr>\r\n"
-                    + "<tr style='height:12.75pt'>\r\n"
+                    + "<tr>\r\n"
                     + "  <td class='light_maybe'>-</td>\r\n"
                     + "  <td class='light_info_left'>This particular algorithm was NOT tested. Usually, this equals to unsupported algorithm. Typical example is the addition of new constants introduced by the newer version of JavaCard standard, which are not supported by cards tested before apperance of of new version of specification. The exceptions to this rule are classes that have to be tested manually (at the moment, following information: JavaCard support version, javacardx.apdu.ExtendedLength Extended APDU) where not tested doesn't automatically means not supported. Automated upload and testing of these features will solve this in future.</td>\r\n"
                     + "</tr>\r\n"
@@ -325,25 +324,63 @@ public class AlgTestProcess {
             file.write(explain.getBytes());
             
             
-            String table = "<table id=\"tab\" width=\"730\" border=\"0\" cellspacing=\"2\" cellpadding=\"4\">\r\n";
+            //Checkboxes to show/hide columns in table, JavaScript required 
+            String checkboxes = "<h4>Click on each checkbox to show/hide corresponding column (card)</h4>\n\t<div class=\"row\" id=\"grpChkBox\">\n";
+            for(int i=0; i<filesArray.length; i++){
+                String cardIdentification = filesArray[i];
+                cardIdentification = cardIdentification.replace('_', ' ');
+                cardIdentification = cardIdentification.replace(".csv", "");
+                cardIdentification = cardIdentification.replace("3B", ", ATR=3B");
+                cardIdentification = cardIdentification.replace("3b", ", ATR=3b");
+                cardIdentification = cardIdentification.replace("ALGSUPPORT", "");                
+                String cardShortName = cardIdentification.substring(0, cardIdentification.indexOf(",")-1);
+                
+                if(i%(filesArray.length/3 + 1) == 0)
+                    checkboxes += "<div class=\"col-lg-4 .col-sm-4\">\n";
+                
+                checkboxes += "\t\t<p style=\"margin:0;\"><input type=\"checkbox\" name=\""+i+"\" /> <b>c"+i+"</b> - "+cardShortName+"</p>\n";
+                
+                getShortCardName(filesArray[i]);
+                if(i%(filesArray.length/3 + 1) == filesArray.length/3)
+                    checkboxes += "\t</div>\n";
+            }
+            checkboxes += "\t<br>\n\t</div>\n</div>\n";
+            checkboxes += "<input type=\"button\" class=\"btn btn-default\" id=\"checkAll\" onclick=\"checkAll('grpChkBox')\" value=\"Select all\">\n";
+            checkboxes += "<input type=\"button\" class=\"btn btn-default\" id=\"uncheckAll\" onclick=\"uncheckAll('grpChkBox')\" value=\"Deselect all\">\n";
+            checkboxes += "\n</br></br>\n\n";
+            file.write(checkboxes.getBytes());
+            
+            
+            String table = "<table id=\"tab\" min-width=\"1000px\" border=\"0\" cellspacing=\"2\" cellpadding=\"4\">\r\n";
             // Insert helper column identification for mouseover row & column jquery highlight
             table += "<colgroup>";        
             for (int i = 0; i < filesArray.length + 2; i++) { table += "<col />"; } // + 2 because of column with algorithm name and introducing version
-            table += "</colgroup>\r\n";               
-            file.write(table.getBytes()); file.flush();                  
+            table += "</colgroup>\r\n";
+            
+            file.write(table.getBytes());                 
 
+            //
+            // HTML TABLE HEAD
+            //
+            file.write("<thead>".getBytes());
+            formatTableAlgorithm_HTML(filesArray, SingleModeTest.ALL_CLASSES_STR[0], filesSupport, file);
+            file.write("</thead>".getBytes());
+            
             //
             // HTML TABLE BODY
             //
-            for (String[] classStr : SingleModeTest.ALL_CLASSES_STR) {
-                formatTableAlgorithm_HTML(filesArray, classStr, filesSupport, file);
-            }
+            file.write("<tbody>".getBytes());
+            for(int i=1; i<SingleModeTest.ALL_CLASSES_STR.length; i++)    
+                formatTableAlgorithm_HTML(filesArray, SingleModeTest.ALL_CLASSES_STR[i], filesSupport, file);
+            
+            file.write("</tbody>".getBytes());
             
             //
             // FOOTER
             //
             String footer = "</table>\r\n\r\n";
-            footer += "\r\n\r\n</body></html>";
+            footer += "<footer>\n\t<hr>\n\t<div class=\"text-center\">\n\t\t<p><a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\"><img alt=\"Creative Commons License\" style=\"border-width:0\" src=\"https://i.creativecommons.org/l/by/4.0/88x31.png\" /></a><br /><span xmlns:dct=\"http://purl.org/dc/terms/\" href=\"http://purl.org/dc/dcmitype/Dataset\" property=\"dct:title\" rel=\"dct:type\">&copy JCAlgTest</span> by <span xmlns:cc=\"http://creativecommons.org/ns#\" property=\"cc:attributionName\">CRoCS MU</span> is licensed under a <a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\">Creative Commons Attribution 4.0 International License</a>.</p>\n\t</div>\n</footer>";
+            footer += "\r\n\r\n</div>\n</body>\n</html>";
             file.write(footer.getBytes());
 
             file.flush();
@@ -390,9 +427,12 @@ public class AlgTestProcess {
     }    
     static void formatTableAlgorithm_HTML(String[] filesArray, String[] classInfo, HashMap[] filesSupport, FileOutputStream file) throws IOException {
         // class (e.g., javacardx.crypto.Cipher)
-        String algorithm = "<tr style='height:12.75pt'>\r\n" + "<td class='dark'>" + classInfo[0] + "</td>\r\n";
-        algorithm += "  <td class='dark_index'>introduced in JavaCard version</td>\r\n"; 
-        for (int i = 0; i < filesSupport.length; i++) { algorithm += "  <td class='dark_index' title = '" + getLongCardName(filesArray[i]) + "'>c" + i + "</td>\r\n"; }
+        String algorithm = "<tr>\r\n" + "<td class='dark'>" + classInfo[0] + "</td>\r\n";
+        algorithm += "  <td class='dark'>introduced in JC ver.</td>\r\n"; 
+        if(classInfo[0] == "Basic info")
+            for (int i = 0; i < filesSupport.length; i++) { algorithm += "  <th class='dark_index "+i+"' title = '" + getLongCardName(filesArray[i]) + "'>c" + i + "</th>\r\n"; }
+         else
+            for (int i = 0; i < filesSupport.length; i++) { algorithm += "  <td class='dark_index' title = '" + getLongCardName(filesArray[i]) + "'>c" + i + "</td>\r\n"; }
         
         String[] jcvArray = java_card_version_array.toArray(new String[java_card_version_array.size()]);
         algorithm += "</tr>\r\n";
@@ -409,13 +449,13 @@ public class AlgTestProcess {
                 else{
                     // Parse algorithm name and version of JC which introduced it
                     if (i == 0){continue;}
-                    CardMngr    cman = new CardMngr();
+                    CardMngr cman = new CardMngr();
                     algorithmName = cman.GetAlgorithmName(classInfo[i]);
                     algorithmVersion = cman.GetAlgorithmIntroductionVersion(classInfo[i]);
                     if (!cman.ShouldBeIncludedInOutput(classInfo[i])) continue; // ignore types with ignore flag set (algorith#version#include 1/0) 
                 }
                 
-                algorithm += "<tr style='height:12.75pt'>\r\n";
+                algorithm += "<tr>\r\n";
                 // Add algorithm name
                 algorithm += "  <td class='light'>" + algorithmName + "</td>\r\n";
                 // Add version of JavaCard standard that introduced given algorithm

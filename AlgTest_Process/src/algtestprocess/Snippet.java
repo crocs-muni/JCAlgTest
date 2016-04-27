@@ -70,8 +70,7 @@ public class Snippet {
 	public static void main(String[] args) throws Exception {
 		Snippet http = new Snippet();
 		http.sendPost();
-	}
-        
+	}        
         
 	// HTTP POST request
 	private String sendPost() throws Exception {

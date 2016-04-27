@@ -1,138 +1,132 @@
-table { border-collapse: collapse; border-spacing:0; }
-td { border: 1px solid #ccc; min-width: 4em; }
-
-a:link { text-decoration: none; }
-
-h2 { color: black; }
-
-
-th { font-family: sans-serif; }
-
-th.dark {
-  color: black;
-  background: #7d9fc4 none;
-  font-family: sans-serif;
-  font-size: smaller;
+table { 
+	border-collapse: collapse; 
+	border-spacing:0;
 }
 
-th.darkname {
-  color: black;
-  background: #7d9fc4 none;
-  font-family: sans-serif;
-  font-size: smaller;
+tr {
+height: 12pt;
+}
+
+th, td{
+	border: 1px solid #eceeef; 
+	padding: 1px;
+	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
+a:link { 
+	text-decoration: none; 
+}
+
+th{
+	line-height: 1.2; 
+}
+
+th.dark, td.dark {
+	color: #ecf0f1;
+	background: #525564 none;
+	font-family: sans-serif;
+	font-size: smaller;
+	font-weight: 600;
+}
+
+th:first-child, td:first-child{
+	padding-left: 10px;
+}
+
+th.dark_index, td.dark_index {
+	color: #ecf0f1;
+	background: #74828F none;	
+	font-size: smaller;
+	font-weight: bold;
+	text-align: center;
+}
+
+td.darkname, th.darkname {
+	color: #ecf0f1;
+	background: #bdc3c7 none;
+	font-size: smaller;
 }
 
 th.pgpdark {
-  color: white;
-  background: #7d9fc4 none;
-  font-family: sans-serif;
-  font-size: smaller;
-  font-weight: bold;
+	color: white;
+	background: #bdc3c7 none;
+	font-size: smaller;
+	font-weight: bold;
 }
-
-td.hover { background-color: #eee; }
 
 td.light {
 	color: black;
+	padding-left: 10px;
+	font-weight: 600;
 	background: #E0E0E0 none;
-	font-family: sans-serif;
 	font-size: smaller;
 }
 td.light_yes {
 	color: black;
 	background: #c0E0c0 none;
-	font-family: sans-serif;
 	font-size: smaller;
 	text-align: center;
 }
 td.light_suspicious {
 	color: black;
-	background: #c0D0c0 none;
-	font-family: sans-serif;
+	background: #c0D0c0 none;	 
 	font-size: smaller;
 	text-align: center;
 }
 td.light_no {
 	color: black;
-	background: #E0C0c0 none;
-	font-family: sans-serif;
+	background: #E0C0c0 none;	 
 	font-size: smaller;
 	text-align: center;
 }
 td.light_info {
 	color: black;
-	background: #F0F0F0 none;
-	font-family: sans-serif;
+	word-break:break-all;
+	min-width: 55px;
+	background: #F0F0F0 none;	 
 	font-size: smaller;
 	text-align: center;
 }
 td.light_info_left {
 	color: black;
-	background: #F0F0F0 none;
-	font-family: sans-serif;
+	background: #F0F0F0 none;	 
 	font-size: smaller;
 	text-align: left;
 }
 td.light_error {
 	color: black;
-	background: #FAFAFA none;
-	font-family: sans-serif;
+	background: #FAFAFA none;	 
 	font-size: smaller;
 	text-align: center;
 }
 td.light_maybe {
 	color: black;
-	background: #FDE1E1 none;
-	font-family: sans-serif;
+	background: #FDE1E1 none;	 
 	font-size: smaller;
 	text-align: center;
 }
 
 td.lightbolt {
 	color: black;
-	background: #E0E0E0 none;
-	font-family: sans-serif;
-	font-size: smaller;
-   font-weight: bold;
-}
-
-
-td.dark {
-	color: black;
-	background: #7d9fc4 none;
-	font-family: sans-serif;
+	background: #E0E0E0 none;	 
 	font-size: smaller;
     font-weight: bold;
 }
 
-td.dark_index {
-	color: black;
-	background: #7d9fc4 none;
-	font-family: sans-serif;
-	font-size: smaller;
-	font-weight: bold;
-	text-align: center;
-}
-
-
 td.pgplight {
 	color: black;
-	background: #E0E0E0 none;
-	font-family: sans-serif;
+	background: #E0E0E0 none;	 
 	font-size: smaller;
     font-weight: bold;
 }
 
 td.complete {
 	color: black;
-	background: #BEBEBE none;
-	font-family: sans-serif;
+	background: #BEBEBE none;	 
 	font-size: smaller;
 }
 
-td.normaltext {
-	color: black;
-	font-family: sans-serif;
+td.normaltext { 
 	font-size: smaller;
 }
 
@@ -141,21 +135,18 @@ td.normaltext {
   font-size: smaller;
 }
 
-#header {
-  font-family: sans-serif;
+#header {   
   font-size: xx-large;
   font-weight: bold;
 }
 
-#pgpheader {
-  font-family: sans-serif;
+#pgpheader {   
   font-size: middle;
   font-weight: bold;
 }
 td.header {
 	color: black;
-	background: #E0E0E0 none;
-	font-family: sans-serif;
+	background: #E0E0E0 none;	 
 	font-size: small;
 	font-weight: bold;
 }
