@@ -46,6 +46,7 @@ public class Consts {
     public final static byte INS_PERF_TEST_SWALG_HOTP     = (byte) 0xa4;
     public final static byte INS_PERF_TEST_SWALGS         = (byte) 0xa5;
     
+    public final static byte INS_PREPARE_TEST_DEFAULT_PARAMS = (byte) 0xb1;
     
     
     
