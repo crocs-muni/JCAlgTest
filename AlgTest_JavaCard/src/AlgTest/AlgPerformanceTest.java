@@ -176,6 +176,8 @@ import javacardx.crypto.*;
                 case Consts.INS_PERF_TEST_SWALG_HOTP: perftest_swalg_HOTP(apdu); break;
                 case Consts.INS_PERF_TEST_SWALGS: perftest_swalgs(apdu); break;
                     
+                case Consts.INS_PREPARE_TEST_DEFAULT_PARAMS: getDefaultECParameters(apdu); break;
+                    
                 default : {
                     // The INS code is not supported by the dispatcher
                     bProcessed = (byte) 0;
@@ -1419,5 +1421,37 @@ import javacardx.crypto.*;
         apdubuf[ISO7816.OFFSET_CDATA] = SUCCESS;
         apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);            
     }        
+    
+    
+    
+     void getDefaultECParameters(APDU apdu) {
+         byte[] apdubuf = apdu.getBuffer();
+         short len = apdu.setIncomingAndReceive();
+         m_testSettings.parse(apdu);
+
+         // Prepare required key object into m_key
+         prepare_Key(apdu, m_testSettings, Consts.TRUE);
+         
+         short offset = (short) 0;
+
+        // IMPORTANT: call to prepare_Key with proper settings is assumed so perfTest is already filled with required 
+         // Store type of key
+         Util.setShort(apdubuf, offset, m_testSettings.keyType);
+         offset += 2;
+
+         Util.setShort(apdubuf, offset, JCConsts.ECPrivateKey_getS);
+         offset += 2;
+         short paramLen = m_ecprivate_key.getS(apdubuf, (short) (offset + 2));
+         Util.setShort(apdubuf, offset, paramLen);
+         offset += 2;
+
+         Util.setShort(apdubuf, offset, JCConsts.ECPublicKey_getW);
+         offset += 2;
+         paramLen = m_ecpublic_key.getW(apdubuf, (short) (offset + 2));
+         Util.setShort(apdubuf, offset, paramLen);
+         offset += 2;
+
+         apdu.setOutgoingAndSend((short) 0, offset);
+     }
     
  }

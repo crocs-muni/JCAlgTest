@@ -1,0 +1,16 @@
+# Usable for: Gemalto_GXP_E64_PK
+mode_201
+enable_trace
+establish_context
+
+card_connect -readerNumber 1
+#select -AID A000000018434D00
+open_sc -security 1 -keyind 0 -keyver 0 -mac_key 404142434445464748494a4b4c4d4e4f -enc_key 404142434445464748494a4b4c4d4e4f
+
+delete -AID 6D7970616330303031
+delete -AID 6D797061636B616731
+
+install -file AlgTest_v1.6_supportOnly_jc212.cap -nvDataLimit 2000 -instParam 00 
+
+card_disconnect
+release_context
