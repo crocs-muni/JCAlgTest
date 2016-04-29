@@ -452,17 +452,17 @@ public class JCinfohtml {
         topNames_sym.addAll(topNames_asym);
         topAcronyms_sym.addAll(topAcronyms_asym);
         
-        //prepare rows - add first value - name of function (data added later)
+        //prepare rows (data added later)
+        //one row(ArrayList<Float>) represent one algorithm, one column (get(i) in each row) represent one card
         for(String acr : topAcronyms_sym)            
             rowsData.add(new ArrayList<Float>());
-        
-        
+                
         //beginning of graph table
         StringBuilder toFile = new StringBuilder();        
         toFile.append("\t<strong><table class=\"compare\" cellspacing=\"0\" style=\"background:#FEFEFE; border-collapse: separate\"><tbody>\n" +
                         "\t\t<tr>\n\t\t\t<th>"+"Higher percentage = more similar"+"</th>\n");
        
-        //load data from input (fixed-size perf data) files and store name of card
+        //load data from input files (fixed-size perf data) and store name of card
         for(String fileName : files)
             namesOfCards.add(addCard(topNames_sym, rowsData, fileName));
            
@@ -486,7 +486,37 @@ public class JCinfohtml {
                     rowsData.get(i).set(j, rowsData.get(i).get(j)/max);
             }            
         }
-
+        
+        System.out.print("var LegendOptions = [");
+        for(int i=0; i<namesOfCards.size(); i++)
+            System.out.print("'"+namesOfCards.get(i)+"', ");
+        System.out.println("];");
+        
+        for(int i=0; i<namesOfCards.size(); i++){
+            System.out.println("[");
+            for(int k=0; k<topAcronyms_sym.size(); k++)
+                System.out.println("{axis:\"" +topAcronyms_sym.get(k)+"\",value:"+rowsData.get(k).get(i)+"},");    
+            
+            System.out.println("],");
+        }
+        System.out.println("];");
+        
+        
+      /*  
+        for(int i=0; i<namesOfCards.size(); i++){
+            float avg = 0.0F;
+            int sum = 0;
+            
+            for(int k=0; k<topNames_sym.size(); k++){
+                if(rowsData.get(k).get(i) != 0.0F)
+                    sum++;
+                
+                avg += rowsData.get(k).get(i);
+            }
+                
+            System.out.println(namesOfCards.get(i)+"\t"+Math.abs(1-avg/sum));
+        }
+*/
          
         for(int i=0; i<namesOfCards.size(); i++){
             toFile.append("\t\t<tr>\n");
@@ -504,6 +534,7 @@ public class JCinfohtml {
                     for(int k=0; k<topNames_sym.size(); k++){
                         if((rowsData.get(k).get(i) == 0.0F) && (rowsData.get(k).get(j) == 0.0F))
                             {} else {
+                                //add method to unsupported list between two cards
                                 if((rowsData.get(k).get(i) == 0.0F) || (rowsData.get(k).get(j) == 0.0F)){
                                     notSupp.add(topNames_sym.get(k));  
                             } else {   
@@ -514,7 +545,7 @@ public class JCinfohtml {
                     }
                      sum = sum/num;
                      sum = (float)Math.sqrt(sum);
-                     sum = Math.abs(sum-1); //conver to percentage, close to 100% = very similar, close to 0% = not similar
+                     sum = Math.abs(sum-1); //convert to percentage, close to 100% = very similar, close to 0% = not similar
                     
                     // toFile.append("\t\t\t<td>"+String.format("%.0f", sum).replace(",", ".")+"</td>\n");
                     toFile.append("\t\t\t<td data-toggle=\"tooltip\" class=\"table-tooltip\" data-html=\"true\" data-original-title=\"");
@@ -622,7 +653,6 @@ public class JCinfohtml {
        }
         
     public static void compareGraphForFunction(String algName, String dir, FileOutputStream file) throws IOException {
-
         List<String> files = listFilesForFolder(new File(dir));
         List<String> rows = new ArrayList<>();
         List<String> rowsData = new ArrayList<>();
@@ -640,7 +670,9 @@ public class JCinfohtml {
         
         //prepare columns - add cards names to graph
         for(String fileName : files){
-            toFile.append("\t\tdata.addColumn('number', '"+addCardVariable(algName, rowsData, fileName)+"');\n");
+            String cardname = addCardVariable(algName, rowsData, fileName);
+            if(cardname != "unsupported")
+                toFile.append("\t\tdata.addColumn('number', '"+cardname+"');\n");
         }
         
         toFile.append("\t\tdata.addRows([\n");
@@ -663,7 +695,54 @@ public class JCinfohtml {
                         "\t<div id=\"cardcompare\" style=\"width: 100%; height: 90%; min-width:1200px; min-height:700px; margin-left:-50px;\"></div>\n");
                 
         file.write(toFile.toString().getBytes());
-       }   
+       }  
+    
+    public static void compareGraphForRSA(String dir, FileOutputStream file) throws IOException {
+
+        List<String> files = listFilesForFolder(new File(dir));
+        List<String> rows = new ArrayList<>();
+        List<String> rowsData = new ArrayList<>();
+
+        //beginning of graph script
+        StringBuilder toFile = new StringBuilder();        
+               toFile.append("\t<script type=\"text/javascript\">\n" +
+                        "\tgoogle.setOnLoadCallback(drawChart);\n" +
+                        "\tfunction drawChart() {\n" +
+                        "\t\tvar data = new google.visualization.DataTable();\n" +
+                        "\t\tdata.addColumn('number', 'Cardname');\n");
+        
+        rowsData.add("[512, "); rowsData.add("[768, ");
+        rowsData.add("[896, "); rowsData.add("[1024, "); rowsData.add("[1280, ");
+        rowsData.add("[1536, "); rowsData.add("[2048, ");
+        
+        //prepare columns - add cards names to graph
+        for(String fileName : files){
+            String cardname = addCardVariableRSA(rowsData, fileName);
+            if(cardname != "unsupported")
+                toFile.append("\t\tdata.addColumn('number', '"+cardname+"');\n");
+        }
+        
+        toFile.append("\t\tdata.addRows([\n");
+        
+        for(String row : rowsData)
+            toFile.append("\t\t"+row+"],\n");
+                
+        toFile.append("\t\t]);\n\n");
+        toFile.append("\t\tvar options = {\n" +
+                        "\t\ttitle: '"+"ALG_RSA LENGTH_RSA KeyPair_genKeyPair()"+"',\n" +
+                        "\t\tlineWidth: 2,\n" +
+                        //"\t\tcurveType: 'function',\n" +
+                        "\t\thAxis: {title: 'Data length' },\n" +
+                        "\t\tvAxis: {title: 'Time of execution'},\n" +
+                        "\t\tpointSize: 8,\n" +
+                        "\t\tlegend: { position: 'right' }};\n" +
+                        "\t\tvar chart = new google.visualization.LineChart(document.getElementById('cardcompare'));\n" +
+                        "\t\tchart.draw(data, options);}\n" +
+                        "\t</script>\n\n" +
+                        "\t<div id=\"cardcompare\" style=\"width: 100%; height: 90%; min-width:1200px; min-height:700px; margin-left:-50px;\"></div>\n");
+                
+        file.write(toFile.toString().getBytes());
+       } 
     
     
     /**
@@ -674,7 +753,7 @@ public class JCinfohtml {
      * @return card of name
      * @throws IOException 
      */
-    private static String addCard(List<String> algs, List<List<Float>> rowsData, String fileName) throws IOException{
+    public static String addCard(List<String> algs, List<List<Float>> rowsData, String fileName) throws IOException{
         int lp = 15;
         StringBuilder cardName = new StringBuilder();
         List<String> lines = initalize(fileName, cardName);
@@ -712,11 +791,15 @@ public class JCinfohtml {
         boolean bTopNameFound = false;
         int i=0;
         while (lp < lines.size() - 4) {
-            if (lines.get(lp).contains(algName)) {
-                bTopNameFound = true;
-                rows.set(i, rows.get(i) + parseOneForCompareGraph(lines, lp) + ", ");                        
+            if (lines.get(lp).contains(algName)) { 
+                float value = parseOneForCompareGraph(lines, lp);
+                //if(value == 0.0F)
+                 //   break;
+                
+                rows.set(i, rows.get(i) + value + ", ");  
                 i++;
                 lp++;
+                bTopNameFound = true; 
             } else {
                 lp++;
             }
@@ -724,11 +807,46 @@ public class JCinfohtml {
 
         // In case given algorithm (topname) is not present in measured file, put -
         if (!bTopNameFound) 
-            for(String row: rows)
-                row+="null, "; 
+            return "unsupported";
+            /*for(String row: rows)
+                row+="null, "; */
         
         return cardName.toString();
-    }   
+    } 
+    
+        private static String addCardVariableRSA(List<String> rows, String fileName) throws IOException{
+        int lp = 15;
+        StringBuilder cardName = new StringBuilder();
+        List<String> lines = initalize(fileName, cardName);
+        if (cardName.toString().isEmpty())
+            cardName.append(fileName.substring(fileName.lastIndexOf("/") + 1, fileName.lastIndexOf(".")));
+        
+        String[] sizes = {"512", "768", "896", "1024", "1280", "1536", "2048"};
+        
+        boolean bTopNameFound = false;
+        int i=0;
+        while (lp < lines.size() - 4) {            
+            if (lines.get(lp).contains("ALG_RSA_CRT LENGTH_RSA_"+sizes[i]+" KeyPair_genKeyPair()")) {
+                bTopNameFound = true;
+                rows.set(i, rows.get(i) + parseOneForCompareGraph(lines, lp) + ", ");                        
+                i++;
+                lp++; 
+              
+                if(i==7)
+                    break;
+            } else {
+                lp++;
+            }
+        }
+
+        // In case given algorithm (topname) is not present in measured file, put -
+        if (!bTopNameFound) 
+            return "unsupported";
+            /*for(String row: rows)
+                row+="null, "; */
+        
+        return cardName.toString();
+    }
     
 
     public static void topFunction(List<String> lines, FileOutputStream file, Integer lp) throws IOException {
@@ -985,15 +1103,13 @@ public class JCinfohtml {
         toFile.append("</br></div>\n</div>\n\t<script type=\"text/javascript\" src=\"https://www.google.com/jsapi\"></script>\n");
         Integer lp = 0;
         String methodName = "";
-
-        // Generating charts of functions that are present in top functions
+        
         while (lp < lines.size() - 20) {
             if (lines.get(lp).contains("method name:")) {
                 methodName = lines.get(lp).split(";")[1];
                 if (methodName.startsWith(" ")) {
                     methodName = methodName.substring(1);
                 }
-                //dFunctions.add(methodName);
                 
                 if ((topFunctions.contains(methodName)) || (topFunctions.size() == 0)) {
                     chart.append("\t<script type=\"text/javascript\">\n"
@@ -1155,7 +1271,7 @@ public class JCinfohtml {
 
     public static void runGraphsOnePage(String input, Boolean toponly) throws IOException {
         StringBuilder cardName = new StringBuilder();
-        String cardNameFile = "noname_graphspage";
+    String cardNameFile = "noname_graphspage";
         List<String> lines = initalize(input, cardName);
         String resultsDir = new File(input).getAbsolutePath();
         resultsDir = resultsDir.substring(0, resultsDir.lastIndexOf("\\"));
@@ -1219,10 +1335,12 @@ public class JCinfohtml {
     }
     
     public static void main(String [] args) throws FileNotFoundException, IOException{
-        FileOutputStream file = new FileOutputStream("D:\\JCAlgTest\\variable_03_2016\\comparealg.html");
+        FileOutputStream file = new FileOutputStream("D:\\JCAlgTest\\variable_03_2016\\comparealgSHA.html");
         
          beginLite(file, "Card performance - algorithm");
-         compareGraphForFunction("ALG_SHA_256 MessageDigest_doFinal()", "D:\\JCAlgTest\\variable_03_2016\\", file);
+        // compareGraphForFunction("ALG_SHA MessageDigest_doFinal()", "D:\\JCAlgTest\\variable_03_2016\\", file);
+         compareGraphForRSA("D:\\JCAlgTest\\fixed_03_2016\\", file);
          endOfHtml(file);
     }
 }
+
