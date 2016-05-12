@@ -487,22 +487,7 @@ public class JCinfohtml {
             }            
         }
         
-        System.out.print("var LegendOptions = [");
-        for(int i=0; i<namesOfCards.size(); i++)
-            System.out.print("'"+namesOfCards.get(i)+"', ");
-        System.out.println("];");
-        
-        for(int i=0; i<namesOfCards.size(); i++){
-            System.out.println("[");
-            for(int k=0; k<topAcronyms_sym.size(); k++)
-                System.out.println("{axis:\"" +topAcronyms_sym.get(k)+"\",value:"+rowsData.get(k).get(i)+"},");    
-            
-            System.out.println("],");
-        }
-        System.out.println("];");
-        
-        
-      /*  
+       
         for(int i=0; i<namesOfCards.size(); i++){
             float avg = 0.0F;
             int sum = 0;
@@ -516,13 +501,10 @@ public class JCinfohtml {
                 
             System.out.println(namesOfCards.get(i)+"\t"+Math.abs(1-avg/sum));
         }
-*/
          
         for(int i=0; i<namesOfCards.size(); i++){
             toFile.append("\t\t<tr>\n");
             toFile.append("\t\t\t<th>"+namesOfCards.get(i)+"</th>\n");
-            int multip = 1000; // multiplier of values in table
-            int sim = 5; // similarity is highlighted by green, VALUES 1-100!, lower = more green
             
             for(int j=0; j<namesOfCards.size(); j++){
                 List<String> notSupp = new ArrayList<>();
@@ -1082,7 +1064,7 @@ public class JCinfohtml {
                 + "</body>\n</html>");
 
         if (!(toFile.toString().contains("data.addRows([]);"))) {
-            FileOutputStream file = new FileOutputStream(dir + "\\" + methodName + ".html");
+            FileOutputStream file = new FileOutputStream(dir + "/" + methodName + ".html");
             file.write(toFile.toString().getBytes());
             file.close();
         }
@@ -1232,12 +1214,12 @@ public class JCinfohtml {
         
         List<String> lines = initalize(input, cardName);                            //load lines to from file to List
         String resultsDir = new File(input).getAbsolutePath();
-        resultsDir = resultsDir.substring(0, resultsDir.lastIndexOf("\\"));
+        resultsDir = resultsDir.substring(0, resultsDir.lastIndexOf("/"));
         if (!(cardName.toString().equals("")) && !(cardName.toString().equals(" "))){
             cardNameFile = cardName.toString().replaceAll(" ", "");
             cardNameFile = cardNameFile.replaceAll("_", "");
         } 
-        FileOutputStream file = new FileOutputStream(resultsDir + "\\" + cardNameFile + ".html");       
+        FileOutputStream file = new FileOutputStream(resultsDir + "/" + cardNameFile + ".html");       
         begin(file, "Test results card: " + cardName.toString());                     //logo + headline
         quickLinks(lines, file);
         details(lines, file);                                                       //test details + CPLC info
@@ -1262,7 +1244,7 @@ public class JCinfohtml {
         StringBuilder cardName = new StringBuilder();
         List<String> lines = initalize(input, cardName);
         String resultsDir = new File(input).getAbsolutePath();
-        resultsDir = resultsDir.substring(0, resultsDir.lastIndexOf("\\")) + "\\graphs";
+        resultsDir = resultsDir.substring(0, resultsDir.lastIndexOf("/")) + "/graphs";
         File dir = new File(resultsDir);
         dir.mkdirs();
         parseGraphs(lines, (dir.getAbsolutePath()), cardName.toString());
@@ -1274,12 +1256,12 @@ public class JCinfohtml {
     String cardNameFile = "noname_graphspage";
         List<String> lines = initalize(input, cardName);
         String resultsDir = new File(input).getAbsolutePath();
-        resultsDir = resultsDir.substring(0, resultsDir.lastIndexOf("\\"));
+        resultsDir = resultsDir.substring(0, resultsDir.lastIndexOf("/"));
         if (!(cardName.toString().equals("")) && !(cardName.toString().equals(" "))){
             cardNameFile = cardName.toString().replaceAll(" ", "");
             cardNameFile = cardNameFile.replaceAll("_", "");
         } 
-        FileOutputStream file = new FileOutputStream(resultsDir + "\\" + cardNameFile + ".html");
+        FileOutputStream file = new FileOutputStream(resultsDir + "/" + cardNameFile + ".html");
         beginLite(file, "Graphs results card: " + cardName.toString());
         parseGraphsPage(lines, file, toponly);
         endOfHtml(file);
@@ -1335,11 +1317,11 @@ public class JCinfohtml {
     }
     
     public static void main(String [] args) throws FileNotFoundException, IOException{
-        FileOutputStream file = new FileOutputStream("D:\\JCAlgTest\\variable_03_2016\\comparealgSHA.html");
+        FileOutputStream file = new FileOutputStream("D:/JCAlgTest/variable_03_2016/comparealgSHA.html");
         
-         beginLite(file, "Card performance - algorithm");
-        // compareGraphForFunction("ALG_SHA MessageDigest_doFinal()", "D:\\JCAlgTest\\variable_03_2016\\", file);
-         compareGraphForRSA("D:\\JCAlgTest\\fixed_03_2016\\", file);
+        beginLite(file, "Card performance - algorithm");
+        // compareGraphForFunction("ALG_SHA MessageDigest_doFinal()", "D:/JCAlgTest/variable_03_2016/", file);
+        // compareGraphForRSA("D:/JCAlgTest/fixed_03_2016/", file);
          endOfHtml(file);
     }
 }
