@@ -18,8 +18,8 @@ import java.util.List;
  *
  * @author rk
  */
-public class RadarGraph {
-    public static void beginBootstrap(FileOutputStream file, String title) throws IOException {
+public class RadarGraph {   
+        public static void beginRadarHTML(FileOutputStream file, String title) throws IOException {
         String toFile = "";
         toFile += "<html lang=\"en\">\n";
         toFile += " <head>\n";
@@ -33,21 +33,21 @@ public class RadarGraph {
 
         toFile += "\t<link href=\"../dist/css/bootstrap.min.css\" rel=\"stylesheet\">\n"
                 + "\t<link href=\"../assets/css/ie10-viewport-bug-workaround.css\" rel=\"stylesheet\">\n"
-                + "\t<link href=\"../jumbotron.css\" rel=\"stylesheet\">\n"
                 + "\t<script src=\"http://d3js.org/d3.v3.min.js\"></script>\n"
                 + "\t<script src=\"RadarChart.js\"></script>\n\n";
         
         toFile += " </head>\n\n";
-        toFile += " <body>\n\n";
+        toFile += " <body style=\"margin-top:50px; padding:20px\">\n\n";
 
-        toFile += " \t<nav class=\"navbar navbar-inverse navbar-fixed-top\">\n\t\t<div class=\"container\">\n\t\t<script type=\"text/javascript\" src=\"header-1.js\"></script>\n\t\t</div>\n\t</nav>\n\n";
+        toFile += " \t<nav class=\"navbar navbar-inverse navbar-fixed-top\">\n\t\t<div class=\"container\">\n\t\t<script type=\"text/javascript\" src=\"../header-1.js\"></script>\n\t\t</div>\n\t</nav>\n\n";
 
         file.write(toFile.getBytes());
     }
-    
-    public static void endBootstrap(FileOutputStream file) throws IOException {
+        
+    public static void endRadarHTML(FileOutputStream file) throws IOException {
         String toFile = "";
-        toFile += "\t<script type=\"text/javascript\" src=\"../footer.js\"></script>\n"+
+        toFile += "\t<script type=\"text/javascript\" src=\"footer.js\"></script>\n"+
+                "<a href=\"#\" class=\"back-to-top\"></a>" +
                 "\t<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js\"></script>\n" +
                 "\t<script>window.jQuery || document.write('<script src=\"../assets/js/vendor/jquery.min.js\"><\\/script>')</script>\n" +
                 "\t<script src=\"../dist/js/bootstrap.min.js\"></script>\n" +
@@ -57,7 +57,7 @@ public class RadarGraph {
         toFile += "</html>\n";
         file.write(toFile.getBytes());
     }
-    
+        
     public static List<String> generateRadarGraphs(String dir) throws IOException {
         // prepare input data - topFunctions, perf results
         List<String> topNames_sym = new ArrayList<>();
@@ -135,7 +135,7 @@ public class RadarGraph {
             script.close();
 
             toFile = new StringBuilder();
-            beginBootstrap(html, "JCAlgTest - " + namesOfCards.get(i) + "radar graph");
+            beginRadarHTML(html, "JCAlgTest - " + namesOfCards.get(i) + " radar graph");
             
             toFile.append("\t<div class=\"container\">\n");
             toFile.append("\t\t<div class=\"row\">\n");
@@ -147,7 +147,7 @@ public class RadarGraph {
             toFile.append("\t</div>\n");
             html.write(toFile.toString().getBytes());
             
-            endBootstrap(html);
+            endRadarHTML(html);
             html.close();            
         }
         
@@ -167,10 +167,10 @@ public class RadarGraph {
         
         return namesOfCards;
     }
-    
+        
     public static void generateRadarMain(String dir, List<String> namesOfCards) throws IOException {
         FileOutputStream page = new FileOutputStream(dir + "/radar_graphs/radar_graphs.html");
-        beginBootstrap(page, "JCAlgTest - performance radar graphs");
+        beginRadarHTML(page, "JCAlgTest - Performance radar graphs");
         StringBuilder toFile = new StringBuilder();
         toFile.append("\t<div class=\"container\">\n");
         toFile.append("\t\t<div class=\"row\">\n");
@@ -202,11 +202,16 @@ public class RadarGraph {
         toFile.append("\t</div>\n");
         page.write(toFile.toString().getBytes());
         
-        endBootstrap(page);
+        endRadarHTML(page);
         page.close();
     }
     
-    
+    public static void runRadarGraph(String dir) throws FileNotFoundException, IOException{
+        List<String> namesOfCards = generateRadarGraphs(dir);
+        generateRadarMain(dir, namesOfCards);
+        System.out.println("ADD all necessary scripts (header-1.js, RadarChart.js) to newly generated folder.");        
+    }
+        
     public static void main(String [] args) throws FileNotFoundException, IOException{
         String dir = "D:/JCAlgTest/fixed/";
         List<String> namesOfCards = generateRadarGraphs(dir);

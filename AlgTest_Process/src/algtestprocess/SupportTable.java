@@ -122,7 +122,7 @@ public class SupportTable {
                     + "<title>JavaCard support test</title>\r\n"
                     + "<script>$(function(){ $(\"#tab td\").hover(function(){$(\"#tab col\").eq($(this).index()).css({\"border\":\" 2px solid #74828F\"});$(this).closest(\"tr\").css({\"border\":\" 2px solid #74828F\"});},function(){$(\"#tab col\").eq($(this).index()).css({\"border\":\" 0px\"}); $(this).closest(\"tr\").css({\"border\":\" 0px\"});});});</script>\r\n"
                     + "</head>\r\n"
-                    + "<body>\r\n\r\n"; 
+                    + "<body style=\\\"margin-top:50px; padding:20px\\\">\\n\\n\";\r\n\r\n"; 
 
 			String cardList = "<div class=\"container-fluid\">\n<h3 id=\"LIST\">Tested cards abbreviations</h3>\r\n";
             for (int i = 0; i < filesArray.length; i++) {
@@ -247,7 +247,8 @@ public class SupportTable {
             // FOOTER
             //
             String footer = "</table>\r\n</div>\r\n\r\n";
-            footer += "<script type=\"text/javascript\" src=\"footer.js\"></script>";
+            footer += "<script type=\"text/javascript\" src=\"footer.js\"></script>\n";
+            footer += "<a href=\"#\" class=\"back-to-top\"></a>\n";
             footer += "\r\n</body>\n</html>";
             file.write(footer.getBytes());
 

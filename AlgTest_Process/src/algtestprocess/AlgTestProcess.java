@@ -86,7 +86,7 @@ public class AlgTestProcess {
                         SupportTable.generateJCConstantsFile(args[0]);}
                     else if (args[1].equals(GENERATE_SORTABLE)){
                         System.out.println("Generating sortable table from all files in directory.");
-                        JCinfohtml.runSortable(args[0]);}
+                        Sortable.runSortable(args[0]);}
                     else if (args[1].equals(GENERATE_GRAPHS)){
                         System.out.println("Generating graphs from input file to new directory.");
                         JCinfohtml.runGraphs(args[0]);}
@@ -117,8 +117,8 @@ public class AlgTestProcess {
                         File file = new File(args[0]);
                         if (file.exists() && file.isDirectory())
                             generateJCInfoHTMLTable(args[0]);
-                        else if (file.exists() && file.isFile())
-                            JCinfohtml.run(args[0],"noname");
+                        else if (file.exists() && file.isFile() && (args[0].contains("csv")))
+                            RunTime.generateRunTimeFile(args[0]);
                         else
                             System.out.println("ERR: Wrong path to the source file / folder.");
                     }
@@ -150,22 +150,12 @@ public class AlgTestProcess {
         }
     }
     
-            
-    
     private static void generateJCInfoHTMLTable(String basePath) throws IOException {        
         File dir = new File(basePath);
         String[] filesArray = dir.list();
         
-        if ((filesArray != null) && (dir.isDirectory() == true)) {    
-            
-            HashMap filesSupport[] = new HashMap[filesArray.length]; 
-            
-            for (int i = 0; i < filesArray.length; i++) {
-                filesSupport[i] = new HashMap();
-                if(filesArray[i].contains("csv"))
-                    JCinfohtml.run(basePath + filesArray[i], filesArray[i]);
-            }   
-        }
+        if ((filesArray != null) && (dir.isDirectory() == true)) 
+            RunTime.runRunTime(basePath); 
     }
     
     private static void generateGraphsPages(String basePath, Boolean toponly) throws IOException {        
