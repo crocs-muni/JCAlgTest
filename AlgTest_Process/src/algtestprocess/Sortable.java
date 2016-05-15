@@ -104,7 +104,7 @@ public class Sortable {
             result += "</tr>\n";
         }
 
-        result += "</tbody>\n</table>\n";
+        result += "</tbody>\n</table>\n</br>\n";
         file.write(result.getBytes());
     }
 
@@ -130,7 +130,7 @@ public class Sortable {
         loadTopFunctions(topNames_sym, topAcronyms_sym, topNames_asym, topAcronyms_asym);
         List<String> files = listFilesForFolder(new File(dir));
         lp = 0;
-        file.write("<h3>Note: Sortable tables - click on column name to sort ascendingly/descendingly</h3>".getBytes());
+        //file.write("<h3>Note: Sortable tables - click on column name to sort ascendingly/descendingly</h3>".getBytes());
         //
         // Sortable table for symmetric algorithms
         //
@@ -181,14 +181,33 @@ public class Sortable {
         file.write(result.getBytes());
         return lp;
     }
+        
+        
+    private static void addInfo(FileOutputStream file) throws IOException {
+        StringBuilder toFile = new StringBuilder();
+        toFile.append("<div class=\"container-fluid\">\n");
+        toFile.append("<div class=\"row\">\n");
+        toFile.append("<h1>Comparative table</h1>\n");
+        toFile.append("<h4>Simple Java card comparison is provided by the Comparative table. It allows sorting cards according to performance results for a particular algorithm. </h4>\n"
+                + "<p>Each row represents tested card, and column represents specific method. <strong>Cards can be sorted just by click on a name of the algorithm in the table header.</strong>\n"
+                + "Ascending and descending sorting are available.</p>\n<p> Unsupported algorithms are supplied by \"-\" symbol and they are placed at the end of ascending sort. While hovering the cursor over any run time, minimum and maximum run times will be displayed.</p>\n");
+        
+        toFile.append("<div class=\"alert alert-info\" role=\"alert\">We generate comparative tables for TOP FUNCTIONS only to preserve clarity of results. First for symmetric and second for asymmetric cryptography algorithms.\n"
+                + "You can find detailed test results in <a href=\"./run_time/execution-time.html\">PERFORMANCE TESTING - EXECUTION TIME</a> section.\n </div>\n");
+       
+        file.write(toFile.toString().getBytes());
+    }
     
     
     public static void runSortable(String dir) throws FileNotFoundException, IOException {
         Integer linePosition = 0;
-        FileOutputStream file = new FileOutputStream(dir + "//" + "sortable.html");
-        beginSortableHTML(file, "JCAlgTest - Similarity table");
+        FileOutputStream file = new FileOutputStream(dir + "//" + "comparative-table.html");
+        beginSortableHTML(file, "JCAlgTest - Comparative table");
+        addInfo(file);
         sortableGenerator(dir, file, linePosition);
         endSortableHTML(file);
+        file.write("</div>".getBytes());
         System.out.println("Make sure that CSS & JS files are present in output folder.");
     }
+
 }

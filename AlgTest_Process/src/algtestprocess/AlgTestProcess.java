@@ -51,6 +51,7 @@ public class AlgTestProcess {
     public static final String GENERATE_GRAPHS_ONEPAGE = "GRAPHSPAGE";  //PAGE WITH VARIABLE PERFTEST GRAPHS
     public static final String GENERATE_COMPARE_GRAPH = "COMPAREGRAPH"; //ONE BIG GRAPH FOR COMPARE CARDS
     public static final String GENERATE_COMPARE_TABLE = "COMPARETABLE"; //ONE BIG TABLE FOR COMPARE CARDS      
+    public static final String GENERATE_RADAR_GRAPHS = "RADAR"; //ONE BIG TABLE FOR COMPARE CARDS      
 
     /**
      * @param args the command line arguments
@@ -93,6 +94,9 @@ public class AlgTestProcess {
                     else if (args[1].equals(GENERATE_COMPARE_GRAPH)){
                         System.out.println("Generating compare graph from input dir.");
                         JCinfohtml.runCompareGraph(args[0]);}
+                    else if (args[1].equals(GENERATE_RADAR_GRAPHS)){
+                        System.out.println("Generating radar graphs from input dir.");
+                        RadarGraph.runRadarGraph(args[0]);}
                     else if (args[1].equals(GENERATE_COMPARE_TABLE)){
                         System.out.println("Generating compare table from input dir.");
                         JCinfohtml.runCompareTable(args[0]);}
@@ -170,7 +174,10 @@ public class AlgTestProcess {
     private static void PrintHelp() {
         System.out.println("Usage: java AlgTestProcess.jar base_path\n" 
                 + "  base_path/results/directory should contain *.csv files with results \n"
-                + "  html table will be generated into base_path/AlgTest_html_table.html \n");
+                + "  html table will be generated into base_path/AlgTest_html_table.html \n\n" 
+                + "  AlgTestProcess.jar base_path_folder [JCINFO, RADAR, COMPARETABLE, GRAPHSPAGE, SORTABLE]"
+        
+        );
     }
         
         
