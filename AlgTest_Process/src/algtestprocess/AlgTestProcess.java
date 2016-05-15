@@ -106,9 +106,9 @@ public class AlgTestProcess {
                                 generateGraphsPages(args[0], false);
                         else if (file.exists() && file.isFile())
                             if((args.length>2) && (args[2].toLowerCase().equals("toponly")))
-                                JCinfohtml.runGraphsOnePage(args[0], true); 
+                                ScalabilityGraph.generateScalabilityFile(args[0], true); 
                             else
-                                JCinfohtml.runGraphsOnePage(args[0], false);                        
+                                ScalabilityGraph.generateScalabilityFile(args[0], false);                         
                         else
                             System.out.println("ERR: Wrong path to the source file / folder.");                        
                     }
@@ -162,16 +162,9 @@ public class AlgTestProcess {
         File dir = new File(basePath);
         String[] filesArray = dir.list();
         
-        if ((filesArray != null) && (dir.isDirectory() == true)) {    
-            
-            HashMap filesSupport[] = new HashMap[filesArray.length]; 
-            
-            for (int i = 0; i < filesArray.length; i++) {
-                filesSupport[i] = new HashMap();
-                if(filesArray[i].contains("csv"))
-                    JCinfohtml.runGraphsOnePage(basePath + filesArray[i], toponly);
-            }   
-        }
+        if ((filesArray != null) && (dir.isDirectory() == true))    
+             ScalabilityGraph.runScalability(basePath, toponly);              
+       
     }
         
     private static void PrintHelp() {

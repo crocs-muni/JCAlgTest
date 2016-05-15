@@ -6,9 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -16,12 +14,8 @@ import java.util.List;
  *
  * @author rk
  */
-public class JCinfohtml {
-
-    public static final String TABLE_HEAD = "<table cellspacing='0'> <!-- cellspacing='0' is important, must stay -->\n\t<tr><th style=\"width: 330px;\">Name of function</th><th><b>Operation average (ms/op)</b></th><th>Operation minimum (ms/op)</th><th>Operation maximum (ms/op)</th><th>Data length (bytes)</th><th></th><th class=\"minor\">Prepare average (ms/op)</th><th class=\"minor\">Prepare minimum (ms/op)</th><th class=\"minor\">Prepare maximum (ms/op)</th><th class=\"minor\">Iterations & Invocations</th></tr><!-- Table Header -->\n";
-    public static final List<String> category = Arrays.asList("MESSAGE DIGEST", "RANDOM GENERATOR", "CIPHER", "SIGNATURE", "CHECKSUM", "AESKey", "DESKey", "KoreanSEEDKey", "DSAPrivateKey", "DSAPublicKey", "ECF2MPublicKey", "ECF2MPrivateKey", "ECFPPublicKey", "HMACKey", "RSAPrivateKey", "RSAPublicKey", "RSAPrivateCRTKey", "KEY PAIR", "UTIL", "SWALGS");
+public class JCinfohtml {    
     public static final String topFunctionsFile = "top.txt";
-    public static final String descFunctionsFile = "desc.txt";
 
     public static void beginHTML(FileOutputStream file, String title) throws IOException {
         String toFile = "";
@@ -160,68 +154,6 @@ public class JCinfohtml {
         toFile += "</div>\n";
         file.write(toFile.getBytes());
     }
-   
-    public static void beginLite(FileOutputStream file, String headline) throws IOException {
-        String toFile = "";
-        toFile += "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n";
-        toFile += "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n";
-        toFile += "<head>\n" + "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\n";
-        toFile += "<title>JCAlgTest Performance test</title>\n";      
-        toFile += "<link rel=\"stylesheet\" href=\"http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css\">\n";        
-        toFile += "<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js\"></script>\n";        
-        toFile += "<script src=\"http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js\"></script>\n";
-        toFile += "<link rel=\"stylesheet\" type=\"text/css\" href=\"./source/style.css\">\n";
-        toFile += "<script>\n" + "\tjQuery(document).ready(function(){\n\tvar offset = 220;var duration = 500;\n"
-                + "\t\tjQuery(window).scroll(function(){\n\tif (jQuery(this).scrollTop()>offset){jQuery('.back-to-top').fadeIn(duration);\n"
-                + "\t}else{jQuery('.back-to-top').fadeOut(duration);}});\n"
-                + "\t\tjQuery('.back-to-top').click(function(event){event.preventDefault();\n"
-                + "\t\tjQuery('html, body').animate({scrollTop: 0}, duration);\n"
-                + "\treturn false;})});\n</script>\n"
-                + "\t<script type=\"text/javascript\" src=\"https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['corechart']}]}\"></script>\n";
-        toFile += "</head>\n";
-        toFile += "<body>\n</br>\n<div class=\"main\">\n";
-        toFile += "<div style=\"margin:15px 20px 10px 20px;\">\n";
-        toFile += "\t<a target=\"_blank\" href=\"https://github.com/crocs-muni/JCAlgTest\"><img  src=\"data:image/png;base64,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\" alt=\"logo\" border=\"0\" align=\"left\"></a>\n</div>\n";
-        toFile += "<div style=\"margin:10px 20px 10px 150px;\">\n" + "\t<h1>" + headline + "</h1>\n";
-        toFile += "\t<p style=\"margin-left:20px;\"><strong>This file was generated by AlgTest utility. See <u><a target=\"_blank\" href=\"http://www.fi.muni.cz/~xsvenda/jcsupport.html\">this website</a></u> for more results, source codes and other details. </strong><u><a href=\"http://www.fi.muni.cz/~xsvenda/jcsupport.html#LIST\">List of all measured cards.</a></u></p>\n";
-        toFile += "</div>\n </br>\n</div>\n";
-        file.write(toFile.getBytes());
-    }
-
-    public static void begin(FileOutputStream file, String headline) throws IOException {
-        String toFile = "";
-        toFile += "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n";
-        toFile += "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n";
-        toFile += "<head>\n" + "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\n";
-        toFile += "<title>JCAlgTest Performance test</title>\n";
-
-        toFile += "<link rel=\"stylesheet\" type=\"text/css\" href=\"./source/style.css\">\n";
-        toFile += "<script src=\"http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js\"></script>\n";
-       
-        toFile += "<script type=\"text/javascript\" src=\"./source/jquery.fancybox.js?v=2.1.5\"></script>\n"
-                + "<link rel=\"stylesheet\" type=\"text/css\" href=\"./source/jquery.fancybox.css?v=2.1.5\" media=\"screen\" />\n"
-                + "<script type=\"text/javascript\">\n"
-                + "\t$(document).ready(function() {\n"
-                + "\t\t$('.fancybox').fancybox();\n"
-                + "\t});\n"
-                + "</script>";
-
-        toFile += "<script>\n" + "\tjQuery(document).ready(function(){\n\tvar offset = 220;var duration = 500;\n"
-                + "\t\tjQuery(window).scroll(function(){\n\tif (jQuery(this).scrollTop()>offset){jQuery('.back-to-top').fadeIn(duration);\n"
-                + "\t}else{jQuery('.back-to-top').fadeOut(duration);}});\n"
-                + "\t\tjQuery('.back-to-top').click(function(event){event.preventDefault();\n"
-                + "\t\tjQuery('html, body').animate({scrollTop: 0}, duration);\n"
-                + "\treturn false;})});\n</script>\n";
-        toFile += "</head>\n";
-        toFile += "<body>\n</br>\n<div class=\"main\">\n";
-        toFile += "<div style=\"margin:15px 20px 10px 20px;\">\n";
-        toFile += "\t<a target=\"_blank\" href=\"https://github.com/crocs-muni/JCAlgTest\"><img  src=\"data:image/png;base64,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\" alt=\"logo\" border=\"0\" align=\"left\"></a>\n</div>\n";
-        toFile += "<div style=\"margin:10px 20px 10px 150px;\">\n" + "\t<h1>" + headline + "</h1>\n";
-        toFile += "\t<p style=\"margin-left:20px;\"><strong>This file was generated by AlgTest utility. See <u><a target=\"_blank\" href=\"http://www.fi.muni.cz/~xsvenda/jcsupport.html\">this website</a></u> for more results, source codes and other details. </strong><u><a href=\"http://www.fi.muni.cz/~xsvenda/jcsupport.html#LIST\">List of all measured cards.</a></u></p>\n";
-        toFile += "</div>\n </br>\n</div>\n";
-
-        file.write(toFile.getBytes());
-    }    
 
     public static int loadTopFunctions(List<String> topNames, List<String> topAcronyms) throws IOException {
         List<String> topNames_sym = new ArrayList<>();
@@ -582,6 +514,7 @@ public class JCinfohtml {
                 
         file.write(toFile.toString().getBytes());
        } 
+    
      /**
      * Parse one card file for compare cards graph
      * @param algs - algs which perf result should be obtained
@@ -684,8 +617,7 @@ public class JCinfohtml {
         
         return cardName.toString();
     }
-       
-   
+     
     public static Float parseOneForCompareGraph(List<String> lines, Integer lp) throws IOException {
         String[] operation;
         Float result = 0.0F;
@@ -799,118 +731,6 @@ public class JCinfohtml {
         return lp;
     }
 
-    public static void parseGraphsPage(List<String> lines, FileOutputStream file, Boolean toponly) throws FileNotFoundException, IOException {
-        List<String> topFunctions = new ArrayList<>();
-        List<String> usedFunctions = new ArrayList<>();
-        //List<String> dFunctions = new ArrayList<>();
-        if(toponly)
-            loadTopFunctions(topFunctions, null);
-        
-        StringBuilder toFile = new StringBuilder();
-        StringBuilder chart = new StringBuilder();
-        //end of test details (1st div), end of beginning (2nd div)
-        toFile.append("</br></div>\n</div>\n\t<script type=\"text/javascript\" src=\"https://www.google.com/jsapi\"></script>\n");
-        Integer lp = 0;
-        String methodName = "";
-        
-        while (lp < lines.size() - 20) {
-            if (lines.get(lp).contains("method name:")) {
-                methodName = lines.get(lp).split(";")[1];
-                if (methodName.startsWith(" ")) {
-                    methodName = methodName.substring(1);
-                }
-                
-                if ((topFunctions.contains(methodName)) || (topFunctions.size() == 0)) {
-                    chart.append("\t<script type=\"text/javascript\">\n"
-                            + "\tgoogle.setOnLoadCallback(drawFancyVisualization);\n"
-                            + "\tfunction drawFancyVisualization() {\n"
-                            + "\t\tvar data = new google.visualization.DataTable();\n"
-                            + "\t\tdata.addColumn('number', 'length of data (bytes)');\n"
-                            + "\t\tdata.addColumn('number', 'Time (ms)');\n"
-                            + "\t\tdata.addColumn({type:'number', role:'interval'});\n"
-                            + "\t\tdata.addColumn({type:'number', role:'interval'});\n"
-                            + "\t\tdata.addColumn({type:'string', role:'annotation'});\n"
-                            + "\t\tdata.addColumn({type:'boolean',role:'certainty'});\n"
-                            + "\t\tdata.addRows([");
-
-                    while (lp < lines.size() - 6) {
-                        if (lines.get(lp).contains(methodName)) {
-                            lp = parseOneForGraph(lines, chart, lp);
-                        } else if (lines.get(lp).contains("method name:")) {
-                            break;
-                        } else {
-                            lp++;
-                        }
-                    }
-
-                    chart.append("]);\n\n"
-                            + "\tvar options = {\n"
-                           // + "\t\ttitle: '" + methodName + "',\n"
-                            //+ "\t\ttitleTextStyle: {fontSize: 15},\n"
-                            + "\t\tbackgroundColor: \"transparent\",\n"
-                            + "\t\thAxis: {title: 'length of data (bytes)', viewWindow: {min: 0, max: "+ (chart.toString().contains("512") ? "530" : "265") +"} },\n"
-                            + "\t\tvAxis: {title: 'duration of operation (ms)' },\n"
-                            + "\t\tlegend:'none',};\n\n"
-                            + "\tvar chart = new google.visualization.LineChart(document.getElementById('" + methodName.replaceAll(" ", "_") + "'));\n"
-                            + "\tchart.draw(data, options);\n"
-                            + "\t}\n\t</script>\n");
-
-                    if (!(chart.toString().contains("data.addRows([]);"))) {
-                        usedFunctions.add(methodName);
-                        toFile.append(chart.toString());
-                    }
-                    chart.delete(0, chart.length() - 1);
-                } else {
-                    lp++;
-                }
-            } else {
-                lp++;
-            }
-        }
-        
-        HashMap<String, String> descMap = loadDescription();
-
-        BigDecimal sec = new BigDecimal(2 + usedFunctions.size()*0.15);
-        sec = sec.setScale(2, BigDecimal.ROUND_HALF_UP);
-        toFile.append("<div>\n");
-        for (String usedFunction : usedFunctions) {
-            toFile.append("\t<div class=\"graph\">\n");
-            toFile.append("\t<h4 style=\"margin-left:40px\">"+usedFunction+"</h4>\n");
-            
-            if(descMap.containsKey(usedFunction)){
-                toFile.append("\t<div style=\"margin-left: 40px;\">");
-                toFile.append(descMap.get(usedFunction));
-                toFile.append("\n\t</div>\n");
-            }
-            
-            if(descMap.containsKey(usedFunction))
-                toFile.append("\t<div id=\"" + usedFunction.replaceAll(" ", "_") + "\" style=\"min-height:400px; margin-top:-50px;\">");
-            else
-                toFile.append("\t<div id=\"" + usedFunction.replaceAll(" ", "_") + "\" style=\"min-height:479px; margin-top:-50px;\">");
-            
-            // <h4 style=\"text-align: center;\">" + usedFunction + "</h4>
-            toFile.append("<p style=\"text-align: center; margin-top:70px\"><strong>GRAPH IS LOADING. </br></br> THIS MAY TAKE <u>"+ sec +"</u> SECONDS DEPENDING ON THE NUMBER OF GRAPHS.</strong></p></div>\n");
-            toFile.append("\t</div>\n\n");
-        }
-
-        toFile.append("</div>\n<script type=\"text/javascript\" src=\"https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['corechart']}]}\"></script>\n");
-
-        //quick links to generated charts at the beginning of html file
-        String toFileBegin;
-        toFileBegin = "<div class=\"main\">\n<div class=\"pageColumnQuickLinks\">\n";        
-        toFileBegin += "<h3>Quick links | number of graphs: "+usedFunctions.size()+" | est. load time: "+ sec +" s</h3>\n<ul style=\"list-style-type: circle;\">\n";
-        for (String usedFunction : usedFunctions) {
-            toFileBegin += "\t<li>" + "<a href=\"#" + usedFunction.replaceAll(" ", "_") + "\">" + usedFunction + "</a>" + "</li>\n";
-        }
-        toFileBegin += "</ul>\n</div>\n";
-        file.write(toFileBegin.getBytes());             //quick links written
-
-        //test details generated at the beginning of html file
-        detailsBasic(lines, file);                      //details written
-        //toFile.append("</div>");
-        file.write(toFile.toString().getBytes());       //charts written
-    }
-
     public static void parseGraphs(List<String> lines, String dir, String name) throws FileNotFoundException, IOException {
         Integer lp = 15;
 
@@ -922,18 +742,7 @@ public class JCinfohtml {
             }
         }
     }
-
-    public static void endOfHtml(FileOutputStream file) throws FileNotFoundException, IOException {
-        String toFile = "<script>/* <![CDATA[ */(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)\n"
-                + "[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');ga('create','UA-1931909-2','auto');ga('send','pageview');/* ]]> */</script>\n";
-        toFile += "\n<a href=\"#\" class=\"back-to-top\"></a>\n";
-        toFile += "<div class=\"end\">\n" +                  
-                  "<p><a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\"><img alt=\"Creative Commons License\" style=\"border-width:0\" src=\"https://i.creativecommons.org/l/by/4.0/88x31.png\" /></a><br /><span xmlns:dct=\"http://purl.org/dc/terms/\" href=\"http://purl.org/dc/dcmitype/Dataset\" property=\"dct:title\" rel=\"dct:type\">JCAlgTest</span> by <span xmlns:cc=\"http://creativecommons.org/ns#\" property=\"cc:attributionName\">CRoCS MU</span> is licensed under a <br><a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\">Creative Commons Attribution 4.0 International License</a>.</p>\n" +
-                  "</div>\n</body>\n</html>";
-        file.write(toFile.getBytes());
-        file.close();
-    }
-    
+   
     public static void runGraphs(String input) throws IOException {
         StringBuilder cardName = new StringBuilder();
         List<String> lines = initalize(input, cardName);
@@ -943,55 +752,6 @@ public class JCinfohtml {
         dir.mkdirs();
         parseGraphs(lines, (dir.getAbsolutePath()), cardName.toString());
         System.out.println("Make sure that CSS file & JS files (\"Source\" folder) is present in output folder.");
-    }
-
-    public static void runGraphsOnePage(String input, Boolean toponly) throws IOException {
-    StringBuilder cardName = new StringBuilder();
-    String cardNameFile = "noname_graphspage";
-        List<String> lines = initalize(input, cardName);
-        String resultsDir = new File(input).getParentFile().toString();
-        resultsDir = resultsDir.substring(0, resultsDir.lastIndexOf("/"));
-        if (!(cardName.toString().equals("")) && !(cardName.toString().equals(" "))){
-            cardNameFile = cardName.toString().replaceAll(" ", "");
-            cardNameFile = cardNameFile.replaceAll("_", "");
-        } 
-        FileOutputStream file = new FileOutputStream(resultsDir + "/" + cardNameFile + ".html");
-        beginHTML(file, "Graphs results card: " + cardName.toString());
-        parseGraphsPage(lines, file, toponly);
-        endHTML(file);
-        System.out.println("Make sure that CSS file & JS files (\"Source\" folder) is present in output folder.");
-    }
-
-    private static HashMap<String, String> loadDescription() throws IOException {
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new FileReader(descFunctionsFile));
-        } catch (IOException e) {
-           // System.out.println("INFO: Description of functions file not found");
-        }
-
-        String[] lineArray;
-        String line;
-        HashMap<String, String> descMap = new HashMap<>();
-
-        if (reader != null) {
-            String name = "";
-            Snippet snippet = new Snippet();
-            while ((line = reader.readLine()) != null) {
-                if (!(line.trim().isEmpty())) { 
-                    if(line.contains("/////")){
-                        if(!(name.isEmpty())){
-                            descMap.put(name, snippet.getSnippet());
-                            snippet.clear();
-                        }
-                        name = line.substring(5).trim();
-                    } else {
-                        snippet.addline(line);
-                    }                              
-                }            
-            }
-        }
-        return descMap;        
     }
     
     public static void runCompareGraph(String dir) throws FileNotFoundException, IOException {
@@ -1013,10 +773,10 @@ public class JCinfohtml {
     public static void main(String [] args) throws FileNotFoundException, IOException{
         FileOutputStream file = new FileOutputStream("D:/JCAlgTest/variable_03_2016/comparealgSHA.html");
         
-        beginLite(file, "Card performance - algorithm");
+        beginHTML(file, "Card performance - algorithm");
         // compareGraphForFunction("ALG_SHA MessageDigest_doFinal()", "D:/JCAlgTest/variable_03_2016/", file);
         // compareGraphForRSA("D:/JCAlgTest/fixed_03_2016/", file);
-         endOfHtml(file);
+         endHTML(file);
     }
 }
 
