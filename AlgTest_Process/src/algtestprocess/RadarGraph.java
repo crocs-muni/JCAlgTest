@@ -169,19 +169,21 @@ public class RadarGraph {
     }
         
     public static void generateRadarMain(String dir, List<String> namesOfCards) throws IOException {
-        FileOutputStream page = new FileOutputStream(dir + "/radar_graphs/radar_graphs.html");
+        FileOutputStream page = new FileOutputStream(dir + "/radar_graphs/radar-graphs.html");
         beginRadarHTML(page, "JCAlgTest - Performance radar graphs");
         StringBuilder toFile = new StringBuilder();
         toFile.append("\t<div class=\"container\">\n");
         toFile.append("\t\t<div class=\"row\">\n");
-        toFile.append("\t\t\t<div class=\"col-md-8 col-xs-8\">\n");
-        toFile.append("\t\t<h2>Performance radar graphs</h2>\n");
-        toFile.append("\t\t<p>Radar graph provides visual overview of Java Card performance.</p>\n");
+        toFile.append("\t\t\t<div class=\"col-md-7 col-xs-7\">\n");
+        toFile.append("\t\t<h1>Performance radar graphs</h1>\n");
+        toFile.append("\t\t<h4>Radar graph provides visual overview of Java Card performance.</h4>\n");
         toFile.append("\t\t<p>It is composed of 25 frequently used functions (TOP FUNCTIONS).</p>\n");
-        toFile.append("\t\t<p>The closest value to 100% represents the fastest result in particular method from all tested cards. Values closer to 10% supply slower results. 0% value means unsupported or not tested algorithms.</p><br>\n");
-        toFile.append("\t\t<div class=\"alert alert-warning\" role=\"alert\">Radar graphs are only approximate. For accurate results check run-times in the Performance testing section.</div>\n");
+        toFile.append("\t\t<p>The closest value to <strong>100%</strong> represents the fastest result in particular method from all tested cards. Values closer to <strong>10%</strong> supply slower results. <strong>0%</strong> value means unsupported or not tested algorithms.</p>\n");
+        toFile.append("\t\t\t<p>After hovering pointer above some point, the actual execution time of algorithm will be displayed.</p><br>\n");        
+        toFile.append("<div class=\"alert alert-info\" role=\"alert\">We generate radar graphs for TOP FUNCTIONS only to preserve clarity of results.\n"
+                + "You can find detailed test results in <a href=\"./run_time/execution-time.html\">PERFORMANCE TESTING - EXECUTION TIME</a> section.\n </div>\n");
         toFile.append("\t\t\t</div>\n");
-        toFile.append("\t\t\t<div class=\"col-md-4 col-xs-4\" style=\"overflow:hidden; margin:2em auto;\">\n");
+        toFile.append("\t\t\t<div class=\"col-md-5 col-xs-5\" style=\"overflow:hidden; margin:2em auto;\">\n");
         toFile.append("\t\t\t<img src=\"../pics/radar_chart_example.png\" alt=\"Radar chart example\" class=\"img-responsive\" align=\"right\">\n");
         toFile.append("\t\t\t</div>\n");
         toFile.append("\t\t\t</div>\n");
@@ -211,12 +213,12 @@ public class RadarGraph {
         generateRadarMain(dir, namesOfCards);
         System.out.println("ADD all necessary scripts (header-1.js, RadarChart.js) to newly generated folder.");        
     }
-        
+    /*    
     public static void main(String [] args) throws FileNotFoundException, IOException{
         String dir = "D:/JCAlgTest/fixed/";
         List<String> namesOfCards = generateRadarGraphs(dir);
         generateRadarMain(dir, namesOfCards);
         System.out.println("ADD all necessary scripts (header-1.js, RadarChart.js) to new generated folder.");        
-    }
+    }*/
 }
 

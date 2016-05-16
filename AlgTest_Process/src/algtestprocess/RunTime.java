@@ -259,19 +259,19 @@ public class RunTime {
     }
         
     public static void generateRunTimeMain(String dir, List<String> namesOfCards) throws IOException {
-        FileOutputStream page = new FileOutputStream(dir + "/run_time/run_time.html");
-        beginRunTimeHTML(page, "JCAlgTest - Algortithm operation time");
+        FileOutputStream page = new FileOutputStream(dir + "/run_time/execution-time.html");
+        beginRunTimeHTML(page, "JCAlgTest - Algortithm execution time");
         StringBuilder toFile = new StringBuilder();
         toFile.append("\t<div class=\"container\">\n");
         toFile.append("\t\t<div class=\"row\">\n");
-        toFile.append("\t\t\t<div class=\"col-md-8 col-xs-8\">\n");
-        toFile.append("\t\t<h2>Algortithm operation time tables</h2>\n");
-        toFile.append("\t\t<p>XXX</p>\n");
-        toFile.append("\t\t<p>XXX</p>\n");
-        toFile.append("\t\t<p>XXXX</p><br>\n");
-        toFile.append("\t\t<div class=\"alert alert-warning\" role=\"alert\">XXX</div>\n");
+        toFile.append("\t\t\t<div class=\"col-md-7 col-xs-7\">\n");
+        toFile.append("\t\t<h1>Algortithm execution time</h1>\n");
+        toFile.append("\t\t<p>HTML page is generated from CSV file for each card. Test details (e.g., date, JCAlgTest version), JavaCard version, available memory and CPLC information are located at the beginning. </p>\n");
+        toFile.append("\t\t<p>We selected 25 frequently used functions and marked them as TOP FUNCTIONS.</p>\n");
+        toFile.append("\t\t<p><strong>Each row of the table contains the name of measured function, time of execution</strong> (average, minimum, maximum), data length and minor information such as preparation time (average, minimum, maximum) and a number of test runs. If there is an unsupported algorithm or specific value returned by card, information is written in the row.</p>\n");
+        toFile.append("\t\t<p>Rest of page consists of 20 tables presenting each group of tested methods.</p><br>\n");
         toFile.append("\t\t\t</div>\n");
-        toFile.append("\t\t\t<div class=\"col-md-4 col-xs-4\" style=\"overflow:hidden; margin:2em auto;\">\n");
+        toFile.append("\t\t\t<div class=\"col-md-5 col-xs-5\" style=\"overflow:hidden; margin:2em auto;\">\n");
         toFile.append("\t\t\t<img src=\"../pics/run_time_example.png\" alt=\"Run time table example\" class=\"img-responsive\" align=\"right\">\n");
         toFile.append("\t\t\t</div>\n");
         toFile.append("\t\t\t</div>\n");
@@ -302,12 +302,12 @@ public class RunTime {
       //  System.out.println("ADD all necessary scripts (header-1.js, RadarChart.js) to new generated folder.");        
     }
         
-    
+    /*
     public static void main(String [] args) throws FileNotFoundException, IOException{
-        String dir = "D:/JCAlgTest/fixed/";
+        String dir = "D:/JCAlgTest/variable/";
         List<String> namesOfCards = generateRunTimeFolder(dir);
         generateRunTimeMain(dir, namesOfCards);
       //  System.out.println("ADD all necessary scripts (header-1.js, RadarChart.js) to new generated folder.");        
-    }
+    }*/
 }
 

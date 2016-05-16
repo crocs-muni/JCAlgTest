@@ -742,6 +742,22 @@ public class JCinfohtml {
             }
         }
     }
+    
+    private static void addInfoSimilarity(FileOutputStream file) throws IOException {
+        StringBuilder toFile = new StringBuilder();
+        toFile.append("<div class=\"container-fluid\">\n");
+        toFile.append("<div class=\"row\">\n");
+        toFile.append("<h1>Performance similarity table</h1>\n");
+        toFile.append("<h4>We calculated how much individual pairs of cards differed in the performance.</h4>\n"
+                + "<p>Each value in the table represents similarity of two cards. Values close to 100% express that cards are very similar, close to 0% mean performance difference.</p>\n");
+        
+        toFile.append("<p>In general, we can say that pair of cards which has similarity value over <strong>95%</strong> is identical or contains the same chip. Similarity of <strong>85% - 95%</strong> usually signals same family of cards. \n" 
+                + "The global average was <strong>70%</strong>, therefore values in this area indicates no connection. Under <strong>50%</strong> means that cards are different in performance.</p>\n"); 
+        
+        toFile.append("<p>When a cursor is placed above value, tooltip showing difference in supported algorithms of exact two cards appears.</p>\n");
+        
+        file.write(toFile.toString().getBytes());
+    }
    
     public static void runGraphs(String input) throws IOException {
         StringBuilder cardName = new StringBuilder();
@@ -763,13 +779,14 @@ public class JCinfohtml {
     }
     
     public static void runCompareTable(String dir) throws FileNotFoundException, IOException {
-        FileOutputStream file = new FileOutputStream(dir + "//" + "compareTable.html");
+        FileOutputStream file = new FileOutputStream(dir + "//" + "similarity-table.html");
         beginHTML(file, "JCAlgTest - Performance similarity table");
+        addInfoSimilarity(file);
         compareTable(dir, file);
         endHTML(file);
         System.out.println("Make sure that CSS & JS files are present in output folder.");
     }
-    
+    /*
     public static void main(String [] args) throws FileNotFoundException, IOException{
         FileOutputStream file = new FileOutputStream("D:/JCAlgTest/variable_03_2016/comparealgSHA.html");
         
@@ -777,6 +794,6 @@ public class JCinfohtml {
         // compareGraphForFunction("ALG_SHA MessageDigest_doFinal()", "D:/JCAlgTest/variable_03_2016/", file);
         // compareGraphForRSA("D:/JCAlgTest/fixed_03_2016/", file);
          endHTML(file);
-    }
+    }*/
 }
 

@@ -48,9 +48,9 @@ public class AlgTestProcess {
     public static final String GENERATE_JCINFO = "JCINFO";              //TABLE WITH PERF RESULTS
     public static final String GENERATE_SORTABLE = "SORTABLE";          //SORTABLE TABLE
     public static final String GENERATE_GRAPHS = "GRAPHS";              //GENERATE SINGLE GRAPHS PAGE FOR JCINFO
-    public static final String GENERATE_GRAPHS_ONEPAGE = "GRAPHSPAGE";  //PAGE WITH VARIABLE PERFTEST GRAPHS
+    public static final String GENERATE_GRAPHS_ONEPAGE = "SCALABILITY";  //PAGE WITH VARIABLE PERFTEST GRAPHS
     public static final String GENERATE_COMPARE_GRAPH = "COMPAREGRAPH"; //ONE BIG GRAPH FOR COMPARE CARDS
-    public static final String GENERATE_COMPARE_TABLE = "COMPARETABLE"; //ONE BIG TABLE FOR COMPARE CARDS      
+    public static final String GENERATE_COMPARE_TABLE = "SIMILARITY"; //ONE BIG TABLE FOR COMPARE CARDS      
     public static final String GENERATE_RADAR_GRAPHS = "RADAR"; //ONE BIG TABLE FOR COMPARE CARDS      
 
     /**
@@ -105,9 +105,9 @@ public class AlgTestProcess {
                         File file = new File(args[0]);                        
                         if (file.exists() && file.isDirectory())
                             if((args.length>2) && (args[2].toLowerCase().equals("toponly")))
-                                generateGraphsPages(args[0], true);
+                                ScalabilityGraph.runScalability(args[0], true);
                             else
-                                generateGraphsPages(args[0], false);
+                                ScalabilityGraph.runScalability(args[0], false);
                         else if (file.exists() && file.isFile())
                             if((args.length>2) && (args[2].toLowerCase().equals("toponly")))
                                 ScalabilityGraph.generateScalabilityFile(args[0], true); 
