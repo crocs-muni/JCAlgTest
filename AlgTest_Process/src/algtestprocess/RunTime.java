@@ -1,10 +1,34 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package algtestprocess;
+/*  
+    Copyright (c) 2008-2016 Petr Svenda <petr@svenda.com>
 
+     LICENSE TERMS
+
+     The free distribution and use of this software in both source and binary
+     form is allowed (with or without changes) provided that:
+
+       1. distributions of this source code include the above copyright
+          notice, this list of conditions and the following disclaimer;
+
+       2. distributions in binary form include the above copyright
+          notice, this list of conditions and the following disclaimer
+          in the documentation and/or other associated materials;
+
+       3. the copyright holder's name is not used to endorse products
+          built using this software without specific written permission.
+
+     ALTERNATIVELY, provided that this notice is retained in full, this product
+     may be distributed under the terms of the GNU General Public License (GPL),
+     in which case the provisions of the GPL apply INSTEAD OF those given above.
+
+     DISCLAIMER
+
+     This software is provided 'as is' with no explicit or implied warranties
+     in respect of its properties, including, but not limited to, correctness
+     and/or fitness for purpose.
+
+    Please, report any bugs to author <petr@svenda.com>
+*/
+package algtestprocess;
 
 import static algtestprocess.JCinfohtml.*;
 import java.io.File;
@@ -16,7 +40,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- *
+ * Class provide generation on tabular results in one HTML page which contains operation times for each function.
  * @author rk
  */
 public class RunTime {   
@@ -265,8 +289,8 @@ public class RunTime {
         toFile.append("\t<div class=\"container\">\n");
         toFile.append("\t\t<div class=\"row\">\n");
         toFile.append("\t\t\t<div class=\"col-md-7 col-xs-7\">\n");
-        toFile.append("\t\t<h1>Algortithm execution time</h1>\n");
-        toFile.append("\t\t<p>HTML page is generated from CSV file for each card. Test details (e.g., date, JCAlgTest version), JavaCard version, available memory and CPLC information are located at the beginning. </p>\n");
+        toFile.append("\t\t<h1>Algorithm execution time</h1>\n");
+        toFile.append("\t\t<p>HTML page is generated from CSV file for each card. Test details (e.g., date, JCAlgTest version), JavaCard version, available memory and CPLC information are located at the beginning.</p>\n");
         toFile.append("\t\t<p>We selected 25 frequently used functions and marked them as TOP FUNCTIONS.</p>\n");
         toFile.append("\t\t<p><strong>Each row of the table contains the name of measured function, time of execution</strong> (average, minimum, maximum), data length and minor information such as preparation time (average, minimum, maximum) and a number of test runs. If there is an unsupported algorithm or specific value returned by card, information is written in the row.</p>\n");
         toFile.append("\t\t<p>Rest of page consists of 20 tables presenting each group of tested methods.</p><br>\n");
@@ -301,13 +325,5 @@ public class RunTime {
         generateRunTimeMain(dir, namesOfCards);
       //  System.out.println("ADD all necessary scripts (header-1.js, RadarChart.js) to new generated folder.");        
     }
-        
-    /*
-    public static void main(String [] args) throws FileNotFoundException, IOException{
-        String dir = "D:/JCAlgTest/variable/";
-        List<String> namesOfCards = generateRunTimeFolder(dir);
-        generateRunTimeMain(dir, namesOfCards);
-      //  System.out.println("ADD all necessary scripts (header-1.js, RadarChart.js) to new generated folder.");        
-    }*/
 }
 

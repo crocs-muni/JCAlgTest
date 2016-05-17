@@ -1,5 +1,5 @@
 /*  
-    Copyright (c) 2008-2014 Petr Svenda <petr@svenda.com>
+    Copyright (c) 2008-2016 Petr Svenda <petr@svenda.com>
 
      LICENSE TERMS
 
@@ -32,7 +32,6 @@
 package algtestprocess;
 
 import java.io.*;
-import java.util.HashMap;
 import java.util.Scanner;
 
 /**
@@ -55,12 +54,13 @@ public class AlgTestProcess {
 
     /**
      * @param args the command line arguments
+     * First argument is part to file/folder second is type of processing
      */
     public static void main(String[] args) {
         System.out.println("Make sure to have JavaCard support version in your CSV file!");
         try {
             if (args.length == 0) { // in case there are no arguments present
-                PrintHelp();
+                printHelp();
             }
             else {
                 /* To be able to run the program even with incomplete parameter (missing '\'). */
@@ -120,7 +120,7 @@ public class AlgTestProcess {
                         System.out.println("Generating JC performance testing to HTML from input file / folder.");
                         File file = new File(args[0]);
                         if (file.exists() && file.isDirectory())
-                            generateJCInfoHTMLTable(args[0]);
+                             RunTime.runRunTime(args[0]); 
                         else if (file.exists() && file.isFile() && (args[0].contains("csv")))
                             RunTime.generateRunTimeFile(args[0]);
                         else
@@ -153,30 +153,12 @@ public class AlgTestProcess {
             System.out.println("Exception : " + ex);
         }
     }
-    
-    private static void generateJCInfoHTMLTable(String basePath) throws IOException {        
-        File dir = new File(basePath);
-        String[] filesArray = dir.list();
         
-        if ((filesArray != null) && (dir.isDirectory() == true)) 
-            RunTime.runRunTime(basePath); 
-    }
-    
-    private static void generateGraphsPages(String basePath, Boolean toponly) throws IOException {        
-        File dir = new File(basePath);
-        String[] filesArray = dir.list();
-        
-        if ((filesArray != null) && (dir.isDirectory() == true))    
-             ScalabilityGraph.runScalability(basePath, toponly);              
-       
-    }
-        
-    private static void PrintHelp() {
+    private static void printHelp() {
         System.out.println("Usage: java AlgTestProcess.jar base_path\n" 
                 + "  base_path/results/directory should contain *.csv files with results \n"
                 + "  html table will be generated into base_path/AlgTest_html_table.html \n\n" 
-                + "  AlgTestProcess.jar base_path_folder [JCINFO, RADAR, COMPARETABLE, GRAPHSPAGE, SORTABLE]"
-        
+                + "  AlgTestProcess.jar base_path_folder [JCINFO, RADAR, COMPARETABLE, GRAPHSPAGE, SORTABLE]"        
         );
     }
         
