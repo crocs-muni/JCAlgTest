@@ -164,7 +164,7 @@ public class RadarGraph {
             toFile.append("\t<div class=\"container\">\n");
             toFile.append("\t\t<div class=\"row\">\n");
             toFile.append("\t\t<h2>"+namesOfCards.get(i)+"</h2>\n");
-            toFile.append("\t\t<p>Radar graph provides visual overview of Java Card performance. It is composed of 25 frequently used functions (TOP FUNCTIONS).</p>\n");
+            toFile.append("\t\t<p>Radar graph provides visual overview of Java Card performance. It is composed of 25 frequently used functions (<a href=\"../top-functions.html\">TOP FUNCTIONS</a>).</p>\n");
             toFile.append("\t\t<p>The closest value to 100% represents the fastest result in particular method from all tested cards. Values closer to 10% supply slower results. 0% value means unsupported or not tested algorithms.</p><br>\n");
             toFile.append("\t\t<div id=\"chart\"></div>\n\t\t</div>\n");
             toFile.append("\t\t<script type=\"text/javascript\" src=\""+cardNameFile+".js\"></script>\n");
@@ -201,10 +201,10 @@ public class RadarGraph {
         toFile.append("\t\t\t<div class=\"col-md-7 col-xs-7\">\n");
         toFile.append("\t\t<h1>Performance radar graphs</h1>\n");
         toFile.append("\t\t<h4>Radar graph provides visual overview of Java Card performance.</h4>\n");
-        toFile.append("\t\t<p>It is composed of 25 frequently used functions (TOP FUNCTIONS).</p>\n");
+        toFile.append("\t\t<p>It is composed of 25 frequently used functions (<a href=\"../top-functions.html\">TOP FUNCTIONS</a>).</p>\n");
         toFile.append("\t\t<p>The closest value to <strong>100%</strong> represents the fastest result in particular method from all tested cards. Values closer to <strong>10%</strong> supply slower results. <strong>0%</strong> value means unsupported or not tested algorithms.</p>\n");
         toFile.append("\t\t\t<p>After hovering pointer above some point, the actual execution time of algorithm will be displayed.</p><br>\n");        
-        toFile.append("<div class=\"alert alert-info\" role=\"alert\">We generate radar graphs for TOP FUNCTIONS only to preserve clarity of results.\n"
+        toFile.append("<div class=\"alert alert-info\" role=\"alert\">We generate radar graphs for <a href=\"../top-functions.html\">TOP FUNCTIONS</a> only to preserve clarity of results.\n"
                 + "You can find detailed test results in <a href=\"./run_time/execution-time.html\">PERFORMANCE TESTING - EXECUTION TIME</a> section.\n </div>\n");
         toFile.append("\t\t\t</div>\n");
         toFile.append("\t\t\t<div class=\"col-md-5 col-xs-5\" style=\"overflow:hidden; margin:2em auto;\">\n");

@@ -217,7 +217,7 @@ public class Sortable {
                 + "<p>Each row represents tested card, and column represents specific method. <strong>Cards can be sorted just by click on a name of the algorithm in the table header.</strong>\n"
                 + "Ascending and descending sorting are available.</p>\n<p> Unsupported algorithms are supplied by \"-\" symbol and they are placed at the end of ascending sort. While hovering the cursor over any run time, minimum and maximum run times will be displayed.</p>\n");
         
-        toFile.append("<div class=\"alert alert-info\" role=\"alert\">We generate comparative tables for TOP FUNCTIONS only to preserve clarity of results. First for symmetric and second for asymmetric cryptography algorithms.\n"
+        toFile.append("<div class=\"alert alert-info\" role=\"alert\">We generate comparative tables for <a href=\"./top-functions.html\">TOP FUNCTIONS</a> only to preserve clarity of results. First for symmetric and second for asymmetric cryptography algorithms.\n"
                 + "You can find detailed test results in <a href=\"./run_time/execution-time.html\">PERFORMANCE TESTING - EXECUTION TIME</a> section.\n </div>\n");
        
         file.write(toFile.toString().getBytes());

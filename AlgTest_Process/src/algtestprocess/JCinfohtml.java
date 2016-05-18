@@ -779,7 +779,7 @@ public class JCinfohtml {
         toFile.append("<div class=\"row\">\n");
         toFile.append("<h1>Performance similarity table</h1>\n");
         toFile.append("<h4>We calculated how much individual pairs of cards differed in the performance.</h4>\n"
-                + "<p>Each value in the table represents similarity of two cards. Values close to 100% express that cards are very similar, close to 0% mean performance difference.</p>\n");
+                + "<p>Each value in the table represents similarity of two cards. Values close to 100% express that cards are very similar, close to 0% mean performance difference. Similarity table is calculated among <a href=\"./top-functions.html\">TOP FUNCTIONS</a>.</p>\n");
         
         toFile.append("<p>In general, we can say that pair of cards which has similarity value over <strong>95%</strong> is identical or contains the same chip. Similarity of <strong>85% - 95%</strong> usually signals same family of cards. \n" 
                 + "The global average was <strong>70%</strong>, therefore values in this area indicates no connection. Under <strong>50%</strong> means that cards are different in performance.</p>\n"); 

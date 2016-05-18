@@ -93,7 +93,7 @@ public class RunTime {
         loadTopFunctions(topNames, null);
 
         if (!topNames.isEmpty()) {
-            toFile = "<h3 id=\"TOP\">TOP FUNCTIONS</h3>\n";                              //name of table
+            toFile = "<h3 id=\"TOP\"><a href=\"../top-functions.html\">TOP FUNCTIONS</a></h3>\n";                              //name of table
             toFile += "<p>In the table below you can find results of performance testing for frequently used functions.</p>\n";
             toFile += TABLE_HEAD;
             file.write(toFile.getBytes());
@@ -268,7 +268,7 @@ public class RunTime {
         toFile = "<div class=\"col-md-3 col-xs-3\">\n";
         toFile += "<h3>Quick links</h3>\n<ul style=\"list-style-type: circle;\">\n";
         if (0 != loadTopFunctions(new ArrayList<String>(), null))
-            toFile += "\t<li>" + "<a href=\"#TOP\">TOP FUNCTIONS</a>" + "</li>\n";        
+            toFile += "\t<li>" + "<a href=\"../top-functions.html\">TOP FUNCTIONS</a>" + "</li>\n";        
 
         List<String> usedCategories = new ArrayList<>();
         for (int i = 10; i < lines.size(); i++) 
@@ -291,7 +291,7 @@ public class RunTime {
         toFile.append("\t\t\t<div class=\"col-md-7 col-xs-7\">\n");
         toFile.append("\t\t<h1>Algorithm execution time</h1>\n");
         toFile.append("\t\t<p>HTML page is generated from CSV file for each card. Test details (e.g., date, JCAlgTest version), JavaCard version, available memory and CPLC information are located at the beginning.</p>\n");
-        toFile.append("\t\t<p>We selected 25 frequently used functions and marked them as TOP FUNCTIONS.</p>\n");
+        toFile.append("\t\t<p>We selected 25 frequently used functions and marked them as <a href=\"../top-functions.html\">TOP FUNCTIONS</a>.</p>\n");
         toFile.append("\t\t<p><strong>Each row of the table contains the name of measured function, time of execution</strong> (average, minimum, maximum), data length and minor information such as preparation time (average, minimum, maximum) and a number of test runs. If there is an unsupported algorithm or specific value returned by card, information is written in the row.</p>\n");
         toFile.append("\t\t<p>Rest of page consists of 20 tables presenting each group of tested methods.</p><br>\n");
         toFile.append("\t\t\t</div>\n");
