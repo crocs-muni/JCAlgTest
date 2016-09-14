@@ -66,8 +66,10 @@ public class AlgSupportTest {
     private   byte[]           m_eepromArray6 = null;
     private   byte[]           m_eepromArray7 = null;
     private   byte[]           m_eepromArray8 = null;
-    private   RSAPublicKey     m_rsaPublicKey = null;
-    private   RSAPrivateCrtKey m_rsaPrivateKey = null;   
+    private RSAPublicKey       m_rsaPublicKey = null;
+    private RSAPrivateCrtKey   m_rsaPrivateKey = null;
+    private ECPublicKey        m_ecPublicKey = null;
+    private ECPrivateKey       m_ecPrivateKey = null;
   
     private   Key[]            m_keyArray1 = null;
     private   Key[]            m_keyArray2 = null;
@@ -179,6 +181,12 @@ public class AlgSupportTest {
            case (byte) 0x1C: { // no break
              try {
                offset++;m_keyPair1 = new KeyPair(algorithmClass, algorithmParam1);
+               
+               if ((algorithmClass == KeyPair.ALG_EC_FP) || (algorithmClass == KeyPair.ALG_EC_F2M)) {
+                   // Key pair for ECC need to be initialized by proper curve for some cards in some cases
+                   EnsureInitializedECCurve(algorithmClass, algorithmParam1, m_keyPair1);
+               }
+               
                m_keyPair1.genKeyPair();
                apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
              }
@@ -203,6 +211,21 @@ public class AlgSupportTest {
        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (short) 240);
     }
     
+    void EnsureInitializedECCurve(byte keyClass, short keyLen, KeyPair ecKeyPair) {
+        m_ecPublicKey = (ECPublicKey) ecKeyPair.getPublic();
+        m_ecPrivateKey = (ECPrivateKey) ecKeyPair.getPrivate();
+        // Some implementation wil not return valid pub key until ecKeyPair.genKeyPair() is called
+        // Other implementation will fail with exception if same is called => try catch 
+        try {
+            if (m_ecPublicKey == null) {
+                ecKeyPair.genKeyPair();
+            }
+        } catch (Exception e) {
+        } // do intentionally nothing
+
+        // Initialize curve parameters 
+        EC_Consts.setValidECKeyParams(m_ecPublicKey, m_ecPrivateKey, keyClass, keyLen, m_ramArray);
+    }
 
     void JCSystemInfo(APDU apdu) {
        byte[]    apdubuf = apdu.getBuffer();
