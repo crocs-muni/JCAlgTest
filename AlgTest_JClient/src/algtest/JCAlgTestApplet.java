@@ -149,7 +149,7 @@ public class JCAlgTestApplet extends javacard.framework.Applet
         m_ramArray = JCSystem.makeTransientByteArray(RAM1_ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);
         m_keyHarvest = new AlgKeyHarvest();
         m_supportTest = new AlgSupportTest(m_ramArray);
-        m_perfTest = new AlgPerformanceTest();
+        m_perfTest = new AlgPerformanceTest(m_ramArray);
         m_storageTest = new AlgStorageTest();
         
         if (isOP2) { register(buffer, (short)(offset + 1), buffer[offset]); }

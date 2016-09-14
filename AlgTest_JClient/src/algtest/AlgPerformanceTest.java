@@ -105,6 +105,7 @@ import javacardx.crypto.*;
     byte[]              m_ram1 = null;
     byte[]              m_ram2 = null;
     byte[]              m_eeprom1 = null;
+    byte[]              m_auxRamArray = null;
     
 
     // Objects for various software implementation of algorithms
@@ -128,10 +129,10 @@ import javacardx.crypto.*;
     
     JavaCardAES         m_aesCipher = null;    
 
-    AlgPerformanceTest() {
+    AlgPerformanceTest(byte[] auxRAMArray) {
         m_testSettings = new TestSettings();
         
-        m_ram1 = JCSystem.makeTransientByteArray(RAM1_ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);
+        m_ram1 = auxRAMArray;
         m_ram2 = JCSystem.makeTransientByteArray(RAM2_ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);    
         m_eeprom1 = new byte[RAM1_ARRAY_LENGTH];
         
@@ -444,10 +445,13 @@ import javacardx.crypto.*;
                 case JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE:
                     if (bSetKeyValue == Consts.TRUE) {
                         m_keyPair1 = new KeyPair(KeyPair.ALG_EC_F2M, m_testSettings.keyLength);
+                        EC_Consts.ensureInitializedECCurve(KeyPair.ALG_EC_F2M, m_testSettings.keyLength, m_keyPair1, m_ram1);
                         m_keyPair1.genKeyPair();
                         m_key1 = m_keyPair1.getPrivate();
                         m_ecprivate_key = (ECPrivateKey) m_keyPair1.getPrivate();
+                        m_ecpublic_key = (ECPublicKey) m_keyPair1.getPublic();
                         m_keyPair2 = new KeyPair(KeyPair.ALG_EC_F2M, m_testSettings.keyLength);
+                        EC_Consts.ensureInitializedECCurve(KeyPair.ALG_EC_F2M, m_testSettings.keyLength, m_keyPair2, m_ram1);
                         m_keyPair2.genKeyPair();
                         m_key2 = m_keyPair2.getPrivate();
                     }
@@ -455,10 +459,13 @@ import javacardx.crypto.*;
                 case JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE:
                     if (bSetKeyValue == Consts.TRUE) {
                         m_keyPair1 = new KeyPair(KeyPair.ALG_EC_FP, m_testSettings.keyLength);
+                        EC_Consts.ensureInitializedECCurve(KeyPair.ALG_EC_FP, m_testSettings.keyLength, m_keyPair1, m_ram1);
                         m_keyPair1.genKeyPair(); // TODO: use fixed key value to shorten time required for key generation?
                         m_key1 = m_keyPair1.getPrivate();                
-                        m_ecprivate_key= (ECPrivateKey) m_keyPair1.getPrivate();
+                        m_ecprivate_key = (ECPrivateKey) m_keyPair1.getPrivate();
+                        m_ecpublic_key = (ECPublicKey) m_keyPair1.getPublic();
                         m_keyPair2 = new KeyPair(KeyPair.ALG_EC_FP, m_testSettings.keyLength);
+                        EC_Consts.ensureInitializedECCurve(KeyPair.ALG_EC_FP, m_testSettings.keyLength, m_keyPair2, m_ram1);
                         m_keyPair2.genKeyPair(); // TODO: use fixed key value to shorten time required for key generation?
                         m_key2 = m_keyPair2.getPrivate();                
                     }
@@ -589,56 +596,29 @@ import javacardx.crypto.*;
             break;
 /**/                    
                 
-            case JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE:
-                switch (m_testSettings.algorithmMethod){
-                    case JCConsts.ECPrivateKey_setS:
-                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_ecprivate_key.setS(m_ram1, (byte) (i % 10), m_testSettings.keyLength);}
-                        break;
-                    case JCConsts.ECPrivateKey_getS:
-                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_ecprivate_key.getS(m_ram1, (short) 0);}
-                        break;
-                    case JCConsts.ECPrivateKey_clearKey:
-                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
-                            // Bugbug: we are settings only S
-                            m_ecprivate_key.setS(m_ram1, (byte) (i % 10), m_testSettings.keyLength); // we need to set key before calling clear - postprocessing is on client side is required substract setKey time
-                            m_ecprivate_key.clearKey();
-                        }
-                        break;
-                    default:
-                        ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
-                    break;
-                }
-            break;
-            case JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC:
-                switch (m_testSettings.algorithmMethod){
-                    case JCConsts.ECPublicKey_setW:
-                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_ecpublic_key.setW(m_ram1, (byte) (i % 10), m_testSettings.keyLength);}
-                        break;
-                    case JCConsts.ECPublicKey_getW:
-                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_ecpublic_key.getW(m_ram1, (short) 0);}
-                        break;
-                    case JCConsts.ECPublicKey_clearKey:
-                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
-                            m_ecpublic_key.setW(m_ram1, (byte) (i % 10), m_testSettings.keyLength); // we need to set key before calling clear - postprocessing is on client side is required substract setKey time
-                            m_ecpublic_key.clearKey();
-                        }
-                        break;
-                    default:
-                        ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
-                    break;
-                }
-            break;
+            case JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE: // no break
             case JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE:
+                // Get valid private key S from both m_key1 and m_key2, fill into m_ram1 after each other
+                m_ecprivate_key = (ECPrivateKey) m_key1;
+                short lengthS = m_ecprivate_key.getS(m_ram1, (short) 0);
+                m_ecprivate_key = (ECPrivateKey) m_key2;
+                m_ecprivate_key.getS(m_ram1, lengthS);
+                short offset = (short) 0;
                 switch (m_testSettings.algorithmMethod){
                     case JCConsts.ECPrivateKey_setS:
-                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_ecprivate_key.setS(m_ram1, (short) (i %10), m_testSettings.keyLength);}
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){
+                            offset = ((byte) (i % 2) == (byte) 0) ? (short) 0 : lengthS; // alternate value S from key1 or key2
+                            m_ecprivate_key.setS(m_ram1, offset, lengthS);
+                        }
                         break;
                     case JCConsts.ECPrivateKey_getS:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_ecprivate_key.getS(m_ram1, (short) 0);}
                         break;
                     case JCConsts.ECPrivateKey_clearKey:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
-                            m_ecprivate_key.setS(m_ram1, (byte) (i % 10), m_testSettings.keyLength); // we need to set key before calling clear - postprocessing is on client side is required substract setKey time
+                            // we need to set key before calling clear - postprocessing is on client side is required substract setKey time
+                            offset = ((byte) (i % 2) == (byte) 0) ? (short) 0 : lengthS; // alternate value S from key1 or key2
+                            m_ecprivate_key.setS(m_ram1, offset, lengthS);
                             m_ecprivate_key.clearKey();
                         }
                         break;
@@ -647,26 +627,37 @@ import javacardx.crypto.*;
                     break;
                 }
             break;
+            case JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC: // no break
             case JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC:
+                // Get valid public key W from both m_key1 and m_key2, fill into m_ram1 after each other
+                m_ecpublic_key = (ECPublicKey) m_key1;
+                short lengthW = m_ecpublic_key.getW(m_ram1, (short) 0);
+                m_ecpublic_key = (ECPublicKey) m_key2;
+                m_ecpublic_key.getW(m_ram1, lengthW);
                 switch (m_testSettings.algorithmMethod){
                     case JCConsts.ECPublicKey_setW:
-                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_ecpublic_key.setW(m_ram1, (short) (i %10), m_testSettings.keyLength);}
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
+                            offset = ((byte) (i % 2) == (byte) 0) ? (short) 0 : lengthW; // alternate value W from key1 or key2
+                            m_ecpublic_key.setW(m_ram1, offset, lengthW);
+                        }
                         break;
                     case JCConsts.ECPublicKey_getW:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_ecpublic_key.getW(m_ram1, (short) 0);}
                         break;
                     case JCConsts.ECPublicKey_clearKey:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
-                            m_ecpublic_key.setW(m_ram1, (byte) (i % 10), m_testSettings.keyLength);
+                            // we need to set key before calling clear - postprocessing is on client side is required substract setKey time
+                            offset = ((byte) (i % 2) == (byte) 0) ? (short) 0 : lengthW; // alternate value W from key1 or key2
+                            m_ecpublic_key.setW(m_ram1, offset, lengthW);
                             m_ecpublic_key.clearKey();
                         }
-                    break;
+                        break;
                     default:
                         ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
                     break;
                 }
-                break;
-                
+            break;
+
             case JCConsts.KeyBuilder_TYPE_HMAC:
 //                throw new CryptoException(CryptoException.NO_SUCH_ALGORITHM);   // enable for JC 2.2.1
 ///*                    
@@ -1187,15 +1178,22 @@ import javacardx.crypto.*;
     void perftest_class_KeyAgreement(APDU apdu) {  
         byte[] apdubuf = apdu.getBuffer();
         m_testSettings.parse(apdu); 
-
+        
+        short pubKeyLen = m_ecpublic_key.getW(m_ram1, (short) 0); // get valid public key
+        short offset;
         switch (m_testSettings.algorithmMethod) {
             case JCConsts.KeyAgreement_init:   
                 for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 
-                    // BUGBUG: add key alteration (m_privateKey1 and m_privateKey2)
+                    m_privateKey = ((byte) (i % 2) == (byte) 0) ? (PrivateKey) m_key1 : (PrivateKey) m_key2; // alternate key1 and key2
                     m_keyAgreement.init(m_privateKey);
                 } 
                 break;
-            case JCConsts.KeyAgreement_generateSecret:   for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_keyAgreement.generateSecret(m_ram1, (short) 0, m_testSettings.dataLength1, m_ram1, m_testSettings.dataLength1); } break;
+            case JCConsts.KeyAgreement_generateSecret:   
+                for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 
+                    offset = ((byte) (i % 2) == (byte) 0) ? (short) 0 : pubKeyLen; // alternate value W from key1 or key2
+                    m_keyAgreement.generateSecret(m_ram1, offset, pubKeyLen, m_ram1, (short) (pubKeyLen * 2)); // * 2 to store new secret after valid public keys  
+                } 
+                break;
     
             default: ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
         }
