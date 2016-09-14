@@ -1434,7 +1434,6 @@ import javacardx.crypto.*;
          
          short offset = (short) 0;
 
-        // IMPORTANT: call to prepare_Key with proper settings is assumed so perfTest is already filled with required 
          // Store type of key
          Util.setShort(apdubuf, offset, m_testSettings.keyType);
          offset += 2;

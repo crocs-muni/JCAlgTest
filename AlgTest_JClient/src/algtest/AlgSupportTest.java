@@ -98,9 +98,6 @@ public class AlgSupportTest {
     public final static short SW_ALG_OPS_NOT_SUPPORTED     = (short) 0x6002;
     public final static short SW_ALG_TYPE_UNKNOWN          = (short) 0x6003;
     
-    public final static short RAM1_ARRAY_LENGTH = (short) 600;
-    public final static short RAM2_ARRAY_LENGTH = (short) 16;
-    
     
     /* Auxiliary variables to choose class - used in APDU as P1 byte. */
     public static final byte CLASS_CIPHER          = 0x11;
@@ -112,7 +109,9 @@ public class AlgSupportTest {
     public static final byte CLASS_KEYPAIR         = 0x19;
     public static final byte CLASS_KEYBUILDER      = 0x20;
 
-    AlgSupportTest() { }
+    AlgSupportTest(byte[] auxRAMArray) { 
+        m_ramArray = auxRAMArray;
+    }
 
     public byte process(APDU apdu) throws ISOException {
         byte bProcessed = 0;
@@ -184,7 +183,7 @@ public class AlgSupportTest {
                
                if ((algorithmClass == KeyPair.ALG_EC_FP) || (algorithmClass == KeyPair.ALG_EC_F2M)) {
                    // Key pair for ECC need to be initialized by proper curve for some cards in some cases
-                   EnsureInitializedECCurve(algorithmClass, algorithmParam1, m_keyPair1);
+                   EC_Consts.ensureInitializedECCurve(algorithmClass, algorithmParam1, m_keyPair1, m_ramArray);
                }
                
                m_keyPair1.genKeyPair();
@@ -211,22 +210,6 @@ public class AlgSupportTest {
        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (short) 240);
     }
     
-    void EnsureInitializedECCurve(byte keyClass, short keyLen, KeyPair ecKeyPair) {
-        m_ecPublicKey = (ECPublicKey) ecKeyPair.getPublic();
-        m_ecPrivateKey = (ECPrivateKey) ecKeyPair.getPrivate();
-        // Some implementation wil not return valid pub key until ecKeyPair.genKeyPair() is called
-        // Other implementation will fail with exception if same is called => try catch 
-        try {
-            if (m_ecPublicKey == null) {
-                ecKeyPair.genKeyPair();
-            }
-        } catch (Exception e) {
-        } // do intentionally nothing
-
-        // Initialize curve parameters 
-        EC_Consts.setValidECKeyParams(m_ecPublicKey, m_ecPrivateKey, keyClass, keyLen, m_ramArray);
-    }
-
     void JCSystemInfo(APDU apdu) {
        byte[]    apdubuf = apdu.getBuffer();
        apdu.setIncomingAndReceive();
@@ -239,7 +222,9 @@ public class AlgSupportTest {
 
         Util.setShort(apdubuf, offset, JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_PERSISTENT));
         offset = (short)(offset + 2);
-        Util.setShort(apdubuf, offset, JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_RESET));
+        short ramMemorySize = JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_RESET);
+        ramMemorySize += (short) m_ramArray.length; // This array is allocated by this applet and therefore consumed some space
+        Util.setShort(apdubuf, offset, ramMemorySize);
         offset = (short)(offset + 2);
         Util.setShort(apdubuf, offset, JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT));
         offset = (short)(offset + 2);
