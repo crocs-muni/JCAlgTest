@@ -1951,8 +1951,10 @@ public class PerformanceTesting {
             this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setX()");
             testSet.algorithmMethod = JCConsts.DSAPrivateKey_setX;
             double setXTime = this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getX()");
-            testSet.algorithmMethod = JCConsts.DSAPrivateKey_clearX;
-            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearX()", setXTime);
+            testSet.algorithmMethod = JCConsts.DSAPrivateKey_clearKey;
+            TestSettings SINGLEOP_testSet = testSet.duplicate();
+            SINGLEOP_testSet.numRepeatWholeOperation = 1; // BUGBUG: calling clearKey twice for asym. algs will fail
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, SINGLEOP_testSet, info + " clearKey()");
         }
         else {
             String message = "No variable data test for " + info + "\n";
@@ -1990,7 +1992,8 @@ public class PerformanceTesting {
             testSet.algorithmMethod = JCConsts.DSAPublicKey_setY;
             double setXTime = this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getY()");
             testSet.algorithmMethod = JCConsts.DSAPublicKey_clearKey;
-            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearY()", setXTime);
+            TestSettings SINGLEOP_testSet = testSet.duplicate(); SINGLEOP_testSet.numRepeatWholeOperation = 1; // BUGBUG: calling clearKey twice for asym. algs will fail
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, SINGLEOP_testSet, info + " clearKey()");
         }
         else {
             String message = "No variable data test for " + info + "\n";
@@ -2029,7 +2032,9 @@ public class PerformanceTesting {
             testSet.algorithmMethod = JCConsts.ECPublicKey_getW;
             this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getW()");
             testSet.algorithmMethod = JCConsts.ECPublicKey_clearKey;
-            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearKey()", setWTime);
+            TestSettings SINGLEOP_testSet = testSet.duplicate();
+            SINGLEOP_testSet.numRepeatWholeOperation = 1; // BUGBUG: calling clearKey twice for asym. algs will fail
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, SINGLEOP_testSet, info + " clearKey()");
         }
         else {
             String message = "No variable data test for " + info + "\n";
@@ -2069,7 +2074,9 @@ public class PerformanceTesting {
             testSet.algorithmMethod = JCConsts.ECPrivateKey_getS;
             this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getS()");
             testSet.algorithmMethod = JCConsts.ECPrivateKey_clearKey;
-            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearKey()", setSTime);
+            TestSettings SINGLEOP_testSet = testSet.duplicate();
+            SINGLEOP_testSet.numRepeatWholeOperation = 1; // BUGBUG: calling clearKey twice for asym. algs will fail
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, SINGLEOP_testSet, info + " clearKey()");
         }
         else {
             String message = "No variable data test for " + info + "\n";
@@ -2216,7 +2223,9 @@ public class PerformanceTesting {
             this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getQ()");
 
             testSet.algorithmMethod = JCConsts.RSAPrivateCrtKey_clearKey;
-            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearKey()", setDP1Time);
+            TestSettings SINGLEOP_testSet = testSet.duplicate();
+            SINGLEOP_testSet.numRepeatWholeOperation = 1; // BUGBUG: calling clearKey twice for asym. algs will fail
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, SINGLEOP_testSet, info + " clearKey()");
         }
         else {
             String message = "No variable data test for " + info + "\n";
@@ -2268,7 +2277,9 @@ public class PerformanceTesting {
             this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getModulus()");
 
             testSet.algorithmMethod = JCConsts.RSAPrivateKey_clearKey;
-            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearKey()", setModulusTime);
+            TestSettings SINGLEOP_testSet = testSet.duplicate();
+            SINGLEOP_testSet.numRepeatWholeOperation = 1; // BUGBUG: calling clearKey twice for asym. algs will fail
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, SINGLEOP_testSet, info + " clearKey()");
         }
         else {
             String message = "No variable data test for " + info + "\n";
@@ -2320,7 +2331,9 @@ public class PerformanceTesting {
             this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getModulus()");
 
             testSet.algorithmMethod = JCConsts.RSAPublicKey_clearKey;
-            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearKey()", setExponentTime);
+            TestSettings SINGLEOP_testSet = testSet.duplicate();
+            SINGLEOP_testSet.numRepeatWholeOperation = 1; // BUGBUG: calling clearKey twice for asym. algs will fail
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, SINGLEOP_testSet, info + " clearKey()");
         }
         else {
             String message = "No variable data test for " + info + "\n";

@@ -367,7 +367,7 @@ public class JCConsts {
     // javacard.security.DSAPrivateKey Methods:
     public static final short DSAPrivateKey_getX                                    = 1;
     public static final short DSAPrivateKey_setX                                    = 2;
-    public static final short DSAPrivateKey_clearX                                  = 3;
+    public static final short DSAPrivateKey_clearKey                                  = 3;
 
     // Class javacard.security.DSAPublicKey
     // javacard.security.DSAPublicKey Fields:

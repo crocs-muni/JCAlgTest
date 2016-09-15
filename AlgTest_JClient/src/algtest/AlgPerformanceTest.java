@@ -596,10 +596,13 @@ import javacardx.crypto.*;
                         break;
                     case JCConsts.ECPrivateKey_clearKey:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
+                            /*
+                            // BUGBUG: once cleared, just to call setS is not enough (whole curve settings must be initialized), Will fail with 0x6f00 when numRepeatWholeOperation > 1
                             // we need to set key before calling clear - postprocessing is on client side is required substract setKey time
                             offset = ((byte) (i % 2) == (byte) 0) ? (short) 0 : lengthS; // alternate value S from key1 or key2
                             m_ecprivate_key.setS(m_ram1, offset, lengthS);
-                            m_ecprivate_key.clearKey(); // BUGBUG: once cleared, just to call setS is not enough (whole curve settings must be initialized), Will fail with 0x6f00 when numRepeatWholeOperation > 1
+                            */
+                            m_ecprivate_key.clearKey(); 
                         }
                         break;
                     default:
@@ -626,10 +629,13 @@ import javacardx.crypto.*;
                         break;
                     case JCConsts.ECPublicKey_clearKey:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
+                            /*
+                            // BUGBUG: once cleared, just to call setW is not enough (whole curve settings must be initialized), Will fail with 0x6f00 when numRepeatWholeOperation > 1
                             // we need to set key before calling clear - postprocessing is on client side is required substract setKey time
                             offset = ((byte) (i % 2) == (byte) 0) ? (short) 0 : lengthW; // alternate value W from key1 or key2
                             m_ecpublic_key.setW(m_ram1, offset, lengthW);
-                            m_ecpublic_key.clearKey(); // BUGBUG: once cleared, just to call setW is not enough (whole curve settings must be initialized), Will fail with 0x6f00 when numRepeatWholeOperation > 1
+                            */                            
+                            m_ecpublic_key.clearKey(); 
                         }
                         break;
                     default:
@@ -669,9 +675,10 @@ import javacardx.crypto.*;
                     case JCConsts.DSAPrivateKey_getX:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_dsaprivate_key.getX(m_ram1, (short) 0); }
                         break;
-                    case JCConsts.DSAPrivateKey_clearX:
+                    case JCConsts.DSAPrivateKey_clearKey:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
-                            m_dsaprivate_key.setX(m_ram1, (byte) (i % 10), m_testSettings.keyLength);
+                            // BUGBUG: once cleared, just to call setW is not enough (whole curve settings must be initialized), Will fail with 0x6f00 when numRepeatWholeOperation > 1
+                            //m_dsaprivate_key.setX(m_ram1, (byte) (i % 10), m_testSettings.keyLength);
                             m_dsaprivate_key.clearKey();
                         }
                         break;
@@ -691,7 +698,8 @@ import javacardx.crypto.*;
                         break;
                     case JCConsts.DSAPublicKey_clearKey:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
-                            m_dsapublic_key.setY(m_ram1, (byte) (i % 10), m_testSettings.keyLength);
+                            // BUGBUG: once cleared, just to call setY is not enough , Will fail with 0x6f00 when numRepeatWholeOperation > 1
+                            //m_dsapublic_key.setY(m_ram1, (byte) (i % 10), m_testSettings.keyLength);
                             m_dsapublic_key.clearKey(); // BUGBUG: once cleared, just to call setY is not enough (whole curve settings must be initialized), Will fail with 0x6f00 when numRepeatWholeOperation > 1
                         }
                         break;
@@ -735,9 +743,11 @@ import javacardx.crypto.*;
                         break;
                     case JCConsts.RSAPrivateCrtKey_clearKey:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
-                            // BUGBUG: is setting only DP1 enough? It is not!!!
+                            /*
+                            // BUGBUG: once cleared, just to call setDP1 is not enough, Will fail with 0x6f00 when numRepeatWholeOperation > 1
                             m_rsaprivatecrt_key.setDP1(m_ram1, (byte) (i % 10), m_testSettings.keyLength);
-                            m_rsaprivatecrt_key.clearKey(); // BUGBUG: once cleared, just to call setDP1 is not enough, Will fail with 0x6f00 when numRepeatWholeOperation > 1
+                            */
+                            m_rsaprivatecrt_key.clearKey(); 
                         }
                     break;
                     default:
@@ -761,8 +771,11 @@ import javacardx.crypto.*;
                         break;
                     case JCConsts.RSAPrivateKey_clearKey:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
+                            /*
+                            // BUGBUG: once cleared, just to call setModulus is not enough, Will fail with 0x6f00 when numRepeatWholeOperation > 1
                             m_rsaprivate_key.setModulus(m_ram1, (byte) (i % 10), m_testSettings.keyLength);
-                            m_rsaprivate_key.clearKey(); // BUGBUG: once cleared, just to call setModulus is not enough, Will fail with 0x6f00 when numRepeatWholeOperation > 1
+                            */
+                            m_rsaprivate_key.clearKey(); 
                         }
                         break;
                     default:
@@ -786,8 +799,11 @@ import javacardx.crypto.*;
                         break;
                     case JCConsts.RSAPublicKey_clearKey:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
+                            /*
+                            // BUGBUG: once cleared, just to call setExponent is not enough, Will fail with 0x6f00 when numRepeatWholeOperation > 1
                             m_rsapublic_key.setExponent(m_ram1, (byte) (i % 10), m_testSettings.keyLength);
-                            m_rsapublic_key.clearKey(); // BUGBUG: once cleared, just to call setExponent is not enough, Will fail with 0x6f00 when numRepeatWholeOperation > 1
+                            */
+                            m_rsapublic_key.clearKey(); 
                         }
                         break;
                     default:
