@@ -159,6 +159,9 @@ public class PerformanceTesting {
         this.m_perfResultsFile = m_cardManager.establishConnection(testClassPerformance, m_cardName, testInfo, selectedTerminal);
         m_cardATR = m_cardManager.getATR();
         
+        testKeyAgreementWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_ALG_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_128, JCConsts.KeyAgreement_ALG_EC_SVDP_DH, "ALG_EC_FP LENGTH_EC_FP_128 ALG_EC_SVDP_DH", (short) 1, (short) Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
+
+        testAllKeyAgreement(1, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
         testAllECFPPrivateKeys(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
 /*        
         testAllECF2MPublicKeys(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
@@ -185,7 +188,8 @@ public class PerformanceTesting {
         testAllUtil(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
         testAllSWAlgs(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
         testAllKeyPairs(1, Consts.NUM_REPEAT_WHOLE_MEASUREMENT_KEYPAIRGEN);    // for keypair, different repeat settings is used
-        
+        testAllKeyAgreement(1, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
+                
         finalizeMeasurement();
     }
     
@@ -1783,8 +1787,57 @@ public class PerformanceTesting {
         tableName = "\n\nCHECKSUM - END\n";
         m_perfResultsFile.write(tableName.getBytes());
     }    
-    
-    // TODO: KeyAgreement tests
+
+    public void testKeyAgreementWithKeyClass(byte keyClass, byte keyType, short keyLength, byte alg, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
+        TestSettings testSet = this.prepareTestSettings(Consts.CLASS_KEYAGREEMENT, alg, keyType, keyLength, JCConsts.KeyAgreement_init,
+                Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
+        testSet.keyClass = keyClass;
+
+        if (!m_bTestVariableData) {
+            testSet.algorithmMethod = JCConsts.KeyAgreement_init;
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEYAGREEMENT, Consts.INS_PERF_TEST_CLASS_KEYAGREEMENT, testSet, info + " KeyAgreement_init()");
+            testSet.algorithmMethod = JCConsts.KeyAgreement_generateSecret;
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEYAGREEMENT, Consts.INS_PERF_TEST_CLASS_KEYAGREEMENT, testSet, info + " KeyAgreement_generateSecret()");
+        } else {
+            // Test of speed dependant on data length
+            String tableName = "\n\nKEYAGREEMENT - " + info + " - variable data - BEGIN\n";
+            m_perfResultsFile.write(tableName.getBytes());
+            System.out.print(tableName);
+            tableName = "For KeyAgreement, variable length perf test is not supported\n";
+            m_perfResultsFile.write(tableName.getBytes());
+            System.out.print(tableName);
+            
+            tableName = "\n\nKEYAGREEMENT - " + info + " - variable data - END\n";
+            m_perfResultsFile.write(tableName.getBytes());
+        }
+    }    
+    public void testAllKeyAgreement(int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception {
+        testAllKeyAgreement((short) numRepeatWholeOperation, (short) numRepeatWholeMeasurement);
+    }
+    public void testAllKeyAgreement(short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
+        String tableName = "\n\nKEYAGREEMENT\n";
+        m_perfResultsFile.write(tableName.getBytes());
+        if (m_bTestAsymmetricAlgs) {
+            testKeyAgreementWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_ALG_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_112, JCConsts.KeyAgreement_ALG_EC_SVDP_DH, "ALG_EC_FP LENGTH_EC_FP_112 ALG_EC_SVDP_DH", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyAgreementWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_ALG_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_128, JCConsts.KeyAgreement_ALG_EC_SVDP_DH, "ALG_EC_FP LENGTH_EC_FP_128 ALG_EC_SVDP_DH", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyAgreementWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_ALG_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_160, JCConsts.KeyAgreement_ALG_EC_SVDP_DH, "ALG_EC_FP LENGTH_EC_FP_160 ALG_EC_SVDP_DH", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyAgreementWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_ALG_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_192, JCConsts.KeyAgreement_ALG_EC_SVDP_DH, "ALG_EC_FP LENGTH_EC_FP_192 ALG_EC_SVDP_DH", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyAgreementWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_ALG_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_224, JCConsts.KeyAgreement_ALG_EC_SVDP_DH, "ALG_EC_FP LENGTH_EC_FP_224 ALG_EC_SVDP_DH", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyAgreementWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_ALG_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_256, JCConsts.KeyAgreement_ALG_EC_SVDP_DH, "ALG_EC_FP LENGTH_EC_FP_256 ALG_EC_SVDP_DH", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyAgreementWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_ALG_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_384, JCConsts.KeyAgreement_ALG_EC_SVDP_DH, "ALG_EC_FP LENGTH_EC_FP_384 ALG_EC_SVDP_DH", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyAgreementWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_ALG_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_521, JCConsts.KeyAgreement_ALG_EC_SVDP_DH, "ALG_EC_FP LENGTH_EC_FP_521 ALG_EC_SVDP_DH", numRepeatWholeOperation, numRepeatWholeMeasurement);
+
+            testKeyAgreementWithKeyClass(JCConsts.KeyPair_ALG_EC_F2M, JCConsts.KeyBuilder_ALG_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_113, JCConsts.KeyAgreement_ALG_EC_SVDP_DH, "ALG_EC_F2M LENGTH_EC_F2M_113 ALG_EC_SVDP_DH", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyAgreementWithKeyClass(JCConsts.KeyPair_ALG_EC_F2M, JCConsts.KeyBuilder_ALG_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_131, JCConsts.KeyAgreement_ALG_EC_SVDP_DH, "ALG_EC_F2M LENGTH_EC_F2M_131 ALG_EC_SVDP_DH", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyAgreementWithKeyClass(JCConsts.KeyPair_ALG_EC_F2M, JCConsts.KeyBuilder_ALG_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_163, JCConsts.KeyAgreement_ALG_EC_SVDP_DH, "ALG_EC_F2M LENGTH_EC_F2M_163 ALG_EC_SVDP_DH", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testKeyAgreementWithKeyClass(JCConsts.KeyPair_ALG_EC_F2M, JCConsts.KeyBuilder_ALG_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_193, JCConsts.KeyAgreement_ALG_EC_SVDP_DH, "ALG_EC_F2M LENGTH_EC_F2M_193 ALG_EC_SVDP_DH", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        } else {
+            String message = "\n# Measurements excluded for asymmetric algorithms\n";
+            m_perfResultsFile.write(message.getBytes());
+        }
+        tableName = "\n\nKEYAGREEMENT - END\n";
+        m_perfResultsFile.write(tableName.getBytes());
+    }
     
     public void testAESKey(byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
         TestSettings testSet = null;
