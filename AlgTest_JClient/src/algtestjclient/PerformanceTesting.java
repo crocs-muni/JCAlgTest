@@ -37,6 +37,7 @@ import java.io.FileOutputStream;
 import java.util.Scanner;
 import javax.smartcardio.ResponseAPDU;
 import AlgTest.Consts;
+import AlgTest.JCAlgTestApplet;
 import AlgTest.JCConsts;
 import AlgTest.TestSettings;
 import java.util.ArrayList;
@@ -159,25 +160,6 @@ public class PerformanceTesting {
         this.m_perfResultsFile = m_cardManager.establishConnection(testClassPerformance, m_cardName, testInfo, selectedTerminal);
         m_cardATR = m_cardManager.getATR();
         
-        testKeyAgreementWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_128, JCConsts.KeyAgreement_ALG_EC_SVDP_DH, "ALG_EC_FP LENGTH_EC_FP_128 ALG_EC_SVDP_DH", (short) 1, (short) Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
-
-        testAllKeyAgreement(1, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
-        testAllECFPPrivateKeys(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
-/*        
-        testAllECF2MPublicKeys(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
-        getDefaultECParametersAllECF2MKeys();    
-        
-/*
-        testAllUtil(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
-        
-
-        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Cipher_ALG_AES_BLOCK_128_CBC_NOPAD,"TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_128_CBC_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, (short) numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
-        testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1024 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, (short) numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
-        testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_NOPAD,"TYPE_RSA_CRT_PRIVATE LENGTH_RSA_2048 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, (short) numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
-        testSignature(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128,JCConsts.Signature_ALG_AES_MAC_128_NOPAD,"TYPE_AES LENGTH_AES_128 ALG_AES_MAC_128_NOPAD", (short) numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_2048 ALG_RSA_SHA_PKCS1", (short) numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
-        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Signature_ALG_RSA_SHA_PKCS1,"ALG_RSA_CRT LENGTH_RSA_2048 ALG_RSA_SHA_PKCS1", (short) numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
-/**/        
         // Run all required tests
         testAllMessageDigests(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
         testAllRandomGenerators(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
@@ -187,8 +169,8 @@ public class PerformanceTesting {
         testAllKeys(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
         testAllUtil(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
         testAllSWAlgs(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
-        testAllKeyPairs(1, Consts.NUM_REPEAT_WHOLE_MEASUREMENT_KEYPAIRGEN);    // for keypair, different repeat settings is used
-        testAllKeyAgreement(1, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
+        testAllKeyPairs(1, Consts.NUM_REPEAT_WHOLE_MEASUREMENT_KEYPAIRGEN);     // for keypair, different repeat settings is used
+        testAllKeyAgreement(10, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);           // for KeyAgrement, different repeat settings is used
                 
         finalizeMeasurement();
     }
@@ -832,7 +814,7 @@ public class PerformanceTesting {
             
         if (!m_bTestVariableData) {
             // Ordinary test of all available methods
-            assert(testSet.dataLength1 <= AlgPerformanceTest.RAM1_ARRAY_LENGTH / 2);  // some methods will operate on same array (copy) so at maxiumum, half of array can be used as input
+            assert(testSet.dataLength1 <= JCAlgTestApplet.RAM1_ARRAY_LENGTH / 2);  // some methods will operate on same array (copy) so at maxiumum, half of array can be used as input
             for (Pair op : testedOps) {
                 testSet.algorithmMethod = (Short) op.getL();
                 this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_UTIL, Consts.INS_PERF_TEST_CLASS_UTIL, testSet, info + " " + (String) op.getR());
@@ -847,7 +829,7 @@ public class PerformanceTesting {
                 testSet.algorithmMethod = (Short) op.getL();
                 for (Integer length : m_testDataLengths) {
                     testSet.dataLength1 = length.shortValue();
-                    if (testSet.dataLength1 <= AlgPerformanceTest.RAM1_ARRAY_LENGTH / 2) {
+                    if (testSet.dataLength1 <= JCAlgTestApplet.RAM1_ARRAY_LENGTH / 2) {
                         this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_UTIL, Consts.INS_PERF_TEST_CLASS_UTIL, testSet, info + " " + (String) op.getR());
                     }
                 }
@@ -2007,7 +1989,7 @@ public class PerformanceTesting {
             this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " setY()");
             testSet.algorithmMethod = JCConsts.DSAPublicKey_setY;
             double setXTime = this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getY()");
-            testSet.algorithmMethod = JCConsts.DSAPublicKey_clearY;
+            testSet.algorithmMethod = JCConsts.DSAPublicKey_clearKey;
             this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " clearY()", setXTime);
         }
         else {
@@ -2035,10 +2017,11 @@ public class PerformanceTesting {
         m_perfResultsFile.write(tableName.getBytes());
     }
     
-    public void testECPublicKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
+    public void testECPublicKey (byte keyClass, byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
         TestSettings testSet = null;
         testSet = this.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.ECPublicKey_setW,
                 Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
+        testSet.keyClass = keyClass;
         
         if (!m_bTestVariableData) {
             testSet.algorithmMethod = JCConsts.ECPublicKey_setW;
@@ -2061,10 +2044,10 @@ public class PerformanceTesting {
         String tableName = "\n\nECF2MPublicKey";
         m_perfResultsFile.write(tableName.getBytes());
         if (m_bTestAsymmetricAlgs) {
-            testECPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_F2M_113, "TYPE_EC_F2M_PUBLIC LENGTH_EC_F2M_113", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_F2M_131, "TYPE_EC_F2M_PUBLIC LENGTH_EC_F2M_131", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_F2M_163, "TYPE_EC_F2M_PUBLIC LENGTH_EC_F2M_163", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_F2M_193, "TYPE_EC_F2M_PUBLIC LENGTH_EC_F2M_193", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPublicKey(JCConsts.KeyPair_ALG_EC_F2M, JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_F2M_113, "TYPE_EC_F2M_PUBLIC LENGTH_EC_F2M_113", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPublicKey(JCConsts.KeyPair_ALG_EC_F2M, JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_F2M_131, "TYPE_EC_F2M_PUBLIC LENGTH_EC_F2M_131", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPublicKey(JCConsts.KeyPair_ALG_EC_F2M, JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_F2M_163, "TYPE_EC_F2M_PUBLIC LENGTH_EC_F2M_163", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPublicKey(JCConsts.KeyPair_ALG_EC_F2M, JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_F2M_193, "TYPE_EC_F2M_PUBLIC LENGTH_EC_F2M_193", numRepeatWholeOperation, numRepeatWholeMeasurement);
         }
         else {
             String message = "\n# Measurements excluded for asymmetric algorithms\n";
@@ -2074,10 +2057,11 @@ public class PerformanceTesting {
         m_perfResultsFile.write(tableName.getBytes());
     }
     
-    public void testECPrivateKey (byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
+    public void testECPrivateKey (byte keyClass, byte keyType, short keyLength, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws Exception{
         TestSettings testSet = null;
         testSet = this.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.ECPrivateKey_setS,
                 Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);
+        testSet.keyClass = keyClass;
         
         if (!m_bTestVariableData) {
             testSet.algorithmMethod = JCConsts.ECPrivateKey_setS;
@@ -2101,10 +2085,10 @@ public class PerformanceTesting {
         String tableName = "\n\nECF2MPrivateKey";
         m_perfResultsFile.write(tableName.getBytes());
         if (m_bTestAsymmetricAlgs) {
-            testECPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_113, "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_113", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_131, "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_131", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_163, "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_163", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPublicKey(JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_193, "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_193", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPublicKey(JCConsts.KeyPair_ALG_EC_F2M, JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_113, "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_113", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPublicKey(JCConsts.KeyPair_ALG_EC_F2M, JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_131, "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_131", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPublicKey(JCConsts.KeyPair_ALG_EC_F2M, JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_163, "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_163", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPublicKey(JCConsts.KeyPair_ALG_EC_F2M, JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_193, "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_193", numRepeatWholeOperation, numRepeatWholeMeasurement);
         }
         else {
             String message = "\n# Measurements excluded for asymmetric algorithms\n";
@@ -2121,14 +2105,14 @@ public class PerformanceTesting {
         String tableName = "\n\nECFPPublicKey";
         m_perfResultsFile.write(tableName.getBytes());
         if (m_bTestAsymmetricAlgs) {
-            testECPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_112, "TYPE_EC_FP_PUBLIC LENGTH_EC_FP_112", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_128, "TYPE_EC_FP_PUBLIC LENGTH_EC_FP_128", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_160, "TYPE_EC_FP_PUBLIC LENGTH_EC_FP_160", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_192, "TYPE_EC_FP_PUBLIC LENGTH_EC_FP_192", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_224, "TYPE_EC_FP_PUBLIC LENGTH_EC_FP_224", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_256, "TYPE_EC_FP_PUBLIC LENGTH_EC_FP_256", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_384, "TYPE_EC_FP_PUBLIC LENGTH_EC_FP_384", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPublicKey(JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_521, "TYPE_EC_FP_PUBLIC LENGTH_EC_FP_521", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPublicKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_112, "TYPE_EC_FP_PUBLIC LENGTH_EC_FP_112", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPublicKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_128, "TYPE_EC_FP_PUBLIC LENGTH_EC_FP_128", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPublicKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_160, "TYPE_EC_FP_PUBLIC LENGTH_EC_FP_160", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPublicKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_192, "TYPE_EC_FP_PUBLIC LENGTH_EC_FP_192", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPublicKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_224, "TYPE_EC_FP_PUBLIC LENGTH_EC_FP_224", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPublicKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_256, "TYPE_EC_FP_PUBLIC LENGTH_EC_FP_256", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPublicKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_384, "TYPE_EC_FP_PUBLIC LENGTH_EC_FP_384", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPublicKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_521, "TYPE_EC_FP_PUBLIC LENGTH_EC_FP_521", numRepeatWholeOperation, numRepeatWholeMeasurement);
         }
         else {
             String message = "\n# Measurements excluded for asymmetric algorithms\n";
@@ -2145,14 +2129,14 @@ public class PerformanceTesting {
         String tableName = "\n\nECFPPrivateKey";
         m_perfResultsFile.write(tableName.getBytes());
         if (m_bTestAsymmetricAlgs) {
-            testECPrivateKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_112, "TYPE_EC_FP PRIVATE LENGTH_EC_FP_112", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPrivateKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_128, "TYPE_EC_FP PRIVATE LENGTH_EC_FP_128", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPrivateKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_160, "TYPE_EC_FP PRIVATE LENGTH_EC_FP_160", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPrivateKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_192, "TYPE_EC_FP PRIVATE LENGTH_EC_FP_192", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPrivateKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_224, "TYPE_EC_FP PRIVATE LENGTH_EC_FP_224", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPrivateKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_256, "TYPE_EC_FP PRIVATE LENGTH_EC_FP_256", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPrivateKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_384, "TYPE_EC_FP PRIVATE LENGTH_EC_FP_384", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPrivateKey(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_521, "TYPE_EC_FP PRIVATE LENGTH_EC_FP_521", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_112, "TYPE_EC_FP PRIVATE LENGTH_EC_FP_112", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_128, "TYPE_EC_FP PRIVATE LENGTH_EC_FP_128", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_160, "TYPE_EC_FP PRIVATE LENGTH_EC_FP_160", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_192, "TYPE_EC_FP PRIVATE LENGTH_EC_FP_192", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_224, "TYPE_EC_FP PRIVATE LENGTH_EC_FP_224", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_256, "TYPE_EC_FP PRIVATE LENGTH_EC_FP_256", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_384, "TYPE_EC_FP PRIVATE LENGTH_EC_FP_384", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_521, "TYPE_EC_FP PRIVATE LENGTH_EC_FP_521", numRepeatWholeOperation, numRepeatWholeMeasurement);
         }
         else {
             String message = "\n# Measurements excluded for asymmetric algorithms\n";
