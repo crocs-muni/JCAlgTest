@@ -840,8 +840,8 @@ import javacardx.crypto.*;
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA,(byte)1);
         }
         catch (CryptoException e) {
-            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte) e.getReason();
-            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET);
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);
         }  
     }
 
@@ -947,8 +947,8 @@ import javacardx.crypto.*;
         }
         catch(CryptoException e)
         {
-            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte)e.getReason();
-            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET);
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);
         }  
     }    
     void perftest_class_Signature(APDU apdu) {  
@@ -1040,8 +1040,8 @@ import javacardx.crypto.*;
         }
         catch(CryptoException e)
         {
-            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte)e.getReason();
-            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET);
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);
         }  
     }      
     void perftest_class_RandomData(APDU apdu) {  
@@ -1072,7 +1072,7 @@ import javacardx.crypto.*;
         }
         catch(CryptoException e)
         {
-            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte)e.getReason();
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET);
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
         }  
     }      
@@ -1109,8 +1109,8 @@ import javacardx.crypto.*;
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
         }
         catch(CryptoException e) {
-            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte)e.getReason(); 
-            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); 
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);
         }  
     }      
     void perftest_class_Checksum(APDU apdu) {  
@@ -1139,9 +1139,9 @@ import javacardx.crypto.*;
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
         }
-        catch(CryptoException e) {
-            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte)e.getReason(); 
-            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
+        catch (CryptoException e) {
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); 
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);
         }  
     }      
     void perftest_class_KeyPair(APDU apdu) {  
@@ -1170,9 +1170,9 @@ import javacardx.crypto.*;
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
         }
-        catch(CryptoException e) {
-            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte)e.getReason(); 
-            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
+        catch (CryptoException e) {
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); 
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);
         }  
     }      
     void perftest_class_KeyAgreement(APDU apdu) {  
@@ -1376,8 +1376,8 @@ import javacardx.crypto.*;
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);            
         }
         catch(CryptoException e) {
-            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte)e.getReason();
-            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
+            apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET);
+            apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);
         }  
     }      
     void perftest_swalgs(APDU apdu) {  
