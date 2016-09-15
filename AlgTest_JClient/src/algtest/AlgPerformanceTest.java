@@ -485,10 +485,12 @@ import javacardx.crypto.*;
                 case JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC:
                     if (bSetKeyValue == Consts.TRUE){
                         m_keyPair1 = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
+                        EC_Consts.ensureInitializedECCurve((byte) m_testSettings.keyClass, m_testSettings.keyLength, m_keyPair1, m_ram1);
                         m_keyPair1.genKeyPair();
                         m_key1 = m_keyPair1.getPublic();
                         m_ecpublic_key = (ECPublicKey) m_keyPair1.getPublic();
                         m_keyPair2 = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
+                        EC_Consts.ensureInitializedECCurve((byte) m_testSettings.keyClass, m_testSettings.keyLength, m_keyPair2, m_ram1);
                         m_keyPair2.genKeyPair();
                         m_key2 = m_keyPair2.getPublic();
                     }
@@ -670,7 +672,8 @@ import javacardx.crypto.*;
             case JCConsts.KeyBuilder_TYPE_DSA_PRIVATE:
                 switch (m_testSettings.algorithmMethod){
                     case JCConsts.DSAPrivateKey_setX: 
-                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_dsaprivate_key.setX(m_ram1, (byte) (i % 10), m_testSettings.keyLength); } // i % 10 => different offset to ensure slightly different key every time
+                        short xLen = m_dsaprivate_key.getX(m_ram1, (short) 0);
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_dsaprivate_key.setX(m_ram1, (short) 0, xLen); } 
                         break;                    
                     case JCConsts.DSAPrivateKey_getX:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_dsaprivate_key.getX(m_ram1, (short) 0); }
@@ -691,7 +694,8 @@ import javacardx.crypto.*;
             case JCConsts.KeyBuilder_TYPE_DSA_PUBLIC:
                 switch (m_testSettings.algorithmMethod){
                     case JCConsts.DSAPublicKey_setY: 
-                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_dsapublic_key.setY(m_ram1, (byte) (i % 10), m_testSettings.keyLength); } // i % 10 => different offset to ensure slightly different key every time
+                        short yLen = m_dsapublic_key.getY(m_ram1, (short) 0);
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_dsapublic_key.setY(m_ram1, (short) 0, yLen); } // i % 10 => different offset to ensure slightly different key every time
                         break;                    
                     case JCConsts.DSAPublicKey_getY:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_dsapublic_key.getY(m_ram1, (short) 0); }
@@ -709,22 +713,27 @@ import javacardx.crypto.*;
                 }
                 break;
                 
-            case JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE:                
+            case JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE:  
                 switch (m_testSettings.algorithmMethod){
                     case JCConsts.RSAPrivateCrtKey_setDP1: 
-                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_rsaprivatecrt_key.setDP1(m_ram1, (byte) (i % 10), m_testSettings.keyLength); } // i % 10 => different offset to ensure slightly different key every time
+                        short dp1Len = m_rsaprivatecrt_key.getDP1(m_ram1, (short) 0);
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_rsaprivatecrt_key.setDP1(m_ram1, (short) 0, dp1Len); } 
                         break;
                     case JCConsts.RSAPrivateCrtKey_setDQ1: 
-                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_rsaprivatecrt_key.setDQ1(m_ram1, (byte) (i % 10), m_testSettings.keyLength); } // i % 10 => different offset to ensure slightly different key every time
+                        short dq1Len = m_rsaprivatecrt_key.getDQ1(m_ram1, (short) 0);
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_rsaprivatecrt_key.setDQ1(m_ram1, (short) 0, dq1Len); } 
                         break;
                     case JCConsts.RSAPrivateCrtKey_setP: 
-                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_rsaprivatecrt_key.setP(m_ram1, (byte) (i % 10), m_testSettings.keyLength); } // i % 10 => different offset to ensure slightly different key every time
+                        short pLen = m_rsaprivatecrt_key.getP(m_ram1, (short) 0);
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_rsaprivatecrt_key.setP(m_ram1, (short) 0, pLen); } 
                         break;
                     case JCConsts.RSAPrivateCrtKey_setPQ: 
-                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_rsaprivatecrt_key.setPQ(m_ram1, (byte) (i % 10), m_testSettings.keyLength); } // i % 10 => different offset to ensure slightly different key every time
+                        short pqLen = m_rsaprivatecrt_key.getPQ(m_ram1, (short) 0);
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_rsaprivatecrt_key.setPQ(m_ram1, (short) 0, pqLen); } 
                         break;  
                     case JCConsts.RSAPrivateCrtKey_setQ: 
-                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_rsaprivatecrt_key.setQ(m_ram1, (byte) (i % 10), m_testSettings.keyLength); } // i % 10 => different offset to ensure slightly different key every time
+                        short qLen = m_rsaprivatecrt_key.getQ(m_ram1, (short) 0);
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_rsaprivatecrt_key.setQ(m_ram1, (short) 0, qLen); } 
                         break;  
                     case JCConsts.RSAPrivateCrtKey_getDP1:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_rsaprivatecrt_key.getDP1(m_ram1, (short) 0); }
@@ -758,10 +767,12 @@ import javacardx.crypto.*;
             case JCConsts.KeyBuilder_TYPE_RSA_PRIVATE:
                 switch (m_testSettings.algorithmMethod){
                     case JCConsts.RSAPrivateKey_setExponent:
-                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_rsaprivate_key.setExponent(m_ram1, (byte) (i % 10), m_testSettings.keyLength);}
+                        short expLen = m_rsaprivate_key.getExponent(m_ram1, (short) 0);
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_rsaprivate_key.setExponent(m_ram1, (short) 0, expLen);}
                         break;
                     case JCConsts.RSAPrivateKey_setModulus:
-                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_rsaprivate_key.setModulus(m_ram1, (byte) (i % 10), m_testSettings.keyLength);}
+                        short modLen = m_rsaprivate_key.getModulus(m_ram1, (short) 0);
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_rsaprivate_key.setModulus(m_ram1, (short) 0, modLen);}
                         break;
                     case JCConsts.RSAPrivateKey_getExponent:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_rsaprivate_key.getExponent(m_ram1, (short) 0);}
@@ -786,10 +797,12 @@ import javacardx.crypto.*;
             case JCConsts.KeyBuilder_TYPE_RSA_PUBLIC:
                 switch (m_testSettings.algorithmMethod){
                     case JCConsts.RSAPublicKey_setExponent:
-                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_rsapublic_key.setExponent(m_ram1, (byte) (i % 10), m_testSettings.keyLength);}
+                        short expLen = m_rsapublic_key.getExponent(m_ram1, (short) 0);
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_rsapublic_key.setExponent(m_ram1, (short) 0, expLen);}
                         break;
                     case JCConsts.RSAPublicKey_setModulus:
-                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_rsapublic_key.setModulus(m_ram1, (byte) (i % 10), m_testSettings.keyLength);}
+                        short modLen = m_rsapublic_key.getModulus(m_ram1, (short) 0);
+                        for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_rsapublic_key.setModulus(m_ram1, (short) 0, modLen);}
                         break;
                     case JCConsts.RSAPublicKey_getExponent:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++){m_rsapublic_key.getExponent(m_ram1, (short) 0);}
