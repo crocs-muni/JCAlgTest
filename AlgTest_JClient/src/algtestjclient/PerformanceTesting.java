@@ -1953,7 +1953,7 @@ public class PerformanceTesting {
             double setXTime = this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getX()");
             testSet.algorithmMethod = JCConsts.DSAPrivateKey_clearKey;
             TestSettings SINGLEOP_testSet = testSet.duplicate();
-            SINGLEOP_testSet.numRepeatWholeOperation = 1; // BUGBUG: calling clearKey twice for asym. algs will fail
+            SINGLEOP_testSet.numRepeatWholeOperation = 1; SINGLEOP_testSet.numRepeatWholeMeasurement = 1;// BUGBUG: calling clearKey twice for asym. algs will fail
             this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, SINGLEOP_testSet, info + " clearKey()");
         }
         else {
@@ -2033,7 +2033,7 @@ public class PerformanceTesting {
             this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getW()");
             testSet.algorithmMethod = JCConsts.ECPublicKey_clearKey;
             TestSettings SINGLEOP_testSet = testSet.duplicate();
-            SINGLEOP_testSet.numRepeatWholeOperation = 1; // BUGBUG: calling clearKey twice for asym. algs will fail
+            SINGLEOP_testSet.numRepeatWholeOperation = 1; SINGLEOP_testSet.numRepeatWholeMeasurement = 1;// BUGBUG: calling clearKey twice for asym. algs will fail
             this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, SINGLEOP_testSet, info + " clearKey()");
         }
         else {
@@ -2075,7 +2075,7 @@ public class PerformanceTesting {
             this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, testSet, info + " getS()");
             testSet.algorithmMethod = JCConsts.ECPrivateKey_clearKey;
             TestSettings SINGLEOP_testSet = testSet.duplicate();
-            SINGLEOP_testSet.numRepeatWholeOperation = 1; // BUGBUG: calling clearKey twice for asym. algs will fail
+            SINGLEOP_testSet.numRepeatWholeOperation = 1; SINGLEOP_testSet.numRepeatWholeMeasurement = 1;// BUGBUG: calling clearKey twice for asym. algs will fail
             this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, SINGLEOP_testSet, info + " clearKey()");
         }
         else {
@@ -2224,7 +2224,7 @@ public class PerformanceTesting {
 
             testSet.algorithmMethod = JCConsts.RSAPrivateCrtKey_clearKey;
             TestSettings SINGLEOP_testSet = testSet.duplicate();
-            SINGLEOP_testSet.numRepeatWholeOperation = 1; // BUGBUG: calling clearKey twice for asym. algs will fail
+            SINGLEOP_testSet.numRepeatWholeOperation = 1; SINGLEOP_testSet.numRepeatWholeMeasurement = 1;// BUGBUG: calling clearKey twice for asym. algs will fail
             this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, SINGLEOP_testSet, info + " clearKey()");
         }
         else {
@@ -2278,7 +2278,7 @@ public class PerformanceTesting {
 
             testSet.algorithmMethod = JCConsts.RSAPrivateKey_clearKey;
             TestSettings SINGLEOP_testSet = testSet.duplicate();
-            SINGLEOP_testSet.numRepeatWholeOperation = 1; // BUGBUG: calling clearKey twice for asym. algs will fail
+            SINGLEOP_testSet.numRepeatWholeOperation = 1; SINGLEOP_testSet.numRepeatWholeMeasurement = 1;// BUGBUG: calling clearKey twice for asym. algs will fail
             this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, SINGLEOP_testSet, info + " clearKey()");
         }
         else {
@@ -2332,7 +2332,7 @@ public class PerformanceTesting {
 
             testSet.algorithmMethod = JCConsts.RSAPublicKey_clearKey;
             TestSettings SINGLEOP_testSet = testSet.duplicate();
-            SINGLEOP_testSet.numRepeatWholeOperation = 1; // BUGBUG: calling clearKey twice for asym. algs will fail
+            SINGLEOP_testSet.numRepeatWholeOperation = 1; SINGLEOP_testSet.numRepeatWholeMeasurement = 1;// BUGBUG: calling clearKey twice for asym. algs will fail
             this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_KEY, Consts.INS_PERF_TEST_CLASS_KEY, SINGLEOP_testSet, info + " clearKey()");
         }
         else {
