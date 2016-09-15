@@ -125,7 +125,9 @@ public class JCAlgTestApplet extends javacard.framework.Applet
     AlgStorageTest      m_storageTest = null;
 
     public final static short RAM1_ARRAY_LENGTH = (short) 600;
-    byte[]              m_ramArray = null;  // auxalarity array used for various purposes. Length of this array is added to value returned as amount of available RAM memory
+    public final static short RAM2_ARRAY_LENGTH = (short) 128;
+    byte[] m_ramArray = null;  // auxalarity array used for various purposes. Length of this array is added to value returned as amount of available RAM memory
+    byte[] m_ramArray2 = null;  // auxalarity array used for various purposes. Length of this array is added to value returned as amount of available RAM memory
     
     protected JCAlgTestApplet(byte[] buffer, short offset, byte length) {
         // data offset is used for application specific parameter.
@@ -147,9 +149,11 @@ public class JCAlgTestApplet extends javacard.framework.Applet
        } else {}
 
         m_ramArray = JCSystem.makeTransientByteArray(RAM1_ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);
+        m_ramArray2 = JCSystem.makeTransientByteArray(RAM2_ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);
+
         m_keyHarvest = new AlgKeyHarvest();
-        m_supportTest = new AlgSupportTest(m_ramArray);
-        m_perfTest = new AlgPerformanceTest(m_ramArray);
+        m_supportTest = new AlgSupportTest(m_ramArray, m_ramArray2);
+        m_perfTest = new AlgPerformanceTest(m_ramArray, m_ramArray2);
         m_storageTest = new AlgStorageTest();
         
         if (isOP2) { register(buffer, (short)(offset + 1), buffer[offset]); }
