@@ -52,8 +52,7 @@ import javacardx.crypto.*;
     public final static short SW_ALG_OPS_NOT_SUPPORTED     = (short) 0x6002;
     public final static short SW_ALG_TYPE_UNKNOWN          = (short) 0x6003;
     
-    public final static short RAM1_ARRAY_LENGTH = (short) 600;
-    public final static short RAM2_ARRAY_LENGTH = (short) 16;
+    final static short EEPROM1_ARRAY_LENGTH = (short) 600;
     
     
     TestSettings    m_testSettings = null;
@@ -129,12 +128,12 @@ import javacardx.crypto.*;
     
     JavaCardAES         m_aesCipher = null;    
 
-    AlgPerformanceTest(byte[] auxRAMArray) {
+    AlgPerformanceTest(byte[] auxRAMArray, byte[] auxRAMArray2) {
         m_testSettings = new TestSettings();
         
         m_ram1 = auxRAMArray;
-        m_ram2 = JCSystem.makeTransientByteArray(RAM2_ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);    
-        m_eeprom1 = new byte[RAM1_ARRAY_LENGTH];
+        m_ram2 = auxRAMArray2;
+        m_eeprom1 = new byte[EEPROM1_ARRAY_LENGTH];
         
         m_trng = RandomData.getInstance(RandomData.ALG_SECURE_RANDOM);
         
@@ -451,10 +450,13 @@ import javacardx.crypto.*;
                         m_key1 = m_keyPair1.getPrivate();                
                         m_ecprivate_key = (ECPrivateKey) m_keyPair1.getPrivate();
                         m_ecpublic_key = (ECPublicKey) m_keyPair1.getPublic();
+                        
                         m_keyPair2 = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
                         EC_Consts.ensureInitializedECCurve((byte) m_testSettings.keyClass, m_testSettings.keyLength, m_keyPair2, m_ram1);
                         m_keyPair2.genKeyPair(); // TODO: use fixed key value to shorten time required for key generation?
                         m_key2 = m_keyPair2.getPrivate();                
+                        m_ecprivate_key2 = (ECPrivateKey) m_keyPair2.getPrivate();                        
+                        m_ecpublic_key2 = (ECPublicKey) m_keyPair2.getPublic();
                     }
                     break;
                 case JCConsts.KeyBuilder_TYPE_DSA_PRIVATE:
@@ -479,28 +481,18 @@ import javacardx.crypto.*;
                         m_key2 = m_keyPair2.getPrivate();
                     }
                     break;
-                case JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC:
+                case JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC: // no break
+                case JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC:
                     if (bSetKeyValue == Consts.TRUE){
-                        m_keyPair1 = new KeyPair(KeyPair.ALG_EC_F2M, m_testSettings.keyLength);
+                        m_keyPair1 = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
                         m_keyPair1.genKeyPair();
                         m_key1 = m_keyPair1.getPublic();
                         m_ecpublic_key = (ECPublicKey) m_keyPair1.getPublic();
-                        m_keyPair2 = new KeyPair(KeyPair.ALG_EC_F2M, m_testSettings.keyLength);
+                        m_keyPair2 = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
                         m_keyPair2.genKeyPair();
                         m_key2 = m_keyPair2.getPublic();
                     }
                     break;
-                case JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC:
-                    if (bSetKeyValue == Consts.TRUE){
-                        m_keyPair1 = new KeyPair(KeyPair.ALG_EC_FP, m_testSettings.keyLength);
-                        m_keyPair1.genKeyPair(); // TODO: use fixed key value to shorten time required for key generation?
-                        m_key1 = m_keyPair1.getPublic();                        
-                        m_ecpublic_key = (ECPublicKey) m_keyPair1.getPublic();              
-                        m_keyPair2 = new KeyPair(KeyPair.ALG_EC_FP, m_testSettings.keyLength);
-                        m_keyPair2.genKeyPair(); // TODO: use fixed key value to shorten time required for key generation?
-                        m_key2 = m_keyPair2.getPublic();
-                    }
-                    break;                
                 default:
                     ISOException.throwIt(SW_ALG_TYPE_UNKNOWN);
             }
@@ -607,7 +599,7 @@ import javacardx.crypto.*;
                             // we need to set key before calling clear - postprocessing is on client side is required substract setKey time
                             offset = ((byte) (i % 2) == (byte) 0) ? (short) 0 : lengthS; // alternate value S from key1 or key2
                             m_ecprivate_key.setS(m_ram1, offset, lengthS);
-                            m_ecprivate_key.clearKey();
+                            m_ecprivate_key.clearKey(); // BUGBUG: once cleared, just to call setS is not enough (whole curve settings must be initialized), Will fail with 0x6f00 when numRepeatWholeOperation > 1
                         }
                         break;
                     default:
@@ -637,7 +629,7 @@ import javacardx.crypto.*;
                             // we need to set key before calling clear - postprocessing is on client side is required substract setKey time
                             offset = ((byte) (i % 2) == (byte) 0) ? (short) 0 : lengthW; // alternate value W from key1 or key2
                             m_ecpublic_key.setW(m_ram1, offset, lengthW);
-                            m_ecpublic_key.clearKey();
+                            m_ecpublic_key.clearKey(); // BUGBUG: once cleared, just to call setW is not enough (whole curve settings must be initialized), Will fail with 0x6f00 when numRepeatWholeOperation > 1
                         }
                         break;
                     default:
@@ -697,10 +689,10 @@ import javacardx.crypto.*;
                     case JCConsts.DSAPublicKey_getY:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { m_dsapublic_key.getY(m_ram1, (short) 0); }
                         break;
-                    case JCConsts.DSAPublicKey_clearY:
+                    case JCConsts.DSAPublicKey_clearKey:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
                             m_dsapublic_key.setY(m_ram1, (byte) (i % 10), m_testSettings.keyLength);
-                            m_dsapublic_key.clearKey();
+                            m_dsapublic_key.clearKey(); // BUGBUG: once cleared, just to call setY is not enough (whole curve settings must be initialized), Will fail with 0x6f00 when numRepeatWholeOperation > 1
                         }
                         break;
                     default:
@@ -743,9 +735,9 @@ import javacardx.crypto.*;
                         break;
                     case JCConsts.RSAPrivateCrtKey_clearKey:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
-                            // BUGBUG: is setting only DP1 enough?
+                            // BUGBUG: is setting only DP1 enough? It is not!!!
                             m_rsaprivatecrt_key.setDP1(m_ram1, (byte) (i % 10), m_testSettings.keyLength);
-                            m_rsaprivatecrt_key.clearKey();
+                            m_rsaprivatecrt_key.clearKey(); // BUGBUG: once cleared, just to call setDP1 is not enough, Will fail with 0x6f00 when numRepeatWholeOperation > 1
                         }
                     break;
                     default:
@@ -770,7 +762,8 @@ import javacardx.crypto.*;
                     case JCConsts.RSAPrivateKey_clearKey:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
                             m_rsaprivate_key.setModulus(m_ram1, (byte) (i % 10), m_testSettings.keyLength);
-                            m_rsaprivate_key.clearKey();}
+                            m_rsaprivate_key.clearKey(); // BUGBUG: once cleared, just to call setModulus is not enough, Will fail with 0x6f00 when numRepeatWholeOperation > 1
+                        }
                         break;
                     default:
                         ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
@@ -794,7 +787,7 @@ import javacardx.crypto.*;
                     case JCConsts.RSAPublicKey_clearKey:
                         for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
                             m_rsapublic_key.setExponent(m_ram1, (byte) (i % 10), m_testSettings.keyLength);
-                            m_rsapublic_key.clearKey();
+                            m_rsapublic_key.clearKey(); // BUGBUG: once cleared, just to call setExponent is not enough, Will fail with 0x6f00 when numRepeatWholeOperation > 1
                         }
                         break;
                     default:
@@ -1170,8 +1163,8 @@ import javacardx.crypto.*;
         byte[] apdubuf = apdu.getBuffer();
         m_testSettings.parse(apdu); 
         
-        short pubKeyLen = m_ecpublic_key.getW(m_ram1, (short) 0); // get valid public key
-        short offset;
+        m_keyAgreement.init(m_ecprivate_key);   // initialize with private key
+        short pubKeyLen = m_ecpublic_key2.getW(m_ram1, (short) 0); // get valid public key (other party during key establishment)
         switch (m_testSettings.algorithmMethod) {
             case JCConsts.KeyAgreement_init:   
                 for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 
@@ -1181,8 +1174,7 @@ import javacardx.crypto.*;
                 break;
             case JCConsts.KeyAgreement_generateSecret:   
                 for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 
-                    offset = ((byte) (i % 2) == (byte) 0) ? (short) 0 : pubKeyLen; // alternate value W from key1 or key2
-                    m_keyAgreement.generateSecret(m_ram1, offset, pubKeyLen, m_ram1, (short) (pubKeyLen * 2)); // * 2 to store new secret after valid public keys  
+                    m_keyAgreement.generateSecret(m_ram1, (short) 0, pubKeyLen, m_ram2, (short) 0); // store new secret after valid public key  
                 } 
                 break;
     
