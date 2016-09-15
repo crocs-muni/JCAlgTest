@@ -343,8 +343,7 @@ public class PerformanceTestingNGTest {
     void debug() throws Exception { 
         bTestRealCards = true;
         perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection(null) : perfTesting.m_cardManager.establishConnection(JCAlgTestApplet.class);   
-        perfTesting.testCipherWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_CRT_PUBLIC LENGTH_RSA_2048 Cipher_ALG_RSA_PKCS1", JCConsts.Cipher_MODE_ENCRYPT, (short) 5, (short) 5);
-        perfTesting.testCipherWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_2048,JCConsts.Cipher_ALG_RSA_PKCS1,"TYPE_RSA_PUBLIC LENGTH_RSA_2048 Cipher_ALG_RSA_PKCS1", JCConsts.Cipher_MODE_ENCRYPT, (short) 5, (short) 5);
+        perfTesting.testKeyAgreementWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_128, JCConsts.KeyAgreement_ALG_EC_SVDP_DH, "ALG_EC_FP LENGTH_EC_FP_128 ALG_EC_SVDP_DH", (short) 1, (short) 10);
     }
     
     void uploadReconnect() throws IOException, InterruptedException, Exception {

@@ -1589,10 +1589,10 @@ public class CardMngr {
         
         short keyClass = JCConsts.KeyPair_ALG_RSA;
         if (useCrt) keyClass = JCConsts.KeyPair_ALG_RSA_CRT;
-        TestSettings publicKeySetting = this.prepareKeyHarvestSettings(keyClass, JCConsts.KeyBuilder_ALG_TYPE_RSA_PUBLIC, bitLength);
+        TestSettings publicKeySetting = this.prepareKeyHarvestSettings(keyClass, JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, bitLength);
         byte apduPublic[] = this.prepareApduForKeyHarvest(publicKeySetting);
         
-        TestSettings privateKeySetting = this.prepareKeyHarvestSettings(keyClass, JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE, bitLength);
+        TestSettings privateKeySetting = this.prepareKeyHarvestSettings(keyClass, JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, bitLength);
         byte apduPrivate[] = this.prepareApduForKeyHarvest(privateKeySetting);
         
         int errors = 0;

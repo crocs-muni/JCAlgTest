@@ -442,30 +442,17 @@ import javacardx.crypto.*;
                         m_key2 = m_keyPair2.getPublic();                
                     }
                     break;
-                case JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE:
-                    if (bSetKeyValue == Consts.TRUE) {
-                        m_keyPair1 = new KeyPair(KeyPair.ALG_EC_F2M, m_testSettings.keyLength);
-                        EC_Consts.ensureInitializedECCurve(KeyPair.ALG_EC_F2M, m_testSettings.keyLength, m_keyPair1, m_ram1);
-                        m_keyPair1.genKeyPair();
-                        m_key1 = m_keyPair1.getPrivate();
-                        m_ecprivate_key = (ECPrivateKey) m_keyPair1.getPrivate();
-                        m_ecpublic_key = (ECPublicKey) m_keyPair1.getPublic();
-                        m_keyPair2 = new KeyPair(KeyPair.ALG_EC_F2M, m_testSettings.keyLength);
-                        EC_Consts.ensureInitializedECCurve(KeyPair.ALG_EC_F2M, m_testSettings.keyLength, m_keyPair2, m_ram1);
-                        m_keyPair2.genKeyPair();
-                        m_key2 = m_keyPair2.getPrivate();
-                    }
-                    break;
+                case JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE: // no break
                 case JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE:
                     if (bSetKeyValue == Consts.TRUE) {
-                        m_keyPair1 = new KeyPair(KeyPair.ALG_EC_FP, m_testSettings.keyLength);
-                        EC_Consts.ensureInitializedECCurve(KeyPair.ALG_EC_FP, m_testSettings.keyLength, m_keyPair1, m_ram1);
+                        m_keyPair1 = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
+                        EC_Consts.ensureInitializedECCurve((byte) m_testSettings.keyClass, m_testSettings.keyLength, m_keyPair1, m_ram1);
                         m_keyPair1.genKeyPair(); // TODO: use fixed key value to shorten time required for key generation?
                         m_key1 = m_keyPair1.getPrivate();                
                         m_ecprivate_key = (ECPrivateKey) m_keyPair1.getPrivate();
                         m_ecpublic_key = (ECPublicKey) m_keyPair1.getPublic();
-                        m_keyPair2 = new KeyPair(KeyPair.ALG_EC_FP, m_testSettings.keyLength);
-                        EC_Consts.ensureInitializedECCurve(KeyPair.ALG_EC_FP, m_testSettings.keyLength, m_keyPair2, m_ram1);
+                        m_keyPair2 = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
+                        EC_Consts.ensureInitializedECCurve((byte) m_testSettings.keyClass, m_testSettings.keyLength, m_keyPair2, m_ram1);
                         m_keyPair2.genKeyPair(); // TODO: use fixed key value to shorten time required for key generation?
                         m_key2 = m_keyPair2.getPrivate();                
                     }
@@ -525,6 +512,7 @@ import javacardx.crypto.*;
         catch (CryptoException e) { 
             apdubuf[offset] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); offset++;
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);
+            ISOException.throwIt(ISO7816.SW_NO_ERROR);
         }
         
         return (short) (offset - ISO7816.OFFSET_CDATA);
@@ -842,6 +830,7 @@ import javacardx.crypto.*;
         catch (CryptoException e) {
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET);
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);
+            ISOException.throwIt(ISO7816.SW_NO_ERROR);
         }  
     }
 
@@ -1142,6 +1131,7 @@ import javacardx.crypto.*;
         catch (CryptoException e) {
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); 
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);
+            ISOException.throwIt(ISO7816.SW_NO_ERROR);
         }  
     }      
     void perftest_class_KeyPair(APDU apdu) {  
@@ -1173,6 +1163,7 @@ import javacardx.crypto.*;
         catch (CryptoException e) {
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); 
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);
+            ISOException.throwIt(ISO7816.SW_NO_ERROR);
         }  
     }      
     void perftest_class_KeyAgreement(APDU apdu) {  
