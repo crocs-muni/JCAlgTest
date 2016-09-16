@@ -31,6 +31,7 @@
 package algtestprocess;
 
 import algtestjclient.CardMngr;
+import algtestjclient.DirtyLogger;
 import algtestjclient.SingleModeTest;
 import java.io.BufferedReader;
 import java.io.File;
@@ -342,7 +343,7 @@ public class SupportTable {
                 else{
                     // Parse algorithm name and version of JC which introduced it
                     if (i == 0){continue;}
-                    CardMngr cman = new CardMngr();
+                    CardMngr cman = new CardMngr(new DirtyLogger(null, true));
                     algorithmName = cman.GetAlgorithmName(classInfo[i]);
                     algorithmVersion = cman.GetAlgorithmIntroductionVersion(classInfo[i]);
                     if (!cman.ShouldBeIncludedInOutput(classInfo[i])) continue; // ignore types with ignore flag set (algorith#version#include 1/0) 

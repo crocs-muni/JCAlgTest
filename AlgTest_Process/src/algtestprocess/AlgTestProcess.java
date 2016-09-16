@@ -31,6 +31,7 @@
 
 package algtestprocess;
 
+import algtestjclient.DirtyLogger;
 import java.io.*;
 import java.util.Scanner;
 
@@ -56,7 +57,7 @@ public class AlgTestProcess {
      * @param args the command line arguments
      * First argument is part to file/folder second is type of processing
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
         System.out.println("Make sure to have JavaCard support version in your CSV file!");
         try {
             if (args.length == 0) { // in case there are no arguments present
