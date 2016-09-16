@@ -59,7 +59,7 @@ public class PerformanceTesting {
     public static final int NUM_BASELINE_CALIBRATION_RUNS = 5;
     
     // 
-    public CardMngr m_cardManager = new CardMngr();
+    public CardMngr m_cardManager = null;
     String m_cardATR = "";
     String m_cardName = "";
     long   m_elapsedTimeWholeTest = 0;
@@ -78,7 +78,11 @@ public class PerformanceTesting {
     
     public List<Integer> m_testDataLengths = new ArrayList<>();
     
-    public PerformanceTesting() {
+    DirtyLogger m_SystemOutLogger = null;
+
+    public PerformanceTesting(DirtyLogger logger) {
+        m_SystemOutLogger = logger;
+        m_cardManager = new CardMngr(m_SystemOutLogger);
         // data lengths to be tested (only for variable data length test)
         m_testDataLengths.add(16);
         m_testDataLengths.add(32);
@@ -106,11 +110,11 @@ public class PerformanceTesting {
         m_bTestVariableData = bTestVariableDataLengths;
                 
 
-        System.out.println("\nCHOOSE which type of performance test you like to execute:");
-        System.out.append("1 -> All algorithms (estimated time 5-8 hours)\n" + 
+        m_SystemOutLogger.println("\nCHOOSE which type of performance test you like to execute:");
+        m_SystemOutLogger.println("1 -> All algorithms (estimated time 5-8 hours)\n" + 
                 "2 -> Only algorithms WITHOUT asymmetric cryptography (estimated time 1-2 hours)\n" + 
-                "3 -> Only algorithms WITH asymmetric crypto (estimated time 4-6 hours)\n");
-        System.out.print("Test option number: ");
+                "3 -> Only algorithms WITH asymmetric crypto (estimated time 4-6 hours)");
+        m_SystemOutLogger.print("Test option number: ");
         int answ = sc.nextInt();
         switch (answ){
             case 1:
@@ -134,7 +138,7 @@ public class PerformanceTesting {
             numRepeatWholeOperation = Consts.NUM_REPEAT_WHOLE_OPERATION_VARIABLE_DATA;                
         }
 
-        System.out.print("Specify type of your card (e.g., NXP JCOP CJ2A081): ");
+        m_SystemOutLogger.print("Specify type of your card (e.g., NXP JCOP CJ2A081): ");
         
         m_cardName = sc.next();
         m_cardName += sc.nextLine();
@@ -180,13 +184,13 @@ public class PerformanceTesting {
         m_elapsedTimeWholeTest += System.currentTimeMillis();
         String message = "";
         message += "\n\nTotal test time:; " + m_elapsedTimeWholeTest / 1000 + " seconds."; 
-        System.out.println(message);
+        m_SystemOutLogger.println(message);
         m_perfResultsFile.write(message.getBytes());
         message = "\n\nTotal human interventions (retries with physical resets etc.):; " + m_numHumanInterventions; 
-        System.out.println(message);
+        m_SystemOutLogger.println(message);
         m_perfResultsFile.write(message.getBytes());
         message = "\n\nTotal reconnects to card:; " + m_numReconnects; 
-        System.out.println(message);
+        m_SystemOutLogger.println(message);
         m_perfResultsFile.write(message.getBytes());
     }
     
@@ -200,25 +204,25 @@ public class PerformanceTesting {
             if (f.exists() && !f.isDirectory()) {
                 // Ask user for continuation
                 String message = "File '" + filePath + "' with already measured algorithms found. Do you like to use it and measure only missing algorithms? (y/n)\n";
-                System.out.print(message);
+                m_SystemOutLogger.print(message);
                 Scanner sc = new Scanner(System.in);
                 String answ = sc.next();
                 if (answ.equals("y")) {
-                    System.out.println("\tContinue was selected. Only algorithms NOT present " + filePath + " in will be measured");
+                    m_SystemOutLogger.println("\tContinue was selected. Only algorithms NOT present " + filePath + " in will be measured");
                     // Read all measured algorithms earlier
-                    System.out.println("Following algorithms will NOT be measured again (listed in " + filePath + " file):");
+                    m_SystemOutLogger.println("Following algorithms will NOT be measured again (listed in " + filePath + " file):");
                     BufferedReader br = new BufferedReader(new FileReader(filePath));
                     String strLine;
                     while ((strLine = br.readLine()) != null) {
                         if (!strLine.isEmpty()) {
                             m_algsMeasuredList.add(strLine);
-                            System.out.println(strLine);
+                            m_SystemOutLogger.println(strLine);
                         }
                     }
                     br.close();
                 }
                 else {
-                    System.out.println("\tContinue was NOT selected. All algorithms will be measured");
+                    m_SystemOutLogger.println("\tContinue was NOT selected. All algorithms will be measured");
                     m_algsMeasuredList.clear();
                 }
                 // Create backup of file with measured algorithms
@@ -228,7 +232,7 @@ public class PerformanceTesting {
             // Create new file with list of measured algorithms (already measured and newly measured will be included)
             m_algsMeasuredFile = new FileOutputStream(filePath);
         } catch (IOException ex) {
-            System.out.println("No read of file with already measured algs: " + filePath);
+            m_SystemOutLogger.println("No read of file with already measured algs: " + filePath);
         }
     }
     
@@ -246,7 +250,7 @@ public class PerformanceTesting {
         if (this.TestVariableRSAPublicExponentSupport(value, file, (byte) 0) == CardMngr.STAT_OK) {}
         else { 
             message = "\nERROR: Test variable public exponent support fail\n"; 
-            System.out.println(message); file.write(message.getBytes());
+            m_SystemOutLogger.println(message); file.write(message.getBytes());
         }
         if (file != null) file.flush();
         
@@ -255,7 +259,7 @@ public class PerformanceTesting {
         if (this.TestAvailableRAMMemory(value, file, (byte) 0) == CardMngr.STAT_OK) {}
         else { 
             message = "\nERROR: Get available RAM memory fail\n"; 
-            System.out.println(message); file.write(message.getBytes());
+            m_SystemOutLogger.println(message); file.write(message.getBytes());
         }
         if (file != null) file.flush();
         
@@ -264,7 +268,7 @@ public class PerformanceTesting {
         if (this.TestAvailableEEPROMMemory(value, file, (byte) 0) == CardMngr.STAT_OK) {}
         else { 
             message = "\nERROR: Get available EEPROM memory fail\n"; 
-            System.out.println(message); file.write(message.getBytes());
+            m_SystemOutLogger.println(message); file.write(message.getBytes());
         }
         if (file != null) file.flush();
         
@@ -287,7 +291,7 @@ public class PerformanceTesting {
 
         ResponseAPDU resp = m_cardManager.sendAPDU(apdu);
         if (resp.getSW() != 0x9000) {
-            System.out.println("Fail to obtain response for TestAvailableRAMMemory");
+            m_SystemOutLogger.println("Fail to obtain response for TestAvailableRAMMemory");
         } else {
             // SAVE TIME OF CARD RESPONSE
             elapsedCard += System.currentTimeMillis();
@@ -301,13 +305,13 @@ public class PerformanceTesting {
 
             String message = "";
             message += "\r\n\r\nAvailable RAM memory;"; 
-            System.out.println(message);
+            m_SystemOutLogger.println(message);
             pFile.write(message.getBytes());
             pValue.append(message);
 
             int ramSize = (temp[0] << 8) + (temp[1] & 0xff);
             message = String.format("%1d B;", ramSize); 
-            System.out.println(message);
+            m_SystemOutLogger.println(message);
             pFile.write(message.getBytes());
             pValue.append(message);
         }
@@ -341,7 +345,7 @@ public class PerformanceTesting {
                 elapsedCard += System.currentTimeMillis();
 
                 if (resp.getSW() != 0x9000) {
-                    System.out.println("Fail to obtain response for IOSpeed");
+                    m_SystemOutLogger.println("Fail to obtain response for IOSpeed");
                 } else {
                     // SAVE TIME OF CARD RESPONSE
 
@@ -375,7 +379,7 @@ public class PerformanceTesting {
 
         ResponseAPDU resp = m_cardManager.sendAPDU(apdu);
         if (resp.getSW() != 0x9000) {
-            System.out.println("Fail to obtain response for TestAvailableEEPROMMemory");
+            m_SystemOutLogger.println("Fail to obtain response for TestAvailableEEPROMMemory");
         } else {
             // SAVE TIME OF CARD RESPONSE
             elapsedCard += System.currentTimeMillis();
@@ -391,7 +395,7 @@ public class PerformanceTesting {
 
             String message = "";
             message += "\"\\r\\n\r\nAvailable EEPROM memory;"; 
-            System.out.println(message);
+            m_SystemOutLogger.println(message);
             pFile.write(message.getBytes());
             pValue.append(message);
 
@@ -404,7 +408,7 @@ public class PerformanceTesting {
             eepromSize += (temp[14] << 8) + (temp[15] & 0xff);
             eepromSize += (temp[16] << 8) + (temp[17] & 0xff);
             message = String.format("%1d B;\r\n", eepromSize); 
-            System.out.println(message);
+            m_SystemOutLogger.println(message);
             pFile.write(message.getBytes());
             pValue.append(message);
 
@@ -421,14 +425,14 @@ public class PerformanceTesting {
 
 	String message;
 	message = String.format("\r\n%1s;", actionName); 
-        System.out.println(message);
+        m_SystemOutLogger.println(message);
         pFile.write(message.getBytes());
         pValue.append(message);
             
         ResponseAPDU resp = m_cardManager.sendAPDU(apdu);
         if (resp.getSW() != 0x9000) {
             message = String.format("no;"); 
-            System.out.println(message);
+            m_SystemOutLogger.println(message);
             pFile.write(message.getBytes());
             pValue.append(message);
         } else {
@@ -439,7 +443,7 @@ public class PerformanceTesting {
             elTimeStr = String.format("%1f", (double) elapsedCard / (float) CardMngr.CLOCKS_PER_SEC);
 
             message = String.format("yes;%1s sec;", elTimeStr); 
-            System.out.println(message);
+            m_SystemOutLogger.println(message);
             pFile.write(message.getBytes());
             pValue.append(message);
 	}
@@ -459,7 +463,7 @@ public class PerformanceTesting {
             
         String message;
         message = "\r\nSupport for variable public exponent for RSA 1024. If supported, user-defined fast modular exponentiation can be executed on the smart card via cryptographic coprocessor. This is very specific feature and you will probably not need it;"; 
-        System.out.println(message);
+        m_SystemOutLogger.println(message);
         pFile.write(message.getBytes());
         pValue.append(message);
 
@@ -496,7 +500,7 @@ public class PerformanceTesting {
             
         String message;
         message = "\r\nSupport for extended APDU. If supported, APDU longer than 255 bytes can be send.;"; 
-        System.out.println(message);
+        m_SystemOutLogger.println(message);
         pFile.write(message.getBytes());
         pValue.append(message);
         
@@ -518,7 +522,7 @@ public class PerformanceTesting {
                 message = String.format("no;");                 
             }
         }
-        System.out.println(message);
+        m_SystemOutLogger.println(message);
         pFile.write(message.getBytes());
         pValue.append(message);            
 
@@ -596,12 +600,13 @@ public class PerformanceTesting {
                 catch (CardCommunicationException ex) {
                     // Normal exception like NO_SUCH_ALGORITHM  - just print it 
                     String message = ex.toString();
+                    message += "\n";
                     if (ex.getReason() == ISO7816.SW_INS_NOT_SUPPORTED) {
                         message += ";ERROR: Invalid instruction was send to card. "
                                 + "Possibly, card contains only restricted version of JCAlgTest applet. "
                                 + "If you like to do performance testing, upload full version of  JCAlgTest applet (e.g. AlgTest_v1.6_jc212.cap instead of AlgTest_v1.6_supportOnly_jc212.cap)";    
                     }
-                    System.out.println(message); 
+                    m_SystemOutLogger.println(message); 
                     // Write result string into file
                     m_perfResultsFile.write(result.toString().getBytes());
                     // Write exception into file
@@ -616,7 +621,7 @@ public class PerformanceTesting {
                 }
                 catch (Exception ex) {
                     // Unexpected exception
-                    System.out.println(ex.toString()); 
+                    m_SystemOutLogger.println(ex.toString()); 
                     numFailedRepeats++; 
                     
                     if (numFailedRepeats == 1) {
@@ -626,17 +631,17 @@ public class PerformanceTesting {
                             m_cardManager.ConnectToCard();
                         }
                         catch (Exception ex2) {
-                            System.out.println(ex2.toString()); 
+                            m_SystemOutLogger.println(ex2.toString()); 
                             numFailedRepeats++;
                         }
                     }
                     
                     if (numFailedRepeats > 1) {
                         // For second fail, ask user 
-                        System.out.println("ERROR: unable to measure operation '" + info + "' properly because of exception (" + ex.toString() + ")");
-                        System.out.println("Current reader is: " + m_cardManager.getTerminalName());
-                        System.out.println("Current card is: " + m_cardName + " - " + m_cardManager.getATR());
-                        System.out.println("Try to physically remove card and/or upload applet manually and insert it again. Press 'r' to retry or 's' to skip this algorithm (if retry fails)\n");
+                        m_SystemOutLogger.println("ERROR: unable to measure operation '" + info + "' properly because of exception (" + ex.toString() + ")");
+                        m_SystemOutLogger.println("Current reader is: " + m_cardManager.getTerminalName());
+                        m_SystemOutLogger.println("Current card is: " + m_cardName + " - " + m_cardManager.getATR());
+                        m_SystemOutLogger.println("Try to physically remove card and/or upload applet manually and insert it again. Press 'r' to retry or 's' to skip this algorithm (if retry fails)\n");
                         Scanner sc = new Scanner(System.in);
                         String answ = sc.next();
                         if (answ.equals("r")) {
@@ -649,13 +654,13 @@ public class PerformanceTesting {
                                 numFailedRepeats = 0;
                             }
                             catch (Exception ex2) {
-                                System.out.println(ex2.toString()); 
+                                m_SystemOutLogger.println(ex2.toString()); 
                                 numFailedRepeats++;
                             }
                         }
                         else {
                             // Skip this algorithm 
-                            System.out.println("Skipping algorithm " + info); 
+                            m_SystemOutLogger.println("Skipping algorithm " + info); 
                             m_perfResultsFile.write(ex.toString().getBytes());
 
                             return -1;
@@ -665,7 +670,7 @@ public class PerformanceTesting {
             }
         }
         
-        System.out.print("ERROR: unable to measure operation '" + info + "'");
+        m_SystemOutLogger.print("ERROR: unable to measure operation '" + info + "'");
                 
         return -1;
     }
@@ -679,14 +684,14 @@ public class PerformanceTesting {
         String message = "";
         // Tested method name
         message += "\nmethod name:; " + info + "\n";
-        System.out.print(message);
+        m_SystemOutLogger.print(message);
         result.append(message);
         
         // Test settings
         byte[] settings = new byte[TestSettings.TEST_SETTINGS_LENGTH];  
         CardMngr.serializeToApduBuff(testSet, settings, (short) 0);
         message = "measurement config:;" + "appletPrepareINS;" + CardMngr.byteToHex(appletPrepareINS) + ";appletMeasureINS;" + CardMngr.byteToHex(appletMeasureINS) + ";config;" + CardMngr.bytesToHex(settings) + "\n";
-        System.out.print(message);
+        m_SystemOutLogger.print(message);
         result.append(message);
         
         message = "";
@@ -716,7 +721,7 @@ public class PerformanceTesting {
                 sumTimes += overheadTime;
                 timeStr = String.format("%.2f", overheadTime);
                 message +=  timeStr + ";" ;
-                System.out.print(timeStr + " ");
+                m_SystemOutLogger.print(timeStr + " ");
                 if (overheadTime<minOverhead) minOverhead=overheadTime;
                 if (overheadTime>maxOverhead) maxOverhead=overheadTime;
             }
@@ -726,9 +731,9 @@ public class PerformanceTesting {
             message += ";max:;" + String.format("%.2f", maxOverhead);
             message += ";";
             if ((minOverhead/avgOverhead < (1-check)) || (maxOverhead/avgOverhead > (1+check)))  message += ";;CHECK";
-            System.out.print("\nbaseline avg time: " + avgOverhead);
-            System.out.println();     
-            System.out.println(); message += "\n";
+            m_SystemOutLogger.print("\nbaseline avg time: " + avgOverhead);
+            m_SystemOutLogger.println();     
+            m_SystemOutLogger.println(); message += "\n";
             result.append(message);
             message = "";
             // Restore required number of required measurements 
@@ -751,20 +756,20 @@ public class PerformanceTesting {
             time -= avgOverhead;
             if (Math.abs(substractTime) > 0.0005) { // comparing double to 0
                 // Substract given time (if measured operation requires to perform another unrelated operation, e.g., setKey before clearKey)
-                System.out.println("Substracting substractTime = " + substractTime + " from measured time"); 
+                m_SystemOutLogger.println("Substracting substractTime = " + substractTime + " from measured time"); 
                 time -= substractTime;
             }
             
             sumTimes += time;
             timeStr = String.format("%.2f", time);
             message +=  timeStr + ";";
-            System.out.print(timeStr + " ");
+            m_SystemOutLogger.print(timeStr + " ");
             if (time<minOpTime) minOpTime=time;
             if (time>maxOpTime) maxOpTime=time;
         }
-        System.out.println();     
+        m_SystemOutLogger.println();     
 
-        System.out.println(); message += "\n";
+        m_SystemOutLogger.println(); message += "\n";
         result.append(message);
         message = "";
 
@@ -784,10 +789,10 @@ public class PerformanceTesting {
         messageOpTime += "total iterations;" + totalIterations + ";";
         messageOpTime += "total invocations;" + (totalIterations * testSet.numRepeatSubOperation) + ";\n";
         result.append(messageOpTime);
-        System.out.println(messageOpTime);  
+        m_SystemOutLogger.println(messageOpTime);  
 
-        System.out.println(); message += "\n";
-        System.out.println(message); 
+        m_SystemOutLogger.println(); message += "\n";
+        m_SystemOutLogger.println(message); 
         
         return avgOpTime;
     }
@@ -1052,7 +1057,7 @@ public class PerformanceTesting {
                     // For RSA, variable length perf test is not supported
                     tableName = "For RSA, variable length perf test is not supported\n";
                     m_perfResultsFile.write(tableName.getBytes());
-                    System.out.print(tableName);
+                    m_SystemOutLogger.print(tableName);
                     return;
             }    
             // Measurement of only doFinal operation
@@ -1785,10 +1790,10 @@ public class PerformanceTesting {
             // Test of speed dependant on data length
             String tableName = "\n\nKEYAGREEMENT - " + info + " - variable data - BEGIN\n";
             m_perfResultsFile.write(tableName.getBytes());
-            System.out.print(tableName);
+            m_SystemOutLogger.print(tableName);
             tableName = "For KeyAgreement, variable length perf test is not supported\n";
             m_perfResultsFile.write(tableName.getBytes());
-            System.out.print(tableName);
+            m_SystemOutLogger.print(tableName);
             
             tableName = "\n\nKEYAGREEMENT - " + info + " - variable data - END\n";
             m_perfResultsFile.write(tableName.getBytes());
@@ -1839,7 +1844,7 @@ public class PerformanceTesting {
         else {
             String message = "No variable data test for " + info + "\n";
             m_perfResultsFile.write(message.getBytes());
-            System.out.print(message);
+            m_SystemOutLogger.print(message);
         }
     }
     
@@ -1878,7 +1883,7 @@ public class PerformanceTesting {
         else {
             String message = "No variable data test for " + info + "\n";
             m_perfResultsFile.write(message.getBytes());
-            System.out.print(message);
+            m_SystemOutLogger.print(message);
         }
     }
     
@@ -1920,7 +1925,7 @@ public class PerformanceTesting {
         else {
             String message = "No variable data test for " + info + "\n";
             m_perfResultsFile.write(message.getBytes());
-            System.out.print(message);
+            m_SystemOutLogger.print(message);
         }
     }
     public void testAllKoreanSEEDKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
@@ -1960,7 +1965,7 @@ public class PerformanceTesting {
         else {
             String message = "No variable data test for " + info + "\n";
             m_perfResultsFile.write(message.getBytes());
-            System.out.print(message);
+            m_SystemOutLogger.print(message);
         }
     }
     public void testAllDSAPrivateKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
@@ -1999,7 +2004,7 @@ public class PerformanceTesting {
         else {
             String message = "No variable data test for " + info + "\n";
             m_perfResultsFile.write(message.getBytes());
-            System.out.print(message);
+            m_SystemOutLogger.print(message);
         }
     }
     public void testAllDSAPublicKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
@@ -2040,7 +2045,7 @@ public class PerformanceTesting {
         else {
             String message = "No variable data test for " + info + "\n";
             m_perfResultsFile.write(message.getBytes());
-            System.out.print(message);
+            m_SystemOutLogger.print(message);
         }
     }
     public void testAllECF2MPublicKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
@@ -2082,7 +2087,7 @@ public class PerformanceTesting {
         else {
             String message = "No variable data test for " + info + "\n";
             m_perfResultsFile.write(message.getBytes());
-            System.out.print(message);
+            m_SystemOutLogger.print(message);
         }
     }
 
@@ -2170,7 +2175,7 @@ public class PerformanceTesting {
         else {
             String message = "No variable data test for " + info + "\n";
             m_perfResultsFile.write(message.getBytes());
-            System.out.print(message);
+            m_SystemOutLogger.print(message);
         }
     }
     public void testAllHMACKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
@@ -2231,7 +2236,7 @@ public class PerformanceTesting {
         else {
             String message = "No variable data test for " + info + "\n";
             m_perfResultsFile.write(message.getBytes());
-            System.out.print(message);
+            m_SystemOutLogger.print(message);
         }
     }
     public void testAllRSAPrivateCrtKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
@@ -2285,7 +2290,7 @@ public class PerformanceTesting {
         else {
             String message = "No variable data test for " + info + "\n";
             m_perfResultsFile.write(message.getBytes());
-            System.out.print(message);
+            m_SystemOutLogger.print(message);
         }
     }
     public void testAllRSAPrivateKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
@@ -2339,7 +2344,7 @@ public class PerformanceTesting {
         else {
             String message = "No variable data test for " + info + "\n";
             m_perfResultsFile.write(message.getBytes());
-            System.out.print(message);
+            m_SystemOutLogger.print(message);
         }
     }
     public void testAllRSAPublicKeys (int numRepeatWholeOperation, int numRepeatWholeMeasurement) throws IOException, Exception{
