@@ -452,16 +452,26 @@ import javacardx.crypto.*;
                     if (bSetKeyValue == Consts.TRUE){
                         m_keyPair1 = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
                         m_keyPair1.genKeyPair(); // TODO: use fixed key value to shorten time required for key generation?
-                        m_key1 = m_keyPair1.getPublic();                
-                        m_rsaprivate_key = (RSAPrivateKey) m_keyPair1.getPrivate();
+                        m_key1 = m_keyPair1.getPublic();        
                         m_rsapublic_key = (RSAPublicKey) m_keyPair1.getPublic();
-                        m_keyInv1 = m_rsaprivate_key;
                         m_keyPair2 = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
                         m_keyPair2.genKeyPair(); // TODO: use fixed key value to shorten time required for key generation?
                         m_key2 = m_keyPair2.getPublic();                
                         m_rsapublic_key2 = (RSAPublicKey) m_keyPair2.getPublic();
                         m_rsaprivate_key2 = (RSAPrivateKey) m_keyPair2.getPrivate();
                         m_keyInv2 = m_rsaprivate_key2;
+                        if (m_testSettings.keyClass == JCConsts.KeyPair_ALG_RSA) {
+                            m_rsaprivate_key = (RSAPrivateKey) m_keyPair1.getPrivate();
+                            m_keyInv1 = m_rsaprivate_key;
+                            m_rsaprivate_key2 = (RSAPrivateKey) m_keyPair2.getPrivate();
+                            m_keyInv2 = m_rsaprivate_key2;
+                        }
+                        if (m_testSettings.keyClass == JCConsts.KeyPair_ALG_RSA_CRT) {
+                            m_rsaprivatecrt_key = (RSAPrivateCrtKey) m_keyPair1.getPrivate();
+                            m_keyInv1 = m_rsaprivatecrt_key;
+                            m_rsaprivatecrt_key2 = (RSAPrivateCrtKey) m_keyPair2.getPrivate();
+                            m_keyInv2 = m_rsaprivatecrt_key2;
+                        }
                     }
                     break;
                 case JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE: // no break
@@ -915,15 +925,15 @@ import javacardx.crypto.*;
         // Prepare valid input for decryption if required
         // For AES every input is valid but for RSA_PKCS1, structure after decryption is checked
         if ((byte) m_testSettings.initMode == Cipher.MODE_DECRYPT) {
-            if ((m_testSettings.algorithmSpecification == Cipher.ALG_RSA_ISO14888) ||
-                (m_testSettings.algorithmSpecification == Cipher.ALG_RSA_ISO9796) ||    
-                (m_testSettings.algorithmSpecification == Cipher.ALG_RSA_NOPAD) ||    
-                (m_testSettings.algorithmSpecification == Cipher.ALG_RSA_PKCS1) ||
-                (m_testSettings.algorithmSpecification == Cipher.ALG_RSA_PKCS1_OAEP)) {
+            if ((m_testSettings.algorithmSpecification == JCConsts.Cipher_ALG_RSA_ISO14888) ||
+                (m_testSettings.algorithmSpecification == JCConsts.Cipher_ALG_RSA_ISO9796) ||    
+                (m_testSettings.algorithmSpecification == JCConsts.Cipher_ALG_RSA_NOPAD) ||    
+                (m_testSettings.algorithmSpecification == JCConsts.Cipher_ALG_RSA_PKCS1) ||
+                (m_testSettings.algorithmSpecification == JCConsts.Cipher_ALG_RSA_PKCS1_OAEP)) {
                 m_cipher.init(m_rsapublic_key, Cipher.MODE_ENCRYPT);
                 chunkDataLen = m_cipher.doFinal(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) 0); 
                 m_cipher.init(m_key1, (byte) m_testSettings.initMode); // init key to be tested again
-                if (m_testSettings.algorithmSpecification == Cipher.ALG_RSA_NOPAD) {
+                if (m_testSettings.algorithmSpecification == JCConsts.Cipher_ALG_RSA_NOPAD) {
                     m_ram1[(short) 0] = (byte) 0x00; //Note: for raw RSA, most significant bit must be != 1
                 }
             }
