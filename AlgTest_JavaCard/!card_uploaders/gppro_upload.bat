@@ -1,4 +1,4 @@
-gp.exe -delete 6D797061636B616731 -deletedeps -verbose 
+gp.exe -deletedeps -verbose -delete 6D797061636B616731 
 gp.exe -delete  A0000000035344 -deletedeps -verbose 
 gp.exe -delete A0000000035350 -deletedeps -verbose 
 gp.exe -delete 534B544558544C4942 -deletedeps -verbose 

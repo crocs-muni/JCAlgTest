@@ -261,7 +261,7 @@ public class AlgTestJClient {
                 selectedTerminal = terminalList.get(0); // return first and only reader
             }
             else {
-                int terminalIndex = 0;
+                int terminalIndex = 1;
                 // Let user select target terminal
                 for (CardTerminal terminal : terminalList) {
                     Card card;
@@ -274,9 +274,10 @@ public class AlgTestJClient {
                         Logger.getLogger(AlgTestJClient.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }   
-                System.out.println("Select index of target reader you like to use 0.." + (terminalIndex - 1));
+                System.out.print("Select index of target reader you like to use 1.." + (terminalIndex - 1) + ": ");
                 Scanner sc = new Scanner(System.in);
                 int answ = sc.nextInt();
+                answ--; // is starting with 0 
                 selectedTerminal = terminalList.get(answ); 
             }
         }
