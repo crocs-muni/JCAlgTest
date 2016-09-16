@@ -133,7 +133,7 @@ public class JCAlgTestApplet extends javacard.framework.Applet
     AlgStorageTest      m_storageTest = null;
 
     public final static short RAM1_ARRAY_LENGTH = (short) 600;
-    public final static short RAM2_ARRAY_LENGTH = (short) 128;
+    public final static short RAM2_ARRAY_LENGTH = (short) 512;
     byte[] m_ramArray = null;  // auxalarity array used for various purposes. Length of this array is added to value returned as amount of available RAM memory
     byte[] m_ramArray2 = null;  // auxalarity array used for various purposes. Length of this array is added to value returned as amount of available RAM memory
     
