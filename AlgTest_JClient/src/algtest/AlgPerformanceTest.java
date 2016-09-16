@@ -1033,13 +1033,14 @@ import javacardx.crypto.*;
         //   or multiple times (numRepeatSubOperation) on smaller chunks 
         short repeats = (short) (m_testSettings.numRepeatWholeOperation * m_testSettings.numRepeatSubOperation);
         short chunkDataLen = (short) (m_testSettings.dataLength1 / m_testSettings.numRepeatSubOperation);
+        // Compute valid signature once (used later for verification)
+        short signLen = m_signatureSign.sign(m_ram1, (short) 0, chunkDataLen, m_ram2, (short) 0);
+
         switch (m_testSettings.algorithmMethod) {
             case JCConsts.Signature_update:   for (short i = 0; i < repeats; i++) { m_signatureSign.update(m_ram1, (short) 0, chunkDataLen); } break;
             case JCConsts.Signature_sign:     for (short i = 0; i < repeats; i++) { m_signatureSign.sign(m_ram1, (short) 0, chunkDataLen, m_ram2, (short) 0); } break;
             case JCConsts.Signature_verify:   
-                // Compute valid signature once (used later for verification)
-                m_signatureSign.sign(m_ram1, (short) 0, chunkDataLen, m_ram1, chunkDataLen);                 
-                for (short i = 0; i < repeats; i++) { m_signatureVerify.verify(m_ram1, (short) 0, chunkDataLen, m_ram1, chunkDataLen, m_signatureSign.getLength()); } 
+                for (short i = 0; i < repeats; i++) { m_signatureVerify.verify(m_ram1, (short) 0, chunkDataLen, m_ram2, (short) 0, signLen); } 
                 break;
             case JCConsts.Signature_init:     
                 for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 
