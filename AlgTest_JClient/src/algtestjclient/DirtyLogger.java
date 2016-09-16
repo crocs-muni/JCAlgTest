@@ -15,19 +15,19 @@ import java.io.IOException;
 public class DirtyLogger {
     FileOutputStream    m_logFile;
     boolean             m_bOutputSystemOut = true;
-    DirtyLogger(FileOutputStream logFile, boolean bOutputSystemOut) {
+    public DirtyLogger(FileOutputStream logFile, boolean bOutputSystemOut) {
         m_logFile = logFile;
         m_bOutputSystemOut = bOutputSystemOut;
     }
-    void println() {
+    public void println() {
         String logLine = "\n";
         print(logLine);
     }
-    void println(String logLine)  {
+    public void println(String logLine)  {
         logLine += "\n";
         print(logLine);
     }
-    void print(String logLine) {
+    public void print(String logLine) {
         if (m_bOutputSystemOut) {
             System.out.print(logLine);
         }
