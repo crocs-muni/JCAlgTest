@@ -410,6 +410,7 @@ public class SingleModeTest {
                 
         m_SystemOutLogger.print("Specify type of your card (e.g., NXP JCOP CJ2A081): ");
         String cardName = br.next();
+        m_SystemOutLogger.println(String.format("%s", cardName));
         cardName += br.nextLine();
         if (cardName.isEmpty()) {
             cardName = "noname";

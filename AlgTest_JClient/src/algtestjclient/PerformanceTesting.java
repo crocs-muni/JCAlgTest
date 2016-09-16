@@ -116,6 +116,7 @@ public class PerformanceTesting {
                 "3 -> Only algorithms WITH asymmetric crypto (estimated time 4-6 hours)");
         m_SystemOutLogger.print("Test option number: ");
         int answ = sc.nextInt();
+        m_SystemOutLogger.println(String.format("%d", answ));
         switch (answ){
             case 1:
                 m_bTestSymmetricAlgs = true;
@@ -207,6 +208,7 @@ public class PerformanceTesting {
                 m_SystemOutLogger.print(message);
                 Scanner sc = new Scanner(System.in);
                 String answ = sc.next();
+                m_SystemOutLogger.println(String.format("%d", answ));
                 if (answ.equals("y")) {
                     m_SystemOutLogger.println("\tContinue was selected. Only algorithms NOT present " + filePath + " in will be measured");
                     // Read all measured algorithms earlier
@@ -644,6 +646,7 @@ public class PerformanceTesting {
                         m_SystemOutLogger.println("Try to physically remove card and/or upload applet manually and insert it again. Press 'r' to retry or 's' to skip this algorithm (if retry fails)\n");
                         Scanner sc = new Scanner(System.in);
                         String answ = sc.next();
+                        m_SystemOutLogger.println(String.format("%d", answ));
                         if (answ.equals("r")) {
                             m_numHumanInterventions++;
                             

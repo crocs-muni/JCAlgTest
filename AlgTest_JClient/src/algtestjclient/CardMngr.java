@@ -228,6 +228,7 @@ public class CardMngr {
         m_SystemOutLogger.println("Do you want to print supported parameters for AlgTest to separate file? 1 = YES, 0 = NO/r/n");
         Scanner sc = new Scanner(System.in);
         int answ = sc.nextInt();
+        m_SystemOutLogger.println(String.format("%d", answ));
         if (answ == 1){
             FileOutputStream file = new FileOutputStream("AlgTest_supported_parameters.txt");
             file.write(CardMngr.paramList.getBytes());

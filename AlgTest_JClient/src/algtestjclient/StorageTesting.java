@@ -60,6 +60,7 @@ public class StorageTesting {
         m_SystemOutLogger.println("Specify type of your card (e.g., NXP JCOP CJ2A081):");
         String cardName = br.next();
         cardName += br.nextLine();
+        m_SystemOutLogger.println(String.format("%s", cardName));
         if (cardName.isEmpty()) {
             cardName = "noname";
         }            

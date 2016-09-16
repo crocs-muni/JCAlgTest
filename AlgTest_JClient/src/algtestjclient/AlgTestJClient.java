@@ -146,6 +146,7 @@ public class AlgTestJClient {
             m_SystemOutLogger.print("Test option number: ");
             Scanner sc = new Scanner(System.in);
             int answ = sc.nextInt();
+            m_SystemOutLogger.println(String.format("%d", answ));
             switch (answ){
 /*  not supported anymore              
                 // In this case, classic version of AlgTest is used
@@ -282,6 +283,7 @@ public class AlgTestJClient {
                 m_SystemOutLogger.print("Select index of target reader you like to use 1.." + (terminalIndex - 1) + ": ");
                 Scanner sc = new Scanner(System.in);
                 int answ = sc.nextInt();
+                m_SystemOutLogger.println(String.format("%d", answ));
                 answ--; // is starting with 0 
                 selectedTerminal = terminalList.get(answ); 
             }
