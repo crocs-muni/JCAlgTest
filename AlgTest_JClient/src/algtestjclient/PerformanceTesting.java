@@ -1035,15 +1035,15 @@ public class PerformanceTesting {
                 break;
         }    
         
-        TestSettings testSet = this.prepareTestSettings(Consts.CLASS_CIPHER, alg, key, keyLength, JCConsts.Cipher_update, 
+        TestSettings testSet = this.prepareTestSettings(Consts.CLASS_CIPHER, alg, key, keyLength, JCConsts.Cipher_doFinal, 
                 testDataLength, Consts.UNUSED, initMode, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);      
         testSet.keyClass = keyClass;        
 
         
         if (!m_bTestVariableData) {
             // Ordinary test of all available methods
-            testSet.algorithmMethod = JCConsts.Cipher_update;
-            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_update()");
+            //testSet.algorithmMethod = JCConsts.Cipher_update; // NOTE: Cipher_update is disabled as call on most cards will cause 6f00
+            //this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_update()");
             testSet.algorithmMethod = JCConsts.Cipher_doFinal;
             this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_doFinal()");
             testSet.algorithmMethod = JCConsts.Cipher_init;
@@ -1390,13 +1390,13 @@ public class PerformanceTesting {
         testSignatureWithKeyClass(Consts.UNUSED, keyType, keyLength, alg, info, numRepeatWholeOperation, numRepeatWholeMeasurement);
     }   
     public void testSignatureWithKeyClass(byte keyClass, byte keyType, short keyLength, byte alg, String info, short numRepeatWholeOperation, short numRepeatWholeMeasurement) throws IOException, Exception {
-        TestSettings testSet = this.prepareTestSettings(Consts.CLASS_SIGNATURE, alg, keyType, keyLength, JCConsts.Signature_update, 
+        TestSettings testSet = this.prepareTestSettings(Consts.CLASS_SIGNATURE, alg, keyType, keyLength, JCConsts.Signature_sign, 
             Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);      
         testSet.keyClass = keyClass;
         
         if (!m_bTestVariableData) {
-            testSet.algorithmMethod = JCConsts.Signature_update;
-            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_update()");
+            //testSet.algorithmMethod = JCConsts.Signature_update; // NOTE: Cipher_update is disabled as call on most cards will cause 6f00
+            //this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_update()");
             testSet.algorithmMethod = JCConsts.Signature_sign;
             this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_sign()");
             testSet.algorithmMethod = JCConsts.Signature_verify;
