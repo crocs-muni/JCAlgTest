@@ -38,6 +38,8 @@ public class CardCommunicationException extends Exception
                     return "SW_ALG_TYPE_NOT_SUPPORTED";
                 case AlgPerformanceTest.SW_ALG_OPS_NOT_SUPPORTED:
                     return "SW_ALG_OPS_NOT_SUPPORTED";
+                case AlgPerformanceTest.SW_ALG_INCORECT_REPETITIONS: 
+                    return "SW_ALG_INCORECT_REPETITIONS";
                 default:
                     return "UNKONWN_ERROR-card_has_return_value_" + Integer.toHexString(reason);                    
             }
