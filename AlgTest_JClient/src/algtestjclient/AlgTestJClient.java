@@ -47,19 +47,18 @@ import javax.smartcardio.CardTerminal;
  * @author petr
  */
 public class AlgTestJClient {
-    //static CardMngr cardManager = new CardMngr();
-    //static SingleModeTest singleTest = new SingleModeTest();
-    //static PerformanceTesting testingPerformance = new PerformanceTesting();
-    //static KeyHarvest keyHarvest = new KeyHarvest();
-    
-    
     /* Arguments for choosing which AlgTest version to run. */
     public static final String ALGTEST_MULTIPERAPDU = "AT_MULTIPERAPDU";        // for 'old' AlgTest
     public static final String ALGTEST_SINGLEPERAPDU = "AT_SINGLEPERAPDU";      // for 'New' AlgTest
     public static final String ALGTEST_PERFORMANCE = "AT_PERFORMANCE";          // for performance testing
     
     /**
-     * Version 1.6.0 (19.07.5)
+     * Version 1.7.0 (19.09.2016) 
+     * + Updates to support EC and asym. key operations properly
+     */
+    public final static String ALGTEST_JCLIENT_VERSION_1_7_0 = "1.7.0";
+    /**
+     * Version 1.6.0 (19.07.2015)
      * + Many updates, performance tests
      */
     public final static String ALGTEST_JCLIENT_VERSION_1_6_0 = "1.6.0";        
@@ -96,21 +95,23 @@ public class AlgTestJClient {
     /**
      * Current version
      */
-    public final static String ALGTEST_JCLIENT_VERSION = ALGTEST_JCLIENT_VERSION_1_6_0;
+    public final static String ALGTEST_JCLIENT_VERSION = ALGTEST_JCLIENT_VERSION_1_7_0;
     
     public final static int STAT_OK = 0;    
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) throws IOException, Exception {
+        System.out.println("\n-----------------------------------------------------------------------   ");
+        System.out.println("JCAlgTest - comprehensive tool for JavaCard smart card testing.");
+        System.out.println("Visit jcalgtest.org for results from 50+ cards. CRoCS.cz lab 2007-2016.");
+        System.out.println("-----------------------------------------------------------------------\n");
         // If arguments are present. 
         if(args.length > 0){
             if (args[0].equals(ALGTEST_MULTIPERAPDU)){
                 CardMngr cardManager = new CardMngr();
                 cardManager.testClassic(args, 0, null);
-            }  // 0 means ask for every alg to test
-                                                    // possibly change for constant?
-                                                    // or maybe change for 1 and test all algs at once?
+            }  
             else if (args[0].equals(ALGTEST_SINGLEPERAPDU)){
                 SingleModeTest singleTest = new SingleModeTest();
                 singleTest.TestSingleAlg(args, null);
@@ -130,13 +131,14 @@ public class AlgTestJClient {
             CardTerminal selectedTerminal = null;
             PerformanceTesting testingPerformance = new PerformanceTesting();
             
-            System.out.println("Choose which type of AlgTest you want to use.");
-            System.out.println("NOTE that you need to have installed coresponding applet on your card! (Not true if you are using simulator.)");
-            System.out.append("1 -> List of supported algorithms (2-10 minutes, algorithm detected if object allocation succeds)\n" + 
-                              "2 -> Performance Testing (1-3 hours, every method (e.g., doFinal) of given class (e.g., Cipher) of given algorithm is tested for performance (usually over 256 bytes if applicable)\n" + 
-                              "3 -> Performance Testing variable data length (2-10 hours, same as option 2, but lengths {16, 32, 64, 128, 256 and 512} bytes are tested)\n" + 
-                              "4 -> Harvest RSA keys (unlimited, on-card generated keypairs are exported and stored in file)\n");
-            
+            System.out.println("NOTE: JCAlgTest applet (AlgTest.cap) must be already installed on tested card.");
+            System.out.println("The results are stored in CSV files. Use JCAlgProcess for HTML conversion.");
+            System.out.println("CHOOSE test you want to run:");
+            System.out.append("1 -> SUPPORTED ALGORITHMS\n    List all supported JC API algorithms (2-10 minutes)\n" + 
+                              "2 -> PERFORMANCE TEST\n    Test all JC API methods with 256B data length (1-3 hours)\n" + 
+                              "3 -> PERFORMANCE VARIABLE DATA\n    Performance test with 16/32/64/128/256/512B data lengths (2-10 hours)\n" + 
+                              "4 -> HARVEST RSA KEYS\n    Generate RSA keys on card, export to host and store to file (no limit)\n");
+            System.out.print("Test option number: ");
             Scanner sc = new Scanner(System.in);
             int answ = sc.nextInt();
             switch (answ){
@@ -167,6 +169,7 @@ public class AlgTestJClient {
                     testingPerformance.testPerformance(args, true, selectedTerminal);
                     break;
                 case 4:
+                    // BUGBUG: refactor this option code
                     KeyHarvest keyHarvest = new KeyHarvest();    
                     // Remove new line character from stream after load integer as type of test
                     sc.nextLine();       
@@ -233,12 +236,11 @@ public class AlgTestJClient {
                     catch(NumberFormatException ex) {
                         System.out.println("Wrong number. Number of keys to generate is set to "+numOfKeys+".");
                     }
-                  
                     
                     keyHarvest.gatherRSAKeys(autoUploadBefore, bitLength, useCrt, numOfKeys);
                     break;
-                // In this case, user pressed wrong key 
                 default:
+                    // In this case, user pressed wrong key 
                     System.err.println("Incorrect parameter!");
                 break;
             }

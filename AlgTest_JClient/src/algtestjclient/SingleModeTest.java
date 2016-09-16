@@ -402,7 +402,7 @@ public class SingleModeTest {
         Scanner br = new Scanner(System.in);  
         String answ = "";   // When set to 0, program will ask for each algorithm to test.
                 
-        System.out.println("Specify type of your card (e.g., NXP JCOP CJ2A081):");
+        System.out.print("Specify type of your card (e.g., NXP JCOP CJ2A081): ");
         String cardName = br.next();
         cardName += br.nextLine();
         if (cardName.isEmpty()) {

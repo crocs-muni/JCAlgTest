@@ -31,7 +31,6 @@
 
 package algtestjclient;
 
-import AlgTest.AlgPerformanceTest;
 import java.io.*;
 import java.io.FileOutputStream;
 import java.util.Scanner;
@@ -107,33 +106,35 @@ public class PerformanceTesting {
         m_bTestVariableData = bTestVariableDataLengths;
                 
 
-        System.out.println("Choose which type of performance tests you like to execute:");
-        System.out.append("1 -> Only algorithms WITHOUT asymmetric cryptography (estimated time 1-2 hours)\n2 -> Only algorithms WITH asymmetric crypto (estimated time 4-6 hours)\n3 -> All algorithms (estimated time 5-8 hours)\n");
-
+        System.out.println("\nCHOOSE which type of performance test you like to execute:");
+        System.out.append("1 -> All algorithms (estimated time 5-8 hours)\n" + 
+                "2 -> Only algorithms WITHOUT asymmetric cryptography (estimated time 1-2 hours)\n" + 
+                "3 -> Only algorithms WITH asymmetric crypto (estimated time 4-6 hours)\n");
+        System.out.print("Test option number: ");
         int answ = sc.nextInt();
         switch (answ){
             case 1:
                 m_bTestSymmetricAlgs = true;
-                m_bTestAsymmetricAlgs = false;
-            break;
+                m_bTestAsymmetricAlgs = true;
+                break;
             case 2:
+                m_bTestSymmetricAlgs = true;
+                m_bTestAsymmetricAlgs = false;
+                break;
+            case 3:
                 m_bTestSymmetricAlgs = false;
                 m_bTestAsymmetricAlgs = true;
-            break;
-            case 3:
-                m_bTestSymmetricAlgs = true;
-                m_bTestAsymmetricAlgs = true;
-            break;
+                break;
             default:
                 System.err.println("Incorrect parameter, running all tests!");
-            break;
+                break;
         }
         int numRepeatWholeOperation = Consts.NUM_REPEAT_WHOLE_OPERATION;
         if (m_bTestVariableData) {
             numRepeatWholeOperation = Consts.NUM_REPEAT_WHOLE_OPERATION_VARIABLE_DATA;                
         }
 
-        System.out.println("Specify type of your card (e.g., NXP JCOP CJ2A081):");
+        System.out.print("Specify type of your card (e.g., NXP JCOP CJ2A081): ");
         
         m_cardName = sc.next();
         m_cardName += sc.nextLine();
@@ -2505,7 +2506,7 @@ public class PerformanceTesting {
         m_perfResultsFile.write(tableName.getBytes());
     }       
     
-    
+/*  BUGBUG: add dedicated test for obtaining default curve parameters  
     public void getDefaultECParameters(byte keyType, short keyLength, String info) throws IOException, Exception {
         TestSettings testSet = null;
         testSet = this.prepareTestSettings(Consts.CLASS_KEYBUILDER, Consts.UNUSED, keyType, keyLength, JCConsts.ECPrivateKey_getS,
@@ -2539,5 +2540,5 @@ public class PerformanceTesting {
         tableName = "\n\nECFP Default curve - END\n";
         m_perfResultsFile.write(tableName.getBytes());
     }
-   
+*/   
 }
