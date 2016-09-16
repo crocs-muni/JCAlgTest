@@ -45,8 +45,11 @@ public class StorageTesting {
     public static CardMngr m_cardManager = null;
     public FileOutputStream m_perfResultsFile = null;
 
+    DirtyLogger m_SystemOutLogger = null;
 
     public StorageTesting(DirtyLogger logger) {
+        m_SystemOutLogger = logger;
+        m_cardManager = new CardMngr(m_SystemOutLogger);
     }
     
     public void TestStorage (String[] args, CardTerminal selectedReader) throws IOException, Exception{
@@ -54,6 +57,7 @@ public class StorageTesting {
         Scanner br = new Scanner(System.in);  
         String answ = "";   // When set to 0, program will ask for each algorithm to test.
                 
+        m_SystemOutLogger.println("Specify type of your card (e.g., NXP JCOP CJ2A081):");
         String cardName = br.next();
         cardName += br.nextLine();
         if (cardName.isEmpty()) {
@@ -65,6 +69,7 @@ public class StorageTesting {
         //testKeysStorage(file, value);
         elapsedTimeWholeTest += System.currentTimeMillis();
         String message = "\n\nTotal test time:; " + elapsedTimeWholeTest / 1000 + " seconds."; 
+        m_SystemOutLogger.println(message);
         file.write(message.getBytes());
 
         file.close();
@@ -86,6 +91,7 @@ public class StorageTesting {
         try {
             ResponseAPDU resp = m_cardManager.sendAPDU(apdu);
             if (resp.getSW() != 0x9000) {
+                m_SystemOutLogger.println(info + " Fail to obtain storage data");
             } else {
                 // SET READ DATA
                 byte data[] = resp.getData();
@@ -100,12 +106,14 @@ public class StorageTesting {
 
                 String message;
                 message = String.format("\r\nOBJNUM: %1s;%d;%s", info, keysNum, elTimeStr); 
+                m_SystemOutLogger.println(message);
                 pFile.write(message.getBytes());
                 
                 numObjects = keysNum;
             }        
         }
         catch (Exception ex) {
+            m_SystemOutLogger.println(info + "Fail to obtain storage data");
             pValue.append("error");
         }
     
