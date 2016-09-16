@@ -9,4 +9,4 @@ gp.exe -delete D276000005AA0403010103 -deletedeps -verbose
 
 gp.exe -delete D156000132000401 -deletedeps -verbose 
 
-gp.exe -install AlgTest_v1.6.1_jc222.cap -verbose 
+gp.exe -install AlgTest.cap -verbose 

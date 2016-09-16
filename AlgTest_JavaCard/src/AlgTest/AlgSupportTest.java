@@ -57,7 +57,8 @@ public class AlgSupportTest {
     
   
   
-    private   byte[]           m_ramArray = null;
+    private byte[] m_ramArray = null;
+    private byte[] m_ramArray2 = null;
     private   byte[]           m_eepromArray1 = null;
     private   byte[]           m_eepromArray2 = null;
     private   byte[]           m_eepromArray3 = null;
@@ -109,8 +110,9 @@ public class AlgSupportTest {
     public static final byte CLASS_KEYPAIR         = 0x19;
     public static final byte CLASS_KEYBUILDER      = 0x20;
 
-    AlgSupportTest(byte[] auxRAMArray) { 
+    AlgSupportTest(byte[] auxRAMArray, byte[] auxRAMArray2) { 
         m_ramArray = auxRAMArray;
+        m_ramArray2 = auxRAMArray2;
     }
 
     public byte process(APDU apdu) throws ISOException {
@@ -224,6 +226,7 @@ public class AlgSupportTest {
         offset = (short)(offset + 2);
         short ramMemorySize = JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_RESET);
         ramMemorySize += (short) m_ramArray.length; // This array is allocated by this applet and therefore consumed some space
+        ramMemorySize += (short) m_ramArray2.length; // This array is allocated by this applet and therefore consumed some space
         Util.setShort(apdubuf, offset, ramMemorySize);
         offset = (short)(offset + 2);
         Util.setShort(apdubuf, offset, JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT));
