@@ -54,10 +54,18 @@ public class JCAlgTestApplet extends javacard.framework.Applet
 {
     // NOTE: when incrementing version, don't forget to update ALGTEST_JAVACARD_VERSION_CURRENT value
     /**
+     * Version 1.7.0 (16.9.2016) 
+     * + added working support for ECDH KeyAgreement
+     * + EC curves support tests and measurements now works
+     * - fixed various issues with measurement of methods for asymmetric crypto algorithms
+     * - various refactoring
+     */
+    final static byte ALGTEST_JAVACARD_VERSION_1_7_0[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x37, (byte) 0x2e, (byte) 0x30};
+    /**
      * Version 1.6.1 (28.1.2016) 
      * Reset of applet moved directly into main JCAlgTestApplet
      */
-    final static byte ALGTEST_JAVACARD_VERSION_1_6_1[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x36, (byte) 0x2e, (byte) 0x31};
+    //final static byte ALGTEST_JAVACARD_VERSION_1_6_1[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x36, (byte) 0x2e, (byte) 0x31};
     /**
      * Version 1.6.0 (20.7.2015)
      * + source code split into AlgSupportTest and AlgPerformanceTest 
@@ -66,7 +74,7 @@ public class JCAlgTestApplet extends javacard.framework.Applet
      * + added test for software implementation of AES (basically JavaCard code speed test)
      * - fixed minor issues in initialization of engines
      */
-    final static byte ALGTEST_JAVACARD_VERSION_1_6_0[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x36, (byte) 0x2e, (byte) 0x30};
+    //final static byte ALGTEST_JAVACARD_VERSION_1_6_0[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x36, (byte) 0x2e, (byte) 0x30};
     /**
      * Version 1.5.1 (15.7.2015)
      * + added testing of Cipher/Signature sequence setKey, init, doFinal
@@ -74,7 +82,7 @@ public class JCAlgTestApplet extends javacard.framework.Applet
      * + added test for XOR speed 
      * - fixed minor issues (byte) in setKey
      */
-    final static byte ALGTEST_JAVACARD_VERSION_1_5_1[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x35, (byte) 0x2e, (byte) 0x31};    
+    //final static byte ALGTEST_JAVACARD_VERSION_1_5_1[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x35, (byte) 0x2e, (byte) 0x31};    
     /**
      * Version 1.5 (30.6.2015)
      * + added external setting of init mode for Cipher
@@ -83,19 +91,19 @@ public class JCAlgTestApplet extends javacard.framework.Applet
      * + added valid signature before verification 
      * - fixed bugs in tests (i = 10 instead of i % 10), improper breaks...
      */
-    final static byte ALGTEST_JAVACARD_VERSION_1_5[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x35};
+    //final static byte ALGTEST_JAVACARD_VERSION_1_5[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x35};
     /**
      * Version 1.4 (15.3.2015)
      * + Merged separate javacard applet codes into AlgTestSinglePerApdu.java
      * + Added performance testing from L. Kunikova
      */
-    final static byte ALGTEST_JAVACARD_VERSION_1_4[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x34};
+    //final static byte ALGTEST_JAVACARD_VERSION_1_4[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x34};
     /**
      * Version 1.3 (30.11.2014)
      * + Possibility to test single algorithm at single apdu command (possibility for reset in between) via TestSupportedModeSingle()
      * - fixed bug with exact specification of Checksum.getInstance(ALG_ISO3309_CRC16... inside TestSupportedModeSingle
      */
-    final static byte ALGTEST_JAVACARD_VERSION_1_3[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x33};
+    //final static byte ALGTEST_JAVACARD_VERSION_1_3[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x33};
     /**
      * Version 1.2 (3.11.2013)
      * + All relevant constants from JC2.2.2, JC3.0.1 & JC3.0.4 added
@@ -105,19 +113,19 @@ public class JCAlgTestApplet extends javacard.framework.Applet
      * + Changed format of values reported in return array. Unused values are now marked as 0xf0 (change from 0x05). 
      *   Supported algorithm is now designated as 0x00 (change from 0x01). When CryptoException is thrown and captured, value of CryptoException is stored (range from 0x01-0x05). 
      */
-    final static byte ALGTEST_JAVACARD_VERSION_1_2[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x32};
+    //final static byte ALGTEST_JAVACARD_VERSION_1_2[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x32};
     /**
      * Version 1.1 (28.6.2013)
      * + information about version added, command for version retrieval
      */
-    final static byte ALGTEST_JAVACARD_VERSION_1_1[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x31};
+    //final static byte ALGTEST_JAVACARD_VERSION_1_1[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x31};
     /**
      * Version 1.0 (2004-2013)
      * + initial version for version-tracking enabled (all features implemented in 2004-2013)
      */
-    final static byte ALGTEST_JAVACARD_VERSION_1_0[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x30};
+    //final static byte ALGTEST_JAVACARD_VERSION_1_0[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x30};
 
-    byte ALGTEST_JAVACARD_VERSION_CURRENT[] = ALGTEST_JAVACARD_VERSION_1_6_0;
+    byte ALGTEST_JAVACARD_VERSION_CURRENT[] = ALGTEST_JAVACARD_VERSION_1_7_0;
 
     AlgKeyHarvest       m_keyHarvest = null;
     AlgSupportTest      m_supportTest = null;
