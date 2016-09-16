@@ -96,6 +96,8 @@ import javacardx.crypto.*;
     RSAPublicKey        m_rsapublic_key2 = null;
     Key                 m_key1 = null;
     Key                 m_key2 = null;
+    Key                 m_keyInv1 = null;
+    Key                 m_keyInv2 = null;
     PrivateKey          m_privateKey = null;
     PublicKey           m_publicKey = null;
     
@@ -360,8 +362,10 @@ import javacardx.crypto.*;
                     if (bSetKeyValue == Consts.TRUE) {  
                         m_aes_key.setKey(m_ram1, (byte) 0); 
                         m_key1 = m_aes_key;
+                        m_keyInv1 = m_aes_key;
                         m_aes_key2.setKey(m_ram1, (byte) 1); 
                         m_key2 = m_aes_key2;
+                        m_keyInv2 = m_aes_key2;
                     }
                     break;
                     
@@ -373,8 +377,10 @@ import javacardx.crypto.*;
                     if (bSetKeyValue == Consts.TRUE) {  
                         m_des_key.setKey(m_ram1, (byte) 0); 
                         m_key1 = m_des_key;
+                        m_keyInv1 = m_des_key;
                         m_des_key2.setKey(m_ram1, (byte) 1); 
                         m_key2 = m_des_key2;
+                        m_keyInv2 = m_des_key2;
                     }                    
                     break;
                 case JCConsts.KeyBuilder_TYPE_KOREAN_SEED: 
@@ -387,8 +393,10 @@ import javacardx.crypto.*;
                     if (bSetKeyValue == Consts.TRUE) {  
                         m_koreanseed_key.setKey(m_ram1, (byte) 0); 
                         m_key1 = m_koreanseed_key;
+                        m_keyInv1 = m_koreanseed_key;
                         m_koreanseed_key2.setKey(m_ram1, (byte) 1); 
                         m_key2 = m_koreanseed_key2;
+                        m_keyInv2 = m_koreanseed_key2;
                     } 
                     break;
 /**/                    
@@ -402,8 +410,10 @@ import javacardx.crypto.*;
                     if (bSetKeyValue == Consts.TRUE){
                         m_hmac_key.setKey(m_ram1, (byte) 0, m_testSettings.keyLength);
                         m_key1 = m_hmac_key;
+                        m_keyInv1 = m_hmac_key;
                         m_hmac_key2.setKey(m_ram1, (byte) 1, m_testSettings.keyLength);
                         m_key2 = m_hmac_key2;
+                        m_keyInv2 = m_hmac_key2;
                     }
                     break;
 /**/                    
@@ -413,9 +423,14 @@ import javacardx.crypto.*;
                         m_keyPair1.genKeyPair();
                         m_key1 = m_keyPair1.getPrivate();
                         m_rsaprivatecrt_key = (RSAPrivateCrtKey) m_keyPair1.getPrivate();
+                        m_rsapublic_key = (RSAPublicKey) m_keyPair1.getPublic();
+                        m_keyInv1 = m_rsapublic_key;
                         m_keyPair2 = new KeyPair(KeyPair.ALG_RSA_CRT, m_testSettings.keyLength);
                         m_keyPair2.genKeyPair();
                         m_key2 = m_keyPair2.getPrivate();
+                        m_rsaprivatecrt_key2 = (RSAPrivateCrtKey) m_keyPair2.getPrivate();
+                        m_rsapublic_key2 = (RSAPublicKey) m_keyPair2.getPublic();
+                        m_keyInv2 = m_rsapublic_key2;
                     }
                     break;
                 case JCConsts.KeyBuilder_TYPE_RSA_PRIVATE:
@@ -424,20 +439,39 @@ import javacardx.crypto.*;
                         m_keyPair1.genKeyPair();
                         m_key1 = m_keyPair1.getPrivate();
                         m_rsaprivate_key = (RSAPrivateKey) m_keyPair1.getPrivate();
+                        m_rsapublic_key = (RSAPublicKey) m_keyPair1.getPublic();
+                        m_keyInv1 = m_rsapublic_key;
                         m_keyPair2 = new KeyPair(KeyPair.ALG_RSA, m_testSettings.keyLength);
                         m_keyPair2.genKeyPair();
                         m_key2 = m_keyPair2.getPrivate();
+                        m_rsapublic_key2 = (RSAPublicKey) m_keyPair2.getPublic();
+                        m_keyInv2 = m_rsapublic_key2;
                     }
                     break;                
                 case JCConsts.KeyBuilder_TYPE_RSA_PUBLIC:   
                     if (bSetKeyValue == Consts.TRUE){
                         m_keyPair1 = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
                         m_keyPair1.genKeyPair(); // TODO: use fixed key value to shorten time required for key generation?
-                        m_key1 = m_keyPair1.getPublic();                
+                        m_key1 = m_keyPair1.getPublic();        
                         m_rsapublic_key = (RSAPublicKey) m_keyPair1.getPublic();
                         m_keyPair2 = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
                         m_keyPair2.genKeyPair(); // TODO: use fixed key value to shorten time required for key generation?
                         m_key2 = m_keyPair2.getPublic();                
+                        m_rsapublic_key2 = (RSAPublicKey) m_keyPair2.getPublic();
+                        m_rsaprivate_key2 = (RSAPrivateKey) m_keyPair2.getPrivate();
+                        m_keyInv2 = m_rsaprivate_key2;
+                        if (m_testSettings.keyClass == JCConsts.KeyPair_ALG_RSA) {
+                            m_rsaprivate_key = (RSAPrivateKey) m_keyPair1.getPrivate();
+                            m_keyInv1 = m_rsaprivate_key;
+                            m_rsaprivate_key2 = (RSAPrivateKey) m_keyPair2.getPrivate();
+                            m_keyInv2 = m_rsaprivate_key2;
+                        }
+                        if (m_testSettings.keyClass == JCConsts.KeyPair_ALG_RSA_CRT) {
+                            m_rsaprivatecrt_key = (RSAPrivateCrtKey) m_keyPair1.getPrivate();
+                            m_keyInv1 = m_rsaprivatecrt_key;
+                            m_rsaprivatecrt_key2 = (RSAPrivateCrtKey) m_keyPair2.getPrivate();
+                            m_keyInv2 = m_rsaprivatecrt_key2;
+                        }
                     }
                     break;
                 case JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE: // no break
@@ -449,6 +483,7 @@ import javacardx.crypto.*;
                         m_key1 = m_keyPair1.getPrivate();                
                         m_ecprivate_key = (ECPrivateKey) m_keyPair1.getPrivate();
                         m_ecpublic_key = (ECPublicKey) m_keyPair1.getPublic();
+                        m_keyInv1 = m_ecpublic_key;
                         
                         m_keyPair2 = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
                         EC_Consts.ensureInitializedECCurve((byte) m_testSettings.keyClass, m_testSettings.keyLength, m_keyPair2, m_ram1);
@@ -456,6 +491,7 @@ import javacardx.crypto.*;
                         m_key2 = m_keyPair2.getPrivate();                
                         m_ecprivate_key2 = (ECPrivateKey) m_keyPair2.getPrivate();                        
                         m_ecpublic_key2 = (ECPublicKey) m_keyPair2.getPublic();
+                        m_keyInv2 = m_ecpublic_key2;
                     }
                     break;
                 case JCConsts.KeyBuilder_TYPE_DSA_PRIVATE:
@@ -464,9 +500,14 @@ import javacardx.crypto.*;
                         m_keyPair1.genKeyPair();
                         m_key1 = m_keyPair1.getPrivate();
                         m_dsaprivate_key = (DSAPrivateKey) m_keyPair1.getPrivate();
+                        m_dsapublic_key = (DSAPublicKey) m_keyPair1.getPublic();
+                        m_keyInv1 = m_dsapublic_key;
                         m_keyPair2 = new KeyPair(KeyPair.ALG_DSA, m_testSettings.keyLength);
                         m_keyPair2.genKeyPair();
                         m_key2 = m_keyPair2.getPrivate();
+                        m_dsapublic_key2 = (DSAPublicKey) m_keyPair2.getPublic();
+                        m_dsaprivate_key2 = (DSAPrivateKey) m_keyPair2.getPrivate();
+                        m_keyInv2 = m_dsapublic_key2;
                     }
                     break;
                 case JCConsts.KeyBuilder_TYPE_DSA_PUBLIC:
@@ -474,10 +515,15 @@ import javacardx.crypto.*;
                         m_keyPair1 = new KeyPair(KeyPair.ALG_DSA, m_testSettings.keyLength);
                         m_keyPair1.genKeyPair();
                         m_key1 = m_keyPair1.getPrivate();
+                        m_dsaprivate_key = (DSAPrivateKey) m_keyPair1.getPrivate();
                         m_dsapublic_key = (DSAPublicKey) m_keyPair1.getPublic();
+                        m_keyInv1 = m_dsaprivate_key;
                         m_keyPair2 = new KeyPair(KeyPair.ALG_DSA, m_testSettings.keyLength);
                         m_keyPair2.genKeyPair();
                         m_key2 = m_keyPair2.getPrivate();
+                        m_dsapublic_key2 = (DSAPublicKey) m_keyPair2.getPublic();
+                        m_dsaprivate_key2 = (DSAPrivateKey) m_keyPair2.getPrivate();
+                        m_keyInv2 = m_dsaprivate_key2;
                     }
                     break;
                 case JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC: // no break
@@ -488,10 +534,15 @@ import javacardx.crypto.*;
                         m_keyPair1.genKeyPair();
                         m_key1 = m_keyPair1.getPublic();
                         m_ecpublic_key = (ECPublicKey) m_keyPair1.getPublic();
+                        m_ecprivate_key = (ECPrivateKey) m_keyPair1.getPrivate();
+                        m_keyInv1 = m_ecprivate_key;
                         m_keyPair2 = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
                         EC_Consts.ensureInitializedECCurve((byte) m_testSettings.keyClass, m_testSettings.keyLength, m_keyPair2, m_ram1);
                         m_keyPair2.genKeyPair();
                         m_key2 = m_keyPair2.getPublic();
+                        m_ecpublic_key2 = (ECPublicKey) m_keyPair2.getPublic();
+                        m_ecprivate_key2 = (ECPrivateKey) m_keyPair2.getPrivate();
+                        m_keyInv2 = m_ecprivate_key2;
                     }
                     break;
                 default:
@@ -865,23 +916,38 @@ import javacardx.crypto.*;
     void perftest_class_Cipher(APDU apdu) {  
         byte[] apdubuf = apdu.getBuffer();
         m_testSettings.parse(apdu); 
+        
         // Operation is performed either in single call with (dataLength1)
         //   or multiple times (numRepeatSubOperation) on smaller chunks 
         short repeats = (short) (m_testSettings.numRepeatWholeOperation * m_testSettings.numRepeatSubOperation);
         short chunkDataLen = (short) (m_testSettings.dataLength1 / m_testSettings.numRepeatSubOperation);
        
+        // Prepare valid input for decryption if required
+        // For AES every input is valid but for RSA_PKCS1, structure after decryption is checked
+        if ((byte) m_testSettings.initMode == Cipher.MODE_DECRYPT) {
+            if ((m_testSettings.algorithmSpecification == JCConsts.Cipher_ALG_RSA_ISO14888) ||
+                (m_testSettings.algorithmSpecification == JCConsts.Cipher_ALG_RSA_ISO9796) ||    
+                (m_testSettings.algorithmSpecification == JCConsts.Cipher_ALG_RSA_NOPAD) ||    
+                (m_testSettings.algorithmSpecification == JCConsts.Cipher_ALG_RSA_PKCS1) ||
+                (m_testSettings.algorithmSpecification == JCConsts.Cipher_ALG_RSA_PKCS1_OAEP)) {
+                m_cipher.init(m_rsapublic_key, Cipher.MODE_ENCRYPT);
+                chunkDataLen = m_cipher.doFinal(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) 0); 
+                m_cipher.init(m_key1, (byte) m_testSettings.initMode); // init key to be tested again
+                if (m_testSettings.algorithmSpecification == JCConsts.Cipher_ALG_RSA_NOPAD) {
+                    m_ram1[(short) 0] = (byte) 0x00; //Note: for raw RSA, most significant bit must be != 1
+                }
+            }
+        }
         
         switch (m_testSettings.algorithmMethod) {
             case JCConsts.Cipher_update:  
                 for (short i = 0; i < repeats; i++) { 
-                    m_ram1[(short) 0] = (byte) 0x00; //Note: for raw RSA, most significant bit must be != 1
-                    m_cipher.update(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) 0); 
+                    m_cipher.update(m_ram1, (short) 0, chunkDataLen, m_ram2, (short) 0); 
                 } 
                 break;
             case JCConsts.Cipher_doFinal: 
                 for (short i = 0; i < repeats; i++) { 
-                    m_ram1[(short) 0] = (byte) 0x00; //Note: for raw RSA, most significant bit must be != 1
-                    m_cipher.doFinal(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) 0); 
+                    m_cipher.doFinal(m_ram1, (short) 0, chunkDataLen, m_ram2, (short) 0); 
                 } 
                 break;
             case JCConsts.Cipher_init:    
@@ -956,7 +1022,7 @@ import javacardx.crypto.*;
             m_signatureSign = Signature.getInstance((byte) m_testSettings.algorithmSpecification, false);
             m_signatureVerify = Signature.getInstance((byte) m_testSettings.algorithmSpecification, false);
             m_signatureSign.init(m_key1, Signature.MODE_SIGN);
-            m_signatureVerify.init(m_key1, Signature.MODE_VERIFY);
+            m_signatureVerify.init(m_keyInv1, Signature.MODE_VERIFY); // verification key is m_keyInv1
             m_trng.generateData(m_ram1, (short) 0, (short) m_ram1.length); // fill input with random data
             
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
@@ -977,13 +1043,14 @@ import javacardx.crypto.*;
         //   or multiple times (numRepeatSubOperation) on smaller chunks 
         short repeats = (short) (m_testSettings.numRepeatWholeOperation * m_testSettings.numRepeatSubOperation);
         short chunkDataLen = (short) (m_testSettings.dataLength1 / m_testSettings.numRepeatSubOperation);
+        // Compute valid signature once (used later for verification)
+        short signLen = m_signatureSign.sign(m_ram1, (short) 0, chunkDataLen, m_ram2, (short) 0);
+
         switch (m_testSettings.algorithmMethod) {
             case JCConsts.Signature_update:   for (short i = 0; i < repeats; i++) { m_signatureSign.update(m_ram1, (short) 0, chunkDataLen); } break;
-            case JCConsts.Signature_sign:     for (short i = 0; i < repeats; i++) { m_signatureSign.sign(m_ram1, (short) 0, chunkDataLen, m_ram1, chunkDataLen); } break;
+            case JCConsts.Signature_sign:     for (short i = 0; i < repeats; i++) { m_signatureSign.sign(m_ram1, (short) 0, chunkDataLen, m_ram2, (short) 0); } break;
             case JCConsts.Signature_verify:   
-                // Compute valid signature once (used later for verification)
-                m_signatureSign.sign(m_ram1, (short) 0, chunkDataLen, m_ram1, chunkDataLen);                 
-                for (short i = 0; i < repeats; i++) { m_signatureVerify.verify(m_ram1, (short) 0, chunkDataLen, m_ram1, chunkDataLen, m_signatureSign.getLength()); } 
+                for (short i = 0; i < repeats; i++) { m_signatureVerify.verify(m_ram1, (short) 0, chunkDataLen, m_ram2, (short) 0, signLen); } 
                 break;
             case JCConsts.Signature_init:     
                 for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 
