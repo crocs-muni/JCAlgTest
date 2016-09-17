@@ -92,6 +92,27 @@ public class PerformanceTesting {
         m_testDataLengths.add(512);        
     }
     
+    String getCurrentTestInfoString() {
+        String testInfo = m_cardName + "___";
+        testInfo += "_PERFORMANCE_";
+
+        if (m_bTestSymmetricAlgs) {
+            testInfo += "SYMMETRIC_";
+        }
+        if (m_bTestAsymmetricAlgs) {
+            testInfo += "ASYMMETRIC_";
+        }
+        if (m_bTestVariableData) {
+            testInfo += "DATADEPEND_";
+        } else {
+            testInfo += "DATAFIXED_";
+        }
+
+        testInfo += System.currentTimeMillis() + "_";   // add unique time counter 
+        
+        return testInfo;
+    }
+    
     /**
      * Calls methods testing card performance.
      * @param args
@@ -150,17 +171,7 @@ public class PerformanceTesting {
         // Try to open and load list of already measured algorithms (if provided)
         LoadAlreadyMeasuredAlgs(m_cardName);
 
-        String testInfo = m_cardName + "___";
-        testInfo += "_PERFORMANCE_";
-
-        if (m_bTestSymmetricAlgs) { testInfo += "SYMMETRIC_"; }
-        if (m_bTestAsymmetricAlgs) { testInfo += "ASYMMETRIC_"; }
-        if (m_bTestVariableData) { testInfo += "DATADEPEND_"; }
-        else { testInfo += "DATAFIXED_"; }
-
-        testInfo += System.currentTimeMillis() + "_";   // add unique time counter
-
-        m_elapsedTimeWholeTest = -System.currentTimeMillis();
+        String testInfo = getCurrentTestInfoString();
         
         // Connect to card
         this.m_perfResultsFile = m_cardManager.establishConnection(testClassPerformance, m_cardName, testInfo, selectedTerminal);
@@ -181,6 +192,99 @@ public class PerformanceTesting {
         finalizeMeasurement();
     }
     
+    /**
+     * Calls methods testing card performance limited to fingerprinting functions.
+     *
+     * @param args
+     * @param selectedTerminal
+     * @throws IOException
+     * @throws Exception
+     */
+    public void testPerformanceFingerprint(String[] args, CardTerminal selectedTerminal) throws IOException, Exception {
+        Class testClassPerformance = null;
+        Scanner sc = new Scanner(System.in);
+
+        // Fingeprint wants to test only main operation speed => variable data option with 256B only
+        m_bTestVariableData = true;
+        m_testDataLengths.clear(); 
+        m_testDataLengths.add(256);
+        
+        m_bTestSymmetricAlgs = true;
+        m_bTestAsymmetricAlgs = true;
+
+        m_SystemOutLogger.print("Specify type of your card (e.g., NXP JCOP CJ2A081): ");
+        m_cardName = sc.next();
+        m_cardName += sc.nextLine();
+        if (m_cardName.isEmpty()) {
+            m_cardName = "noname";
+        }
+
+        // Try to open and load list of already measured algorithms (if provided)
+        // NOTE: measure always full: LoadAlreadyMeasuredAlgs(m_cardName);
+        String testInfo = getCurrentTestInfoString();
+        
+        m_elapsedTimeWholeTest = -System.currentTimeMillis();
+        // Connect to card
+        this.m_perfResultsFile = m_cardManager.establishConnection(testClassPerformance, m_cardName, testInfo, selectedTerminal);
+        m_cardATR = m_cardManager.getATR();
+
+        short numRepeatWholeMeasurement = (short) 3;
+        short numRepeatWholeOperation = (short) 3;
+        
+        // Run all tests selected for fingeprinting
+        testAllMessageDigests(numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testAllRandomGenerators(numRepeatWholeOperation, numRepeatWholeOperation);
+        
+        //
+        // Cipher
+        //
+        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES, JCConsts.Cipher_ALG_DES_CBC_NOPAD, "TYPE_DES LENGTH_DES ALG_DES_CBC_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_DES, JCConsts.KeyBuilder_LENGTH_DES3_3KEY, JCConsts.Cipher_ALG_DES_CBC_NOPAD, "TYPE_DES LENGTH_DES3_3KEY ALG_DES_CBC_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128, JCConsts.Cipher_ALG_AES_BLOCK_128_CBC_NOPAD, "TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_128_CBC_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_256, JCConsts.Cipher_ALG_AES_BLOCK_128_CBC_NOPAD, "TYPE_AES LENGTH_AES_256 ALG_AES_BLOCK_128_CBC_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024, JCConsts.Cipher_ALG_RSA_NOPAD, "TYPE_RSA_PRIVATE LENGTH_RSA_1024 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048, JCConsts.Cipher_ALG_RSA_NOPAD, "TYPE_RSA_PRIVATE LENGTH_RSA_2048 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096, JCConsts.Cipher_ALG_RSA_NOPAD, "TYPE_RSA_PRIVATE LENGTH_RSA_4096 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024, JCConsts.Cipher_ALG_RSA_NOPAD, "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1024 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048, JCConsts.Cipher_ALG_RSA_NOPAD, "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_2048 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096, JCConsts.Cipher_ALG_RSA_NOPAD, "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_4096 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipherWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1024, JCConsts.Cipher_ALG_RSA_NOPAD, "TYPE_RSA_PUBLIC LENGTH_RSA_1024 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipherWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_2048, JCConsts.Cipher_ALG_RSA_NOPAD, "TYPE_RSA_PUBLIC LENGTH_RSA_2048 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testCipherWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_4096, JCConsts.Cipher_ALG_RSA_NOPAD, "TYPE_RSA_PUBLIC LENGTH_RSA_4096 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        
+        //
+        // Signature
+        //
+        // ALG_EC_F2M
+        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_F2M, JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_113, JCConsts.Signature_ALG_ECDSA_SHA, "KeyPair_ALG_EC_F2M KeyBuilder_LENGTH_EC_F2M_113 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_F2M, JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_F2M_193, JCConsts.Signature_ALG_ECDSA_SHA, "KeyPair_ALG_EC_F2M KeyBuilder_LENGTH_EC_F2M_193 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        // ALG_EC_FP
+        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_128, JCConsts.Signature_ALG_ECDSA_SHA, "KeyPair_ALG_EC_FP KeyBuilder_LENGTH_EC_FP_128 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_192, JCConsts.Signature_ALG_ECDSA_SHA, "KeyPair_ALG_EC_FP KeyBuilder_LENGTH_EC_FP_192 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_256, JCConsts.Signature_ALG_ECDSA_SHA, "KeyPair_ALG_EC_FP KeyBuilder_LENGTH_EC_FP_256 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_384, JCConsts.Signature_ALG_ECDSA_SHA, "KeyPair_ALG_EC_FP KeyBuilder_LENGTH_EC_FP_384 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_521, JCConsts.Signature_ALG_ECDSA_SHA, "KeyPair_ALG_EC_FP KeyBuilder_LENGTH_EC_FP_521 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        // DSA
+        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_DSA, JCConsts.KeyBuilder_TYPE_DSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_DSA_512, JCConsts.Signature_ALG_DSA_SHA, "ALG_DSA LENGTH_DSA_512 ALG_DSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_DSA, JCConsts.KeyBuilder_TYPE_DSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_DSA_1024, JCConsts.Signature_ALG_DSA_SHA, "ALG_DSA LENGTH_DSA_1024 ALG_DSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        
+        // Checksums
+        testAllChecksums(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
+
+        testAllSWAlgs(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
+
+        // Several keypair generations to match time distribution
+        testAllKeyPairs(1, Consts.NUM_REPEAT_WHOLE_MEASUREMENT_KEYPAIRGEN);  
+        numRepeatWholeMeasurement = (short) 1;
+        numRepeatWholeOperation = Consts.NUM_REPEAT_WHOLE_MEASUREMENT_KEYPAIRGEN;
+        testKeyPair(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_1024, "ALG_RSA LENGTH_RSA_1024", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testKeyPair(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1024, "ALG_RSA_CRT LENGTH_RSA_1024", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testKeyPair(JCConsts.KeyPair_ALG_DSA, JCConsts.KeyBuilder_LENGTH_DSA_512, "ALG_DSA LENGTH_DSA_512", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testKeyPair(JCConsts.KeyPair_ALG_EC_F2M, JCConsts.KeyBuilder_LENGTH_EC_F2M_163, "ALG_EC_F2M LENGTH_EC_F2M_163", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testKeyPair(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_LENGTH_EC_FP_192, "ALG_EC_FP LENGTH_EC_FP_192", numRepeatWholeOperation, numRepeatWholeMeasurement);
+
+        finalizeMeasurement();
+    }    
     void finalizeMeasurement() throws IOException {
         m_elapsedTimeWholeTest += System.currentTimeMillis();
         String message = "";

@@ -142,7 +142,8 @@ public class AlgTestJClient {
             m_SystemOutLogger.println("1 -> SUPPORTED ALGORITHMS\n    List all supported JC API algorithms (2-10 minutes)\n" + 
                               "2 -> PERFORMANCE TEST\n    Test all JC API methods with 256B data length (1-3 hours)\n" + 
                               "3 -> PERFORMANCE VARIABLE DATA\n    Performance test with 16/32/64/128/256/512B data lengths (2-10 hours)\n" + 
-                              "4 -> HARVEST RSA KEYS\n    Generate RSA keys on card, export to host and store to file (no limit)\n");
+                              "4 -> HARVEST RSA KEYS\n    Generate RSA keys on card, export to host and store to file (no limit)\n" + 
+                              "5 -> FINGERPRINT\n    Performance measurement of selected methiods for fingeprint (10 minutes)\n");
             m_SystemOutLogger.print("Test option number: ");
             Scanner sc = new Scanner(System.in);
             int answ = sc.nextInt();
@@ -175,75 +176,11 @@ public class AlgTestJClient {
                     testingPerformance.testPerformance(args, true, selectedTerminal);
                     break;
                 case 4:
-                    // BUGBUG: refactor this option code
-                    KeyHarvest keyHarvest = new KeyHarvest(m_SystemOutLogger);    
-                    // Remove new line character from stream after load integer as type of test
-                    sc.nextLine();       
-                    m_SystemOutLogger.print("Upload applet before harvest (y/n): ");
-                    String autoUploadBeforeString = sc.nextLine();
-                    boolean autoUploadBefore = false;
-                    if (autoUploadBeforeString.toLowerCase().equals("y")) autoUploadBefore = true;
-                    else if (!autoUploadBeforeString.toLowerCase().equals("n")) {
-                        m_SystemOutLogger.println("Wrong answer. Auto upload applet before harvest is disabled.");
-                    }
-                    
-                    m_SystemOutLogger.print("Bit length of key to generate (512, 1024 or 2048): ");
-                    String bitLengthString = sc.nextLine();
-                    int acceptedInputs[] = {512, 1024};
-                    short bitLength = JCConsts.KeyBuilder_LENGTH_RSA_512;
-                    try {
-                        int input = Integer.parseInt(bitLengthString);
-                        boolean isAcceptedInput = false;
-                        for (int acceptedInput : acceptedInputs) {
-                            if (input == acceptedInput) {
-                                isAcceptedInput = true;
-                                bitLength = (short)acceptedInput;
-                                break;
-                            }
-                        }
-                        if (!isAcceptedInput) {
-                            throw new NumberFormatException();
-                        }
-                    }
-                    catch(NumberFormatException ex) {
-                        m_SystemOutLogger.println("Wrong number. Bit length is set to "+bitLength+".");
-                    }
-                    
-                    m_SystemOutLogger.print("Use RSA harvest with CRT (y/n): ");
-                    String useCrtString = sc.nextLine();
-                    boolean useCrt = false;
-                    if (useCrtString.toLowerCase().equals("y")) useCrt = true;
-                    else if (!useCrtString.toLowerCase().equals("n")) {
-                        m_SystemOutLogger.println("Wrong answer. CRT is disabled.");
-                    }
-                    
-                    // Check if folder !card_uploaders is correctly set
-                    File fileCardUploadersFolder = new File(CardMngr.cardUploadersFolder);
-                    if (!fileCardUploadersFolder.exists()) {
-                        m_SystemOutLogger.println("Cannot find folder with card uploaders. Default folder: " + CardMngr.cardUploadersFolder);
-                        m_SystemOutLogger.print("Card uploaders folder path: ");
-                        String newPath = sc.nextLine();
-                        fileCardUploadersFolder = new File(CardMngr.cardUploadersFolder);
-                        // If new path is also incorrect
-                        if (!fileCardUploadersFolder.exists()) {
-                            System.err.println("Folder " + newPath + " does not exist. Cannot start gathering RSA keys.");
-                            return;
-                        }
-                        // Set new path to !card_uploaders folder
-                        CardMngr.cardUploadersFolder = newPath;
-                    } 
-                    
-                    m_SystemOutLogger.print("Number of keys to generate: ");
-                    String numOfKeysString = sc.nextLine();
-                    int numOfKeys = 10;
-                    try {
-                        numOfKeys = Integer.parseInt(numOfKeysString);
-                    }
-                    catch(NumberFormatException ex) {
-                        m_SystemOutLogger.println("Wrong number. Number of keys to generate is set to "+numOfKeys+".");
-                    }
-                    
-                    keyHarvest.gatherRSAKeys(autoUploadBefore, bitLength, useCrt, numOfKeys);
+                    performKeyHarvest();
+                    break;
+                case 5:
+                    selectedTerminal = selectTargetReader();
+                    testingPerformance.testPerformanceFingerprint(args, selectedTerminal);
                     break;
                 default:
                     // In this case, user pressed wrong key 
@@ -252,6 +189,78 @@ public class AlgTestJClient {
             }
         
         }
+    }
+    
+    static void performKeyHarvest() throws CardException {
+        KeyHarvest keyHarvest = new KeyHarvest(m_SystemOutLogger);
+        Scanner sc = new Scanner(System.in);
+        // Remove new line character from stream after load integer as type of test
+        sc.nextLine();
+        m_SystemOutLogger.print("Upload applet before harvest (y/n): ");
+        String autoUploadBeforeString = sc.nextLine();
+        boolean autoUploadBefore = false;
+        if (autoUploadBeforeString.toLowerCase().equals("y")) {
+            autoUploadBefore = true;
+        } else if (!autoUploadBeforeString.toLowerCase().equals("n")) {
+            m_SystemOutLogger.println("Wrong answer. Auto upload applet before harvest is disabled.");
+        }
+
+        m_SystemOutLogger.print("Bit length of key to generate (512, 1024 or 2048): ");
+        String bitLengthString = sc.nextLine();
+        int acceptedInputs[] = {512, 1024};
+        short bitLength = JCConsts.KeyBuilder_LENGTH_RSA_512;
+        try {
+            int input = Integer.parseInt(bitLengthString);
+            boolean isAcceptedInput = false;
+            for (int acceptedInput : acceptedInputs) {
+                if (input == acceptedInput) {
+                    isAcceptedInput = true;
+                    bitLength = (short) acceptedInput;
+                    break;
+                }
+            }
+            if (!isAcceptedInput) {
+                throw new NumberFormatException();
+            }
+        } catch (NumberFormatException ex) {
+            m_SystemOutLogger.println("Wrong number. Bit length is set to " + bitLength + ".");
+        }
+
+        m_SystemOutLogger.print("Use RSA harvest with CRT (y/n): ");
+        String useCrtString = sc.nextLine();
+        boolean useCrt = false;
+        if (useCrtString.toLowerCase().equals("y")) {
+            useCrt = true;
+        } else if (!useCrtString.toLowerCase().equals("n")) {
+            m_SystemOutLogger.println("Wrong answer. CRT is disabled.");
+        }
+
+        // Check if folder !card_uploaders is correctly set
+        File fileCardUploadersFolder = new File(CardMngr.cardUploadersFolder);
+        if (!fileCardUploadersFolder.exists()) {
+            m_SystemOutLogger.println("Cannot find folder with card uploaders. Default folder: " + CardMngr.cardUploadersFolder);
+            m_SystemOutLogger.print("Card uploaders folder path: ");
+            String newPath = sc.nextLine();
+            fileCardUploadersFolder = new File(CardMngr.cardUploadersFolder);
+            // If new path is also incorrect
+            if (!fileCardUploadersFolder.exists()) {
+                System.err.println("Folder " + newPath + " does not exist. Cannot start gathering RSA keys.");
+                return;
+            }
+            // Set new path to !card_uploaders folder
+            CardMngr.cardUploadersFolder = newPath;
+        }
+
+        m_SystemOutLogger.print("Number of keys to generate: ");
+        String numOfKeysString = sc.nextLine();
+        int numOfKeys = 10;
+        try {
+            numOfKeys = Integer.parseInt(numOfKeysString);
+        } catch (NumberFormatException ex) {
+            m_SystemOutLogger.println("Wrong number. Number of keys to generate is set to " + numOfKeys + ".");
+        }
+
+        keyHarvest.gatherRSAKeys(autoUploadBefore, bitLength, useCrt, numOfKeys);        
     }
     
     static CardTerminal selectTargetReader() {
@@ -285,6 +294,7 @@ public class AlgTestJClient {
                 int answ = sc.nextInt();
                 m_SystemOutLogger.println(String.format("%d", answ));
                 answ--; // is starting with 0 
+                // BUGBUG; verify allowed index range
                 selectedTerminal = terminalList.get(answ); 
             }
         }
