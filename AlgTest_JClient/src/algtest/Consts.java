@@ -12,8 +12,8 @@ public class Consts {
     
         
     public final static byte CLA_CARD_ALGTEST                  = (byte) 0xB0; 
-    public final static byte INS_CARD_GETVERSION               = (byte) 0x60;
-    public final static byte INS_CARD_RESET                    = (byte) 0x69;
+    public final static byte INS_CARD_GETVERSION               = (byte) 0xe1;
+    public final static byte INS_CARD_RESET                    = (byte) 0xe2;
     
     public final static byte INS_CARD_TESTSUPPORTEDMODES       = (byte) 0x70;
     public final static byte INS_CARD_TESTAVAILABLE_MEMORY     = (byte) 0x71;
