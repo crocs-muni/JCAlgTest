@@ -40,6 +40,7 @@ import AlgTest.JCAlgTestApplet;
 import AlgTest.JCConsts;
 import AlgTest.TestSettings;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javacard.framework.ISO7816;
 import javax.smartcardio.CardTerminal;
@@ -782,6 +783,63 @@ public class PerformanceTesting {
         return -1;
     }
     
+    double computeMedian(double[] rawMeasureList) {
+        return computeMedian(rawMeasureList, 0, rawMeasureList.length);
+    }
+    double computeMedian(double[] rawMeasureList, int startOffset, int length) {
+         // Compute median
+        
+        Arrays.sort(rawMeasureList);
+        
+        double median = 0;
+        if (length % 2 == 1) {
+            median = rawMeasureList[startOffset + (length / 2)]; // middle item
+        } else {
+            median = (rawMeasureList[startOffset + (length / 2)] + rawMeasureList[startOffset + (length / 2) + 1]) / 2; // avg of two middle items
+        }
+        
+        return median;
+    }
+    double[] computeMedianQuartils(double[] rawMeasureList) {
+         // Compute median
+
+        double median = computeMedian(rawMeasureList);
+        
+        double lowerQuartile = computeMedian(rawMeasureList, 0, rawMeasureList.length / 2);
+        double higherQuartile = computeMedian(rawMeasureList, rawMeasureList.length / 2, rawMeasureList.length / 2);            
+
+        double[] result = new double[3];
+        result[0] = median;
+        result[1] = lowerQuartile;
+        result[2] = higherQuartile;
+        
+        return result;
+    }    
+    
+    
+    double getAverageDropOutliers(double[] rawMeasureList) {
+        // Compute stats
+        double[] stats = computeMedianQuartils(rawMeasureList);
+        
+        double sumTimes = 0;
+        // Filter out outliers (Tukey's test)
+        double TukeyConst = 1.5;
+        double lowBound = stats[1] - TukeyConst * (stats[2] - stats[1]);
+        double highBound = stats[2] + TukeyConst * (stats[2] - stats[1]);
+        int numValid = 0;
+        for (double val : rawMeasureList) {
+            if (val < lowBound || val > highBound) {
+                // Outlier
+            }
+            else {
+                // valid value
+                sumTimes += val;
+                numValid++;
+            }
+        }
+        
+        return sumTimes / numValid;
+    }
     public double perftest_measure(byte appletCLA, byte appletPrepareINS, byte appletMeasureINS, TestSettings testSet, String info, StringBuilder result) throws IOException, Exception {
         return perftest_measure(appletCLA, appletPrepareINS, appletMeasureINS, testSet, info, result, 0);
     }
@@ -818,13 +876,15 @@ public class PerformanceTesting {
         //
         // Measure processing time without actually calling measured operation (testSet.numRepeatWholeOperation set to 0)
         //
+        double[] rawMeasureList = new double[NUM_BASELINE_CALIBRATION_RUNS];   
         if (testSet.bPerformBaselineMeasurement == Consts.TRUE) {
             short bkpNumRepeatWholeOperation = testSet.numRepeatWholeOperation;
             testSet.numRepeatWholeOperation = 0;
             message +=  "baseline measurements (ms):;";
-            for(int i = 0; i < NUM_BASELINE_CALIBRATION_RUNS;i++) {
+            for (int i = 0; i < NUM_BASELINE_CALIBRATION_RUNS;i++) {
                 m_cardManager.resetApplet(appletCLA, Consts.INS_CARD_RESET);
                 double overheadTime = m_cardManager.PerfTestCommand(appletCLA, appletMeasureINS, testSet, Consts.INS_CARD_RESET);
+                rawMeasureList[i] = overheadTime;
                 sumTimes += overheadTime;
                 timeStr = String.format("%.2f", overheadTime);
                 message +=  timeStr + ";" ;
@@ -832,7 +892,11 @@ public class PerformanceTesting {
                 if (overheadTime<minOverhead) minOverhead=overheadTime;
                 if (overheadTime>maxOverhead) maxOverhead=overheadTime;
             }
-            avgOverhead = sumTimes / NUM_BASELINE_CALIBRATION_RUNS;
+            
+            //double avgSimpleOverhead = sumTimes / NUM_BASELINE_CALIBRATION_RUNS; // Simple average with all measurements
+            avgOverhead = getAverageDropOutliers(rawMeasureList);
+            
+            
             message += "\nbaseline stats (ms):;avg:;" + String.format("%.2f", avgOverhead);
             message += ";min:;" + String.format("%.2f", minOverhead);
             message += ";max:;" + String.format("%.2f", maxOverhead);
