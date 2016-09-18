@@ -418,7 +418,7 @@ public class SingleModeTest {
         FileOutputStream file = cardManager.establishConnection(testClassSingleApdu, cardName, cardName + "_ALGSUPPORT_", selectedReader);
         
     
-        /* Checking for arguments. */
+        // Checking for arguments 
         if (args.length > 1){       // in case there are arguments from command line present
             if (Arrays.asList(args).contains(TEST_ALL_ALGORITHMS)){testAllAtOnce(file);}
             else if (Arrays.asList(args).contains(TEST_CLASS_CIPHER)){TestClassCipher(file);}
