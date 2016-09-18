@@ -208,8 +208,9 @@ public class AlgSupportTest {
        // ENDING 0xFF
        offset++;
        apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xFF;
-
-       apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (short) 240);
+       offset++;
+       
+       apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (short) (offset - ISO7816.OFFSET_CDATA));
     }
     
     void JCSystemInfo(APDU apdu) {

@@ -100,6 +100,15 @@ import javacardx.crypto.*;
     Key                 m_keyInv2 = null;
     PrivateKey          m_privateKey = null;
     PublicKey           m_publicKey = null;
+/* Potentially, we can pre-generate asymetric keys and later only set these to speedup initailizations of tests   
+    ECPrivateKey       m_ecprivate_key_PREGEN = null;
+    ECPublicKey        m_ecpublic_key_PREGEN = null;
+    RSAPrivateCrtKey   m_rsaprivatecrt_key_PREGEN = null;
+    RSAPublicKey       m_rsapubliccrt_key_PREGEN = null;
+    RSAPrivateKey      m_rsaprivate_key_PREGEN = null;
+    RSAPublicKey       m_rsapublic_key_PREGEN = null;
+*/    
+    
     
     Cipher              m_cipher = null;
     Signature           m_signatureSign = null;
@@ -1275,11 +1284,11 @@ import javacardx.crypto.*;
         m_testSettings.parse(apdu); 
 
         m_keyAgreement.init(m_ecprivate_key);   // initialize with private key
-        short wLen = m_ecpublic_key2.getW(m_ram1, (short) 0); // get valid public key (used as input from other party during generateSecret)
+        short wLen = m_ecpublic_key.getW(m_ram1, (short) 0); // get valid public key (used as input from other party during generateSecret)
         switch (m_testSettings.algorithmMethod) {
             case JCConsts.KeyAgreement_init:   
                 for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 
-                    m_privateKey = ((byte) (i % 2) == (byte) 0) ? (PrivateKey) m_key1 : (PrivateKey) m_key2; // alternate key1 and key2
+                    m_privateKey = ((byte) (i % 2) == (byte) 0) ? (PrivateKey) m_key2 : (PrivateKey) m_key1; // alternate key1 and key2
                     m_keyAgreement.init(m_privateKey);
                 } 
                 break;
