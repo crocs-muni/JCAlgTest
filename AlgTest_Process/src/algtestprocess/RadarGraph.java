@@ -57,7 +57,7 @@ public class RadarGraph {
 
         toFile += "\t<link href=\"../dist/css/bootstrap.min.css\" rel=\"stylesheet\">\n"
                 + "\t<link href=\"../assets/css/ie10-viewport-bug-workaround.css\" rel=\"stylesheet\">\n"
-                + "\t<script src=\"http://d3js.org/d3.v3.min.js\"></script>\n"
+                + "\t<script src=\"../assets/js/d3.v3.min.js\"></script>\n"
                 + "\t<script src=\"RadarChart.js\"></script>\n\n";
         
         toFile += " </head>\n\n";
@@ -70,7 +70,7 @@ public class RadarGraph {
         
     public static void endRadarHTML(FileOutputStream file) throws IOException {
         String toFile = "";
-        toFile += "\t<script type=\"text/javascript\" src=\"footer.js\"></script>\n"+
+        toFile += "\t<script type=\"text/javascript\" src=\"../footer.js\"></script>\n"+
                 "<a href=\"#\" class=\"back-to-top\"></a>" +
                 "\t<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js\"></script>\n" +
                 "\t<script>window.jQuery || document.write('<script src=\"../assets/js/vendor/jquery.min.js\"><\\/script>')</script>\n" +
