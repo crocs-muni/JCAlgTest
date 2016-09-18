@@ -384,7 +384,7 @@ public class SingleModeTest {
     
     public final static int CLOCKS_PER_SEC = 1000;
     
-    public final static byte[] RESET_APDU = {(byte) 0xb0, (byte) 0x69, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+    public final static byte[] RESET_APDU = {(byte) 0xb0, (byte) 0xe2, (byte) 0x00, (byte) 0x00, (byte) 0x00};
        
     static DirtyLogger m_SystemOutLogger = null;
     public SingleModeTest(DirtyLogger logger) {
