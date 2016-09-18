@@ -143,10 +143,16 @@ public class CardMngr {
     Card m_card = null;
     public static String cardUploadersFolder = System.getProperty("user.dir")+File.separator+"!card_uploaders";
     
-    public static final byte selectApplet[] = {
+    public static final byte selectAppletLegacy[] = {
         (byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00, (byte) 0x09, 
         (byte) 0x6D, (byte) 0x79, (byte) 0x70, (byte) 0x61, (byte) 0x63, (byte) 0x30, (byte) 0x30, (byte) 0x30, (byte) 0x31}; 
+    
+    public static final byte selectApplet[] = {
+        (byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00, (byte) 0x0a,
+        (byte) 0x4a, (byte) 0x43, (byte) 0x41, (byte) 0x6c, (byte) 0x67, (byte) 0x54, (byte) 0x65, (byte) 0x73, (byte) 0x74, (byte) 0x31};
 
+    
+    
     public static final String helpString = "This program can be used with following parameters:\r\n"
             + ALGTEST_MULTIPERAPDU + " -> for using classic AlgTest with multiple tests per APDU command\r\n"
             + ALGTEST_SINGLEPERAPDU + " -> for using AlgTest with single test per APDU command\r\n"
@@ -339,51 +345,33 @@ public class CardMngr {
     }
     
     public boolean ConnectToFirstCard(Class ClassToTest, StringBuilder selectedReader, StringBuilder selectedATR, StringBuilder usedProtocol) throws Exception {
-        boolean cardFound = false;        
+        boolean cardFound = false;       
         
-        if (ClassToTest != null) {
+        CardTerminal targetReader = null;
+        // TRY ALL READERS, FIND FIRST SELECTABLE
+        List<CardTerminal> terminalList = GetReaderList();
+        if (terminalList.isEmpty()) {
             m_SystemOutLogger.println("No terminals found");
-            m_SystemOutLogger.println("Creating simulator...");
-            MakeSim(ClassToTest);
-
-            m_SystemOutLogger.println("Simulator created.");
-            cardFound = true;
         }
         else {
-            // TRY ALL READERS, FIND FIRST SELECTABLE
-           List<CardTerminal> terminalList = GetReaderList();
-           if (terminalList.isEmpty()) { m_SystemOutLogger.println("No terminals found"); }
             //List numbers of Card readers        
             for (int i = 0; i < terminalList.size(); i++) {
                 m_SystemOutLogger.println(i + " : " + terminalList.get(i));
-                m_terminal = (CardTerminal) terminalList.get(i);
-                if (m_terminal.isCardPresent()) {
-                    m_card = m_terminal.connect("*");
-                    m_SystemOutLogger.println("card: " + m_card);
-                    m_channel = m_card.getBasicChannel();
-                        m_SystemOutLogger.println("Card Channel: " + m_channel.getChannelNumber());
-
-                    //reset the card
-                    ATR atr = m_card.getATR();
-                    m_SystemOutLogger.println(bytesToHex(atr.getBytes()));
-
-                    // SELECT APPLET
-                    ResponseAPDU resp = sendAPDU(selectApplet);
-                    if (resp.getSW() != 0x9000) {
-                        m_SystemOutLogger.println("No card found.");
-                    } else {
-                        // CARD FOUND
-                        cardFound = true;
-
-                        selectedATR.append(bytesToHex(m_card.getATR().getBytes()));
-                        selectedReader.append(terminalList.get(i).toString());
-                        usedProtocol.append(m_card.getProtocol());
-
-                        break;
-                    }
+                targetReader = (CardTerminal) terminalList.get(i);
+                if (targetReader.isCardPresent()) {     
+                    // Connect to this one
+                    break;
                 }
             }
         }
+
+        if (targetReader != null) {
+            cardFound = ConnectToCard(ClassToTest, targetReader, selectedReader, selectedATR, usedProtocol);
+        }
+        else {
+            cardFound = false;
+        }
+        
         return cardFound;        
     }
     
@@ -411,7 +399,7 @@ public class CardMngr {
         else {
             m_terminal = targetReader;
             if (m_terminal.isCardPresent()) {
-                for(int maxAttempts = 2; maxAttempts > 0; ) {
+                for (int maxAttempts = 2; maxAttempts > 0; ) {
                     maxAttempts--;
                     m_card = m_terminal.connect("*");
                     m_SystemOutLogger.println("card: " + m_card);
@@ -423,16 +411,21 @@ public class CardMngr {
                     m_SystemOutLogger.println(bytesToHex(atr.getBytes()));
 
                     // SELECT APPLET
+                    cardFound = false;
                     ResponseAPDU resp = sendAPDU(selectApplet);
-                    if (resp.getSW() != 0x9000) {
-                        m_SystemOutLogger.println("No JCAlgTest applet found.");
-                        UploadApplet();
-                        m_card.disconnect(false);
-                        continue;
-                    } else {
-                        // CARD FOUND
+                    if (resp.getSW() == 0x9000) {
                         cardFound = true;
+                    } else {
+                        m_SystemOutLogger.println("JCAlgTest applet with new AID not found - trying legacy AID...");
+                        resp = sendAPDU(selectAppletLegacy);
+                        if (resp.getSW() == 0x9000) {
+                            cardFound = true;
+                        } else {
+                            m_SystemOutLogger.println("No JCAlgTest applet found");
+                        }
+                    }
 
+                    if (cardFound) {
                         if (selectedATR != null) { selectedATR.append(bytesToHex(m_card.getATR().getBytes())); }
                         if (selectedReader != null) { selectedReader.append(m_terminal.toString()); }
                         if (usedProtocol != null) { usedProtocol.append(m_card.getProtocol()); }

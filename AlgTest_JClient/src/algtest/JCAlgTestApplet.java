@@ -34,8 +34,8 @@
  * @author Petr Svenda, Lenka Kunikova, Lukas Srom
  */
 /*
- * Package AID: 6D 79 70 61 63 6B 61 67 31 (6D797061636B616731)
- * Applet AID:  6D 79 70 61 63 30 30 30 31 (6D7970616330303031)
+ * Package AID: 4a 43 41 6c 67 54 65 73 74 (4a43416c6754657374)
+ * Applet AID:  4a 43 41 6c 67 54 65 73 74 31 (4a43416c675465737431)
  */
 package AlgTest;
 
@@ -55,6 +55,7 @@ public class JCAlgTestApplet extends javacard.framework.Applet
     // NOTE: when incrementing version, don't forget to update ALGTEST_JAVACARD_VERSION_CURRENT value
     /**
      * Version 1.7.0 (16.9.2016) 
+     * + applet/package AID change (now jcalgtest in hexa)
      * + added working support for ECDH KeyAgreement
      * + EC curves support tests and measurements now works
      * - fixed various issues with measurement of methods for asymmetric crypto algorithms
