@@ -222,7 +222,9 @@ public class PerformanceTesting {
 
         // Try to open and load list of already measured algorithms (if provided)
         // NOTE: measure always full: LoadAlreadyMeasuredAlgs(m_cardName);
-        String testInfo = getCurrentTestInfoString();
+        String testInfo = m_cardName + "___";
+        testInfo += "_FINGERPRINT_";
+        testInfo += System.currentTimeMillis() + "_";   // add unique time counter 
         
         m_elapsedTimeWholeTest = -System.currentTimeMillis();
         // Connect to card
@@ -275,9 +277,8 @@ public class PerformanceTesting {
         testAllSWAlgs(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
 
         // Several keypair generations to match time distribution
-        testAllKeyPairs(1, Consts.NUM_REPEAT_WHOLE_MEASUREMENT_KEYPAIRGEN);  
-        numRepeatWholeMeasurement = (short) 1;
-        numRepeatWholeOperation = Consts.NUM_REPEAT_WHOLE_MEASUREMENT_KEYPAIRGEN;
+        numRepeatWholeMeasurement = Consts.NUM_REPEAT_WHOLE_MEASUREMENT_KEYPAIRGEN;
+        numRepeatWholeOperation = (short) 1;
         testKeyPair(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_LENGTH_RSA_1024, "ALG_RSA LENGTH_RSA_1024", numRepeatWholeOperation, numRepeatWholeMeasurement);
         testKeyPair(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_LENGTH_RSA_1024, "ALG_RSA_CRT LENGTH_RSA_1024", numRepeatWholeOperation, numRepeatWholeMeasurement);
         testKeyPair(JCConsts.KeyPair_ALG_DSA, JCConsts.KeyBuilder_LENGTH_DSA_512, "ALG_DSA LENGTH_DSA_512", numRepeatWholeOperation, numRepeatWholeMeasurement);
@@ -1225,10 +1226,12 @@ public class PerformanceTesting {
                 case JCConsts.KeyBuilder_TYPE_RSA_PRIVATE:
                 case JCConsts.KeyBuilder_TYPE_RSA_PUBLIC:
                 case JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE:
-                    // For RSA, variable length perf test is not supported
-                    tableName = "For RSA, variable length perf test is not supported\n";
-                    m_perfResultsFile.write(tableName.getBytes());
-                    m_SystemOutLogger.print(tableName);
+                    // For RSA, variable length perf test is not supported - use given fixed length
+                    //m_perfResultsFile.write(tableName.getBytes());
+                    //m_SystemOutLogger.print(tableName);
+                    // Not supported => execute only with single data length
+                    testSet.dataLength1 = testDataLength;
+                    this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_doFinal()");
                     return;
             }    
             // Measurement of only doFinal operation
