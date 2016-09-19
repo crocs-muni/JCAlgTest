@@ -57,25 +57,12 @@ public class AlgSupportTest {
     
   
   
-    private   byte[]           m_ramArray = null;
-    private   byte[]           m_eepromArray1 = null;
-    private   byte[]           m_eepromArray2 = null;
-    private   byte[]           m_eepromArray3 = null;
-    private   byte[]           m_eepromArray4 = null;
-    private   byte[]           m_eepromArray5 = null;
-    private   byte[]           m_eepromArray6 = null;
-    private   byte[]           m_eepromArray7 = null;
-    private   byte[]           m_eepromArray8 = null;
-    private   RSAPublicKey     m_rsaPublicKey = null;
-    private   RSAPrivateCrtKey m_rsaPrivateKey = null;   
+    private byte[] m_ramArray = null;
+    private byte[] m_ramArray2 = null;
+
+    private RSAPublicKey       m_rsaPublicKey = null;
+    private RSAPrivateCrtKey   m_rsaPrivateKey = null;
   
-    private   Key[]            m_keyArray1 = null;
-    private   Key[]            m_keyArray2 = null;
-    private   Key[]            m_keyArray3 = null;
-    private   Key[]            m_keyArray4 = null;
-    private   Key[]            m_keyArray5 = null;
-    private   Key[]            m_keyArray6 = null;
-    private   Key[]            m_keyArray7 = null;
     
     // for class 'javacard.security.KeyAgreement'
     public static final byte ALG_EC_SVDP_DH = 1;
@@ -96,9 +83,6 @@ public class AlgSupportTest {
     public final static short SW_ALG_OPS_NOT_SUPPORTED     = (short) 0x6002;
     public final static short SW_ALG_TYPE_UNKNOWN          = (short) 0x6003;
     
-    public final static short RAM1_ARRAY_LENGTH = (short) 600;
-    public final static short RAM2_ARRAY_LENGTH = (short) 16;
-    
     
     /* Auxiliary variables to choose class - used in APDU as P1 byte. */
     public static final byte CLASS_CIPHER          = 0x11;
@@ -110,7 +94,10 @@ public class AlgSupportTest {
     public static final byte CLASS_KEYPAIR         = 0x19;
     public static final byte CLASS_KEYBUILDER      = 0x20;
 
-    AlgSupportTest() { }
+    AlgSupportTest(byte[] auxRAMArray, byte[] auxRAMArray2) { 
+        m_ramArray = auxRAMArray;
+        m_ramArray2 = auxRAMArray2;
+    }
 
     public byte process(APDU apdu) throws ISOException {
         byte bProcessed = 0;
@@ -179,6 +166,12 @@ public class AlgSupportTest {
            case (byte) 0x1C: { // no break
              try {
                offset++;m_keyPair1 = new KeyPair(algorithmClass, algorithmParam1);
+               
+               if ((algorithmClass == KeyPair.ALG_EC_FP) || (algorithmClass == KeyPair.ALG_EC_F2M)) {
+                   // Key pair for ECC need to be initialized by proper curve for some cards in some cases
+                   EC_Consts.ensureInitializedECCurve(algorithmClass, algorithmParam1, m_keyPair1, m_ramArray);
+               }
+               
                m_keyPair1.genKeyPair();
                apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
              }
@@ -199,11 +192,11 @@ public class AlgSupportTest {
        // ENDING 0xFF
        offset++;
        apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xFF;
-
-       apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (short) 240);
+       offset++;
+       
+       apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, offset);
     }
     
-
     void JCSystemInfo(APDU apdu) {
        byte[]    apdubuf = apdu.getBuffer();
        apdu.setIncomingAndReceive();
@@ -216,7 +209,10 @@ public class AlgSupportTest {
 
         Util.setShort(apdubuf, offset, JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_PERSISTENT));
         offset = (short)(offset + 2);
-        Util.setShort(apdubuf, offset, JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_RESET));
+        short ramMemorySize = JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_RESET);
+        ramMemorySize += (short) m_ramArray.length; // This array is allocated by this applet and therefore consumed some space
+        ramMemorySize += (short) m_ramArray2.length; // This array is allocated by this applet and therefore consumed some space
+        Util.setShort(apdubuf, offset, ramMemorySize);
         offset = (short)(offset + 2);
         Util.setShort(apdubuf, offset, JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT));
         offset = (short)(offset + 2);

@@ -41,6 +41,29 @@ public class TestSettings {
     public byte        P2 = (byte) 0;                              // P2 byte from APDU header
     public byte[]      inData = null; 
     
+    public TestSettings duplicate() {
+        TestSettings clone = new TestSettings();
+        
+        clone.classType = this.classType;                     
+        clone.algorithmSpecification = this.algorithmSpecification;        
+        clone.keyClass = this.keyClass;                      
+        clone.keyType = this.keyType;                       
+        clone.keyLength = this.keyLength;                     
+        clone.algorithmMethod = this.algorithmMethod;               
+        clone.dataLength1 = this.dataLength1;                   
+        clone.dataLength2 = this.dataLength2;                  
+        clone.initMode = this.initMode;                     
+        clone.numRepeatWholeOperation = this.numRepeatWholeOperation;        
+        clone.numRepeatSubOperation = this.numRepeatSubOperation;          
+        clone.numRepeatWholeMeasurement = this.numRepeatWholeMeasurement;      
+
+        // Values below are NOT serialized into buffer
+        clone.bPerformBaselineMeasurement = this.bPerformBaselineMeasurement; 
+        clone.P1 = this.P1;
+        clone.P2 = this.P2;
+        
+        return clone;
+    }
     public void clear() {
         classType = -1;               
         algorithmSpecification = -1;        

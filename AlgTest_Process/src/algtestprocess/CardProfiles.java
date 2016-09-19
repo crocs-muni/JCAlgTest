@@ -1,5 +1,5 @@
 /*  
-    Copyright (c) 2008-2014 Petr Svenda <petr@svenda.com>
+    Copyright (c) 2008-2016 Petr Svenda <petr@svenda.com>
 
      LICENSE TERMS
 
@@ -27,7 +27,7 @@
      and/or fitness for purpose.
 
     Please, report any bugs to author <petr@svenda.com>
-/**/
+*/
 
 package algtestprocess;
 

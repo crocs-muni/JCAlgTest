@@ -21,18 +21,21 @@ public class CardRunner implements Runnable {
     boolean m_uploadBeforeStart;
     boolean m_useCrt;
     
-    public CardRunner(CardTerminal cardTerminal, byte dataLength, int numRepeats, boolean uploadBeforeStart, short bitLength, boolean useCrt) {
+    DirtyLogger m_SystemOutLogger = null;
+    
+    public CardRunner(CardTerminal cardTerminal, byte dataLength, int numRepeats, boolean uploadBeforeStart, short bitLength, boolean useCrt, DirtyLogger logger) {
         m_cardTerminal = cardTerminal;
         m_dataLength = dataLength;
         m_numRepeats = numRepeats;
         m_bitLength = bitLength;
         m_uploadBeforeStart = uploadBeforeStart;
         m_useCrt = useCrt;
+        m_SystemOutLogger = logger;
     }
     
      @Override
      public void run() {
-         CardMngr cardMngr = new CardMngr();
+         CardMngr cardMngr = new CardMngr(m_SystemOutLogger);
          // cardMngr.m_verbose = false;
          try {
              FileOutputStream file = cardMngr.establishConnection(null, "", m_cardTerminal.getName(), m_cardTerminal);
@@ -42,7 +45,7 @@ public class CardRunner implements Runnable {
              }
          }
          catch (Exception ex) {
-             System.out.println("Card in terminal "+m_cardTerminal.getName()+" stoped with exception: "+ex.getMessage());
+             m_SystemOutLogger.println("Card in terminal "+m_cardTerminal.getName()+" stoped with exception: "+ex.getMessage());
          }
      }
 }

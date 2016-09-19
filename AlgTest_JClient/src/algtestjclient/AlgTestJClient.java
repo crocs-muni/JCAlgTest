@@ -47,19 +47,18 @@ import javax.smartcardio.CardTerminal;
  * @author petr
  */
 public class AlgTestJClient {
-    //static CardMngr cardManager = new CardMngr();
-    //static SingleModeTest singleTest = new SingleModeTest();
-    //static PerformanceTesting testingPerformance = new PerformanceTesting();
-    //static KeyHarvest keyHarvest = new KeyHarvest();
-    
-    
     /* Arguments for choosing which AlgTest version to run. */
     public static final String ALGTEST_MULTIPERAPDU = "AT_MULTIPERAPDU";        // for 'old' AlgTest
     public static final String ALGTEST_SINGLEPERAPDU = "AT_SINGLEPERAPDU";      // for 'New' AlgTest
     public static final String ALGTEST_PERFORMANCE = "AT_PERFORMANCE";          // for performance testing
     
     /**
-     * Version 1.6.0 (19.07.5)
+     * Version 1.7.0 (19.09.2016) 
+     * + Updates to support EC and asym. key operations properly
+     */
+    public final static String ALGTEST_JCLIENT_VERSION_1_7_0 = "1.7.0";
+    /**
+     * Version 1.6.0 (19.07.2015)
      * + Many updates, performance tests
      */
     public final static String ALGTEST_JCLIENT_VERSION_1_6_0 = "1.6.0";        
@@ -96,27 +95,35 @@ public class AlgTestJClient {
     /**
      * Current version
      */
-    public final static String ALGTEST_JCLIENT_VERSION = ALGTEST_JCLIENT_VERSION_1_6_0;
+    public final static String ALGTEST_JCLIENT_VERSION = ALGTEST_JCLIENT_VERSION_1_7_0;
     
     public final static int STAT_OK = 0;    
     /**
      * @param args the command line arguments
      */
+    
+    static DirtyLogger m_SystemOutLogger = null;
     public static void main(String[] args) throws IOException, Exception {
+        String logFileName = String.format("ALGTEST_log_%d.log", System.currentTimeMillis()); 
+        FileOutputStream    systemOutLogger = new FileOutputStream(logFileName);
+        m_SystemOutLogger = new DirtyLogger(systemOutLogger, true);
+        
+        m_SystemOutLogger.println("\n-----------------------------------------------------------------------   ");
+        m_SystemOutLogger.println("JCAlgTest - comprehensive tool for JavaCard smart card testing.");
+        m_SystemOutLogger.println("Visit jcalgtest.org for results from 50+ cards. CRoCS.cz lab 2007-2016.");
+        m_SystemOutLogger.println("-----------------------------------------------------------------------\n");
         // If arguments are present. 
         if(args.length > 0){
             if (args[0].equals(ALGTEST_MULTIPERAPDU)){
-                CardMngr cardManager = new CardMngr();
+                CardMngr cardManager = new CardMngr(m_SystemOutLogger);
                 cardManager.testClassic(args, 0, null);
-            }  // 0 means ask for every alg to test
-                                                    // possibly change for constant?
-                                                    // or maybe change for 1 and test all algs at once?
+            }  
             else if (args[0].equals(ALGTEST_SINGLEPERAPDU)){
-                SingleModeTest singleTest = new SingleModeTest();
+                SingleModeTest singleTest = new SingleModeTest(m_SystemOutLogger);
                 singleTest.TestSingleAlg(args, null);
             }
             else if (args[0].equals(ALGTEST_PERFORMANCE)){
-                PerformanceTesting testingPerformance = new PerformanceTesting();
+                PerformanceTesting testingPerformance = new PerformanceTesting(m_SystemOutLogger);
                 testingPerformance.testPerformance(args, false, null);
             }
             // In case of incorect parameter, program will report error and shut down.
@@ -128,24 +135,26 @@ public class AlgTestJClient {
         // If there are no arguments present
         else {   
             CardTerminal selectedTerminal = null;
-            PerformanceTesting testingPerformance = new PerformanceTesting();
-            
-            System.out.println("Choose which type of AlgTest you want to use.");
-            System.out.println("NOTE that you need to have installed coresponding applet on your card! (Not true if you are using simulator.)");
-            System.out.append("1 -> List of supported algorithms (2-10 minutes, algorithm detected if object allocation succeds)\n" + 
-                              "2 -> Performance Testing (1-3 hours, every method (e.g., doFinal) of given class (e.g., Cipher) of given algorithm is tested for performance (usually over 256 bytes if applicable)\n" + 
-                              "3 -> Performance Testing variable data length (2-10 hours, same as option 2, but lengths {16, 32, 64, 128, 256 and 512} bytes are tested)\n" + 
-                              "4 -> Harvest RSA keys (unlimited, on-card generated keypairs are exported and stored in file)\n");
-            
+            PerformanceTesting testingPerformance = new PerformanceTesting(m_SystemOutLogger);
+            m_SystemOutLogger.println("NOTE: JCAlgTest applet (AlgTest.cap) must be already installed on tested card.");
+            m_SystemOutLogger.println("The results are stored in CSV files. Use JCAlgProcess for HTML conversion.");
+            m_SystemOutLogger.println("CHOOSE test you want to run:");
+            m_SystemOutLogger.println("1 -> SUPPORTED ALGORITHMS\n    List all supported JC API algorithms (2-10 minutes)\n" + 
+                              "2 -> PERFORMANCE TEST\n    Test all JC API methods with 256B data length (1-3 hours)\n" + 
+                              "3 -> PERFORMANCE VARIABLE DATA\n    Performance test with 16/32/64/128/256/512B data lengths (2-10 hours)\n" + 
+                              "4 -> HARVEST RSA KEYS\n    Generate RSA keys on card, export to host and store to file (no limit)\n" + 
+                              "5 -> FINGERPRINT\n    Performance measurement of selected methods for fingeprint (10 minutes)\n");
+            m_SystemOutLogger.print("Test option number: ");
             Scanner sc = new Scanner(System.in);
             int answ = sc.nextInt();
+            m_SystemOutLogger.println(String.format("%d", answ));
             switch (answ){
 /*  not supported anymore              
                 // In this case, classic version of AlgTest is used
                 case 1:
-                    System.out.println("\n\n#########################");
-                    System.out.println("\n\nQ: Do you like to test all supported algorithms or be asked separately for every class? Separate questions help when testing all algorithms at once will provide incorrect answers due too many internal allocation of cryptographic objects (e.g., KeyBuilder class).");
-                    System.out.println("Type \"y\" for test all algorithms, \"n\" for asking for every class separately: ");	
+                    m_logger.println("\n\n#########################");
+                    m_logger.println("\n\nQ: Do you like to test all supported algorithms or be asked separately for every class? Separate questions help when testing all algorithms at once will provide incorrect answers due too many internal allocation of cryptographic objects (e.g., KeyBuilder class).");
+                    m_logger.println("Type \"y\" for test all algorithms, \"n\" for asking for every class separately: ");	
                     answ = sc.nextInt();
                     CardMngr cardManager = new CardMngr();
                     cardManager.testClassic(args, answ);
@@ -154,7 +163,7 @@ public class AlgTestJClient {
                 // In this case, SinglePerApdu version of AlgTest is used.
                 case 1:
                     selectedTerminal = selectTargetReader();
-                    SingleModeTest singleTest = new SingleModeTest();
+                    SingleModeTest singleTest = new SingleModeTest(m_SystemOutLogger);
                     singleTest.TestSingleAlg(args, selectedTerminal);
                     break;
                 // In this case Performance tests are used. 
@@ -167,78 +176,14 @@ public class AlgTestJClient {
                     testingPerformance.testPerformance(args, true, selectedTerminal);
                     break;
                 case 4:
-                    KeyHarvest keyHarvest = new KeyHarvest();    
-                    // Remove new line character from stream after load integer as type of test
-                    sc.nextLine();       
-                    System.out.print("Upload applet before harvest (y/n): ");
-                    String autoUploadBeforeString = sc.nextLine();
-                    boolean autoUploadBefore = false;
-                    if (autoUploadBeforeString.toLowerCase().equals("y")) autoUploadBefore = true;
-                    else if (!autoUploadBeforeString.toLowerCase().equals("n")) {
-                        System.out.println("Wrong answer. Auto upload applet before harvest is disabled.");
-                    }
-                    
-                    System.out.print("Bit length of key to generate (512, 1024 or 2048): ");
-                    String bitLengthString = sc.nextLine();
-                    int acceptedInputs[] = {512, 1024};
-                    short bitLength = JCConsts.KeyBuilder_LENGTH_RSA_512;
-                    try {
-                        int input = Integer.parseInt(bitLengthString);
-                        boolean isAcceptedInput = false;
-                        for (int acceptedInput : acceptedInputs) {
-                            if (input == acceptedInput) {
-                                isAcceptedInput = true;
-                                bitLength = (short)acceptedInput;
-                                break;
-                            }
-                        }
-                        if (!isAcceptedInput) {
-                            throw new NumberFormatException();
-                        }
-                    }
-                    catch(NumberFormatException ex) {
-                        System.out.println("Wrong number. Bit length is set to "+bitLength+".");
-                    }
-                    
-                    System.out.print("Use RSA harvest with CRT (y/n): ");
-                    String useCrtString = sc.nextLine();
-                    boolean useCrt = false;
-                    if (useCrtString.toLowerCase().equals("y")) useCrt = true;
-                    else if (!useCrtString.toLowerCase().equals("n")) {
-                        System.out.println("Wrong answer. CRT is disabled.");
-                    }
-                    
-                    // Check if folder !card_uploaders is correctly set
-                    File fileCardUploadersFolder = new File(CardMngr.cardUploadersFolder);
-                    if (!fileCardUploadersFolder.exists()) {
-                        System.out.println("Cannot find folder with card uploaders. Default folder: " + CardMngr.cardUploadersFolder);
-                        System.out.print("Card uploaders folder path: ");
-                        String newPath = sc.nextLine();
-                        fileCardUploadersFolder = new File(CardMngr.cardUploadersFolder);
-                        // If new path is also incorrect
-                        if (!fileCardUploadersFolder.exists()) {
-                            System.err.println("Folder " + newPath + " does not exist. Cannot start gathering RSA keys.");
-                            return;
-                        }
-                        // Set new path to !card_uploaders folder
-                        CardMngr.cardUploadersFolder = newPath;
-                    } 
-                    
-                    System.out.print("Number of keys to generate: ");
-                    String numOfKeysString = sc.nextLine();
-                    int numOfKeys = 10;
-                    try {
-                        numOfKeys = Integer.parseInt(numOfKeysString);
-                    }
-                    catch(NumberFormatException ex) {
-                        System.out.println("Wrong number. Number of keys to generate is set to "+numOfKeys+".");
-                    }
-                  
-                    
-                    keyHarvest.gatherRSAKeys(autoUploadBefore, bitLength, useCrt, numOfKeys);
+                    performKeyHarvest();
                     break;
-                // In this case, user pressed wrong key 
+                case 5:
+                    selectedTerminal = selectTargetReader();
+                    testingPerformance.testPerformanceFingerprint(args, selectedTerminal);
+                    break;
                 default:
+                    // In this case, user pressed wrong key 
                     System.err.println("Incorrect parameter!");
                 break;
             }
@@ -246,12 +191,84 @@ public class AlgTestJClient {
         }
     }
     
+    static void performKeyHarvest() throws CardException {
+        KeyHarvest keyHarvest = new KeyHarvest(m_SystemOutLogger);
+        Scanner sc = new Scanner(System.in);
+        // Remove new line character from stream after load integer as type of test
+        sc.nextLine();
+        m_SystemOutLogger.print("Upload applet before harvest (y/n): ");
+        String autoUploadBeforeString = sc.nextLine();
+        boolean autoUploadBefore = false;
+        if (autoUploadBeforeString.toLowerCase().equals("y")) {
+            autoUploadBefore = true;
+        } else if (!autoUploadBeforeString.toLowerCase().equals("n")) {
+            m_SystemOutLogger.println("Wrong answer. Auto upload applet before harvest is disabled.");
+        }
+
+        m_SystemOutLogger.print("Bit length of key to generate (512, 1024 or 2048): ");
+        String bitLengthString = sc.nextLine();
+        int acceptedInputs[] = {512, 1024};
+        short bitLength = JCConsts.KeyBuilder_LENGTH_RSA_512;
+        try {
+            int input = Integer.parseInt(bitLengthString);
+            boolean isAcceptedInput = false;
+            for (int acceptedInput : acceptedInputs) {
+                if (input == acceptedInput) {
+                    isAcceptedInput = true;
+                    bitLength = (short) acceptedInput;
+                    break;
+                }
+            }
+            if (!isAcceptedInput) {
+                throw new NumberFormatException();
+            }
+        } catch (NumberFormatException ex) {
+            m_SystemOutLogger.println("Wrong number. Bit length is set to " + bitLength + ".");
+        }
+
+        m_SystemOutLogger.print("Use RSA harvest with CRT (y/n): ");
+        String useCrtString = sc.nextLine();
+        boolean useCrt = false;
+        if (useCrtString.toLowerCase().equals("y")) {
+            useCrt = true;
+        } else if (!useCrtString.toLowerCase().equals("n")) {
+            m_SystemOutLogger.println("Wrong answer. CRT is disabled.");
+        }
+
+        // Check if folder !card_uploaders is correctly set
+        File fileCardUploadersFolder = new File(CardMngr.cardUploadersFolder);
+        if (!fileCardUploadersFolder.exists()) {
+            m_SystemOutLogger.println("Cannot find folder with card uploaders. Default folder: " + CardMngr.cardUploadersFolder);
+            m_SystemOutLogger.print("Card uploaders folder path: ");
+            String newPath = sc.nextLine();
+            fileCardUploadersFolder = new File(CardMngr.cardUploadersFolder);
+            // If new path is also incorrect
+            if (!fileCardUploadersFolder.exists()) {
+                System.err.println("Folder " + newPath + " does not exist. Cannot start gathering RSA keys.");
+                return;
+            }
+            // Set new path to !card_uploaders folder
+            CardMngr.cardUploadersFolder = newPath;
+        }
+
+        m_SystemOutLogger.print("Number of keys to generate: ");
+        String numOfKeysString = sc.nextLine();
+        int numOfKeys = 10;
+        try {
+            numOfKeys = Integer.parseInt(numOfKeysString);
+        } catch (NumberFormatException ex) {
+            m_SystemOutLogger.println("Wrong number. Number of keys to generate is set to " + numOfKeys + ".");
+        }
+
+        keyHarvest.gatherRSAKeys(autoUploadBefore, bitLength, useCrt, numOfKeys);        
+    }
+    
     static CardTerminal selectTargetReader() {
         // Test available card - if more present, let user to select one
         List<CardTerminal> terminalList = CardMngr.GetReaderList(true);
         CardTerminal selectedTerminal = null;
         if (terminalList.isEmpty()) {
-            System.out.println("ERROR: No reader detected. Please check your reader connection");
+            m_SystemOutLogger.println("ERROR: No reader detected. Please check your reader connection");
             return null;
         }
         else {
@@ -259,22 +276,25 @@ public class AlgTestJClient {
                 selectedTerminal = terminalList.get(0); // return first and only reader
             }
             else {
-                int terminalIndex = 0;
+                int terminalIndex = 1;
                 // Let user select target terminal
                 for (CardTerminal terminal : terminalList) {
                     Card card;
                     try {
                         card = terminal.connect("*");
                         ATR atr = card.getATR();
-                        System.out.println(terminalIndex + " : " + terminal.getName() + " - " + CardMngr.bytesToHex(atr.getBytes()));    
+                        m_SystemOutLogger.println(terminalIndex + " : " + terminal.getName() + " - " + CardMngr.bytesToHex(atr.getBytes()));    
                         terminalIndex++;
                     } catch (CardException ex) {
                         Logger.getLogger(AlgTestJClient.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }   
-                System.out.println("Select index of target reader you like to use 0.." + (terminalIndex - 1));
+                m_SystemOutLogger.print("Select index of target reader you like to use 1.." + (terminalIndex - 1) + ": ");
                 Scanner sc = new Scanner(System.in);
                 int answ = sc.nextInt();
+                m_SystemOutLogger.println(String.format("%d", answ));
+                answ--; // is starting with 0 
+                // BUGBUG; verify allowed index range
                 selectedTerminal = terminalList.get(answ); 
             }
         }

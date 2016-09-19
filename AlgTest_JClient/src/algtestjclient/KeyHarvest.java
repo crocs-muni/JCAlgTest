@@ -41,8 +41,15 @@ import javax.smartcardio.CardTerminal;
 import javax.smartcardio.TerminalFactory;
 
 public class KeyHarvest {
-    public static CardMngr cardManager = new CardMngr();
+    public static CardMngr cardManager = null;
     public static FileOutputStream file;
+    
+    DirtyLogger m_SystemOutLogger = null;
+
+    public KeyHarvest(DirtyLogger logger) {
+        m_SystemOutLogger = logger;
+        cardManager = new CardMngr(m_SystemOutLogger);
+    }
     
     void gatherRSAKeys(boolean autoUploadBefore, short bitLength, boolean useCrt, int numOfKeys) throws CardException {
 	    //
@@ -51,32 +58,32 @@ public class KeyHarvest {
             TerminalFactory factory = TerminalFactory.getDefault();
             List<CardTerminal> readersList = factory.terminals().list();
             ArrayList<CardTerminal> readersWithCardList = new ArrayList();
-            if (readersList.isEmpty()) { System.out.println("No terminals found"); }
+            if (readersList.isEmpty()) { m_SystemOutLogger.println("No terminals found"); }
             for (int i = 0; i < readersList.size(); i++) {
                 CardTerminal terminal = (CardTerminal) readersList.get(i);
                 if (terminal.isCardPresent()) {
                     // store readers with cards
                     readersWithCardList.add(readersList.get(i));
-                    System.out.println(i + " : " + readersList.get(i) + " : card present");
+                    m_SystemOutLogger.println(i + " : " + readersList.get(i) + " : card present");
                 }
                 else {
-                    System.out.println(i + " : " + readersList.get(i) + " : card NOT present");
+                    m_SystemOutLogger.println(i + " : " + readersList.get(i) + " : card NOT present");
                 }
             }
         
-            System.out.println("TOTAL cards: " + readersWithCardList.size());
+            m_SystemOutLogger.println("TOTAL cards: " + readersWithCardList.size());
             
 	    // Run separate thread for every reader / card		
             ExecutorService executor = Executors.newCachedThreadPool();
   
             for (int i = 0; i < readersWithCardList.size(); i++) {
-                executor.execute(new CardRunner((CardTerminal) readersWithCardList.get(i), (byte) 0, numOfKeys, autoUploadBefore, bitLength, useCrt));
+                executor.execute(new CardRunner((CardTerminal) readersWithCardList.get(i), (byte) 0, numOfKeys, autoUploadBefore, bitLength, useCrt, m_SystemOutLogger));
             }
         
             executor.shutdown();
             // Wait until all threads are finish
             while (!executor.isTerminated()) {}
-            System.out.println("\nFinished all threads");           
+            m_SystemOutLogger.println("\nFinished all threads");           
     }
     
 }

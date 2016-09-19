@@ -50,7 +50,7 @@ import javax.smartcardio.ResponseAPDU;
  * @version 1.0
  */
 public class SingleModeTest {
-    public static CardMngr cardManager = new CardMngr();
+    public static CardMngr cardManager = null;
     
     /* Argument constants for choosing algorithm to test. */
     public static final String TEST_ALL_ALGORITHMS = "ALL_ALGS";
@@ -384,8 +384,14 @@ public class SingleModeTest {
     
     public final static int CLOCKS_PER_SEC = 1000;
     
-    public final static byte[] RESET_APDU = {(byte) 0xb0, (byte) 0x69, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+    public final static byte[] RESET_APDU = {(byte) 0xb0, (byte) 0xe2, (byte) 0x00, (byte) 0x00, (byte) 0x00};
        
+    static DirtyLogger m_SystemOutLogger = null;
+    public SingleModeTest(DirtyLogger logger) {
+        m_SystemOutLogger = logger;
+        cardManager = new CardMngr(m_SystemOutLogger);        
+    }
+    
     /**
      * Method containing 'menu'.
      * Calls all other methods in this class.
@@ -402,8 +408,9 @@ public class SingleModeTest {
         Scanner br = new Scanner(System.in);  
         String answ = "";   // When set to 0, program will ask for each algorithm to test.
                 
-        System.out.println("Specify type of your card (e.g., NXP JCOP CJ2A081):");
+        m_SystemOutLogger.print("Specify type of your card (e.g., NXP JCOP CJ2A081): ");
         String cardName = br.next();
+        m_SystemOutLogger.println(String.format("%s", cardName));
         cardName += br.nextLine();
         if (cardName.isEmpty()) {
             cardName = "noname";
@@ -411,7 +418,7 @@ public class SingleModeTest {
         FileOutputStream file = cardManager.establishConnection(testClassSingleApdu, cardName, cardName + "_ALGSUPPORT_", selectedReader);
         
     
-        /* Checking for arguments. */
+        // Checking for arguments 
         if (args.length > 1){       // in case there are arguments from command line present
             if (Arrays.asList(args).contains(TEST_ALL_ALGORITHMS)){testAllAtOnce(file);}
             else if (Arrays.asList(args).contains(TEST_CLASS_CIPHER)){TestClassCipher(file);}
@@ -440,7 +447,7 @@ public class SingleModeTest {
             testAllAtOnce(file);
             elapsedTimeWholeTest += System.currentTimeMillis();
             String message = "\n\nTotal test time:; " + elapsedTimeWholeTest / 1000 + " seconds."; 
-            System.out.println(message);
+            m_SystemOutLogger.println(message);
             file.write(message.getBytes());
 
             CloseFile(file);
@@ -448,7 +455,7 @@ public class SingleModeTest {
 /*            
             
             // in case there are no arguments from command line present
-            System.out.println("Do you want to test all possible algorithms at once? (y/n)");
+            m_logger.println("Do you want to test all possible algorithms at once? (y/n)");
             br.reset();
             answ = br.nextLine();       
         
@@ -456,67 +463,67 @@ public class SingleModeTest {
             switch (answ) {
                 // Program will ask for every class. 
                 case "n":
-                    System.out.println("Do you want to test algorithms from class 'Cipher'? (y/n)");
+                    m_logger.println("Do you want to test algorithms from class 'Cipher'? (y/n)");
                         answ = br.nextLine();
                         if (answ.equals("y")){TestClassCipher(file);}
                         else{ClassSkipped(file, "javacardx.crypto.Cipher");}
 
-                    System.out.println("Do you want to test algorithms from class 'Signature'? (y/n)");
+                    m_logger.println("Do you want to test algorithms from class 'Signature'? (y/n)");
                         answ = br.nextLine();
                         if (answ.equals("y")){TestClassSignature(file);}
                         else{ClassSkipped(file, "javacard.security.Signature");}
 
-                    System.out.println("Do you want to test algorithms from class 'MessageDigest'? (y/n)");
+                    m_logger.println("Do you want to test algorithms from class 'MessageDigest'? (y/n)");
                         answ = br.nextLine();
                         if (answ.equals("y")){TestClassMessageDigest(file);}
                         else{ClassSkipped(file, "javacard.security.MessageDigest");}
 
-                    System.out.println("Do you want to test algorithms from class 'RandomData'? (y/n)");
+                    m_logger.println("Do you want to test algorithms from class 'RandomData'? (y/n)");
                         answ = br.nextLine();
                         if (answ.equals("y")){TestClassRandomData(file);}
                         else{ClassSkipped(file, "javacard.security.RandomData");}
 
-                    System.out.println("Do you want to test algorithms from class 'KeyBuilder'? (y/n)");
+                    m_logger.println("Do you want to test algorithms from class 'KeyBuilder'? (y/n)");
                         answ = br.nextLine();
                         if (answ.equals("y")){TestClassKeyBuilder(file);}
                         else{ClassSkipped(file, "javacard.security.KeyBuilder");}
 
-                    System.out.println("Do you want to test algorithms from class 'KeyAgreement'? (y/n)");
+                    m_logger.println("Do you want to test algorithms from class 'KeyAgreement'? (y/n)");
                         answ = br.nextLine();
                         if (answ.equals("y")){TestClassKeyAgreement(file);}
                         else{ClassSkipped(file, "javacard.security.KeyAgreement");}
 
-                    System.out.println("Do you want to test algorithms from class 'Checksum'? (y/n)");
+                    m_logger.println("Do you want to test algorithms from class 'Checksum'? (y/n)");
                         answ = br.nextLine();
                         if (answ.equals("y")){TestClassChecksum(file);}
                         else{ClassSkipped(file, "javacard.security.Checksum");}
 
-                    System.out.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_RSA on-card generation'? (y/n)");
+                    m_logger.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_RSA on-card generation'? (y/n)");
                         answ = br.nextLine();
                         if (answ.equals("y")){TestClassKeyPair_ALG_RSA(file);}
                         else{ClassSkipped(file, "javacard.security.KeyPair ALG_RSA on-card generation");}
 
-                    System.out.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_RSA_CRT on-card generation'? (y/n)");
+                    m_logger.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_RSA_CRT on-card generation'? (y/n)");
                         answ = br.nextLine();
                         if (answ.equals("y")){TestClassKeyPair_ALG_RSA_CRT(file);}
                         else{ClassSkipped(file, "javacard.security.KeyPair ALG_RSA_CRT on-card generation");}   
 
-                    System.out.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_DSA on-card generation'? (y/n)");
+                    m_logger.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_DSA on-card generation'? (y/n)");
                         answ = br.nextLine();
                         if (answ.equals("y")){TestClassKeyPair_ALG_DSA(file);}
                         else{ClassSkipped(file, "javacard.security.KeyPair ALG_DSA on-card generation");} 
 
-                    System.out.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_EC_F2M on-card generation'? (y/n)");
+                    m_logger.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_EC_F2M on-card generation'? (y/n)");
                         answ = br.nextLine();
                         if (answ.equals("y")){TestClassKeyPair_ALG_EC_F2M(file);}
                         else{ClassSkipped(file, "javacard.security.KeyPair ALG_EC_F2M on-card generation");}
 
-                    System.out.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_EC_FP on-card generation'? (y/n)");
+                    m_logger.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_EC_FP on-card generation'? (y/n)");
                         answ = br.nextLine();
                         if (answ.equals("y")){TestClassKeyPair_ALG_EC_FP(file);}
                         else{ClassSkipped(file, "javacard.security.KeyPair ALG_EC_FP on-card generation");}
                     // RSA exponent 
-                    System.out.println("\n\nQ: Do you like to test support for variable RSA public exponent? (y/n)");
+                    m_logger.println("\n\nQ: Do you like to test support for variable RSA public exponent? (y/n)");
                         answ = br.nextLine();
                         if (answ.equals("y")) {
                         // Variable public exponent
@@ -525,7 +532,7 @@ public class SingleModeTest {
                         cardManager.TestVariableRSAPublicExponentSupport(value, file, (byte) 0);}
                         else{
                             String message = "\nERROR: Test variable public exponent support fail\n"; 
-                            System.out.println(message); file.write(message.getBytes());
+                            m_logger.println(message); file.write(message.getBytes());
                         }
                     CloseFile(file);
                 break;
@@ -536,7 +543,7 @@ public class SingleModeTest {
                     testAllAtOnce(file);
                     elapsedTimeWholeTest += System.currentTimeMillis();
                     String message = "\n\nTotal test time:; " + elapsedTimeWholeTest / 1000 + " seconds."; 
-                    System.out.println(message);
+                    m_logger.println(message);
                     file.write(message.getBytes());
                     
                     CloseFile(file);
@@ -574,7 +581,7 @@ public class SingleModeTest {
         /* Message to be send on the screen and to the output file. */
         String message = "Testing of algorithm class " + className + " skipped by user\r\n";
         /* Prints given message on screen and in output file. */
-        System.out.println(message);
+        m_SystemOutLogger.println(message);
         file.write(message.getBytes());
     }
     
@@ -593,7 +600,7 @@ public class SingleModeTest {
         byte response = UNKNOWN_ERROR;
         if (responseBuffer != null) {
             if (responseBuffer.length > 0) {
-                System.out.println("RESPONSE: " + responseBuffer[0]);
+                m_SystemOutLogger.println("RESPONSE: " + responseBuffer[0]);
             }
             if (responseBuffer.length > 1) {
                 response = responseBuffer[1];
@@ -642,14 +649,14 @@ public class SingleModeTest {
 
                 default:
                     // OTHER VALUE, IGNORE 
-                System.out.println("Unknown value detected in AlgTest applet (0x" + Integer.toHexString(response & 0xff) + "). Possibly, old version of AlTestJClient is used (try update)");
+                m_SystemOutLogger.println("Unknown value detected in AlgTest applet (0x" + Integer.toHexString(response & 0xff) + "). Possibly, old version of AlTestJClient is used (try update)");
                 break;        
             }
         }
         else {
             message += name + ";" + "error(0x" + Integer.toHexString(swStatus) + ");" + "\r\n";
         }
-        System.out.println(message);
+        m_SystemOutLogger.println(message);
         file.write(message.getBytes());                
     }
         
@@ -669,7 +676,7 @@ public class SingleModeTest {
 
         /* Creates message with class name and writes it in the output file and on the screen. */
         String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.CIPHER_STR[0]) + "\r\n";
-        System.out.println(message);
+        m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         
         for (int i=1; i< SingleModeTest.CIPHER_STR.length; i++){    // i = 1 because Cipher[0] is class name
@@ -708,7 +715,7 @@ public class SingleModeTest {
         
         /* Creates message with class name and writes it in the output file and on the screen. */
         String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.SIGNATURE_STR[0]) + "\r\n";
-        System.out.println(message);
+        m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         
         for (int i=1; i<SingleModeTest.SIGNATURE_STR.length; i++){    // i = 1 because Signature[0] is class name
@@ -745,7 +752,7 @@ public class SingleModeTest {
         
         /* Creates message with class name and writes it in the output file and on the screen. */
         String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.MESSAGEDIGEST_STR[0]) + "\r\n";
-        System.out.println(message);
+        m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         
         for (int i=1; i<SingleModeTest.MESSAGEDIGEST_STR.length; i++){    // i = 1 because MessageDigest[0] is class name
@@ -781,7 +788,7 @@ public class SingleModeTest {
         
         /* Creates message with class name and writes it in the output file and on the screen. */
         String message = "\r\n" + cardManager.GetAlgorithmName(SingleModeTest.RANDOMDATA_STR[0]) + "\r\n";
-        System.out.println(message);
+        m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         
         for (int i=1; i<SingleModeTest.RANDOMDATA_STR.length; i++){    // i = 1 because RandomData[0] is class name
@@ -816,7 +823,7 @@ public class SingleModeTest {
             
         // Creates message with class name and writes it in the output file and on the screen. 
         String message = "\n" + cardManager.GetAlgorithmName(KEYBUILDER_STR[0]) + "\r\n";
-        System.out.println(message);
+        m_SystemOutLogger.println(message);
         file.write(message.getBytes());
 
         for (int i = 1; i < KEYBUILDER_STR.length; i++){
@@ -857,7 +864,7 @@ public class SingleModeTest {
     
         /* Creates message with class name and writes it in the output file and on the screen. */
         String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.KEYAGREEMENT_STR[0]) + "\r\n";
-        System.out.println(message);
+        m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         
         for (int i=1; i<SingleModeTest.KEYAGREEMENT_STR.length; i++){    // i = 1 because KeyAgreement[0] is class name
@@ -893,7 +900,7 @@ public class SingleModeTest {
     
         // Creates message with class name and writes it in the output file and on the screen. 
         String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.CHECKSUM_STR[0]) + "\r\n";
-        System.out.println(message);
+        m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         
         for (int i=1; i<SingleModeTest.CHECKSUM_STR.length; i++){    // i = 1 because Checksum[0] is class name
@@ -929,7 +936,7 @@ public class SingleModeTest {
         
         /* Creates message with class name and writes it in the output file and on the screen. */
         String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_RSA_STR[0]) + "\r\n";
-        System.out.println(message);
+        m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         
         int counter = 24;
@@ -970,7 +977,7 @@ public class SingleModeTest {
         
         /* Creates message with class name and writes it in the output file and on the screen. */
         String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_RSACRT_STR[0]) + "\r\n";
-        System.out.println(message);
+        m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         
         int counter = 24;
@@ -1011,7 +1018,7 @@ public class SingleModeTest {
         
         /* Creates message with class name and writes it in the output file and on the screen. */
         String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_DSA_STR[0]) + "\r\n";
-        System.out.println(message);
+        m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         
         int counter = 24;
@@ -1052,7 +1059,7 @@ public class SingleModeTest {
         
         /* Creates message with class name and writes it in the output file and on the screen. */
         String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_EC_F2M_STR[0]) + "\r\n";
-        System.out.println(message);
+        m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         
         int counter = 16;
@@ -1093,7 +1100,7 @@ public class SingleModeTest {
         
         // Creates message with class name and writes it in the output file and on the screen 
         String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_EC_FP_STR[0]) + "\r\n";
-        System.out.println(message);
+        m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         
         int counter = 0;

@@ -278,8 +278,8 @@ public class AlgStorageTest {
                                 m_desCipher.init(m_keyArray1[i], Cipher.MODE_ENCRYPT);
                                 m_desCipher.doFinal(apdubuf, (short) 0, (short) 16, apdubuf, (short) 0);
                                 break;
-                            case JCConsts.KeyBuilder_ALG_TYPE_RSA_CRT_PRIVATE: 
-                            case JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE: 
+                            case JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE: 
+                            case JCConsts.KeyBuilder_TYPE_RSA_PRIVATE: 
                                 // do nothing
                                 break;
                             default:
