@@ -59,26 +59,10 @@ public class AlgSupportTest {
   
     private byte[] m_ramArray = null;
     private byte[] m_ramArray2 = null;
-    private   byte[]           m_eepromArray1 = null;
-    private   byte[]           m_eepromArray2 = null;
-    private   byte[]           m_eepromArray3 = null;
-    private   byte[]           m_eepromArray4 = null;
-    private   byte[]           m_eepromArray5 = null;
-    private   byte[]           m_eepromArray6 = null;
-    private   byte[]           m_eepromArray7 = null;
-    private   byte[]           m_eepromArray8 = null;
+
     private RSAPublicKey       m_rsaPublicKey = null;
     private RSAPrivateCrtKey   m_rsaPrivateKey = null;
-    private ECPublicKey        m_ecPublicKey = null;
-    private ECPrivateKey       m_ecPrivateKey = null;
   
-    private   Key[]            m_keyArray1 = null;
-    private   Key[]            m_keyArray2 = null;
-    private   Key[]            m_keyArray3 = null;
-    private   Key[]            m_keyArray4 = null;
-    private   Key[]            m_keyArray5 = null;
-    private   Key[]            m_keyArray6 = null;
-    private   Key[]            m_keyArray7 = null;
     
     // for class 'javacard.security.KeyAgreement'
     public static final byte ALG_EC_SVDP_DH = 1;
@@ -210,7 +194,7 @@ public class AlgSupportTest {
        apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xFF;
        offset++;
        
-       apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (short) (offset - ISO7816.OFFSET_CDATA));
+       apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, offset);
     }
     
     void JCSystemInfo(APDU apdu) {

@@ -612,6 +612,7 @@ public class EC_Consts {
     private static void setECKeyParams(ECPublicKey ecPubKey, ECPrivateKey ecPrivKey, byte ecClass, short ecLength, byte[] auxBuffer, boolean bInvalidCurve) {
         if (ecClass == KeyPair.ALG_EC_FP) {
             // Select proper courve parameters
+            boolean bParamReady = false;
             switch (ecLength) {
                 case (short) 128: {
                     EC_FP_P = EC128_FP_P;
@@ -621,6 +622,7 @@ public class EC_Consts {
                     EC_FP_G_Y = EC128_FP_G_Y;
                     EC_FP_R = EC128_FP_R;
                     EC_FP_K = EC128_FP_K;
+                    bParamReady = true;
                     break;
                 }          
                 case (short) 160: {
@@ -631,6 +633,7 @@ public class EC_Consts {
                     EC_FP_G_Y = EC160_FP_G_Y;
                     EC_FP_R = EC160_FP_R;
                     EC_FP_K = EC160_FP_K;
+                    bParamReady = true;
                     break;
                 }                
                 case (short) 192: {
@@ -641,6 +644,7 @@ public class EC_Consts {
                     EC_FP_G_Y = EC192_FP_G_Y;
                     EC_FP_R = EC192_FP_R;
                     EC_FP_K = EC192_FP_K;     
+                    bParamReady = true;
                     break;
                 }
                 case (short) 224: {
@@ -651,6 +655,7 @@ public class EC_Consts {
                     EC_FP_G_Y = EC224_FP_G_Y;
                     EC_FP_R = EC224_FP_R;
                     EC_FP_K = EC224_FP_K;
+                    bParamReady = true;
                     break;
                 }                
                 case (short) 256: {
@@ -661,6 +666,7 @@ public class EC_Consts {
                     EC_FP_G_Y = EC256_FP_G_Y;
                     EC_FP_R = EC256_FP_R;
                     EC_FP_K = EC256_FP_K;
+                    bParamReady = true;
                     break;
                 }            
                 case (short) 384: {
@@ -671,6 +677,7 @@ public class EC_Consts {
                     EC_FP_G_Y = EC384_FP_G_Y;
                     EC_FP_R = EC384_FP_R;
                     EC_FP_K = EC384_FP_K;
+                    bParamReady = true;
                     break;
                 }                
                 case (short) 521: {
@@ -681,6 +688,7 @@ public class EC_Consts {
                     EC_FP_G_Y = EC521_FP_G_Y;
                     EC_FP_R = EC521_FP_R;
                     EC_FP_K = EC521_FP_K;
+                    bParamReady = true;
                     break;
                 }
                 default: {
@@ -688,40 +696,44 @@ public class EC_Consts {
                 }
             }
             
-            // prepare an ANSI X9.62 uncompressed EC point representation for G
-            short gSize = (short) 1;
-            gSize += (short) EC_FP_G_X.length;
-            gSize += (short) EC_FP_G_Y.length;
-            auxBuffer[0] = 0x04;
-            short off = 1;
-            off = Util.arrayCopyNonAtomic(EC_FP_G_X, (short) 0, auxBuffer, off, (short) EC_FP_G_X.length);
-            Util.arrayCopyNonAtomic(EC_FP_G_Y, (short) 0, auxBuffer, off, (short) EC_FP_G_Y.length);
+            if (bParamReady) {
+                // prepare an ANSI X9.62 uncompressed EC point representation for G
+                short gSize = (short) 1;
+                gSize += (short) EC_FP_G_X.length;
+                gSize += (short) EC_FP_G_Y.length;
+                auxBuffer[0] = 0x04;
+                short off = 1;
+                off = Util.arrayCopyNonAtomic(EC_FP_G_X, (short) 0, auxBuffer, off, (short) EC_FP_G_X.length);
+                Util.arrayCopyNonAtomic(EC_FP_G_Y, (short) 0, auxBuffer, off, (short) EC_FP_G_Y.length);
 
-            // pre-set basic EC parameters:
-            ecPubKey.setFieldFP(EC_FP_P, (short) 0, (short) EC_FP_P.length);
-            ecPubKey.setA(EC_FP_A, (short) 0, (short) EC_FP_A.length);
-            ecPubKey.setB(EC_FP_B, (short) 0, (short) EC_FP_B.length);
-            if (bInvalidCurve) { // corrupt curve if required for testing
-                Util.arrayCopyNonAtomic(EC_FP_B, (short) 0, auxBuffer, (short) 0, (short) EC_FP_B.length);                
-                auxBuffer[(byte) 10] = (byte) 0xcc;
-                auxBuffer[(byte) 11] = (byte) 0xcc;
-                ecPubKey.setB(auxBuffer, (short) 0, (short) EC_FP_B.length);
+                // pre-set basic EC parameters:
+                ecPubKey.setFieldFP(EC_FP_P, (short) 0, (short) EC_FP_P.length);
+                ecPubKey.setA(EC_FP_A, (short) 0, (short) EC_FP_A.length);
+                ecPubKey.setB(EC_FP_B, (short) 0, (short) EC_FP_B.length);
+                if (bInvalidCurve) { // corrupt curve if required for testing
+                    Util.arrayCopyNonAtomic(EC_FP_B, (short) 0, auxBuffer, (short) 0, (short) EC_FP_B.length);                
+                    auxBuffer[(byte) 10] = (byte) 0xcc;
+                    auxBuffer[(byte) 11] = (byte) 0xcc;
+                    ecPubKey.setB(auxBuffer, (short) 0, (short) EC_FP_B.length);
+                }
+
+                ecPubKey.setG(auxBuffer, (short) 0, gSize);
+                ecPubKey.setR(EC_FP_R, (short) 0, (short) EC_FP_R.length);
+                ecPubKey.setK(EC_FP_K);
+
+                ecPrivKey.setFieldFP(EC_FP_P, (short) 0, (short) EC_FP_P.length);
+                ecPrivKey.setA(EC_FP_A, (short) 0, (short) EC_FP_A.length);
+                ecPrivKey.setB(EC_FP_B, (short) 0, (short) EC_FP_B.length);
+                ecPrivKey.setG(auxBuffer, (short) 0, gSize);
+                ecPrivKey.setR(EC_FP_R, (short) 0, (short) EC_FP_R.length);
+                ecPrivKey.setK(EC_FP_K);        
             }
-            
-            ecPubKey.setG(auxBuffer, (short) 0, gSize);
-            ecPubKey.setR(EC_FP_R, (short) 0, (short) EC_FP_R.length);
-            ecPubKey.setK(EC_FP_K);
-
-            ecPrivKey.setFieldFP(EC_FP_P, (short) 0, (short) EC_FP_P.length);
-            ecPrivKey.setA(EC_FP_A, (short) 0, (short) EC_FP_A.length);
-            ecPrivKey.setB(EC_FP_B, (short) 0, (short) EC_FP_B.length);
-            ecPrivKey.setG(auxBuffer, (short) 0, gSize);
-            ecPrivKey.setR(EC_FP_R, (short) 0, (short) EC_FP_R.length);
-            ecPrivKey.setK(EC_FP_K);        
         }
         
         
         if (ecClass == KeyPair.ALG_EC_F2M) {
+            return; // use default values if present (for F2M only) 
+/*            
             // Not supported yet 
             ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
             
@@ -767,6 +779,7 @@ public class EC_Consts {
             ecPrivKey.setG(auxBuffer, (short) 0, gSize);
             ecPrivKey.setR(EC_F2M_R, (short) 0, (short) EC_F2M_R.length);
             ecPrivKey.setK(EC_F2M_K);            
+*/        
         }
         
     }    
