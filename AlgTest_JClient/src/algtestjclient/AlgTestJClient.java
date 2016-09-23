@@ -149,38 +149,35 @@ public class AlgTestJClient {
             int answ = sc.nextInt();
             m_SystemOutLogger.println(String.format("%d", answ));
             switch (answ){
-/*  not supported anymore              
-                // In this case, classic version of AlgTest is used
-                case 1:
-                    m_logger.println("\n\n#########################");
-                    m_logger.println("\n\nQ: Do you like to test all supported algorithms or be asked separately for every class? Separate questions help when testing all algorithms at once will provide incorrect answers due too many internal allocation of cryptographic objects (e.g., KeyBuilder class).");
-                    m_logger.println("Type \"y\" for test all algorithms, \"n\" for asking for every class separately: ");	
-                    answ = sc.nextInt();
-                    CardMngr cardManager = new CardMngr();
-                    cardManager.testClassic(args, answ);
-                    break;
-*/                
                 // In this case, SinglePerApdu version of AlgTest is used.
                 case 1:
                     selectedTerminal = selectTargetReader();
-                    SingleModeTest singleTest = new SingleModeTest(m_SystemOutLogger);
-                    singleTest.TestSingleAlg(args, selectedTerminal);
+                    if (selectedTerminal != null) {
+                        SingleModeTest singleTest = new SingleModeTest(m_SystemOutLogger);
+                        singleTest.TestSingleAlg(args, selectedTerminal);
+                    }
                     break;
                 // In this case Performance tests are used. 
                 case 2:
                     selectedTerminal = selectTargetReader();
-                    testingPerformance.testPerformance(args, false, selectedTerminal);
+                    if (selectedTerminal != null) {
+                        testingPerformance.testPerformance(args, false, selectedTerminal);
+                    }
                     break;
                 case 3:
                     selectedTerminal = selectTargetReader();
-                    testingPerformance.testPerformance(args, true, selectedTerminal);
+                    if (selectedTerminal != null) {
+                        testingPerformance.testPerformance(args, true, selectedTerminal);
+                    }
                     break;
                 case 4:
                     performKeyHarvest();
                     break;
                 case 5:
                     selectedTerminal = selectTargetReader();
-                    testingPerformance.testPerformanceFingerprint(args, selectedTerminal);
+                    if (selectedTerminal != null) {
+                        testingPerformance.testPerformanceFingerprint(args, selectedTerminal);
+                    }
                     break;
                 default:
                     // In this case, user pressed wrong key 
