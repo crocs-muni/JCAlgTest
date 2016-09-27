@@ -265,7 +265,7 @@ public class AlgTestJClient {
         List<CardTerminal> terminalList = CardMngr.GetReaderList(true);
         CardTerminal selectedTerminal = null;
         if (terminalList.isEmpty()) {
-            m_SystemOutLogger.println("ERROR: No reader detected. Please check your reader connection");
+            m_SystemOutLogger.println("ERROR: No suitable reader with card detected. Please check your reader connection");
             return null;
         }
         else {
