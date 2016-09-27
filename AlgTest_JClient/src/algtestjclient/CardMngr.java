@@ -454,12 +454,20 @@ public class CardMngr {
             // If no readers are detected then try via JNA
             TerminalFactory termFactory = TerminalFactory.getDefault(); 
             List<CardTerminal> readersList = null;
+            boolean bReadersFound = false;
             try {
                 CardTerminals ct = termFactory.terminals();
                 readersList = ct.list();
+                if (readersList.size() > 0) {
+                    m_SystemOutLogger.println("Total " + readersList.size() + " readers detected via " + termFactory.getProvider().getName());
+                    bReadersFound = true;
+                }
             }
             catch(CardException ex) {
                 m_SystemOutLogger.println("Exception : " + ex);
+            }
+            
+            if (!bReadersFound) {
                 m_SystemOutLogger.println("No readers detected via SunPCSC, trying JNA2PCSC...");
                 termFactory = TerminalManager.getTerminalFactory(true);
                 CardTerminals ct = termFactory.terminals();
