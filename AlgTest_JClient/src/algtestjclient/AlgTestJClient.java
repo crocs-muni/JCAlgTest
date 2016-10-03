@@ -53,8 +53,13 @@ public class AlgTestJClient {
     public static final String ALGTEST_PERFORMANCE = "AT_PERFORMANCE";          // for performance testing
     
     /**
-     * Version 1.7.0 (19.09.2016) 
-     * + Updates to support EC and asym. key operations properly
+     * Version 1.7.1 (03.10.2016) 
+     * + support for reader access via JNA
+     */
+    public final static String ALGTEST_JCLIENT_VERSION_1_7_1 = "1.7.1";
+    /**
+     * Version 1.7.0 (19.09.2016) + Updates to support EC and asym. key
+     * operations properly
      */
     public final static String ALGTEST_JCLIENT_VERSION_1_7_0 = "1.7.0";
     /**
@@ -95,7 +100,7 @@ public class AlgTestJClient {
     /**
      * Current version
      */
-    public final static String ALGTEST_JCLIENT_VERSION = ALGTEST_JCLIENT_VERSION_1_7_0;
+    public final static String ALGTEST_JCLIENT_VERSION = ALGTEST_JCLIENT_VERSION_1_7_1;
     
     public final static int STAT_OK = 0;    
     /**
@@ -109,8 +114,10 @@ public class AlgTestJClient {
         m_SystemOutLogger = new DirtyLogger(systemOutLogger, true);
         
         m_SystemOutLogger.println("\n-----------------------------------------------------------------------   ");
-        m_SystemOutLogger.println("JCAlgTest - comprehensive tool for JavaCard smart card testing.");
+        m_SystemOutLogger.println("JCAlgTest " + ALGTEST_JCLIENT_VERSION + " - comprehensive tool for JavaCard smart card testing.");
         m_SystemOutLogger.println("Visit jcalgtest.org for results from 50+ cards. CRoCS.cz lab 2007-2016.");
+        m_SystemOutLogger.println("Please check if you use the latest version at\n  https://github.com/crocs-muni/JCAlgTest/releases/latest.");
+        
         m_SystemOutLogger.println("-----------------------------------------------------------------------\n");
         // If arguments are present. 
         if(args.length > 0){
@@ -149,38 +156,35 @@ public class AlgTestJClient {
             int answ = sc.nextInt();
             m_SystemOutLogger.println(String.format("%d", answ));
             switch (answ){
-/*  not supported anymore              
-                // In this case, classic version of AlgTest is used
-                case 1:
-                    m_logger.println("\n\n#########################");
-                    m_logger.println("\n\nQ: Do you like to test all supported algorithms or be asked separately for every class? Separate questions help when testing all algorithms at once will provide incorrect answers due too many internal allocation of cryptographic objects (e.g., KeyBuilder class).");
-                    m_logger.println("Type \"y\" for test all algorithms, \"n\" for asking for every class separately: ");	
-                    answ = sc.nextInt();
-                    CardMngr cardManager = new CardMngr();
-                    cardManager.testClassic(args, answ);
-                    break;
-*/                
                 // In this case, SinglePerApdu version of AlgTest is used.
                 case 1:
                     selectedTerminal = selectTargetReader();
-                    SingleModeTest singleTest = new SingleModeTest(m_SystemOutLogger);
-                    singleTest.TestSingleAlg(args, selectedTerminal);
+                    if (selectedTerminal != null) {
+                        SingleModeTest singleTest = new SingleModeTest(m_SystemOutLogger);
+                        singleTest.TestSingleAlg(args, selectedTerminal);
+                    }
                     break;
                 // In this case Performance tests are used. 
                 case 2:
                     selectedTerminal = selectTargetReader();
-                    testingPerformance.testPerformance(args, false, selectedTerminal);
+                    if (selectedTerminal != null) {
+                        testingPerformance.testPerformance(args, false, selectedTerminal);
+                    }
                     break;
                 case 3:
                     selectedTerminal = selectTargetReader();
-                    testingPerformance.testPerformance(args, true, selectedTerminal);
+                    if (selectedTerminal != null) {
+                        testingPerformance.testPerformance(args, true, selectedTerminal);
+                    }
                     break;
                 case 4:
                     performKeyHarvest();
                     break;
                 case 5:
                     selectedTerminal = selectTargetReader();
-                    testingPerformance.testPerformanceFingerprint(args, selectedTerminal);
+                    if (selectedTerminal != null) {
+                        testingPerformance.testPerformanceFingerprint(args, selectedTerminal);
+                    }
                     break;
                 default:
                     // In this case, user pressed wrong key 
@@ -268,7 +272,7 @@ public class AlgTestJClient {
         List<CardTerminal> terminalList = CardMngr.GetReaderList(true);
         CardTerminal selectedTerminal = null;
         if (terminalList.isEmpty()) {
-            m_SystemOutLogger.println("ERROR: No reader detected. Please check your reader connection");
+            m_SystemOutLogger.println("ERROR: No suitable reader with card detected. Please check your reader connection");
             return null;
         }
         else {

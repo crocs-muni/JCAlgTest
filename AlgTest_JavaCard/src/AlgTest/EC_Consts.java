@@ -603,13 +603,7 @@ public class EC_Consts {
     public static final short EC163_F2M_K = 2;
 */    
     
-    public static void setValidECKeyParams(ECPublicKey ecPubKey, ECPrivateKey ecPrivKey, byte ecClass, short ecLength, byte[] auxBuffer) {
-        setECKeyParams(ecPubKey, ecPrivKey, ecClass, ecLength, auxBuffer, false);
-    }
-    public static void setInValidECKeyParams(ECPublicKey ecPubKey, ECPrivateKey ecPrivKey, byte ecClass, short ecLength, byte[] auxBuffer) {
-        setECKeyParams(ecPubKey, ecPrivKey, ecClass, ecLength, auxBuffer, true);
-    }
-    private static void setECKeyParams(ECPublicKey ecPubKey, ECPrivateKey ecPrivKey, byte ecClass, short ecLength, byte[] auxBuffer, boolean bInvalidCurve) {
+    private static void setECKeyParams(ECPublicKey ecPubKey, ECPrivateKey ecPrivKey, byte ecClass, short ecLength, byte[] auxBuffer) {
         if (ecClass == KeyPair.ALG_EC_FP) {
             // Select proper courve parameters
             boolean bParamReady = false;
@@ -708,24 +702,16 @@ public class EC_Consts {
 
                 // pre-set basic EC parameters:
                 ecPubKey.setFieldFP(EC_FP_P, (short) 0, (short) EC_FP_P.length);
-                ecPubKey.setA(EC_FP_A, (short) 0, (short) EC_FP_A.length);
-                ecPubKey.setB(EC_FP_B, (short) 0, (short) EC_FP_B.length);
-                if (bInvalidCurve) { // corrupt curve if required for testing
-                    Util.arrayCopyNonAtomic(EC_FP_B, (short) 0, auxBuffer, (short) 0, (short) EC_FP_B.length);                
-                    auxBuffer[(byte) 10] = (byte) 0xcc;
-                    auxBuffer[(byte) 11] = (byte) 0xcc;
-                    ecPubKey.setB(auxBuffer, (short) 0, (short) EC_FP_B.length);
-                }
-
-                ecPubKey.setG(auxBuffer, (short) 0, gSize);
-                ecPubKey.setR(EC_FP_R, (short) 0, (short) EC_FP_R.length);
-                ecPubKey.setK(EC_FP_K);
-
                 ecPrivKey.setFieldFP(EC_FP_P, (short) 0, (short) EC_FP_P.length);
+                ecPubKey.setA(EC_FP_A, (short) 0, (short) EC_FP_A.length);
                 ecPrivKey.setA(EC_FP_A, (short) 0, (short) EC_FP_A.length);
+                ecPubKey.setB(EC_FP_B, (short) 0, (short) EC_FP_B.length);
                 ecPrivKey.setB(EC_FP_B, (short) 0, (short) EC_FP_B.length);
+                ecPubKey.setG(auxBuffer, (short) 0, gSize);
                 ecPrivKey.setG(auxBuffer, (short) 0, gSize);
+                ecPubKey.setR(EC_FP_R, (short) 0, (short) EC_FP_R.length);
                 ecPrivKey.setR(EC_FP_R, (short) 0, (short) EC_FP_R.length);
+                ecPubKey.setK(EC_FP_K);
                 ecPrivKey.setK(EC_FP_K);        
             }
         }
@@ -797,7 +783,7 @@ public class EC_Consts {
         } // do intentionally nothing
 
         // Initialize curve parameters 
-        EC_Consts.setValidECKeyParams(ecPubKey, ecPrivKey, keyClass, keyLen, auxArray);
+        EC_Consts.setECKeyParams(ecPubKey, ecPrivKey, keyClass, keyLen, auxArray);
     }
     
 }

@@ -55,8 +55,7 @@ public class KeyHarvest {
 	    //
             // Obtain all readers with cards
             //
-            TerminalFactory factory = TerminalFactory.getDefault();
-            List<CardTerminal> readersList = factory.terminals().list();
+            List<CardTerminal> readersList = CardMngr.GetReaderList();
             ArrayList<CardTerminal> readersWithCardList = new ArrayList();
             if (readersList.isEmpty()) { m_SystemOutLogger.println("No terminals found"); }
             for (int i = 0; i < readersList.size(); i++) {

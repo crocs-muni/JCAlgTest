@@ -45,6 +45,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
+
 /* BUGBUG: we need to figure out how to support JCardSim in nice way (copy of class files, directory structure...)
 //import javacard.framework.AID;
 */
@@ -57,8 +58,11 @@ import com.licel.jcardsim.io.CAD;
 import com.licel.jcardsim.io.JavaxSmartCardInterface;
 import java.io.File;
 import java.lang.ProcessBuilder.Redirect;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javacard.framework.AID;
 import javacard.framework.ISO7816;
 
@@ -446,10 +450,42 @@ public class CardMngr {
 
     public static List<CardTerminal> GetReaderList() {
         try {
-            TerminalFactory factory = TerminalFactory.getDefault();
-            List<CardTerminal> readersList = factory.terminals().list();
+            // Try to get list of readers first via default SunPCSC provider. 
+            // If no readers are detected then try via JNA
+            TerminalFactory termFactory = TerminalFactory.getDefault(); 
+            List<CardTerminal> readersList = null;
+            boolean bReadersFound = false;
+            try {
+                CardTerminals ct = termFactory.terminals();
+                readersList = ct.list();
+                if (readersList.size() > 0) {
+                    m_SystemOutLogger.println("Total " + readersList.size() + " readers detected via " + termFactory.getProvider().getName());
+                    bReadersFound = true;
+                }
+            }
+            catch(CardException ex) {
+                m_SystemOutLogger.println("Exception : " + ex);
+            }
+            
+            if (!bReadersFound) {
+                m_SystemOutLogger.println("No readers detected via SunPCSC, trying JNA2PCSC...");
+                termFactory = TerminalManager.getTerminalFactory(true);
+                CardTerminals ct = termFactory.terminals();
+                readersList = ct.list();
+            }
+            
+            // Print all detected readers and terminals
+            m_SystemOutLogger.println("Following readers are available via '" + termFactory.getProvider().getName() + "' provider:");
+            if (readersList.isEmpty()) {
+                m_SystemOutLogger.println("No readers");
+            }
+            else {
+                for (CardTerminal terminal : readersList) {
+                    m_SystemOutLogger.println((terminal.isCardPresent() ? "[*] " : "[ ] ") + terminal.getName());
+                }
+            }
             return readersList;
-        } catch (CardException ex) {
+        } catch (Exception ex) {
             m_SystemOutLogger.println("Exception : " + ex);
             return new ArrayList<>();
         }
