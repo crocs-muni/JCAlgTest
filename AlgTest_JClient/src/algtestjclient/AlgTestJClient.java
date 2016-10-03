@@ -53,8 +53,13 @@ public class AlgTestJClient {
     public static final String ALGTEST_PERFORMANCE = "AT_PERFORMANCE";          // for performance testing
     
     /**
-     * Version 1.7.0 (19.09.2016) 
-     * + Updates to support EC and asym. key operations properly
+     * Version 1.7.1 (03.10.2016) 
+     * + support for reader access via JNA
+     */
+    public final static String ALGTEST_JCLIENT_VERSION_1_7_1 = "1.7.1";
+    /**
+     * Version 1.7.0 (19.09.2016) + Updates to support EC and asym. key
+     * operations properly
      */
     public final static String ALGTEST_JCLIENT_VERSION_1_7_0 = "1.7.0";
     /**
@@ -95,7 +100,7 @@ public class AlgTestJClient {
     /**
      * Current version
      */
-    public final static String ALGTEST_JCLIENT_VERSION = ALGTEST_JCLIENT_VERSION_1_7_0;
+    public final static String ALGTEST_JCLIENT_VERSION = ALGTEST_JCLIENT_VERSION_1_7_1;
     
     public final static int STAT_OK = 0;    
     /**
@@ -109,8 +114,10 @@ public class AlgTestJClient {
         m_SystemOutLogger = new DirtyLogger(systemOutLogger, true);
         
         m_SystemOutLogger.println("\n-----------------------------------------------------------------------   ");
-        m_SystemOutLogger.println("JCAlgTest - comprehensive tool for JavaCard smart card testing.");
+        m_SystemOutLogger.println("JCAlgTest " + ALGTEST_JCLIENT_VERSION + " - comprehensive tool for JavaCard smart card testing.");
         m_SystemOutLogger.println("Visit jcalgtest.org for results from 50+ cards. CRoCS.cz lab 2007-2016.");
+        m_SystemOutLogger.println("Please check if you use the latest version at\n  https://github.com/crocs-muni/JCAlgTest/releases/latest.");
+        
         m_SystemOutLogger.println("-----------------------------------------------------------------------\n");
         // If arguments are present. 
         if(args.length > 0){
