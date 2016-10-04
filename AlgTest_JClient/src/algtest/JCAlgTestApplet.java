@@ -54,6 +54,11 @@ public class JCAlgTestApplet extends javacard.framework.Applet
 {
     // NOTE: when incrementing version, don't forget to update ALGTEST_JAVACARD_VERSION_CURRENT value
     /**
+     * Version 1.7.1 (04.10.2016) 
+     * + fixed issue with detection of ECFP-384 curve
+     */
+    final static byte ALGTEST_JAVACARD_VERSION_1_7_1[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x37, (byte) 0x2e, (byte) 0x31};
+    /**
      * Version 1.7.0 (16.9.2016) 
      * + applet/package AID change (now jcalgtest in hexa)
      * + added working support for ECDH KeyAgreement
@@ -126,7 +131,7 @@ public class JCAlgTestApplet extends javacard.framework.Applet
      */
     //final static byte ALGTEST_JAVACARD_VERSION_1_0[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x30};
 
-    byte ALGTEST_JAVACARD_VERSION_CURRENT[] = ALGTEST_JAVACARD_VERSION_1_7_0;
+    byte ALGTEST_JAVACARD_VERSION_CURRENT[] = ALGTEST_JAVACARD_VERSION_1_7_1;
 
     AlgKeyHarvest       m_keyHarvest = null;
     AlgSupportTest      m_supportTest = null;
