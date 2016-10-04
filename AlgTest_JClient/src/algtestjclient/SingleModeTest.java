@@ -416,7 +416,6 @@ public class SingleModeTest {
             cardName = "noname";
         }            
         FileOutputStream file = cardManager.establishConnection(testClassSingleApdu, cardName, cardName + "_ALGSUPPORT_", selectedReader);
-        
     
         // Checking for arguments 
         if (args.length > 1){       // in case there are arguments from command line present

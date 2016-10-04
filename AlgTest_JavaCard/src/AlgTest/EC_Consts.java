@@ -295,7 +295,7 @@ public class EC_Consts {
         (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
         (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
         (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
-        (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+        (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFE,
         (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
         (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
         (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
@@ -608,6 +608,9 @@ public class EC_Consts {
             // Select proper courve parameters
             boolean bParamReady = false;
             switch (ecLength) {
+                case (short) 112: {
+                    return; // use default values if present                  
+                }
                 case (short) 128: {
                     EC_FP_P = EC128_FP_P;
                     EC_FP_A = EC128_FP_A;
