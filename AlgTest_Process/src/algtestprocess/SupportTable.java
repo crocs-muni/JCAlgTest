@@ -166,8 +166,8 @@ public class SupportTable {
                 if (filesSupport[i].containsKey("Performance")) { 
                     cardName = (String) filesSupport[i].get("Card name");
                     cardName = cardName.replace(" ", ""); cardName = cardName.replace("_", ""); 
-                    cardList += "&nbsp;<a target=\"_blank\" href=\"jcalgtest/fixData/" + cardName + ".html\">PERFORMANCE</a>,&nbsp;";
-                    cardList += "<a target=\"_blank\" href=\"jcalgtest/variableData/" + cardName + ".html\">GRAPHS</a>";
+                    cardList += "&nbsp;<a target=\"_blank\" href=\"run_time/" + cardName + ".html\">Performance</a>,&nbsp;";
+                    cardList += "<a target=\"_blank\" href=\"scalability/" + cardName + ".html\">Graphs</a>";
                 }
                 cardList += "<br>\r\n";
             }

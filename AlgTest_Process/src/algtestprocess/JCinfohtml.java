@@ -136,7 +136,7 @@ public class JCinfohtml {
         toFile += "<p>AlgTest applet version: <strong>" + infoMap.get("AlgTest applet version") + "</strong></p>\n";
         toFile += "<p>Used reader: <strong>" + infoMap.get("Used reader") + "</strong></p>\n";
         toFile += "<p><strong>Card ATR: " + infoMap.get("Card ATR") + "</strong></p>\n";
-        toFile += "<p><u><a href=\"https://smartcard-atr.appspot.com/parse?ATR=" + infoMap.get("Card ATR").replaceAll(" ", "") + "\" target=\"_blank\">Smart card ATR parsing link</a></u></p>\n</br>\n";
+        toFile += "<p><u><a href=\"https://smartcard-atr.appspot.com/parse?ATR=" + infoMap.get("Card ATR").replaceAll(" ", "") + "\" target=\"_blank\">More information parsed from ATR</a></u></p>\n</br>\n";
 
         toFile += "<p>JavaCard version: <strong>" + infoMap.get("JCSystem.getVersion()[Major.Minor]") + "</strong></p>\n";
         toFile += "<p>MEMORY_TYPE_PERSISTENT: <strong>" + infoMap.get("JCSystem.MEMORY_TYPE_PERSISTENT") + "</strong></p>\n";
