@@ -1,5 +1,6 @@
 package AlgTest;
 
+import algtestjclient.DirtyLogger;
 import algtestjclient.PerformanceTesting;
 import algtestjclient.StorageTesting;
 import java.io.File;
@@ -20,8 +21,8 @@ import org.testng.annotations.Test;
  * @author xsvenda
  */
 public class PerformanceTestingNGTest {
-    static PerformanceTesting perfTesting = new PerformanceTesting();
-    static StorageTesting storageTesting = new StorageTesting();
+    static PerformanceTesting perfTesting = new PerformanceTesting(new DirtyLogger(null, true));
+    static StorageTesting storageTesting = new StorageTesting(new DirtyLogger(null, true));
     static boolean bTestRealCards = true;
     
     public PerformanceTestingNGTest() {
@@ -343,7 +344,29 @@ public class PerformanceTestingNGTest {
     void debug() throws Exception { 
         bTestRealCards = true;
         perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection(null) : perfTesting.m_cardManager.establishConnection(JCAlgTestApplet.class);   
-        perfTesting.testKeyAgreementWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_128, JCConsts.KeyAgreement_ALG_EC_SVDP_DH, "ALG_EC_FP LENGTH_EC_FP_128 ALG_EC_SVDP_DH", (short) 1, (short) 10);
+
+        perfTesting.testAESKey(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128, "TYPE_AES LENGTH_AES_128", Consts.NUM_REPEAT_WHOLE_OPERATION, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
+
+       // perfTesting.testECPublicKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_224, "TYPE_EC_FP_PUBLIC LENGTH_EC_FP_224", (short) 2, (short) 2);
+        //perfTesting.testChecksum(JCConsts.Checksum_ALG_ISO3309_CRC16, "ALG_ISO3309_CRC16", (short) 2, (short) 2);
+
+        //perfTesting.testKeyAgreementWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_192, JCConsts.KeyAgreement_ALG_EC_SVDP_DH, "ALG_EC_FP LENGTH_EC_FP_192 ALG_EC_SVDP_DH", (short) 1, (short) 1);
+        /* 
+        perfTesting.testSignatureWithKeyClass(JCConsts.KeyPair_ALG_RSA, JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1280, JCConsts.Signature_ALG_RSA_SHA_ISO9796, "ALG_RSA LENGTH_RSA_1280 ALG_RSA_SHA_ISO9796", (short) 2, (short) 2);
+        
+
+       
+        perfTesting.testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_160, JCConsts.Signature_ALG_ECDSA_SHA, "KeyPair_ALG_EC_FP KeyBuilder_LENGTH_EC_FP_160 Signature_ALG_ECDSA_SHA", (short) 2, (short) 2);
+         perfTesting.testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512, JCConsts.Cipher_ALG_RSA_NOPAD, "TYPE_RSA_PRIVATE LENGTH_RSA_512 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, (short) 2, (short) 2);
+        perfTesting.testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512, JCConsts.Cipher_ALG_RSA_ISO14888, "TYPE_RSA_PRIVATE LENGTH_RSA_512 ALG_RSA_ISO14888", JCConsts.Cipher_MODE_DECRYPT, (short) 2, (short) 2);
+        perfTesting.testCipher(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512, JCConsts.Cipher_ALG_RSA_PKCS1, "TYPE_RSA_PRIVATE LENGTH_RSA_512 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_DECRYPT, (short) 2, (short) 2);
+        
+        //perfTesting.testRSAPrivateCrtKey(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512, "TYPE_RSA_PRIVATE_CRT LENGTH_RSA_512", (short) 2, (short) 2);
+//        perfTesting.testECPublicKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC, JCConsts.KeyBuilder_LENGTH_EC_FP_224, "TYPE_EC_FP_PUBLIC LENGTH_EC_FP_224", (short) 2, (short) 2);
+
+        perfTesting.testAllKeys((short) 2, (short) 2);
+//        perfTesting.testKeyAgreementWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_128, JCConsts.KeyAgreement_ALG_EC_SVDP_DH, "ALG_EC_FP LENGTH_EC_FP_128 ALG_EC_SVDP_DH", (short) 10, (short) 10);
+*/        
     }
     
     void uploadReconnect() throws IOException, InterruptedException, Exception {
