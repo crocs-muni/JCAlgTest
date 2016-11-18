@@ -370,7 +370,7 @@ public class JCinfohtml {
             "    selector: \"[data-toggle='tooltip']\",\n" +
             "    container: \"body\"\n" +
             "  })\n" +
-            "});\n</script>\n");
+            "});\n</script>\n");        
         file.write(toFile.toString().getBytes());
     }
       
@@ -777,15 +777,16 @@ public class JCinfohtml {
         StringBuilder toFile = new StringBuilder();
         toFile.append("<div class=\"container-fluid\">\n");
         toFile.append("<div class=\"row\">\n");
-        toFile.append("<h1>Performance similarity table</h1>\n");
-        toFile.append("<h4>We calculated how much individual pairs of cards differed in the performance.</h4>\n"
-                + "<p>Each value in the table represents similarity of two cards. Values close to 100% express that cards are very similar, close to 0% mean performance difference. Similarity table is calculated among <a href=\"./top-functions.html\">TOP FUNCTIONS</a>.</p>\n");
+        toFile.append("<h1>Similarity of smart cards based on their performance</h1>\n");
+        toFile.append("<h4>The actual performance of tested card when executing required algorithm can be used as useful side-channel for fingerprinting purposes.</h4>\n<br>\n"
+                + "<p>Using performance results for many cards, we calculated how much individual pairs of cards differ in the performance of selected important operations (so-called <a href=\"./top-functions.html\">TOP FUNCTIONS</a>).</p>\n"
+                + "<p>Each cell in the table represents the (di-) similarity of two cards. A value close to <strong>100%</strong> means that these two cards are very similar, whereas going to <strong>0%</strong> mean significant dissimilarity. When a cursor is placed above value, tooltip showing difference in supported algorithms of exact two cards appears.</p>\n"
+                + "<p>From the practical experience, we can say that pair of cards with similarity value over <strong>95%</strong> means either the identical card type or both being members of the same product family with same underlying hardware and very similar implementation of JavaCard Virtual Machine. The similarity in the range of <strong>85% - 95%</strong> usually signals the same family of cards yet with detectable differences (possibly different co-processor for some of the supported algorithms). The global average is about <strong>70%</strong>, with similarity below <strong>50%</strong> encountered for cards from completely different manufacturers.</p>\n");
         
-        toFile.append("<p>In general, we can say that pair of cards which has similarity value over <strong>95%</strong> is identical or contains the same chip. Similarity of <strong>85% - 95%</strong> usually signals same family of cards. \n" 
-                + "The global average was <strong>70%</strong>, therefore values in this area indicates no connection. Under <strong>50%</strong> means that cards are different in performance.</p>\n"); 
-        
-        toFile.append("<p>When a cursor is placed above value, tooltip showing difference in supported algorithms of exact two cards appears.</p>\n");
-        
+        toFile.append("<br>\n<h4>Why does it work? </h4>\n");
+        toFile.append("<p>In contrast to ordinary computers, smart cards are on one side more deterministic (usually, no processes running in parallel) yet more specialized on the hardware level. There is not \"just\" single general purpose CPU running compiled cryptographic algorithm, but a set of specialized circuits dedicated to the acceleration of particular cryptographic algorithm (DES, AES, RSA, ECC co-processor), all optimized for the maximum speed and minimum die space. Performance measurements of cryptographic algorithms can be therefore used as a card's fingerprint which cannot be easily manipulated on the higher software level. "
+                + "For example, one cannot re-implement faster RSA on the card's main CPU to mimic the speed of another card. The fastest achievable modular multiplication, on that particular card, is given by the performance of card's co-processor circuit and cannot be improved by the main CPU. </p>\n<br>\n");
+                
         file.write(toFile.toString().getBytes());
     }
    
@@ -810,7 +811,7 @@ public class JCinfohtml {
     
     public static void runCompareTable(String dir) throws FileNotFoundException, IOException {
         FileOutputStream file = new FileOutputStream(dir + "//" + "similarity-table.html");
-        beginHTML(file, "JCAlgTest - Performance similarity table");
+        beginHTML(file, "JCAlgTest - Similarity of smart cards");
         addInfoSimilarity(file);
         compareTable(dir, file);
         endHTML(file);
