@@ -1671,7 +1671,7 @@ public class CardMngr {
                     // Some problem, upload applet again
                     UploadApplet();
                     errors++;
-                    if(errors>=2) throw new Exception("Cannot upload applet.");
+                    if (errors>=2) throw new Exception("Cannot upload applet.");
 
                     key.append("# Applet uploaded\n\n");
                     file.write(key.toString().getBytes());
@@ -1683,23 +1683,36 @@ public class CardMngr {
                     // We got public key out
                     byte pubKey[] = resp.getData();
                     key.append("PUBL: ");
-                    key.append(bytesToHex(pubKey));
+                    key.append(bytesToHex(pubKey, false));
                     key.append("\n");
                     errors = 0;
                 }
 
 
                 // Ask for private key
-                ResponseAPDU respPrivate = sendAPDU(apduPrivate);
-                if (respPrivate.getSW() != 0x9000) {
-                    m_SystemOutLogger.println(getTerminalName() + " : Failed to obtain private key with " + Integer.toHexString(respPrivate.getSW()));
+                privateKeySetting.P1 = 1;
+                byte apduPrivateP[] = this.prepareApduForKeyHarvest(privateKeySetting);
+                privateKeySetting.P1 = 2;
+                byte apduPrivateQ[] = this.prepareApduForKeyHarvest(privateKeySetting);
+                ResponseAPDU respPrivateP = sendAPDU(apduPrivateP);
+                ResponseAPDU respPrivateQ = sendAPDU(apduPrivateQ);
+                //ResponseAPDU respPrivate = sendAPDU(apduPrivate);
+                
+                if ((respPrivateP.getSW() != 0x9000) || (respPrivateQ.getSW() != 0x9000)) {
+                    m_SystemOutLogger.println(getTerminalName() + " : Failed to obtain private key P with " + Integer.toHexString(respPrivateP.getSW()));
+                    m_SystemOutLogger.println(getTerminalName() + " : Failed to obtain private key Q with " + Integer.toHexString(respPrivateQ.getSW()));
                     continue;
                 }  
                 else {
                     // We got private key out
-                    byte privKey[] = respPrivate.getData();
+                    byte privKeyP[] = respPrivateP.getData();
+                    byte privKeyQ[] = respPrivateQ.getData();
+                    byte privKey[] = new byte[privKeyP.length + privKeyQ.length]; 
+                    
+                    System.arraycopy(privKeyP, 0, privKey, 0, privKeyP.length);
+                    System.arraycopy(privKeyQ, 0, privKey, privKeyP.length, privKeyQ.length);
                     key.append("PRIV: ");
-                    key.append(bytesToHex(privKey));
+                    key.append(bytesToHex(privKey, false));
                     key.append("\n");
                 }
 

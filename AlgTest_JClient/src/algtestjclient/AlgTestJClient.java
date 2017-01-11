@@ -199,7 +199,7 @@ public class AlgTestJClient {
         KeyHarvest keyHarvest = new KeyHarvest(m_SystemOutLogger);
         Scanner sc = new Scanner(System.in);
         // Remove new line character from stream after load integer as type of test
-        sc.nextLine();
+        //sc.nextLine();
         m_SystemOutLogger.print("Upload applet before harvest (y/n): ");
         String autoUploadBeforeString = sc.nextLine();
         boolean autoUploadBefore = false;
@@ -211,7 +211,7 @@ public class AlgTestJClient {
 
         m_SystemOutLogger.print("Bit length of key to generate (512, 1024 or 2048): ");
         String bitLengthString = sc.nextLine();
-        int acceptedInputs[] = {512, 1024};
+        int acceptedInputs[] = {512, 1024, 2048};
         short bitLength = JCConsts.KeyBuilder_LENGTH_RSA_512;
         try {
             int input = Integer.parseInt(bitLengthString);
@@ -240,21 +240,23 @@ public class AlgTestJClient {
         }
 
         // Check if folder !card_uploaders is correctly set
-        File fileCardUploadersFolder = new File(CardMngr.cardUploadersFolder);
-        if (!fileCardUploadersFolder.exists()) {
-            m_SystemOutLogger.println("Cannot find folder with card uploaders. Default folder: " + CardMngr.cardUploadersFolder);
-            m_SystemOutLogger.print("Card uploaders folder path: ");
-            String newPath = sc.nextLine();
-            fileCardUploadersFolder = new File(CardMngr.cardUploadersFolder);
-            // If new path is also incorrect
+        if (autoUploadBeforeString.toLowerCase().equals("y")) {
+            File fileCardUploadersFolder = new File(CardMngr.cardUploadersFolder);
             if (!fileCardUploadersFolder.exists()) {
-                System.err.println("Folder " + newPath + " does not exist. Cannot start gathering RSA keys.");
-                return;
+                m_SystemOutLogger.println("Cannot find folder with card uploaders. Default folder: " + CardMngr.cardUploadersFolder);
+                m_SystemOutLogger.print("Card uploaders folder path: ");
+                String newPath = sc.nextLine();
+                fileCardUploadersFolder = new File(CardMngr.cardUploadersFolder);
+                // If new path is also incorrect
+                if (!fileCardUploadersFolder.exists()) {
+                    System.err.println("Folder " + newPath + " does not exist. Cannot start gathering RSA keys.");
+                    return;
+                }
+                // Set new path to !card_uploaders folder
+                CardMngr.cardUploadersFolder = newPath;
             }
-            // Set new path to !card_uploaders folder
-            CardMngr.cardUploadersFolder = newPath;
         }
-
+        
         m_SystemOutLogger.print("Number of keys to generate: ");
         String numOfKeysString = sc.nextLine();
         int numOfKeys = 10;
