@@ -11,11 +11,10 @@ Automated testing tool for algorithms supported by particular smart card with Ja
 
 2. Run Java application AlgTestJClient ('java -jar AlgTestJClient.jar'). Choose the target reader for card with uploaded AlgTest applet and let it run. CSV file with values separated by the semicolon is created (AlgTest_ATR.csv). 
 
-3. Please consider to send me (petr@svenda.com) your results in case your card is not yet in the database at http://www.fi.muni.cz/~xsvenda/jcsupport.html
+3. Please consider to send us (petr@svenda.com) your results in case your card is not yet in the database at https://www.fi.muni.cz/~xsvenda/jcalgtest/
 
 
-
-Results for (at least) following smartcards are currently in database (http://www.fi.muni.cz/~xsvenda/jcsupport.html):
+Results for (at least) following smartcards are currently in database (https://www.fi.muni.cz/~xsvenda/jcalgtest/):
 
 - Athena IDprotect , ATR=3B D5 18 FF 80 91 FE 1F C3 80 73 C8 21 13 08
 - Axalto Cyberflex32 , ATR=3B 75 94 00 00 62 02 02 02 01
@@ -63,6 +62,6 @@ More detailed usage:
 3. Upload AlgTest package to your smart card and install it - Use uploader supplied by your card vendor (e.g., GPShell, GlobalPlatformPro). Package AID: 4a 43 41 6c 67 54 65 73 74, Applet AID: 4a 43 41 6c 67 54 65 73 74 31. No special installation parameters are given.
 4. Run application AlgTestJClient.jar as 'java -jar AlgTestJClient.jar' - Choose the target reader for card with uploaded AlgTest applet, select test you like to execute and let it run. CSV file with values separated by the semicolon is created (AlgTest_ATR.csv). 
   
-5. Please consider to send me (petr@svenda.com) your results in case your card is not yet in the database at http://www.fi.muni.cz/~xsvenda/jcsupport.html
+5. Please consider to send us (petr@svenda.com) your results in case your card is not yet in the database at https://www.fi.muni.cz/~xsvenda/jcalgtest/
 
-See more details at http://www.fi.muni.cz/~xsvenda/jcsupport.html
+See more details at https://www.fi.muni.cz/~xsvenda/jcalgtest/

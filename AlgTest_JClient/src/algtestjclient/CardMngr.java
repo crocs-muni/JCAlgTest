@@ -1621,7 +1621,44 @@ public class CardMngr {
         CardMngr.serializeToApduBuff(setting, apdu, ISO7816.OFFSET_CDATA);
         return apdu;
     }
-      
+    
+    public byte[] prepareApduCipherEngine(TestSettings setting) {
+        byte apdu[] = new byte[HEADER_LENGTH + TestSettings.TEST_SETTINGS_LENGTH + ((setting.inData == null) ? 0 : setting.inData.length)];
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
+        apdu[OFFSET_INS] = Consts.INS_PREPARE_CIPHERENGINE;
+        apdu[OFFSET_P1] = setting.P1;
+        apdu[OFFSET_P2] = setting.P2;
+        apdu[OFFSET_LC] = (byte) (apdu.length - HEADER_LENGTH);
+        CardMngr.serializeToApduBuff(setting, apdu, ISO7816.OFFSET_CDATA);
+        return apdu;
+    }    
+    
+        
+    public boolean PrepareRSAEngine(FileOutputStream file, short bitLength, boolean useCrt) throws Exception {
+        short keyClass = JCConsts.KeyPair_ALG_RSA;
+        if (useCrt) {
+            keyClass = JCConsts.KeyPair_ALG_RSA_CRT;
+        }
+
+        TestSettings publicKeySetting = this.prepareKeyHarvestSettings(keyClass, JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, bitLength);
+        byte apduEngine[] = this.prepareApduCipherEngine(publicKeySetting);
+
+        // Prepare for new key generation
+        long elapsedCard = -System.currentTimeMillis();
+
+        ResponseAPDU resp = sendAPDU(apduEngine);
+        elapsedCard += System.currentTimeMillis();
+
+        if (resp.getSW() != 0x9000) {
+            m_SystemOutLogger.println(getTerminalName() + " : Failed to prepare new RSA engine " + Integer.toHexString(resp.getSW()));
+            return false;
+        } else {
+            // We have engine prepared
+            m_SystemOutLogger.println("RSA engine prepared");
+        }
+        return true;
+    }
+            
     public int GenerateAndGetKeys(FileOutputStream file, int numRepeats, int resetFrequency, boolean uploadBeforeStart, short bitLength, boolean useCrt) throws Exception { 
         String message;
         int numKeysGenerated = 0;                  
@@ -1633,105 +1670,126 @@ public class CardMngr {
             ConnectToCard(null, m_terminal, null, null, null);
         }
         
-        int seriousProblemCounter = 0;
-        
-        short keyClass = JCConsts.KeyPair_ALG_RSA;
-        if (useCrt) keyClass = JCConsts.KeyPair_ALG_RSA_CRT;
-        TestSettings publicKeySetting = this.prepareKeyHarvestSettings(keyClass, JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, bitLength);
-        byte apduPublic[] = this.prepareApduForKeyHarvest(publicKeySetting);
-        
-        TestSettings privateKeySetting = this.prepareKeyHarvestSettings(keyClass, JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, bitLength);
-        byte apduPrivate[] = this.prepareApduForKeyHarvest(privateKeySetting);
-        
-        int errors = 0;
-        while(numKeysGenerated < numRepeats) {
-            try {
-                key.setLength(0);
-                if ((resetFrequency > 0) && (numKeysGenerated % resetFrequency == 0)) { bResetCard = true; }
+        if (PrepareRSAEngine(file, bitLength, useCrt)) {
+            int seriousProblemCounter = 0;
 
-                // Reset card if required
-                if (bResetCard) {
-                    m_SystemOutLogger.println(getTerminalName() + " : Reseting card...");
-                    key.append("# Card reseted\n\n");
+            short keyClass = JCConsts.KeyPair_ALG_RSA;
+            if (useCrt) keyClass = JCConsts.KeyPair_ALG_RSA_CRT;
+            TestSettings publicKeySetting = this.prepareKeyHarvestSettings(keyClass, JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, bitLength);
+            byte apduPublic[] = this.prepareApduForKeyHarvest(publicKeySetting);
+
+            TestSettings privateKeySetting = this.prepareKeyHarvestSettings(keyClass, JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, bitLength);
+            byte apduPrivate[] = this.prepareApduForKeyHarvest(privateKeySetting);
+
+            int errors = 0;
+            while(numKeysGenerated < numRepeats) {
+                try {
+                    key.setLength(0);
+                    if ((resetFrequency > 0) && (numKeysGenerated % resetFrequency == 0)) { bResetCard = true; }
+
+                    // Reset card if required
+                    if (bResetCard) {
+                        m_SystemOutLogger.println(getTerminalName() + " : Reseting card...");
+                        key.append("# Card reseted\n\n");
+                        file.write(key.toString().getBytes());
+
+                        m_card.disconnect(true);
+                        ConnectToCard(null, m_terminal, null, null, null);
+                        bResetCard = false;
+                    }
+
+                    // Prepare for new key generation
+                    long elapsedCard = - System.currentTimeMillis();
+
+                    ResponseAPDU resp = sendAPDU(apduPublic);
+                    elapsedCard += System.currentTimeMillis();
+
+                    if (resp.getSW() != 0x9000) {
+                        m_SystemOutLogger.println(getTerminalName() + " : Failed to generate new key with " + Integer.toHexString(resp.getSW()));
+                        // Some problem, upload applet again
+                        UploadApplet();
+                        errors++;
+                        if (errors>=2) throw new Exception("Cannot upload applet.");
+
+                        key.append("# Applet uploaded\n\n");
+                        file.write(key.toString().getBytes());
+
+                        ConnectToCard(null, m_terminal, null, null, null);
+                        continue;
+                    }
+                    else {
+                        // We got public key out
+                        byte pubKey[] = resp.getData();
+                        key.append("PUBL: ");
+                        key.append(bytesToHex(pubKey, false));
+                        key.append("\n");
+                        errors = 0;
+                    }
+
+
+                    // Ask for private key
+                    privateKeySetting.P1 = 1;
+                    byte apduPrivateP[] = this.prepareApduForKeyHarvest(privateKeySetting);
+                    privateKeySetting.P1 = 2;
+                    byte apduPrivateQ[] = this.prepareApduForKeyHarvest(privateKeySetting);
+                    ResponseAPDU respPrivateP = sendAPDU(apduPrivateP);
+                    ResponseAPDU respPrivateQ = sendAPDU(apduPrivateQ);
+                    //ResponseAPDU respPrivate = sendAPDU(apduPrivate);
+
+                    if ((respPrivateP.getSW() != 0x9000) || (respPrivateQ.getSW() != 0x9000)) {
+                        m_SystemOutLogger.println(getTerminalName() + " : Failed to obtain private key P with " + Integer.toHexString(respPrivateP.getSW()));
+                        m_SystemOutLogger.println(getTerminalName() + " : Failed to obtain private key Q with " + Integer.toHexString(respPrivateQ.getSW()));
+                        continue;
+                    }  
+                    else {
+                        // We got private key out
+                        byte privKeyP[] = respPrivateP.getData();
+                        byte privKeyQ[] = respPrivateQ.getData();
+                        byte privKey[] = new byte[privKeyP.length + privKeyQ.length]; 
+
+                        System.arraycopy(privKeyP, 0, privKey, 0, privKeyP.length);
+                        System.arraycopy(privKeyQ, 0, privKey, privKeyP.length, privKeyQ.length);
+                        key.append("PRIV: ");
+                        key.append(bytesToHex(privKey, false));
+                        key.append("\n");
+                    }
+
+
+                    String elTimeStr;
+                    // OUTPUT REQUIRED TIME WHEN PARTITIONED CHECK WAS PERFORMED (NOTMULTIPLE ALGORITHMS IN SINGLE RUN)
+                    elTimeStr = String.valueOf((double) elapsedCard / (float) CLOCKS_PER_SEC);
+                    key.append("# ");
+                    key.append(numKeysGenerated + 1);
+                    key.append(":");
+                    key.append(elTimeStr);
+                    key.append("\n\n");
+
+                    // Save key to file
                     file.write(key.toString().getBytes());
 
-                    m_card.disconnect(true);
-                    ConnectToCard(null, m_terminal, null, null, null);
-                    bResetCard = false;
+
+                    numKeysGenerated++; 
+
+                    message = getTerminalName() + " | " + numKeysGenerated + " : " ;
+                    message += elTimeStr;
+                    m_SystemOutLogger.println(message);
+
+                    file.flush();
+
+                    seriousProblemCounter = 0;   // problems were solved now
                 }
-
-                // Prepare for new key generation
-                long elapsedCard = - System.currentTimeMillis();
-                
-                ResponseAPDU resp = sendAPDU(apduPublic);
-                elapsedCard += System.currentTimeMillis();
-
-                if (resp.getSW() != 0x9000) {
-                    m_SystemOutLogger.println(getTerminalName() + " : Failed to generate new key with " + Integer.toHexString(resp.getSW()));
-                    // Some problem, upload applet again
-                    UploadApplet();
-                    errors++;
-                    if(errors>=2) throw new Exception("Cannot upload applet.");
-
-                    key.append("# Applet uploaded\n\n");
-                    file.write(key.toString().getBytes());
-
-                    ConnectToCard(null, m_terminal, null, null, null);
-                    continue;
+                catch (Exception ex) {
+                    m_SystemOutLogger.println(getTerminalName() + " : Failed with " + ex.getMessage());
+                    seriousProblemCounter = RestartCardWithUpload(seriousProblemCounter, file);
                 }
-                else {
-                    // We got public key out
-                    byte pubKey[] = resp.getData();
-                    key.append("PUBL: ");
-                    key.append(bytesToHex(pubKey));
-                    key.append("\n");
-                    errors = 0;
-                }
-
-
-                // Ask for private key
-                ResponseAPDU respPrivate = sendAPDU(apduPrivate);
-                if (respPrivate.getSW() != 0x9000) {
-                    m_SystemOutLogger.println(getTerminalName() + " : Failed to obtain private key with " + Integer.toHexString(respPrivate.getSW()));
-                    continue;
-                }  
-                else {
-                    // We got private key out
-                    byte privKey[] = respPrivate.getData();
-                    key.append("PRIV: ");
-                    key.append(bytesToHex(privKey));
-                    key.append("\n");
-                }
-
-
-                String elTimeStr;
-                // OUTPUT REQUIRED TIME WHEN PARTITIONED CHECK WAS PERFORMED (NOTMULTIPLE ALGORITHMS IN SINGLE RUN)
-                elTimeStr = String.valueOf((double) elapsedCard / (float) CLOCKS_PER_SEC);
-                key.append("# ");
-                key.append(numKeysGenerated + 1);
-                key.append(":");
-                key.append(elTimeStr);
-                key.append("\n\n");
-
-                // Save key to file
-                file.write(key.toString().getBytes());
-
-
-                numKeysGenerated++; 
-
-                message = getTerminalName() + " | " + numKeysGenerated + " : " ;
-                message += elTimeStr;
-                m_SystemOutLogger.println(message);
-
-                file.flush();
-                
-                seriousProblemCounter = 0;   // problems were solved now
-            }
-            catch (Exception ex) {
-                m_SystemOutLogger.println(getTerminalName() + " : Failed with " + ex.getMessage());
-                seriousProblemCounter = RestartCardWithUpload(seriousProblemCounter, file);
-            }
-        }   
+            }   
+        }
+        else {
+            // Failed to prepare engine for given length => no keys
+            numKeysGenerated = 0;
+            message = String.format("\nFailed to prepare RSA engine for key length '%d'\n\n", bitLength);
+            file.write(message.getBytes());
+        }
         return numKeysGenerated;
     }    
    

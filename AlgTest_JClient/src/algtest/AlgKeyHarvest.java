@@ -50,9 +50,9 @@ public class AlgKeyHarvest {
     
     private static final byte KeyPair_ALG_RSA                       = 1;
     private static final byte KeyPair_ALG_RSA_CRT                   = 2;
-    private static final byte KeyBuilder_ALG_TYPE_RSA_PUBLIC        = 11;
-    private static final byte KeyBuilder_ALG_TYPE_RSA_PRIVATE       = 12;
-    private static final byte KeyBuilder_ALG_TYPE_RSA_CRT_PRIVATE   = 13;
+    private static final byte KeyBuilder_ALG_TYPE_RSA_PUBLIC        = 4;
+    private static final byte KeyBuilder_ALG_TYPE_RSA_PRIVATE       = 5;
+    private static final byte KeyBuilder_ALG_TYPE_RSA_CRT_PRIVATE   = 6;
 
 
     AlgKeyHarvest() { 
@@ -67,6 +67,7 @@ public class AlgKeyHarvest {
         if (apduBuffer[ISO7816.OFFSET_CLA] == AlgTest.Consts.CLA_CARD_ALGTEST) {
             bProcessed = 1;
             switch ( apduBuffer[ISO7816.OFFSET_INS]) {
+                case AlgTest.Consts.INS_PREPARE_CIPHERENGINE: PrepareRSAEngine(apdu); break;
                 case AlgTest.Consts.INS_CARD_GETRSAKEY: GetRSAKey(apdu); break;
                 case AlgTest.Consts.INS_CARD_GETRANDOMDATA: GetRandomData(apdu); break;
                 default : {
@@ -79,19 +80,26 @@ public class AlgKeyHarvest {
         return bProcessed;
     }
 
+    void PrepareRSAEngine(APDU apdu) {
+        byte[] apdubuf = apdu.getBuffer();
+        m_testSettings.parse(apdu);
+
+        m_keyPair = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
+    }
+    
+    
    /**
     * Method for on-card generation of RSA keypair and export of result outside (in two apdu)
     * @param apdu 
     */
    void GetRSAKey(APDU apdu) {
        byte[]    apdubuf = apdu.getBuffer();
-       apdu.setIncomingAndReceive();
        m_testSettings.parse(apdu);
-
+       
        // Generate new object if not before yet
        if (m_keyPair == null) {
           m_keyPair = new KeyPair((byte)m_testSettings.keyClass, m_testSettings.keyLength);
-//          m_keyPair = new KeyPair(KeyPair.ALG_RSA_CRT, KeyBuilder.LENGTH_RSA_512);
+//          m_keyPair = new KeyPair(KeyPair.ALG_RSA_CRT, KeyBuilder.LENGTH_RSA_2048);
       }	       
       
       switch (m_testSettings.keyType) {
@@ -100,18 +108,23 @@ public class AlgKeyHarvest {
             m_rsaPublicKey = (RSAPublicKey) m_keyPair.getPublic();
 
             short offset = 0;
-            apdubuf[offset] = (byte)0x82; offset++;
-            short len = m_rsaPublicKey.getExponent(apdubuf, (short)(offset + 2));
-            Util.setShort(apdubuf, offset, len); 
-            offset += 2;    // length
-            offset += len;  // value
+            short len = 0;
+            if (apdubuf[ISO7816.OFFSET_P1] == (byte) 0x00 || apdubuf[ISO7816.OFFSET_P1] == (byte) 0x01) {
+                apdubuf[offset] = (byte)0x81; offset++;
+                len = m_rsaPublicKey.getExponent(apdubuf, (short)(offset + 2));
+                Util.setShort(apdubuf, offset, len); 
+                offset += 2;    // length
+                offset += len;  // value
+            }
             
-            apdubuf[offset] = (byte)0x82; offset++;
-            len = m_rsaPublicKey.getModulus(apdubuf, (short) (offset + 2));
-            Util.setShort(apdubuf, offset, len); 
-            offset += 2;    // length
-            offset += len;  // value
-
+            if (apdubuf[ISO7816.OFFSET_P1] == (byte) 0x00 || apdubuf[ISO7816.OFFSET_P1] == (byte) 0x02) {
+                apdubuf[offset] = (byte)0x82; offset++;
+                len = m_rsaPublicKey.getModulus(apdubuf, (short) (offset + 2));
+                Util.setShort(apdubuf, offset, len); 
+                offset += 2;    // length
+                offset += len;  // value
+            }
+            
             apdu.setOutgoingAndSend((short) 0, offset);
         
             break;
@@ -121,21 +134,25 @@ public class AlgKeyHarvest {
             if(m_testSettings.keyClass == KeyPair_ALG_RSA_CRT) {
                 m_rsaPrivateCrtKey = (RSAPrivateCrtKey) m_keyPair.getPrivate();
                 
-                short len = m_rsaPrivateCrtKey.getP(apdubuf, (short)(offset + 3));
-                apdubuf[offset] = (byte)0x82; offset++;
-                Util.setShort(apdubuf, offset, len); offset += 2;
-                offset += len;
-
-                len = m_rsaPrivateCrtKey.getQ(apdubuf, (short)(offset + 3));
-                apdubuf[offset] = (byte)0x82; offset++;
-                Util.setShort(apdubuf, offset, len); offset += 2;
-                offset += len;
+                short len = 0;
+                if (apdubuf[ISO7816.OFFSET_P1] == (byte) 0x00 || apdubuf[ISO7816.OFFSET_P1] == (byte) 0x01) {
+                    len = m_rsaPrivateCrtKey.getP(apdubuf, (short)(offset + 3));
+                    apdubuf[offset] = (byte)0x83; offset++;
+                    Util.setShort(apdubuf, offset, len); offset += 2;
+                    offset += len;
+                }
+                if (apdubuf[ISO7816.OFFSET_P1] == (byte) 0x00 || apdubuf[ISO7816.OFFSET_P1] == (byte) 0x02) {
+                    len = m_rsaPrivateCrtKey.getQ(apdubuf, (short)(offset + 3));
+                    apdubuf[offset] = (byte)0x84; offset++;
+                    Util.setShort(apdubuf, offset, len); offset += 2;
+                    offset += len;
+                }
             }
             else if(m_testSettings.keyClass == KeyPair_ALG_RSA) {
                 m_rsaPrivateKey = (RSAPrivateKey) m_keyPair.getPrivate();
                 
                 short len = m_rsaPrivateKey.getExponent(apdubuf, (short)(offset + 3));
-                apdubuf[offset] = (byte)0x82; offset++;
+                apdubuf[offset] = (byte)0x85; offset++;
                 Util.setShort(apdubuf, offset, len); offset += 2;
                 offset += len;
 
