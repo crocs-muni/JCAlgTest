@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.PatternSyntaxException;
 import javax.smartcardio.ATR;
 import javax.smartcardio.Card;
 import javax.smartcardio.CardException;
@@ -115,7 +116,7 @@ public class AlgTestJClient {
         
         m_SystemOutLogger.println("\n-----------------------------------------------------------------------   ");
         m_SystemOutLogger.println("JCAlgTest " + ALGTEST_JCLIENT_VERSION + " - comprehensive tool for JavaCard smart card testing.");
-        m_SystemOutLogger.println("Visit jcalgtest.org for results from 50+ cards. CRoCS.cz lab 2007-2016.");
+        m_SystemOutLogger.println("Visit jcalgtest.org for results from 60+ cards. CRoCS.cz lab 2007-2016.");
         m_SystemOutLogger.println("Please check if you use the latest version at\n  https://github.com/crocs-muni/JCAlgTest/releases/latest.");
         
         m_SystemOutLogger.println("-----------------------------------------------------------------------\n");
@@ -200,8 +201,9 @@ public class AlgTestJClient {
         Scanner sc = new Scanner(System.in);
         // Remove new line character from stream after load integer as type of test
         //sc.nextLine();
-        m_SystemOutLogger.print("Upload applet before harvest (y/n): ");
+        m_SystemOutLogger.print("\nUpload applet before harvest (y/n): ");
         String autoUploadBeforeString = sc.nextLine();
+        m_SystemOutLogger.println(autoUploadBeforeString);
         boolean autoUploadBefore = false;
         if (autoUploadBeforeString.toLowerCase().equals("y")) {
             autoUploadBefore = true;
@@ -209,29 +211,58 @@ public class AlgTestJClient {
             m_SystemOutLogger.println("Wrong answer. Auto upload applet before harvest is disabled.");
         }
 
-        m_SystemOutLogger.print("Bit length of key to generate (512, 1024 or 2048): ");
+        m_SystemOutLogger.println("\nBit length of key to generate.");
+        m_SystemOutLogger.println("Can be any number between 512 and 4096 bits (based on the card support)\n\t or range given as [start_bit_length:step_bits:end_bit_length]");
+        m_SystemOutLogger.println("Example inputs: '2048' or '1024:32:2048'");
+        m_SystemOutLogger.print("Bit length of key to generate: ");
         String bitLengthString = sc.nextLine();
-        int acceptedInputs[] = {512, 1024, 2048};
-        short bitLength = JCConsts.KeyBuilder_LENGTH_RSA_512;
+        m_SystemOutLogger.println(bitLengthString);
+        int acceptedInputs[] = {512, 736, 768, 896, 960, 1024, 1280, 1536, 1984, 2048, 3072, 4096};
+        //short bitLength = JCConsts.KeyBuilder_LENGTH_RSA_512;
+        short bitLength_start = JCConsts.KeyBuilder_LENGTH_RSA_512;
+        short bitLength_step = (short) 0;
+        short bitLength_end = JCConsts.KeyBuilder_LENGTH_RSA_512;
         try {
-            int input = Integer.parseInt(bitLengthString);
-            boolean isAcceptedInput = false;
-            for (int acceptedInput : acceptedInputs) {
-                if (input == acceptedInput) {
-                    isAcceptedInput = true;
-                    bitLength = (short) acceptedInput;
-                    break;
+            // Detect range if submitted
+            if (bitLengthString.contains(":")) {
+                bitLengthString = bitLengthString.trim();
+                String[] rangeVals = bitLengthString.split(":");
+                int input = Integer.parseInt(rangeVals[0]);
+                bitLength_start = (short) input;
+                input = Integer.parseInt(rangeVals[1]);
+                bitLength_step = (short) input;
+                input = Integer.parseInt(rangeVals[2]);
+                bitLength_end = (short) input;
+            }
+            else {
+                // Single bit length submitted
+                int input = Integer.parseInt(bitLengthString);
+                boolean isAcceptedInput = false;
+                for (int acceptedInput : acceptedInputs) {
+                    if (input == acceptedInput) {
+                        isAcceptedInput = true;
+                        // Simulated range with single value only
+                        bitLength_start = (short) acceptedInput;
+                        bitLength_step = (short) 0;
+                        bitLength_end = (short) acceptedInput;                        
+                        break;
+                    }
+                }
+                if (!isAcceptedInput) {
+                    throw new NumberFormatException();
                 }
             }
-            if (!isAcceptedInput) {
-                throw new NumberFormatException();
-            }
-        } catch (NumberFormatException ex) {
-            m_SystemOutLogger.println("Wrong number. Bit length is set to " + bitLength + ".");
+        } 
+        catch (NumberFormatException ex) {
+            m_SystemOutLogger.println("Wrong number. Bit length is set to " + bitLength_start + ".");
+        }
+        catch (PatternSyntaxException ex) {
+            m_SystemOutLogger.println("Wrong range input. Correct format is '1024:32:2048'. Bit length is set to " + bitLength_start + ".");
         }
 
-        m_SystemOutLogger.print("Use RSA harvest with CRT (y/n): ");
+        m_SystemOutLogger.print("\nUse RSA harvest with CRT (y/n): ");
         String useCrtString = sc.nextLine();
+        m_SystemOutLogger.println(useCrtString);
         boolean useCrt = false;
         if (useCrtString.toLowerCase().equals("y")) {
             useCrt = true;
@@ -257,8 +288,9 @@ public class AlgTestJClient {
             }
         }
         
-        m_SystemOutLogger.print("Number of keys to generate: ");
+        m_SystemOutLogger.print("\nNumber of keys to generate: ");
         String numOfKeysString = sc.nextLine();
+        m_SystemOutLogger.println(numOfKeysString);
         int numOfKeys = 10;
         try {
             numOfKeys = Integer.parseInt(numOfKeysString);
@@ -266,7 +298,7 @@ public class AlgTestJClient {
             m_SystemOutLogger.println("Wrong number. Number of keys to generate is set to " + numOfKeys + ".");
         }
 
-        keyHarvest.gatherRSAKeys(autoUploadBefore, bitLength, useCrt, numOfKeys);        
+        keyHarvest.gatherRSAKeys(autoUploadBefore, bitLength_start, bitLength_step, bitLength_end, useCrt, numOfKeys);        
     }
     
     static CardTerminal selectTargetReader() {

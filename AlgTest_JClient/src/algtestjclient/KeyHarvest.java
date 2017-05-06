@@ -51,7 +51,7 @@ public class KeyHarvest {
         cardManager = new CardMngr(m_SystemOutLogger);
     }
     
-    void gatherRSAKeys(boolean autoUploadBefore, short bitLength, boolean useCrt, int numOfKeys) throws CardException {
+    void gatherRSAKeys(boolean autoUploadBefore, short bitLength_start, short bitLength_step, short bitLength_end, boolean useCrt, int numOfKeys) throws CardException {
 	    //
             // Obtain all readers with cards
             //
@@ -76,7 +76,7 @@ public class KeyHarvest {
             ExecutorService executor = Executors.newCachedThreadPool();
   
             for (int i = 0; i < readersWithCardList.size(); i++) {
-                executor.execute(new CardRunner((CardTerminal) readersWithCardList.get(i), (byte) 0, numOfKeys, autoUploadBefore, bitLength, useCrt, m_SystemOutLogger));
+                executor.execute(new CardRunner((CardTerminal) readersWithCardList.get(i), (byte) 0, numOfKeys, autoUploadBefore, bitLength_start, bitLength_step, bitLength_end, useCrt, m_SystemOutLogger));
             }
         
             executor.shutdown();
