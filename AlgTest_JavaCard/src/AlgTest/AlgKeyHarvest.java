@@ -67,6 +67,7 @@ public class AlgKeyHarvest {
         if (apduBuffer[ISO7816.OFFSET_CLA] == AlgTest.Consts.CLA_CARD_ALGTEST) {
             bProcessed = 1;
             switch ( apduBuffer[ISO7816.OFFSET_INS]) {
+                case AlgTest.Consts.INS_PREPARE_CIPHERENGINE: PrepareRSAEngine(apdu); break;
                 case AlgTest.Consts.INS_CARD_GETRSAKEY: GetRSAKey(apdu); break;
                 case AlgTest.Consts.INS_CARD_GETRANDOMDATA: GetRandomData(apdu); break;
                 default : {
@@ -79,6 +80,14 @@ public class AlgKeyHarvest {
         return bProcessed;
     }
 
+    void PrepareRSAEngine(APDU apdu) {
+        byte[] apdubuf = apdu.getBuffer();
+        m_testSettings.parse(apdu);
+
+        m_keyPair = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
+    }
+    
+    
    /**
     * Method for on-card generation of RSA keypair and export of result outside (in two apdu)
     * @param apdu 

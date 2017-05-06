@@ -134,6 +134,9 @@ public class JCAlgTestApplet extends javacard.framework.Applet
     byte ALGTEST_JAVACARD_VERSION_CURRENT[] = ALGTEST_JAVACARD_VERSION_1_7_1;
 
     AlgKeyHarvest       m_keyHarvest = null;
+    AlgSupportTest      m_supportTest = null;
+    AlgPerformanceTest  m_perfTest = null;
+    AlgStorageTest      m_storageTest = null;
 
     public final static short RAM1_ARRAY_LENGTH = (short) 600;
     public final static short RAM2_ARRAY_LENGTH = (short) 512;
@@ -159,10 +162,13 @@ public class JCAlgTestApplet extends javacard.framework.Applet
             isOP2 = true;
        } else {}
 
-        // m_ramArray1 = JCSystem.makeTransientByteArray(RAM1_ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);
-        //m_ramArray2 = JCSystem.makeTransientByteArray(RAM2_ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);
+        m_ramArray = JCSystem.makeTransientByteArray(RAM1_ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);
+        m_ramArray2 = JCSystem.makeTransientByteArray(RAM2_ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);
 
         m_keyHarvest = new AlgKeyHarvest();
+        m_supportTest = new AlgSupportTest(m_ramArray, m_ramArray2);
+        m_perfTest = new AlgPerformanceTest(m_ramArray, m_ramArray2);
+        m_storageTest = new AlgStorageTest();
         
         if (isOP2) { register(buffer, (short)(offset + 1), buffer[offset]); }
         else { register(); }
@@ -195,12 +201,22 @@ public class JCAlgTestApplet extends javacard.framework.Applet
                 bProcessed = (byte) 1;
             }
             if (apduBuffer[ISO7816.OFFSET_INS] == Consts.INS_CARD_RESET) {
+                JCSystem.requestObjectDeletion();
                 bProcessed = (byte) 1;
             }
         }
 
         if (bProcessed == 0) {
+            bProcessed = m_supportTest.process(apdu);
+        }
+        if (bProcessed == 0) {
             bProcessed = m_keyHarvest.process(apdu);
+        }
+        if (bProcessed == 0) {
+            bProcessed = m_perfTest.process(apdu);
+        }
+        if (bProcessed == 0) {
+            bProcessed = m_storageTest.process(apdu);
         }
         
         
