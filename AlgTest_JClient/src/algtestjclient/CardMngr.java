@@ -1621,7 +1621,44 @@ public class CardMngr {
         CardMngr.serializeToApduBuff(setting, apdu, ISO7816.OFFSET_CDATA);
         return apdu;
     }
-      
+    
+    public byte[] prepareApduCipherEngine(TestSettings setting) {
+        byte apdu[] = new byte[HEADER_LENGTH + TestSettings.TEST_SETTINGS_LENGTH + ((setting.inData == null) ? 0 : setting.inData.length)];
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
+        apdu[OFFSET_INS] = Consts.INS_PREPARE_CIPHERENGINE;
+        apdu[OFFSET_P1] = setting.P1;
+        apdu[OFFSET_P2] = setting.P2;
+        apdu[OFFSET_LC] = (byte) (apdu.length - HEADER_LENGTH);
+        CardMngr.serializeToApduBuff(setting, apdu, ISO7816.OFFSET_CDATA);
+        return apdu;
+    }    
+    
+        
+    public boolean PrepareRSAEngine(FileOutputStream file, short bitLength, boolean useCrt) throws Exception {
+        short keyClass = JCConsts.KeyPair_ALG_RSA;
+        if (useCrt) {
+            keyClass = JCConsts.KeyPair_ALG_RSA_CRT;
+        }
+
+        TestSettings publicKeySetting = this.prepareKeyHarvestSettings(keyClass, JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, bitLength);
+        byte apduEngine[] = this.prepareApduCipherEngine(publicKeySetting);
+
+        // Prepare for new key generation
+        long elapsedCard = -System.currentTimeMillis();
+
+        ResponseAPDU resp = sendAPDU(apduEngine);
+        elapsedCard += System.currentTimeMillis();
+
+        if (resp.getSW() != 0x9000) {
+            m_SystemOutLogger.println(getTerminalName() + " : Failed to prepare new RSA engine " + Integer.toHexString(resp.getSW()));
+            return false;
+        } else {
+            // We have engine prepared
+            m_SystemOutLogger.println("RSA engine prepared");
+        }
+        return true;
+    }
+            
     public int GenerateAndGetKeys(FileOutputStream file, int numRepeats, int resetFrequency, boolean uploadBeforeStart, short bitLength, boolean useCrt) throws Exception { 
         String message;
         int numKeysGenerated = 0;                  
@@ -1632,6 +1669,9 @@ public class CardMngr {
             UploadApplet();
             ConnectToCard(null, m_terminal, null, null, null);
         }
+        
+        PrepareRSAEngine(file, bitLength, useCrt);
+        
         
         int seriousProblemCounter = 0;
         
