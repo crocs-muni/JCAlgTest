@@ -54,6 +54,13 @@ public class AlgTestJClient {
     public static final String ALGTEST_PERFORMANCE = "AT_PERFORMANCE";          // for performance testing
     
     /**
+     * Version 1.7.2 (06.05.2017) 
+     * + support for RSA key generation and export within given range
+     * + minor improvements of interface
+     */
+    public final static String ALGTEST_JCLIENT_VERSION_1_7_2 = "1.7.2";
+
+    /**
      * Version 1.7.1 (03.10.2016) 
      * + support for reader access via JNA
      */
@@ -101,7 +108,7 @@ public class AlgTestJClient {
     /**
      * Current version
      */
-    public final static String ALGTEST_JCLIENT_VERSION = ALGTEST_JCLIENT_VERSION_1_7_1;
+    public final static String ALGTEST_JCLIENT_VERSION = ALGTEST_JCLIENT_VERSION_1_7_2;
     
     public final static int STAT_OK = 0;    
     /**
