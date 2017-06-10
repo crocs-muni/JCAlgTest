@@ -221,6 +221,10 @@ public class SingleModeTest {
     public static final String RANDOMDATA_STR[] = {"javacard.security.RandomData", 
         "ALG_PSEUDO_RANDOM#&le;2.1", "ALG_SECURE_RANDOM#&le;2.1"}; 
 
+        "ALG_PSEUDO_RANDOM#&le;2.1", "ALG_SECURE_RANDOM#&le;2.1",
+        //3.0.5
+        "ALG_TRNG#3.0.5", "ALG_ALG_PRESEEDED_DRBG#3.0.5", "ALG_FAST#3.0.5", "ALG_KEYGENERATION#3.0.5"
+    }; 
     public static final String CHECKSUM_STR[] = {"javacard.security.Checksum", "ALG_ISO3309_CRC16#2.2.1", "ALG_ISO3309_CRC32#2.2.1"}; 
     
     public static final String JCSYSTEM_STR[] = {"javacard.framework.JCSystem", "JCSystem.getVersion()[Major.Minor]#&le;2.1", 

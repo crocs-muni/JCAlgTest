@@ -312,6 +312,11 @@ public class JCConsts {
     // javacard.security.RandomData Fields:
     public static final byte RandomData_ALG_PSEUDO_RANDOM                           = 1;
     public static final byte RandomData_ALG_SECURE_RANDOM                           = 2;
+    public static final byte RandomData_ALG_TRNG                                    = 3;
+    public static final byte RandomData_ALG_ALG_PRESEEDED_DRBG                      = 4;
+    public static final byte RandomData_ALG_FAST                                    = 5;
+    public static final byte RandomData_ALG_KEYGENERATION                           = 6;
+    
 
     // javacard.security.RandomData Methods:
     public static final short RandomData_getInstance                                = 1;
