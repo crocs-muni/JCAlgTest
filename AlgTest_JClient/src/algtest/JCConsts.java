@@ -286,6 +286,12 @@ public class JCConsts {
     public static final byte MessageDigest_LENGTH_SHA_256                           = 32;
     public static final byte MessageDigest_LENGTH_SHA_384                           = 48;
     public static final byte MessageDigest_LENGTH_SHA_512                           = 64;
+    // JC3.0.5
+    public static final byte MessageDigest_ALG_SHA3_224                             = 8;
+    public static final byte MessageDigest_ALG_SHA3_256                             = 9;
+    public static final byte MessageDigest_ALG_SHA3_384                             = 10;
+    public static final byte MessageDigest_ALG_SHA3_512                             = 11;
+    
 
     // javacard.security.MessageDigest Methods:
     public static final short MessageDigest_getLength                               = 1;

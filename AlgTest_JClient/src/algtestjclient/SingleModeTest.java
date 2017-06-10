@@ -208,7 +208,10 @@ public class SingleModeTest {
         //2.2.2
         "ALG_SHA_256#2.2.2", "ALG_SHA_384#2.2.2", "ALG_SHA_512#2.2.2", 
         //3.0.1
-        "ALG_SHA_224#3.0.1"
+        "ALG_SHA_224#3.0.1",
+        //3.0.5
+        "ALG_SHA3_224#3.0.5", "ALG_SHA3_256#3.0.5", "ALG_SHA3_384#3.0.5", "ALG_SHA3_512#3.0.5"   
+            
     }; 
 
     public static final String RANDOMDATA_STR[] = {"javacard.security.RandomData", 
