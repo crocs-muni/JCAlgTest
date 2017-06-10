@@ -132,9 +132,9 @@ public class SingleModeTest {
 
     public static final String KEYAGREEMENT_STR[] = {"javacard.security.KeyAgreement", 
         //2.2.1
-        "ALG_EC_SVDP_DH/ALG_EC_SVDP_DHC_KDF#2.2.1", "ALG_EC_SVDP_DHC/ALG_EC_SVDP_DHC_KDF#2.2.1",
+        "ALG_EC_SVDP_DH/ALG_EC_SVDP_DH_KDF#2.2.1", "ALG_EC_SVDP_DHC/ALG_EC_SVDP_DHC_KDF#2.2.1",
         //3.0.1
-        //was like this: "ALG_EC_SVDP_DH_KDF#3.0.1", "ALG_EC_SVDP_DH_PLAIN#3.0.1", "ALG_EC_SVDP_DHC_KDF#3.0.1", "ALG_EC_SVDP_DHC_PLAIN#3.0.1",
+        //was incorrectly like this: "ALG_EC_SVDP_DH_KDF#3.0.1", "ALG_EC_SVDP_DH_PLAIN#3.0.1", "ALG_EC_SVDP_DHC_KDF#3.0.1", "ALG_EC_SVDP_DHC_PLAIN#3.0.1",
         "ALG_EC_SVDP_DH_PLAIN#3.0.1", "ALG_EC_SVDP_DHC_PLAIN#3.0.1", 
         //3.0.5    
         "ALG_EC_PACE_GM#3.0.5", "ALG_EC_SVDP_DH_PLAIN_XY#3.0.5", "ALG_DH_PLAIN#3.0.5"
