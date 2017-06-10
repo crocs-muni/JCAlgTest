@@ -156,6 +156,9 @@ public class JCConsts {
     public static final byte KeyAgreement_ALG_EC_SVDP_DHC_KDF                       = 2;
     public static final byte KeyAgreement_ALG_EC_SVDP_DH_PLAIN                      = 3;
     public static final byte KeyAgreement_ALG_EC_SVDP_DHC_PLAIN                     = 4;
+    public static final byte KeyAgreement_ALG_EC_PACE_GM                            = 5;
+    public static final byte KeyAgreement_ALG_EC_SVDP_DH_PLAIN_XY                   = 6;
+    public static final byte KeyAgreement_ALG_DH_PLAIN                              = 7;
 
     // javacard.security.KeyAgreement Methods:
     public static final short KeyAgreement_getInstance                              = 1;
