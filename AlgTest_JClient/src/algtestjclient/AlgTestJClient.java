@@ -54,61 +54,68 @@ public class AlgTestJClient {
     public static final String ALGTEST_PERFORMANCE = "AT_PERFORMANCE";          // for performance testing
     
     /**
+     * Version 1.7.3 (10.06.2017) 
+     * + added new constants from JC3.0.5
+     * - fixed bug with incorrect testing of KeyAgreement 
+     */
+    public final static String ALGTEST_JCLIENT_VERSION_1_7_3 = "1.7.3";
+
+    /**
      * Version 1.7.2 (06.05.2017) 
      * + support for RSA key generation and export within given range
      * + minor improvements of interface
      */
-    public final static String ALGTEST_JCLIENT_VERSION_1_7_2 = "1.7.2";
+    //public final static String ALGTEST_JCLIENT_VERSION_1_7_2 = "1.7.2";
 
     /**
      * Version 1.7.1 (03.10.2016) 
      * + support for reader access via JNA
      */
-    public final static String ALGTEST_JCLIENT_VERSION_1_7_1 = "1.7.1";
+    //public final static String ALGTEST_JCLIENT_VERSION_1_7_1 = "1.7.1";
     /**
      * Version 1.7.0 (19.09.2016) + Updates to support EC and asym. key
      * operations properly
      */
-    public final static String ALGTEST_JCLIENT_VERSION_1_7_0 = "1.7.0";
+    //public final static String ALGTEST_JCLIENT_VERSION_1_7_0 = "1.7.0";
     /**
      * Version 1.6.0 (19.07.2015)
      * + Many updates, performance tests
      */
-    public final static String ALGTEST_JCLIENT_VERSION_1_6_0 = "1.6.0";        
+    //public final static String ALGTEST_JCLIENT_VERSION_1_6_0 = "1.6.0";        
         
     /**
      * Version 1.3 (30.11.2014)
      * + Improved gathering of data, single command per single algorithm instance possible
      */
-    public final static String ALGTEST_JCLIENT_VERSION_1_3_0 = "1.3.0";    
+    //public final static String ALGTEST_JCLIENT_VERSION_1_3_0 = "1.3.0";    
     /**
      * Version 1.2.1 (29.1.2014)
      * + added support for TYPE_RSA_PRIVATE_TRANSIENT_RESET and TYPE_RSA_PRIVATE_TRANSIENT_DESELECT parsing
      * + added possibility to run test for every class separately
      * - more information for user, small refactoring
      */
-    public final static String ALGTEST_JCLIENT_VERSION_1_2_1 = "1.2.1";
+    //public final static String ALGTEST_JCLIENT_VERSION_1_2_1 = "1.2.1";
     /**
      * Version 1.2 (3.11.2013)
      * + All relevant constants from JC2.2.2, JC3.0.1 and JC3.0.4 added
      */
-    public final static String ALGTEST_JCLIENT_VERSION_1_2 = "1.2";
+    //public final static String ALGTEST_JCLIENT_VERSION_1_2 = "1.2";
     /**
      * Version 1.1 (28.6.2013)
      * + information about version added
      * + link to project added into resulting file 
      */
-    public final static String ALGTEST_JCLIENT_VERSION_1_1 = "1.1";
+    //public final static String ALGTEST_JCLIENT_VERSION_1_1 = "1.1";
     /**
      * Version 1.0 (27.11.2012)
      * + initial version of AlgTestJClient, clone of AlgTestCppClient
      */
-    public final static String ALGTEST_JCLIENT_VERSION_1_0 = "1.0";
+    //public final static String ALGTEST_JCLIENT_VERSION_1_0 = "1.0";
  
     /**
      * Current version
      */
-    public final static String ALGTEST_JCLIENT_VERSION = ALGTEST_JCLIENT_VERSION_1_7_2;
+    public final static String ALGTEST_JCLIENT_VERSION = ALGTEST_JCLIENT_VERSION_1_7_3;
     
     public final static int STAT_OK = 0;    
     /**
@@ -123,7 +130,7 @@ public class AlgTestJClient {
         
         m_SystemOutLogger.println("\n-----------------------------------------------------------------------   ");
         m_SystemOutLogger.println("JCAlgTest " + ALGTEST_JCLIENT_VERSION + " - comprehensive tool for JavaCard smart card testing.");
-        m_SystemOutLogger.println("Visit jcalgtest.org for results from 60+ cards. CRoCS.cz lab 2007-2016.");
+        m_SystemOutLogger.println("Visit jcalgtest.org for results from 60+ cards. CRoCS lab 2007-2017.");
         m_SystemOutLogger.println("Please check if you use the latest version at\n  https://github.com/crocs-muni/JCAlgTest/releases/latest.");
         
         m_SystemOutLogger.println("-----------------------------------------------------------------------\n");

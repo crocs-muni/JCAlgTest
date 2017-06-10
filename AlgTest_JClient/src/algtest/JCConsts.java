@@ -64,6 +64,9 @@ public class JCConsts {
     public static final byte Signature_SIG_CIPHER_AES_MAC128                        = 6;
     public static final byte Signature_SIG_CIPHER_HMAC                              = 7;
     public static final byte Signature_SIG_CIPHER_KOREAN_SEED_MAC                   = 8;
+    // JC3.0.5
+    public static final byte Signature_ALG_AES_CMAC_128                             = 49;
+    
     
     public static final byte Signature_MODE_SIGN                                    = 1;
     public static final byte Signature_MODE_VERIFY                                  = 2;
@@ -153,6 +156,9 @@ public class JCConsts {
     public static final byte KeyAgreement_ALG_EC_SVDP_DHC_KDF                       = 2;
     public static final byte KeyAgreement_ALG_EC_SVDP_DH_PLAIN                      = 3;
     public static final byte KeyAgreement_ALG_EC_SVDP_DHC_PLAIN                     = 4;
+    public static final byte KeyAgreement_ALG_EC_PACE_GM                            = 5;
+    public static final byte KeyAgreement_ALG_EC_SVDP_DH_PLAIN_XY                   = 6;
+    public static final byte KeyAgreement_ALG_DH_PLAIN                              = 7;
 
     // javacard.security.KeyAgreement Methods:
     public static final short KeyAgreement_getInstance                              = 1;
@@ -286,6 +292,12 @@ public class JCConsts {
     public static final byte MessageDigest_LENGTH_SHA_256                           = 32;
     public static final byte MessageDigest_LENGTH_SHA_384                           = 48;
     public static final byte MessageDigest_LENGTH_SHA_512                           = 64;
+    // JC3.0.5
+    public static final byte MessageDigest_ALG_SHA3_224                             = 8;
+    public static final byte MessageDigest_ALG_SHA3_256                             = 9;
+    public static final byte MessageDigest_ALG_SHA3_384                             = 10;
+    public static final byte MessageDigest_ALG_SHA3_512                             = 11;
+    
 
     // javacard.security.MessageDigest Methods:
     public static final short MessageDigest_getLength                               = 1;
@@ -300,6 +312,11 @@ public class JCConsts {
     // javacard.security.RandomData Fields:
     public static final byte RandomData_ALG_PSEUDO_RANDOM                           = 1;
     public static final byte RandomData_ALG_SECURE_RANDOM                           = 2;
+    public static final byte RandomData_ALG_TRNG                                    = 3;
+    public static final byte RandomData_ALG_ALG_PRESEEDED_DRBG                      = 4;
+    public static final byte RandomData_ALG_FAST                                    = 5;
+    public static final byte RandomData_ALG_KEYGENERATION                           = 6;
+    
 
     // javacard.security.RandomData Methods:
     public static final short RandomData_getInstance                                = 1;

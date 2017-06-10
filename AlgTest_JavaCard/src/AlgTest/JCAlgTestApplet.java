@@ -54,10 +54,19 @@ public class JCAlgTestApplet extends javacard.framework.Applet
 {
     // NOTE: when incrementing version, don't forget to update ALGTEST_JAVACARD_VERSION_CURRENT value
     /**
+     * Version 1.7.3 (10.06.2017) + fixed issue with incorrect test for KeyAgreement support 
+     */
+    final static byte ALGTEST_JAVACARD_VERSION_1_7_3[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x37, (byte) 0x2e, (byte) 0x33};
+    /**
+     * Version 1.7.2 (06.05.2017) 
+     * + better support for RSA key collection
+     */
+    //final static byte ALGTEST_JAVACARD_VERSION_1_7_2[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x37, (byte) 0x2e, (byte) 0x32};
+    /**
      * Version 1.7.1 (04.10.2016) 
      * + fixed issue with detection of ECFP-384 curve
      */
-    final static byte ALGTEST_JAVACARD_VERSION_1_7_1[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x37, (byte) 0x2e, (byte) 0x31};
+    //final static byte ALGTEST_JAVACARD_VERSION_1_7_1[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x37, (byte) 0x2e, (byte) 0x31};
     /**
      * Version 1.7.0 (16.9.2016) 
      * + applet/package AID change (now jcalgtest in hexa)
@@ -66,7 +75,7 @@ public class JCAlgTestApplet extends javacard.framework.Applet
      * - fixed various issues with measurement of methods for asymmetric crypto algorithms
      * - various refactoring
      */
-    final static byte ALGTEST_JAVACARD_VERSION_1_7_0[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x37, (byte) 0x2e, (byte) 0x30};
+    //final static byte ALGTEST_JAVACARD_VERSION_1_7_0[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x37, (byte) 0x2e, (byte) 0x30};
     /**
      * Version 1.6.1 (28.1.2016) 
      * Reset of applet moved directly into main JCAlgTestApplet
@@ -131,7 +140,7 @@ public class JCAlgTestApplet extends javacard.framework.Applet
      */
     //final static byte ALGTEST_JAVACARD_VERSION_1_0[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x30};
 
-    byte ALGTEST_JAVACARD_VERSION_CURRENT[] = ALGTEST_JAVACARD_VERSION_1_7_1;
+    byte ALGTEST_JAVACARD_VERSION_CURRENT[] = ALGTEST_JAVACARD_VERSION_1_7_3;
 
     AlgKeyHarvest       m_keyHarvest = null;
     AlgSupportTest      m_supportTest = null;
