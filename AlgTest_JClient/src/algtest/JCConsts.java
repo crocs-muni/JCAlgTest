@@ -64,6 +64,9 @@ public class JCConsts {
     public static final byte Signature_SIG_CIPHER_AES_MAC128                        = 6;
     public static final byte Signature_SIG_CIPHER_HMAC                              = 7;
     public static final byte Signature_SIG_CIPHER_KOREAN_SEED_MAC                   = 8;
+    // JC3.0.5
+    public static final byte Signature_ALG_AES_CMAC_128                             = 49;
+    
     
     public static final byte Signature_MODE_SIGN                                    = 1;
     public static final byte Signature_MODE_VERIFY                                  = 2;

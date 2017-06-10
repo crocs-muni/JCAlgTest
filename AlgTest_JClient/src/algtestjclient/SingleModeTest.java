@@ -105,8 +105,12 @@ public class SingleModeTest {
         "ALG_RSA_SHA_224_PKCS1#3.0.1", "ALG_RSA_SHA_256_PKCS1#3.0.1", "ALG_RSA_SHA_384_PKCS1#3.0.1", "ALG_RSA_SHA_512_PKCS1#3.0.1", 
         "ALG_RSA_SHA_224_PKCS1_PSS#3.0.1", "ALG_RSA_SHA_256_PKCS1_PSS#3.0.1", "ALG_RSA_SHA_384_PKCS1_PSS#3.0.1", "ALG_RSA_SHA_512_PKCS1_PSS#3.0.1",
         //3.0.4
-        "ALG_DES_MAC4_ISO9797_1_M1_ALG3#3.0.4", "ALG_DES_MAC8_ISO9797_1_M1_ALG3#3.0.4"
+        "ALG_DES_MAC4_ISO9797_1_M1_ALG3#3.0.4", "ALG_DES_MAC8_ISO9797_1_M1_ALG3#3.0.4",
+        //3.0.5
+        "ALG_AES_CMAC_128#3.0.5"
     };
+    public static final int SIGNATURE_STR_LAST_INDEX = JCConsts.Signature_ALG_AES_CMAC_128;
+    
     
     public static final String CIPHER_STR[] = {"javacardx.crypto.Cipher", 
         "ALG_DES_CBC_NOPAD#&le;2.1", "ALG_DES_CBC_ISO9797_M1#&le;2.1", "ALG_DES_CBC_ISO9797_M2#&le;2.1", "ALG_DES_CBC_PKCS5#&le;2.1", 
