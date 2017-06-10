@@ -123,7 +123,7 @@ public class AlgTestJClient {
         
         m_SystemOutLogger.println("\n-----------------------------------------------------------------------   ");
         m_SystemOutLogger.println("JCAlgTest " + ALGTEST_JCLIENT_VERSION + " - comprehensive tool for JavaCard smart card testing.");
-        m_SystemOutLogger.println("Visit jcalgtest.org for results from 60+ cards. CRoCS.cz lab 2007-2016.");
+        m_SystemOutLogger.println("Visit jcalgtest.org for results from 60+ cards. CRoCS lab 2007-2017.");
         m_SystemOutLogger.println("Please check if you use the latest version at\n  https://github.com/crocs-muni/JCAlgTest/releases/latest.");
         
         m_SystemOutLogger.println("-----------------------------------------------------------------------\n");
