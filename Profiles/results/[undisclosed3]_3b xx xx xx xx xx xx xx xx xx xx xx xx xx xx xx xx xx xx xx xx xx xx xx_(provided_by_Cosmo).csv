@@ -235,12 +235,10 @@ ALG_EC_FP LENGTH_EC_FP_256;yes;8.903000
 ALG_EC_FP LENGTH_EC_FP_384;no;
 ALG_EC_FP LENGTH_EC_FP_521;no;
 
-javacard.security.KeyAgreement;
-ALG_EC_SVDP_DH;yes;
-ALG_EC_SVDP_DHC;yes;
-ALG_EC_SVDP_DH_KDF;yes;
+javacard\.security\.KeyAgreement
+ALG_EC_SVDP_DH/ALG_EC_SVDP_DH_KDF;yes;
+ALG_EC_SVDP_DHC/ALG_EC_SVDP_DHC_KDF;yes;
 ALG_EC_SVDP_DH_PLAIN;no;
-ALG_EC_SVDP_DHC_KDF;yes;
 ALG_EC_SVDP_DHC_PLAIN;no;
 
 javacard.security.Checksum;
