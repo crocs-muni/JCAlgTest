@@ -33,6 +33,7 @@ package algtestjclient;
 
 /* Import 'ALGTEST_JCLIENT_VERSION' variable - possibly replace with actual import of those variables later? */
 import AlgTest.Consts;
+import AlgTest.JCConsts;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
@@ -126,6 +127,8 @@ public class SingleModeTest {
         "ALG_AES_BLOCK_192_CBC_NOPAD#3.0.1", "ALG_AES_BLOCK_192_ECB_NOPAD#3.0.1", "ALG_AES_BLOCK_256_CBC_NOPAD#3.0.1", "ALG_AES_BLOCK_256_ECB_NOPAD#3.0.1", 
         "ALG_AES_CBC_ISO9797_M1#3.0.1", "ALG_AES_CBC_ISO9797_M2#3.0.1", "ALG_AES_CBC_PKCS5#3.0.1", "ALG_AES_ECB_ISO9797_M1#3.0.1", "ALG_AES_ECB_ISO9797_M2#3.0.1", "ALG_AES_ECB_PKCS5#3.0.1"         
     }; 
+    public static final int CIPHER_STR_LAST_INDEX = JCConsts.Cipher_ALG_AES_ECB_PKCS5;
+    
 
     public static final String KEYAGREEMENT_STR[] = {"javacard.security.KeyAgreement", 
         //2.2.1
@@ -215,17 +218,19 @@ public class SingleModeTest {
         "ALG_SHA_224#3.0.1",
         //3.0.5
         "ALG_SHA3_224#3.0.5", "ALG_SHA3_256#3.0.5", "ALG_SHA3_384#3.0.5", "ALG_SHA3_512#3.0.5"   
-            
     }; 
-
+    public static final int MESSAGEDIGEST_STR_LAST_INDEX = JCConsts.MessageDigest_ALG_SHA3_512;    
+            
     public static final String RANDOMDATA_STR[] = {"javacard.security.RandomData", 
-        "ALG_PSEUDO_RANDOM#&le;2.1", "ALG_SECURE_RANDOM#&le;2.1"}; 
-
         "ALG_PSEUDO_RANDOM#&le;2.1", "ALG_SECURE_RANDOM#&le;2.1",
         //3.0.5
         "ALG_TRNG#3.0.5", "ALG_ALG_PRESEEDED_DRBG#3.0.5", "ALG_FAST#3.0.5", "ALG_KEYGENERATION#3.0.5"
     }; 
+    public static final int RANDOMDATA_STR_LAST_INDEX = JCConsts.RandomData_ALG_KEYGENERATION;
+            
     public static final String CHECKSUM_STR[] = {"javacard.security.Checksum", "ALG_ISO3309_CRC16#2.2.1", "ALG_ISO3309_CRC32#2.2.1"}; 
+    public static final int CHECKSUM_STR_LAST_INDEX = JCConsts.Checksum_ALG_ISO3309_CRC32;
+    
     
     public static final String JCSYSTEM_STR[] = {"javacard.framework.JCSystem", "JCSystem.getVersion()[Major.Minor]#&le;2.1", 
         "JCSystem.isObjectDeletionSupported#2.2.0", "JCSystem.MEMORY_TYPE_PERSISTENT#2.2.1", "JCSystem.MEMORY_TYPE_TRANSIENT_RESET#2.2.1", 
@@ -693,6 +698,7 @@ public class SingleModeTest {
         m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         
+        assert (CIPHER_STR_LAST_INDEX == (CIPHER_STR.length - 1)); // Sanity check as we will construct constant value based on position inside string
         for (int i=1; i< SingleModeTest.CIPHER_STR.length; i++){    // i = 1 because Cipher[0] is class name
             // Reset applet before call
             cardManager.sendAPDU(RESET_APDU);
@@ -732,11 +738,12 @@ public class SingleModeTest {
         m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         
+        assert (SIGNATURE_STR_LAST_INDEX == (SIGNATURE_STR.length - 1)); // Sanity check as we will construct constant value based on position inside string
         for (int i=1; i<SingleModeTest.SIGNATURE_STR.length; i++){    // i = 1 because Signature[0] is class name
             // Reset applet before call
             cardManager.sendAPDU(RESET_APDU);
             // get starting time of communication cycle
-            apdu[OFFSET_DATA] = (byte)i;
+            apdu[OFFSET_DATA] = (byte) i;
             elapsedCard = -System.currentTimeMillis();
             ResponseAPDU response = cardManager.sendAPDU(apdu);
             // save time of card response
@@ -769,6 +776,7 @@ public class SingleModeTest {
         m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         
+        assert (MESSAGEDIGEST_STR_LAST_INDEX == (MESSAGEDIGEST_STR.length - 1)); // Sanity check as we will construct constant value based on position inside string
         for (int i=1; i<SingleModeTest.MESSAGEDIGEST_STR.length; i++){    // i = 1 because MessageDigest[0] is class name
             // Reset applet before call
             cardManager.sendAPDU(RESET_APDU);
@@ -791,7 +799,7 @@ public class SingleModeTest {
      * @throws IOException
      * @throws Exception
      */
-    public static void TestClassRandomData (FileOutputStream file) throws IOException, Exception{
+    public static void TestClassRandomData(FileOutputStream file) throws IOException, Exception{
         long       elapsedCard = 0;
         byte[] apdu = new byte[6];
         apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
@@ -805,6 +813,7 @@ public class SingleModeTest {
         m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         
+        assert (RANDOMDATA_STR_LAST_INDEX == (SingleModeTest.RANDOMDATA_STR.length - 1)); // Sanity check as we will construct constant value based on position inside string
         for (int i=1; i<SingleModeTest.RANDOMDATA_STR.length; i++){    // i = 1 because RandomData[0] is class name
             // Reset applet before call
             cardManager.sendAPDU(RESET_APDU);
@@ -876,15 +885,16 @@ public class SingleModeTest {
         apdu[OFFSET_P2] = (byte)0x00;
         apdu[OFFSET_LC] = (byte)0x01;
     
-        /* Creates message with class name and writes it in the output file and on the screen. */
+        // Creates message with class name and writes it in the output file and on the screen.
         String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.KEYAGREEMENT_STR[0]) + "\r\n";
         m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         
-        for (int i=1; i<SingleModeTest.KEYAGREEMENT_STR.length; i++){    // i = 1 because KeyAgreement[0] is class name
+        assert (KEYAGREEMENT_STR_LAST_INDEX == (SingleModeTest.KEYAGREEMENT_STR.length - 1)); // Sanity check as we will construct constant value based on position inside string
+        for (int i = 1; i<SingleModeTest.KEYAGREEMENT_STR.length; i++){    // i = 1 because KeyAgreement[0] is class name
             // Reset applet before call
             cardManager.sendAPDU(RESET_APDU);
-            apdu[OFFSET_DATA] = (byte)i;
+            apdu[OFFSET_DATA] = (byte) i;
             // get starting time of communication cycle
             elapsedCard = -System.currentTimeMillis();
             ResponseAPDU response = cardManager.sendAPDU(apdu);
@@ -917,7 +927,8 @@ public class SingleModeTest {
         m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         
-        for (int i=1; i<SingleModeTest.CHECKSUM_STR.length; i++){    // i = 1 because Checksum[0] is class name
+        assert (CHECKSUM_STR_LAST_INDEX == (CHECKSUM_STR.length - 1)); // Sanity check as we will construct constant value based on position inside string
+        for (int i=1; i< CHECKSUM_STR.length; i++){    // i = 1 because Checksum[0] is class name
             // Reset applet before call
             cardManager.sendAPDU(RESET_APDU);
             apdu[OFFSET_DATA] = (byte) i;
