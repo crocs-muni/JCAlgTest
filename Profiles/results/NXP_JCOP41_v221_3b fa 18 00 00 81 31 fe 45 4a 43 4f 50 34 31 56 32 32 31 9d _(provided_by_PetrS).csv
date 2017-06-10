@@ -194,9 +194,9 @@ ALG_EC_FP LENGTH_EC_FP_128;no;
 ALG_EC_FP LENGTH_EC_FP_160;no;
 ALG_EC_FP LENGTH_EC_FP_192;no;
 
-javacard.security.KeyAgreement;
-ALG_EC_SVDP_DH;yes;
-ALG_EC_SVDP_DHC;yes;
+javacard\.security\.KeyAgreement
+ALG_EC_SVDP_DH/ALG_EC_SVDP_DH_KDF;yes;
+ALG_EC_SVDP_DHC/ALG_EC_SVDP_DHC_KDF;yes;
 
 javacard.security.Checksum;
 ALG_ISO3309_CRC16;yes;
