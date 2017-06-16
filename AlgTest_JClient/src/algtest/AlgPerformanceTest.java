@@ -1236,6 +1236,14 @@ import javacardx.crypto.*;
         
         try {
             m_keyPair1 = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
+            // Make sure that for EC, we will have initailized curve
+            switch (m_testSettings.keyClass) {
+                case JCConsts.KeyPair_ALG_EC_F2M: // no break
+                case JCConsts.KeyPair_ALG_EC_FP:
+                     EC_Consts.ensureInitializedECCurve((byte) m_testSettings.keyClass, m_testSettings.keyLength, m_keyPair1, m_ram1);            
+                default: 
+                    // do nothing
+            }
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
         }

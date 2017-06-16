@@ -44,6 +44,7 @@ package AlgTest;
  */
 // specific import for Javacard API access
 import javacard.framework.*;
+import javacard.security.CryptoException;
 
 
 // JC 2.2.2 only
@@ -141,7 +142,19 @@ public class JCAlgTestApplet extends javacard.framework.Applet
     //final static byte ALGTEST_JAVACARD_VERSION_1_0[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x30};
 
     byte ALGTEST_JAVACARD_VERSION_CURRENT[] = ALGTEST_JAVACARD_VERSION_1_7_3;
-
+    // lower byte of exception is value as defined in JCSDK/api_classic/constant-values.htm
+    final static short SW_Exception = (short) 0xff01;
+    final static short SW_ArrayIndexOutOfBoundsException = (short) 0xff02;
+    final static short SW_ArithmeticException = (short) 0xff03;
+    final static short SW_ArrayStoreException = (short) 0xff04;
+    final static short SW_NullPointerException = (short) 0xff05;
+    final static short SW_NegativeArraySizeException = (short) 0xff06;
+    final static short SW_CryptoException_prefix = (short) 0xf100;
+    final static short SW_SystemException_prefix = (short) 0xf200;
+    final static short SW_PINException_prefix = (short) 0xf300;
+    final static short SW_TransactionException_prefix = (short) 0xf400;
+    final static short SW_CardRuntimeException_prefix = (short) 0xf500;    
+    
     AlgKeyHarvest       m_keyHarvest = null;
     AlgSupportTest      m_supportTest = null;
     AlgPerformanceTest  m_perfTest = null;
@@ -203,36 +216,63 @@ public class JCAlgTestApplet extends javacard.framework.Applet
         
         byte bProcessed = (byte) 0;
         
-        // Serve get version
-        if (apduBuffer[ISO7816.OFFSET_CLA] == Consts.CLA_CARD_ALGTEST) {
-            if (apduBuffer[ISO7816.OFFSET_INS] == Consts.INS_CARD_GETVERSION) {
-                GetVersion(apdu); 
-                bProcessed = (byte) 1;
+        try {
+            // Serve get version
+            if (apduBuffer[ISO7816.OFFSET_CLA] == Consts.CLA_CARD_ALGTEST) {
+                if (apduBuffer[ISO7816.OFFSET_INS] == Consts.INS_CARD_GETVERSION) {
+                    GetVersion(apdu); 
+                    bProcessed = (byte) 1;
+                }
+                if (apduBuffer[ISO7816.OFFSET_INS] == Consts.INS_CARD_RESET) {
+                    JCSystem.requestObjectDeletion();
+                    bProcessed = (byte) 1;
+                }
             }
-            if (apduBuffer[ISO7816.OFFSET_INS] == Consts.INS_CARD_RESET) {
-                JCSystem.requestObjectDeletion();
-                bProcessed = (byte) 1;
-            }
-        }
 
-        if (bProcessed == 0) {
-            bProcessed = m_supportTest.process(apdu);
-        }
-        if (bProcessed == 0) {
-            bProcessed = m_keyHarvest.process(apdu);
-        }
-        if (bProcessed == 0) {
-            bProcessed = m_perfTest.process(apdu);
-        }
-        if (bProcessed == 0) {
-            bProcessed = m_storageTest.process(apdu);
-        }
-        
-        
-        // If not processed by any of module, then emit exception
-        if (bProcessed == 0) {
-            ISOException.throwIt( ISO7816.SW_INS_NOT_SUPPORTED) ;
-        }
+            if (bProcessed == 0) {
+                bProcessed = m_supportTest.process(apdu);
+            }
+            if (bProcessed == 0) {
+                bProcessed = m_keyHarvest.process(apdu);
+            }
+            if (bProcessed == 0) {
+                bProcessed = m_perfTest.process(apdu);
+            }
+            if (bProcessed == 0) {
+                bProcessed = m_storageTest.process(apdu);
+            }
+
+
+            // If not processed by any of module, then emit exception
+            if (bProcessed == 0) {
+                ISOException.throwIt( ISO7816.SW_INS_NOT_SUPPORTED) ;
+            }
+            // Capture all reasonable exceptions and change into readable ones (instead of 0x6f00) 
+        } catch (ISOException e) {
+            throw e; // Our exception from code, just re-emit
+        } catch (ArrayIndexOutOfBoundsException e) {
+            ISOException.throwIt(SW_ArrayIndexOutOfBoundsException);
+        } catch (ArithmeticException e) {
+            ISOException.throwIt(SW_ArithmeticException);
+        } catch (ArrayStoreException e) {
+            ISOException.throwIt(SW_ArrayStoreException);
+        } catch (NullPointerException e) {
+            ISOException.throwIt(SW_NullPointerException);
+        } catch (NegativeArraySizeException e) {
+            ISOException.throwIt(SW_NegativeArraySizeException);
+        } catch (CryptoException e) {
+            ISOException.throwIt((short) (SW_CryptoException_prefix | e.getReason()));
+        } catch (SystemException e) {
+            ISOException.throwIt((short) (SW_SystemException_prefix | e.getReason()));
+        } catch (PINException e) {
+            ISOException.throwIt((short) (SW_PINException_prefix | e.getReason()));
+        } catch (TransactionException e) {
+            ISOException.throwIt((short) (SW_TransactionException_prefix | e.getReason()));
+        } catch (CardRuntimeException e) {
+            ISOException.throwIt((short) (SW_CardRuntimeException_prefix | e.getReason()));
+        } catch (Exception e) {
+            ISOException.throwIt(SW_Exception);
+        }        
     }
 
     void GetVersion(APDU apdu) {

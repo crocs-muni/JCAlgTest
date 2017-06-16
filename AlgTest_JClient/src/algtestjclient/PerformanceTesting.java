@@ -321,6 +321,8 @@ public class PerformanceTesting {
         short numRepeatWholeMeasurement = (short) 3;
         short numRepeatWholeOperation = (short) 3;
         
+        testKeyAgreementWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_256, JCConsts.KeyAgreement_ALG_EC_SVDP_DH, "ALG_EC_FP LENGTH_EC_FP_256 ALG_EC_SVDP_DH", numRepeatWholeOperation, numRepeatWholeMeasurement);
+
         // Test speed of message digest - applied in some options of KeyAgreement.generateSecret()
         testMessageDigest(JCConsts.MessageDigest_ALG_SHA_256, "ALG_SHA_256", numRepeatWholeOperation, numRepeatWholeMeasurement);
         testRandomGenerator(JCConsts.RandomData_ALG_SECURE_RANDOM, "ALG_SECURE_RANDOM", numRepeatWholeOperation, numRepeatWholeMeasurement);
