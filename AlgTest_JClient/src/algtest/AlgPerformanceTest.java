@@ -1284,7 +1284,7 @@ import javacardx.crypto.*;
         m_testSettings.parse(apdu); 
 
         m_keyAgreement.init(m_ecprivate_key);   // initialize with private key
-        short wLen = m_ecpublic_key.getW(m_ram1, (short) 0); // get valid public key (used as input from other party during generateSecret)
+        short wLen = m_ecpublic_key.getW(m_ram1, (short) 0); // get valid public key from second key (used as input from other party during generateSecret)
         switch (m_testSettings.algorithmMethod) {
             case JCConsts.KeyAgreement_init:   
                 for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 
