@@ -114,6 +114,16 @@ public class PerformanceTesting {
         return testInfo;
     }
     
+    String requestCardName(Scanner sc) {
+        m_SystemOutLogger.print("Specify type of your card (e.g., NXP JCOP CJ2A081): ");
+        String cardName = sc.next();
+        cardName += sc.nextLine();
+        if (cardName.isEmpty()) {
+            cardName = "noname";
+        }        
+        
+        return cardName;
+    }
     /**
      * Calls methods testing card performance.
      * @param args
@@ -161,13 +171,7 @@ public class PerformanceTesting {
             numRepeatWholeOperation = Consts.NUM_REPEAT_WHOLE_OPERATION_VARIABLE_DATA;                
         }
 
-        m_SystemOutLogger.print("Specify type of your card (e.g., NXP JCOP CJ2A081): ");
-        
-        m_cardName = sc.next();
-        m_cardName += sc.nextLine();
-        if (m_cardName.isEmpty()) {
-            m_cardName = "noname";
-        }
+        m_cardName = requestCardName(sc);
 
         // Try to open and load list of already measured algorithms (if provided)
         LoadAlreadyMeasuredAlgs(m_cardName);
@@ -213,12 +217,7 @@ public class PerformanceTesting {
         m_bTestSymmetricAlgs = true;
         m_bTestAsymmetricAlgs = true;
 
-        m_SystemOutLogger.print("Specify type of your card (e.g., NXP JCOP CJ2A081): ");
-        m_cardName = sc.next();
-        m_cardName += sc.nextLine();
-        if (m_cardName.isEmpty()) {
-            m_cardName = "noname";
-        }
+        m_cardName = requestCardName(sc);
 
         // Try to open and load list of already measured algorithms (if provided)
         // NOTE: measure always full: LoadAlreadyMeasuredAlgs(m_cardName);
@@ -287,6 +286,49 @@ public class PerformanceTesting {
 
         finalizeMeasurement();
     }    
+    
+    /**
+     * Calls methods testing card performance on ECC operations.
+     *
+     * @param args
+     * @param bTestVariableDataLengths
+     * @param selectedTerminal
+     * @throws IOException
+     * @throws Exception
+     */
+    public void testECCPerformance(String[] args, boolean bTestVariableDataLengths, CardTerminal selectedTerminal) throws IOException, Exception {
+        Class testClassPerformance = null;
+
+        // ECC wants to test only main operation speed => variable data option with 256B only
+        m_bTestVariableData = false;
+        m_bTestSymmetricAlgs = true;
+        m_bTestAsymmetricAlgs = true;
+
+        Scanner sc = new Scanner(System.in);
+        m_cardName = requestCardName(sc);
+
+        String testInfo = m_cardName + "___";
+        testInfo += "_ECCPERF_";
+        testInfo += System.currentTimeMillis() + "_";   // add unique time counter 
+
+        m_elapsedTimeWholeTest = -System.currentTimeMillis();
+        // Connect to card
+        this.m_perfResultsFile = m_cardManager.establishConnection(testClassPerformance, m_cardName, testInfo, selectedTerminal);
+        m_cardATR = m_cardManager.getATR();
+
+        short numRepeatWholeMeasurement = (short) 3;
+        short numRepeatWholeOperation = (short) 3;
+        
+        // Test speed of message digest - applied in some options of KeyAgreement.generateSecret()
+        testMessageDigest(JCConsts.MessageDigest_ALG_SHA_256, "ALG_SHA_256", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testRandomGenerator(JCConsts.RandomData_ALG_SECURE_RANDOM, "ALG_SECURE_RANDOM", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_256, JCConsts.Signature_ALG_ECDSA_SHA, "KeyPair_ALG_EC_FP KeyBuilder_LENGTH_EC_FP_256 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testKeyPair(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_LENGTH_EC_FP_256, "ALG_EC_FP LENGTH_EC_FP_256", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testKeyAgreementWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_256, JCConsts.KeyAgreement_ALG_EC_SVDP_DH, "ALG_EC_FP LENGTH_EC_FP_256 ALG_EC_SVDP_DH", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        
+        finalizeMeasurement();
+    }
+    
     void finalizeMeasurement() throws IOException {
         m_elapsedTimeWholeTest += System.currentTimeMillis();
         String message = "";
@@ -1132,7 +1174,11 @@ public class PerformanceTesting {
             testMessageDigest(JCConsts.MessageDigest_ALG_SHA_256,"ALG_SHA_256", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testMessageDigest(JCConsts.MessageDigest_ALG_SHA_384,"ALG_SHA_384", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testMessageDigest(JCConsts.MessageDigest_ALG_SHA_512,"ALG_SHA_512", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testMessageDigest(JCConsts.MessageDigest_ALG_SHA_224,"ALG_SHA_224", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testMessageDigest(JCConsts.MessageDigest_ALG_SHA_224, "ALG_SHA_224", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testMessageDigest(JCConsts.MessageDigest_ALG_SHA3_224, "ALG_SHA3_224", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testMessageDigest(JCConsts.MessageDigest_ALG_SHA3_256, "ALG_SHA3_256", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testMessageDigest(JCConsts.MessageDigest_ALG_SHA3_384, "ALG_SHA3_384", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testMessageDigest(JCConsts.MessageDigest_ALG_SHA3_512, "ALG_SHA3_512", numRepeatWholeOperation, numRepeatWholeMeasurement);
         }
         else {
             String message = "\n# Measurements excluded for symmetric algorithms\n";
@@ -1174,7 +1220,11 @@ public class PerformanceTesting {
         m_perfResultsFile.write(tableName.getBytes());
         if (m_bTestSymmetricAlgs) {
             testRandomGenerator(JCConsts.RandomData_ALG_PSEUDO_RANDOM,"ALG_PSEUDO_RANDOM", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testRandomGenerator(JCConsts.RandomData_ALG_SECURE_RANDOM,"ALG_SECURE_RANDOM", numRepeatWholeOperation, numRepeatWholeMeasurement);     
+            testRandomGenerator(JCConsts.RandomData_ALG_SECURE_RANDOM, "ALG_SECURE_RANDOM", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testRandomGenerator(JCConsts.RandomData_ALG_TRNG, "ALG_TRNG", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testRandomGenerator(JCConsts.RandomData_ALG_ALG_PRESEEDED_DRBG, "ALG_ALG_PRESEEDED_DRBG", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testRandomGenerator(JCConsts.RandomData_ALG_FAST, "ALG_FAST", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testRandomGenerator(JCConsts.RandomData_ALG_KEYGENERATION, "ALG_KEYGENERATION", numRepeatWholeOperation, numRepeatWholeMeasurement);
         }
         else {
             String message = "\n# Measurements excluded for symmetric algorithms\n";
