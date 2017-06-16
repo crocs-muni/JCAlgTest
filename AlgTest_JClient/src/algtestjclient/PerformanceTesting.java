@@ -41,6 +41,7 @@ import AlgTest.JCConsts;
 import AlgTest.TestSettings;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import javacard.framework.ISO7816;
 import javax.smartcardio.CardTerminal;
@@ -71,6 +72,7 @@ public class PerformanceTesting {
     public FileOutputStream m_perfResultsFile;
     public FileOutputStream m_algsMeasuredFile;
     public List<String> m_algsMeasuredList = new ArrayList<>();
+    public HashMap<String, Double> m_algsAvgTime = new HashMap<>();
     public boolean m_bAlgsMeasuredSomeNew = false;
     
     private boolean m_bTestSymmetricAlgs = true;
@@ -325,6 +327,11 @@ public class PerformanceTesting {
         testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_256, JCConsts.Signature_ALG_ECDSA_SHA, "KeyPair_ALG_EC_FP KeyBuilder_LENGTH_EC_FP_256 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
         testKeyPair(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_LENGTH_EC_FP_256, "ALG_EC_FP LENGTH_EC_FP_256", numRepeatWholeOperation, numRepeatWholeMeasurement);
         testKeyAgreementWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_256, JCConsts.KeyAgreement_ALG_EC_SVDP_DH, "ALG_EC_FP LENGTH_EC_FP_256 ALG_EC_SVDP_DH", numRepeatWholeOperation, numRepeatWholeMeasurement);
+
+        for (String opName : m_algsAvgTime.keySet()) {
+            m_SystemOutLogger.println(String.format("%s = \t %f", opName, m_algsAvgTime.get(opName)));
+        }
+        
         
         finalizeMeasurement();
     }
@@ -744,6 +751,8 @@ public class PerformanceTesting {
                     String message = info + "\n";
                     if (m_algsMeasuredFile != null) { m_algsMeasuredFile.write(message.getBytes()); }        
 
+                    m_algsAvgTime.put(info, measureTime);
+                    
                     // end loop 
                     return measureTime;
                 }
