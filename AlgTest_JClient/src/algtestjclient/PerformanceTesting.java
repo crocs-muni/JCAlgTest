@@ -72,7 +72,7 @@ public class PerformanceTesting {
     public FileOutputStream m_perfResultsFile;
     public FileOutputStream m_algsMeasuredFile;
     public List<String> m_algsMeasuredList = new ArrayList<>();
-    public HashMap<String, Double> m_algsAvgTime = new HashMap<>();
+    public HashMap<String, double[]> m_algsAvgTime = new HashMap<>();
     public boolean m_bAlgsMeasuredSomeNew = false;
     
     private boolean m_bTestSymmetricAlgs = true;
@@ -321,8 +321,6 @@ public class PerformanceTesting {
         short numRepeatWholeMeasurement = (short) 3;
         short numRepeatWholeOperation = (short) 3;
         
-        testKeyAgreementWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_256, JCConsts.KeyAgreement_ALG_EC_SVDP_DH, "ALG_EC_FP LENGTH_EC_FP_256 ALG_EC_SVDP_DH", numRepeatWholeOperation, numRepeatWholeMeasurement);
-
         // Test speed of message digest - applied in some options of KeyAgreement.generateSecret()
         testMessageDigest(JCConsts.MessageDigest_ALG_SHA_256, "ALG_SHA_256", numRepeatWholeOperation, numRepeatWholeMeasurement);
         testRandomGenerator(JCConsts.RandomData_ALG_SECURE_RANDOM, "ALG_SECURE_RANDOM", numRepeatWholeOperation, numRepeatWholeMeasurement);
@@ -331,13 +329,37 @@ public class PerformanceTesting {
         testKeyAgreementWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_256, JCConsts.KeyAgreement_ALG_EC_SVDP_DH, "ALG_EC_FP LENGTH_EC_FP_256 ALG_EC_SVDP_DH", numRepeatWholeOperation, numRepeatWholeMeasurement);
 
         for (String opName : m_algsAvgTime.keySet()) {
-            m_SystemOutLogger.println(String.format("%s = \t %f", opName, m_algsAvgTime.get(opName)));
+            double[] measuredTimes = m_algsAvgTime.get(opName);
+            m_SystemOutLogger.print(String.format("%s : \t avg=%4.1f,\t[", opName, measuredTimes[0]));
+            for (int i = 1; i < measuredTimes.length; i++) {
+                m_SystemOutLogger.print(String.format("%.1f,", measuredTimes[i]));
+            }
+            m_SystemOutLogger.println("]");
         }
         
+        ArrayList<String> wantedOps = new ArrayList<>();
+        wantedOps.add("KeyPair_ALG_EC_FP KeyBuilder_LENGTH_EC_FP_256 Signature_ALG_ECDSA_SHA Signature_sign()");
+        wantedOps.add("KeyPair_ALG_EC_FP KeyBuilder_LENGTH_EC_FP_256 Signature_ALG_ECDSA_SHA Signature_verify()");
+        wantedOps.add("ALG_EC_FP LENGTH_EC_FP_256 ALG_EC_SVDP_DH KeyAgreement_generateSecret()");
+        wantedOps.add("ALG_EC_FP LENGTH_EC_FP_256 KeyPair_genKeyPair()");
+        
+        // Generate CSV line
+        String csvHeader = "cardName, ";
+        String csvLine = String.format("%s, ", m_cardName);
+        for (String wantedOp : wantedOps) {
+            double[] measuredTimes = m_algsAvgTime.get(wantedOp);
+            if (measuredTimes != null) {
+                csvHeader += String.format("%s, ", wantedOp);
+                csvLine += String.format("%f, ", measuredTimes[0]);
+            }
+        }
+        
+        m_SystemOutLogger.println(csvHeader);
+        m_SystemOutLogger.println(csvLine);
         
         finalizeMeasurement();
     }
-    
+
     void finalizeMeasurement() throws IOException {
         m_elapsedTimeWholeTest += System.currentTimeMillis();
         String message = "";
@@ -742,7 +764,8 @@ public class PerformanceTesting {
             while (numFailedRepeats < MAX_FAILED_REPEATS) {
                 try {
                     result.setLength(0);
-                    measureTime = perftest_measure(appletCLA, appletPrepareINS, appletMeasureINS, testSet, info, result, substractTime);
+                    double[] measuredTimes = perftest_measure(appletCLA, appletPrepareINS, appletMeasureINS, testSet, info, result, substractTime);
+                    measureTime = measuredTimes[0];
                     // Measurement success, reset failed attempts counter
                     numFailedRepeats = 0;
                     // Write result string into file
@@ -753,7 +776,7 @@ public class PerformanceTesting {
                     String message = info + "\n";
                     if (m_algsMeasuredFile != null) { m_algsMeasuredFile.write(message.getBytes()); }        
 
-                    m_algsAvgTime.put(info, measureTime);
+                    m_algsAvgTime.put(info, measuredTimes);
                     
                     // end loop 
                     return measureTime;
@@ -894,10 +917,10 @@ public class PerformanceTesting {
         
         return sumTimes / numValid;
     }
-    public double perftest_measure(byte appletCLA, byte appletPrepareINS, byte appletMeasureINS, TestSettings testSet, String info, StringBuilder result) throws IOException, Exception {
+    public double[] perftest_measure(byte appletCLA, byte appletPrepareINS, byte appletMeasureINS, TestSettings testSet, String info, StringBuilder result) throws IOException, Exception {
         return perftest_measure(appletCLA, appletPrepareINS, appletMeasureINS, testSet, info, result, 0);
     }
-    public double perftest_measure(byte appletCLA, byte appletPrepareINS, byte appletMeasureINS, TestSettings testSet, String info, StringBuilder result, double substractTime) throws IOException, Exception {
+    public double[] perftest_measure(byte appletCLA, byte appletPrepareINS, byte appletMeasureINS, TestSettings testSet, String info, StringBuilder result, double substractTime) throws IOException, Exception {
         double check = 0.05; // Maximum percentage difference in which should be all times of individual operations, 0.1 = 10%
         double avgOpTime = -1;
         String message = "";
@@ -971,7 +994,7 @@ public class PerformanceTesting {
 
         double minOpTime = Double.MAX_VALUE;
         double maxOpTime = -Double.MAX_VALUE;
-
+        double[] times = new double[testSet.numRepeatWholeMeasurement + 1]; // first value is average, rest are computed times    
         double time = 0;
         sumTimes = 0;
         message += "operation raw measurements (ms):;";
@@ -991,6 +1014,7 @@ public class PerformanceTesting {
             m_SystemOutLogger.print(timeStr + " ");
             if (time<minOpTime) minOpTime=time;
             if (time>maxOpTime) maxOpTime=time;
+            times[i + 1] = time / testSet.numRepeatWholeOperation; // store current measurement (start from 1, times[0]] reserved for average)
         }
         m_SystemOutLogger.println();     
 
@@ -1002,6 +1026,7 @@ public class PerformanceTesting {
         String messageOpTime =  "operation stats (ms/op):";
         int totalIterations = testSet.numRepeatWholeOperation * testSet.numRepeatWholeMeasurement;
         avgOpTime = (totalIterations != 0) ? sumTimes/totalIterations : 0;
+        times[0] = avgOpTime;
         minOpTime = (totalIterations != 0) ? minOpTime/testSet.numRepeatWholeOperation : 0;
         maxOpTime = (totalIterations != 0) ? maxOpTime/testSet.numRepeatWholeOperation : 0;
         messageOpTime += ";avg op:;" + String.format("%.2f", avgOpTime);
@@ -1019,7 +1044,7 @@ public class PerformanceTesting {
         m_SystemOutLogger.println(); message += "\n";
         m_SystemOutLogger.println(message); 
         
-        return avgOpTime;
+        return times;
     }
     
     
