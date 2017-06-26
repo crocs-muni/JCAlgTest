@@ -405,27 +405,37 @@ public class CardMngr {
             if (m_terminal.isCardPresent()) {
                 for (int maxAttempts = 2; maxAttempts > 0; ) {
                     maxAttempts--;
-                    m_card = m_terminal.connect("*");
-                    m_SystemOutLogger.println("card: " + m_card);
-                    m_channel = m_card.getBasicChannel();
-                    m_SystemOutLogger.println("Card Channel: " + m_channel.getChannelNumber());
+                    m_card = null;
+                    try {
+                        m_card = m_terminal.connect("*");
+                    }
+                    catch (javax.smartcardio.CardException e) {
+                        m_SystemOutLogger.print("Fail to connect(*), trying connect(T=0)...");
+                        m_card = m_terminal.connect("T=0");
+                        m_SystemOutLogger.println("done.");
+                    }
+                    if (m_card != null) {
+                        m_SystemOutLogger.println("card: " + m_card);
+                        m_channel = m_card.getBasicChannel();
+                        m_SystemOutLogger.println("Card Channel: " + m_channel.getChannelNumber());
 
-                    //reset the card
-                    ATR atr = m_card.getATR();
-                    m_SystemOutLogger.println(bytesToHex(atr.getBytes()));
+                        //reset the card
+                        ATR atr = m_card.getATR();
+                        m_SystemOutLogger.println(bytesToHex(atr.getBytes()));
 
-                    // SELECT APPLET
-                    cardFound = false;
-                    ResponseAPDU resp = sendAPDU(selectApplet);
-                    if (resp.getSW() == 0x9000) {
-                        cardFound = true;
-                    } else {
-                        m_SystemOutLogger.println("JCAlgTest applet with new AID not found - trying legacy AID...");
-                        resp = sendAPDU(selectAppletLegacy);
+                        // SELECT APPLET
+                        cardFound = false;
+                        ResponseAPDU resp = sendAPDU(selectApplet);
                         if (resp.getSW() == 0x9000) {
                             cardFound = true;
                         } else {
-                            m_SystemOutLogger.println("No JCAlgTest applet found");
+                            m_SystemOutLogger.println("JCAlgTest applet with new AID not found - trying legacy AID...");
+                            resp = sendAPDU(selectAppletLegacy);
+                            if (resp.getSW() == 0x9000) {
+                                cardFound = true;
+                            } else {
+                                m_SystemOutLogger.println("No JCAlgTest applet found");
+                            }
                         }
                     }
 

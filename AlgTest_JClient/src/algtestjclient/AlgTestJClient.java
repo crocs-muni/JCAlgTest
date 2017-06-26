@@ -165,7 +165,8 @@ public class AlgTestJClient {
                               "2 -> PERFORMANCE TEST\n    Test all JC API methods with 256B data length (1-3 hours)\n" + 
                               "3 -> PERFORMANCE VARIABLE DATA\n    Performance test with 16/32/64/128/256/512B data lengths (2-10 hours)\n" + 
                               "4 -> HARVEST RSA KEYS\n    Generate RSA keys on card, export to host and store to file (no limit)\n" + 
-                              "5 -> FINGERPRINT\n    Performance measurement of selected methods for fingeprint (10 minutes)\n");
+                              "5 -> FINGERPRINT\n    Performance measurement of selected methods for fingeprint (10 minutes)\n" +                              
+                              "6 -> ECC PERFORMANCE\n    Performance measurement of eliptic curve operations (10 minutes)\n");
             m_SystemOutLogger.print("Test option number: ");
             Scanner sc = new Scanner(System.in);
             int answ = sc.nextInt();
@@ -199,6 +200,12 @@ public class AlgTestJClient {
                     selectedTerminal = selectTargetReader();
                     if (selectedTerminal != null) {
                         testingPerformance.testPerformanceFingerprint(args, selectedTerminal);
+                    }
+                    break;
+                case 6:
+                    selectedTerminal = selectTargetReader();
+                    if (selectedTerminal != null) {
+                        testingPerformance.testECCPerformance(args, true, selectedTerminal);
                     }
                     break;
                 default:
