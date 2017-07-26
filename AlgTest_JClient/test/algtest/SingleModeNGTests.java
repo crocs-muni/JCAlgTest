@@ -1,4 +1,4 @@
-package algtest;
+package AlgTest;
 
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
