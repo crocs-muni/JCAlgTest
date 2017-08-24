@@ -1,4 +1,4 @@
-package AlgTest;
+package algtest;
 
 public class JCConsts { 
 
@@ -312,6 +312,7 @@ public class JCConsts {
     // javacard.security.RandomData Fields:
     public static final byte RandomData_ALG_PSEUDO_RANDOM                           = 1;
     public static final byte RandomData_ALG_SECURE_RANDOM                           = 2;
+    // JC3.0.5
     public static final byte RandomData_ALG_TRNG                                    = 3;
     public static final byte RandomData_ALG_ALG_PRESEEDED_DRBG                      = 4;
     public static final byte RandomData_ALG_FAST                                    = 5;
@@ -384,7 +385,7 @@ public class JCConsts {
     // javacard.security.DSAPrivateKey Methods:
     public static final short DSAPrivateKey_getX                                    = 1;
     public static final short DSAPrivateKey_setX                                    = 2;
-    public static final short DSAPrivateKey_clearKey                                  = 3;
+    public static final short DSAPrivateKey_clearKey                                = 3;
 
     // Class javacard.security.DSAPublicKey
     // javacard.security.DSAPublicKey Fields:

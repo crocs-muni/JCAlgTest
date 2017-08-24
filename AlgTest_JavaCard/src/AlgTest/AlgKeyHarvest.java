@@ -33,7 +33,7 @@
  *
  * @author Petr Svenda, Lenka Kunikova, Lukas Srom
  */
-package AlgTest;
+package algtest;
 
 
 import javacard.framework.*;
@@ -42,7 +42,7 @@ import javacard.security.*;
 
 public class AlgKeyHarvest {
     private   KeyPair          m_keyPair = null;
-    private   AlgTest.TestSettings     m_testSettings = null;
+    private   TestSettings     m_testSettings = null;
     private   RSAPublicKey     m_rsaPublicKey = null;
     private   RSAPrivateCrtKey m_rsaPrivateCrtKey = null; 
     private   RSAPrivateKey    m_rsaPrivateKey = null; 
@@ -56,7 +56,7 @@ public class AlgKeyHarvest {
 
 
     AlgKeyHarvest() { 
-        m_testSettings = new AlgTest.TestSettings();
+        m_testSettings = new TestSettings();
         m_random = RandomData.getInstance(RandomData.ALG_SECURE_RANDOM);
     }
 
@@ -64,12 +64,12 @@ public class AlgKeyHarvest {
         byte bProcessed = 0;
         byte[] apduBuffer = apdu.getBuffer();
 
-        if (apduBuffer[ISO7816.OFFSET_CLA] == AlgTest.Consts.CLA_CARD_ALGTEST) {
+        if (apduBuffer[ISO7816.OFFSET_CLA] == Consts.CLA_CARD_ALGTEST) {
             bProcessed = 1;
             switch ( apduBuffer[ISO7816.OFFSET_INS]) {
-                case AlgTest.Consts.INS_PREPARE_CIPHERENGINE: PrepareRSAEngine(apdu); break;
-                case AlgTest.Consts.INS_CARD_GETRSAKEY: GetRSAKey(apdu); break;
-                case AlgTest.Consts.INS_CARD_GETRANDOMDATA: GetRandomData(apdu); break;
+                case Consts.INS_PREPARE_CIPHERENGINE: PrepareRSAEngine(apdu); break;
+                case Consts.INS_CARD_GETRSAKEY: GetRSAKey(apdu); break;
+                case Consts.INS_CARD_GETRANDOMDATA: GetRandomData(apdu); break;
                 default : {
                     bProcessed = 0;
                     break;

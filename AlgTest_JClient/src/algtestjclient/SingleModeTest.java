@@ -32,8 +32,8 @@
 package algtestjclient;
 
 /* Import 'ALGTEST_JCLIENT_VERSION' variable - possibly replace with actual import of those variables later? */
-import AlgTest.Consts;
-import AlgTest.JCConsts;
+import algtest.Consts;
+import algtest.JCConsts;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;

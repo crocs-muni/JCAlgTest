@@ -1,4 +1,4 @@
-package AlgTest;
+package algtest;
 
 /**
  * @author Petr Svenda <petr@svenda.com>

@@ -31,8 +31,8 @@
 
 package algtestjclient;
 
-import AlgTest.Consts;
-import AlgTest.TestSettings;
+import algtest.Consts;
+import algtest.TestSettings;
 import static algtestjclient.CardMngr.*;
 import java.io.FileOutputStream;
 import java.io.IOException;
