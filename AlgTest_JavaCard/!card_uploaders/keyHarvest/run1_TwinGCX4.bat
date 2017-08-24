@@ -1,1 +1,0 @@
-GPShell.exe installAlgTest_Gemalto_TOP_IM_GXP4_reader1.txt

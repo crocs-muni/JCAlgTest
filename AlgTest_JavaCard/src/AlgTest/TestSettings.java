@@ -1,4 +1,4 @@
-package AlgTest;
+package algtest;
 
 import javacard.framework.APDU;
 import javacard.framework.ISO7816;

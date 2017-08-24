@@ -31,7 +31,7 @@
 
 package algtestjclient;
 
-import AlgTest.JCConsts;
+import algtest.JCConsts;
 import java.io.*;
 import java.util.List;
 import java.util.Scanner;

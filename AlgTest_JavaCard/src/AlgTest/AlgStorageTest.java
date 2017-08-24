@@ -33,7 +33,7 @@
  *
  * @author Petr Svenda, Lenka Kunikova, Lukas Srom
  */
-package AlgTest;
+package algtest;
 
 
 import javacard.framework.*;

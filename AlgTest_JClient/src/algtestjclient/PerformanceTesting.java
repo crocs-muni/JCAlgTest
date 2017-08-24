@@ -35,10 +35,10 @@ import java.io.*;
 import java.io.FileOutputStream;
 import java.util.Scanner;
 import javax.smartcardio.ResponseAPDU;
-import AlgTest.Consts;
-import AlgTest.JCAlgTestApplet;
-import AlgTest.JCConsts;
-import AlgTest.TestSettings;
+import algtest.Consts;
+import algtest.JCAlgTestApplet;
+import algtest.JCConsts;
+import algtest.TestSettings;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -321,13 +321,19 @@ public class PerformanceTesting {
         short numRepeatWholeMeasurement = (short) 3;
         short numRepeatWholeOperation = (short) 3;
         
+        testKeyAgreementWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_256, JCConsts.KeyAgreement_ALG_EC_SVDP_DH_PLAIN, "ALG_EC_FP LENGTH_EC_FP_256 ALG_EC_SVDP_DH_PLAIN", numRepeatWholeOperation, numRepeatWholeMeasurement);
+
         // Test speed of message digest - applied in some options of KeyAgreement.generateSecret()
         testMessageDigest(JCConsts.MessageDigest_ALG_SHA_256, "ALG_SHA_256", numRepeatWholeOperation, numRepeatWholeMeasurement);
         testRandomGenerator(JCConsts.RandomData_ALG_SECURE_RANDOM, "ALG_SECURE_RANDOM", numRepeatWholeOperation, numRepeatWholeMeasurement);
         testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_256, JCConsts.Signature_ALG_ECDSA_SHA, "KeyPair_ALG_EC_FP KeyBuilder_LENGTH_EC_FP_256 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
         testKeyPair(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_LENGTH_EC_FP_256, "ALG_EC_FP LENGTH_EC_FP_256", numRepeatWholeOperation, numRepeatWholeMeasurement);
         testKeyAgreementWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_256, JCConsts.KeyAgreement_ALG_EC_SVDP_DH, "ALG_EC_FP LENGTH_EC_FP_256 ALG_EC_SVDP_DH", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testKeyAgreementWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_256, JCConsts.KeyAgreement_ALG_EC_SVDP_DH_PLAIN, "ALG_EC_FP LENGTH_EC_FP_256 ALG_EC_SVDP_DH_PLAIN", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        //testKeyAgreementWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_256, JCConsts.KeyAgreement_ALG_EC_PACE_GM, "ALG_EC_FP LENGTH_EC_FP_256 ALG_EC_PACE_GM", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testKeyAgreementWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_256, JCConsts.KeyAgreement_ALG_EC_SVDP_DH_PLAIN_XY, "ALG_EC_FP LENGTH_EC_FP_256 ALG_EC_SVDP_DH_PLAIN_XY", numRepeatWholeOperation, numRepeatWholeMeasurement);
 
+    
         for (String opName : m_algsAvgTime.keySet()) {
             double[] measuredTimes = m_algsAvgTime.get(opName);
             m_SystemOutLogger.print(String.format("%s : \t avg=%4.1f,\t[", opName, measuredTimes[0]));
@@ -341,6 +347,8 @@ public class PerformanceTesting {
         wantedOps.add("KeyPair_ALG_EC_FP KeyBuilder_LENGTH_EC_FP_256 Signature_ALG_ECDSA_SHA Signature_sign()");
         wantedOps.add("KeyPair_ALG_EC_FP KeyBuilder_LENGTH_EC_FP_256 Signature_ALG_ECDSA_SHA Signature_verify()");
         wantedOps.add("ALG_EC_FP LENGTH_EC_FP_256 ALG_EC_SVDP_DH KeyAgreement_generateSecret()");
+        wantedOps.add("ALG_EC_FP LENGTH_EC_FP_256 ALG_EC_SVDP_DH_PLAIN KeyAgreement_generateSecret()");
+        wantedOps.add("ALG_EC_FP LENGTH_EC_FP_256 ALG_EC_SVDP_DH_PLAIN_XY KeyAgreement_generateSecret()");
         wantedOps.add("ALG_EC_FP LENGTH_EC_FP_256 KeyPair_genKeyPair()");
         
         // Generate CSV line
@@ -348,9 +356,12 @@ public class PerformanceTesting {
         String csvLine = String.format("%s, ", m_cardName);
         for (String wantedOp : wantedOps) {
             double[] measuredTimes = m_algsAvgTime.get(wantedOp);
+            csvHeader += String.format("%s, ", wantedOp);
             if (measuredTimes != null) {
-                csvHeader += String.format("%s, ", wantedOp);
-                csvLine += String.format("%f, ", measuredTimes[0]);
+                csvLine += String.format("%4.1f, ", measuredTimes[0]); // supported, store time
+            }
+            else {
+                csvLine += "-1, "; // not supported
             }
         }
         

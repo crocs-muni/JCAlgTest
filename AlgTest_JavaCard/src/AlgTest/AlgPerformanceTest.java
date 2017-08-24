@@ -33,7 +33,7 @@
  *
  * @author Petr Svenda, Lenka Kunikova, Lukas Srom
  */
-package AlgTest;
+package algtest;
 
 import javacard.framework.*;
 import javacard.security.*;
@@ -1236,6 +1236,15 @@ import javacardx.crypto.*;
         
         try {
             m_keyPair1 = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
+            // Make sure that for EC, we will have initailized curve
+            switch (m_testSettings.keyClass) {
+                case JCConsts.KeyPair_ALG_EC_F2M: // no break
+                case JCConsts.KeyPair_ALG_EC_FP:
+                    EC_Consts.ensureInitializedECCurve((byte) m_testSettings.keyClass, m_testSettings.keyLength, m_keyPair1, m_ram1);            
+                    break;
+                default: 
+                    // do nothing
+            }
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
         }
@@ -1284,7 +1293,7 @@ import javacardx.crypto.*;
         m_testSettings.parse(apdu); 
 
         m_keyAgreement.init(m_ecprivate_key);   // initialize with private key
-        short wLen = m_ecpublic_key.getW(m_ram1, (short) 0); // get valid public key (used as input from other party during generateSecret)
+        short wLen = m_ecpublic_key.getW(m_ram1, (short) 0); // get valid public key from second key (used as input from other party during generateSecret)
         switch (m_testSettings.algorithmMethod) {
             case JCConsts.KeyAgreement_init:   
                 for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 

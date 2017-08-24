@@ -51,7 +51,7 @@ SPEED (GXP E64PK):
 
 /**/
 
-package AlgTest;
+package algtest;
 import javacard.framework.*;
 
 public class JavaCardAES {
@@ -122,7 +122,7 @@ public class JavaCardAES {
       for (i=0; i<256; ++i) {
           Alogtable[i]= p;
           Logtable[(p >= 0) ? p : (short) (256 + p)]= (byte) i;
-          p=(byte) (p^(p<<1)^(((p&0x80) == 0) ? 0: 0x01b));
+          p=(byte) (p^(p<<1)^(((short) (p&0x80) == 0) ? 0: 0x01b));
       }
       // CORRECTION OF GENERATED LOG TABLE IS NEEDED
       Logtable[1] = 0;
@@ -179,13 +179,13 @@ public class JavaCardAES {
           hlp += STATELEN;
 
           // COPY KEY FOR round - 1 TO BUFFER FOR round
-          Util.arrayCopyNonAtomic(aesRoundKeys, (short) ((round - 1) * STATELEN), aesRoundKeys, hlp, STATELEN);
+          Util.arrayCopyNonAtomic(aesRoundKeys, (short) ((short) (round - 1) * STATELEN), aesRoundKeys, hlp, STATELEN);
 
           rconpointer = (byte) (round - 1);
 
           for (i = 0; i < 4; i++) {
-            sourceOffset = (short) ( ((i + 1) % 4) + ((KEYN-1) * 4) + hlp );
-            targetOffset = (short) ( i + (0 * 4) + hlp );
+            sourceOffset = (short) ( (short)((short)(i + 1) % 4) + (short) ((short)((short)(KEYN-1) * 4) + hlp));
+            targetOffset = (short) ( i + (short)((short)(0 * 4) + hlp));
             aesRoundKeys[targetOffset] ^= SBox[(aesRoundKeys[sourceOffset] >= 0) ? aesRoundKeys[sourceOffset] : (short) (256 + aesRoundKeys[sourceOffset])];
           }
 
@@ -193,8 +193,8 @@ public class JavaCardAES {
 
           for (j = 1; j < KEYN; j++) {
               for (i = 0; i < 4; i++) {
-                sourceOffset = (short) (i + ((j - 1) * 4) + hlp);
-                targetOffset = (short) ((i + (j * 4)) + hlp);
+                sourceOffset = (short) (i + (short)((short)((short)(j - 1) * 4) + hlp));
+                targetOffset = (short) ((i + (short) ((short)(j * 4) + hlp)));
                 aesRoundKeys[targetOffset] ^= aesRoundKeys[sourceOffset];
               }
           }
@@ -240,7 +240,7 @@ public class JavaCardAES {
       // ALSO FIRST ROUND IS SHIFTED (BUT BY 0 POSITIONS) DUE TO POSSIBILITY FOR USING Util.arrayCopy() LATER
       // tempBuffer WILL CONTAINS SHIFTED STATE a
       for(i = 0; i < 4; i++) {
-          for(j = 0; j < BLOCKN; j++) tempBuffer[(short) (i + j * 4)] = a[(short) (((i + (byte) ((j + shifts[(short) (i + d*4)] % BLOCKN) * 4)) % STATELEN) + dataOffset)];
+          for(j = 0; j < BLOCKN; j++) tempBuffer[(short) (i + (short)(j * 4))] = a[(short) ((short)((short)(i + (byte) ((short)(j + shifts[(short) (i + (short)(d*4))] % BLOCKN) * 4)) % STATELEN) + dataOffset)];
       }
       Util.arrayCopyNonAtomic(tempBuffer, (short) 0, a, dataOffset, STATELEN);
     }

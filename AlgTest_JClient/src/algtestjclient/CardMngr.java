@@ -50,9 +50,9 @@ import java.util.Scanner;
 //import javacard.framework.AID;
 */
 import javax.smartcardio.*;
-import AlgTest.Consts;
-import AlgTest.JCConsts;
-import AlgTest.TestSettings;
+import algtest.Consts;
+import algtest.JCConsts;
+import algtest.TestSettings;
 
 import com.licel.jcardsim.io.CAD;
 import com.licel.jcardsim.io.JavaxSmartCardInterface;

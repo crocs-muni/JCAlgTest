@@ -1,7 +1,7 @@
 
 package algtestjclient;
 
-import AlgTest.AlgPerformanceTest;
+import algtest.AlgPerformanceTest;
 
 /**
  *
