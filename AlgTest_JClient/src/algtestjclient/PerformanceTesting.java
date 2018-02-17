@@ -183,7 +183,9 @@ public class PerformanceTesting {
         // Connect to card
         this.m_perfResultsFile = m_cardManager.establishConnection(testClassPerformance, m_cardName, testInfo, selectedTerminal);
         m_cardATR = m_cardManager.getATR();
-        
+
+        //testAllUtil(1000, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
+
         // Run all required tests
         testAllMessageDigests(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
         testAllRandomGenerators(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
@@ -1064,6 +1066,9 @@ public class PerformanceTesting {
                 Consts.TEST_DATA_LENGTH, Consts.UNUSED, Consts.UNUSED, numRepeatWholeOperation, (short) 1, numRepeatWholeMeasurement);      
 
         ArrayList<Pair<Short, String>> testedOps = new ArrayList<>();
+        testedOps.add(new Pair(JCConsts.Util_arrayCompare_RAM_matching, "Util_arrayCompare_RAM_matching()"));
+        testedOps.add(new Pair(JCConsts.Util_arrayCompare_RAM_mismatching, "Util_arrayCompare_RAM_mismatching()"));
+
         testedOps.add(new Pair(JCConsts.Util_arrayCopy_RAM, "Util_arrayCopy_RAM()"));
         testedOps.add(new Pair(JCConsts.Util_arrayCopy_EEPROM, "Util_arrayCopy_EEPROM()"));
         testedOps.add(new Pair(JCConsts.Util_arrayCopy_RAM2EEPROM, "Util_arrayCopy_RAM2EEPROM()"));
