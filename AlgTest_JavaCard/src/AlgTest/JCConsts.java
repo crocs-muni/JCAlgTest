@@ -508,7 +508,10 @@ public class JCConsts {
     //public static final short Util_makeShort                                        = 15; // not tested
     //public static final short Util_getShort                                         = 16; // not tested
     //public static final short Util_setShort                                         = 17; // not tested
+    public static final short Util_arrayCompare_RAM_matching                        = 18;
+    public static final short Util_arrayCompare_RAM_mismatching                     = 19;
     
+            
     public static final short SWAlgs_xor                                            = 1;    
     public static final short SWAlgs_AES                                            = 2;    
     

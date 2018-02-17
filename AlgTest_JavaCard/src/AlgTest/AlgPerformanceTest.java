@@ -224,9 +224,12 @@ import javacardx.crypto.*;
                 break;
             }
 
-            case JCConsts.Util_arrayCompare_RAM: {
+            case JCConsts.Util_arrayCompare_RAM: 
+            case JCConsts.Util_arrayCompare_RAM_matching:
+            case JCConsts.Util_arrayCompare_RAM_mismatching: {
                 m_trng.generateData(m_ram1, (short) 0, chunkDataLen); 
                 Util.arrayCopyNonAtomic(m_ram1, (short) 0, m_ram1, chunkDataLen, chunkDataLen);    // prepare same second part to measure full operation
+                m_trng.generateData(m_ram2, (short) 0, chunkDataLen);
                 break;
             }
             case JCConsts.Util_arrayCompare_EEPROM: {
@@ -320,6 +323,19 @@ import javacardx.crypto.*;
                 }
                 break;
             }
+            case JCConsts.Util_arrayCompare_RAM_matching: {
+                Util.arrayCopyNonAtomic(m_ram1, (short) 0, m_ram2, (short) 0, chunkDataLen);
+                for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
+                    Util.arrayCompare(m_ram1, (short) 0, m_ram1, chunkDataLen, chunkDataLen);
+                }
+                break;
+            }
+            case JCConsts.Util_arrayCompare_RAM_mismatching: {
+                for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) {
+                    Util.arrayCompare(m_ram1, (short) 0, m_ram2, (short) 0, chunkDataLen);
+                }
+                break;
+            }
             case JCConsts.Util_arrayCompare_EEPROM: {
                 for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 
                     Util.arrayCopy(m_eeprom1, (short) 0, m_eeprom1, chunkDataLen, chunkDataLen);  
@@ -346,9 +362,22 @@ import javacardx.crypto.*;
         apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte) 1);            
     }  
    
-   
-   
-   
+/*   
+     void consttimetest_class_Util(APDU apdu) {
+         byte[] apdubuf = apdu.getBuffer();
+         m_testSettings.parse(apdu);
+
+         short chunkDataLen = (short) (m_testSettings.dataLength1 / m_testSettings.numRepeatSubOperation);
+         m_trng.generateData(m_ram1, (short) 0, chunkDataLen);
+         Util.arrayCopy(m_ram1, (short) 0, m_ram1, chunkDataLen, chunkDataLen);
+         m_trng.generateData(m_ram2, (short) 0, chunkDataLen);
+
+         switch (m_testSettings.algorithmMethod) {
+             default:
+                 ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
+         }
+     }
+*/   
     void prepare_class_Key(APDU apdu) {
         byte[] apdubuf = apdu.getBuffer();
         m_testSettings.parse(apdu);  
