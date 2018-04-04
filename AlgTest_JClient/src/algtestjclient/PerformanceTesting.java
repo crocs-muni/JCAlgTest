@@ -324,9 +324,7 @@ public class PerformanceTesting {
         short numRepeatWholeOperation = (short) 3;
         
         testKeyAgreementWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_256, JCConsts.KeyAgreement_ALG_EC_SVDP_DH_PLAIN, "ALG_EC_FP LENGTH_EC_FP_256 ALG_EC_SVDP_DH_PLAIN", numRepeatWholeOperation, numRepeatWholeMeasurement);
-
         // Test speed of message digest - applied in some options of KeyAgreement.generateSecret()
-        testMessageDigest(JCConsts.MessageDigest_ALG_SHA_256, "ALG_SHA_256", numRepeatWholeOperation, numRepeatWholeMeasurement);
         testRandomGenerator(JCConsts.RandomData_ALG_SECURE_RANDOM, "ALG_SECURE_RANDOM", numRepeatWholeOperation, numRepeatWholeMeasurement);
         testSignatureWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_256, JCConsts.Signature_ALG_ECDSA_SHA, "KeyPair_ALG_EC_FP KeyBuilder_LENGTH_EC_FP_256 Signature_ALG_ECDSA_SHA", numRepeatWholeOperation, numRepeatWholeMeasurement);
         testKeyPair(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_LENGTH_EC_FP_256, "ALG_EC_FP LENGTH_EC_FP_256", numRepeatWholeOperation, numRepeatWholeMeasurement);
@@ -334,6 +332,7 @@ public class PerformanceTesting {
         testKeyAgreementWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_256, JCConsts.KeyAgreement_ALG_EC_SVDP_DH_PLAIN, "ALG_EC_FP LENGTH_EC_FP_256 ALG_EC_SVDP_DH_PLAIN", numRepeatWholeOperation, numRepeatWholeMeasurement);
         //testKeyAgreementWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_256, JCConsts.KeyAgreement_ALG_EC_PACE_GM, "ALG_EC_FP LENGTH_EC_FP_256 ALG_EC_PACE_GM", numRepeatWholeOperation, numRepeatWholeMeasurement);
         testKeyAgreementWithKeyClass(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_256, JCConsts.KeyAgreement_ALG_EC_SVDP_DH_PLAIN_XY, "ALG_EC_FP LENGTH_EC_FP_256 ALG_EC_SVDP_DH_PLAIN_XY", numRepeatWholeOperation, numRepeatWholeMeasurement);
+        testMessageDigest(JCConsts.MessageDigest_ALG_SHA_256, "ALG_SHA_256", numRepeatWholeOperation, numRepeatWholeMeasurement);
 
     
         for (String opName : m_algsAvgTime.keySet()) {

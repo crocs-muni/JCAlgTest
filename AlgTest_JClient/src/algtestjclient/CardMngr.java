@@ -1692,7 +1692,7 @@ public class CardMngr {
             byte apduPrivate[] = this.prepareApduForKeyHarvest(privateKeySetting);
 
             int errors = 0;
-            while(numKeysGenerated < numRepeats) {
+            while (numKeysGenerated < numRepeats) {
                 try {
                     key.setLength(0);
                     if ((resetFrequency > 0) && (numKeysGenerated % resetFrequency == 0)) { bResetCard = true; }
