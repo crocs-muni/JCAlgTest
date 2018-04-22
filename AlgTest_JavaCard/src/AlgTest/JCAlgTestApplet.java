@@ -55,9 +55,15 @@ public class JCAlgTestApplet extends javacard.framework.Applet
 {
     // NOTE: when incrementing version, don't forget to update ALGTEST_JAVACARD_VERSION_CURRENT value
     /**
+     * Version 1.7.4 (20.04.2018) + fixed occasional freeze on some cards when
+     * testing MessageDigest performance
+     */
+    final static byte ALGTEST_JAVACARD_VERSION_1_7_4[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x37, (byte) 0x2e, (byte) 0x34};
+    
+    /**
      * Version 1.7.3 (10.06.2017) + fixed issue with incorrect test for KeyAgreement support 
      */
-    final static byte ALGTEST_JAVACARD_VERSION_1_7_3[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x37, (byte) 0x2e, (byte) 0x33};
+    //final static byte ALGTEST_JAVACARD_VERSION_1_7_3[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x37, (byte) 0x2e, (byte) 0x33};
     /**
      * Version 1.7.2 (06.05.2017) 
      * + better support for RSA key collection
@@ -141,7 +147,7 @@ public class JCAlgTestApplet extends javacard.framework.Applet
      */
     //final static byte ALGTEST_JAVACARD_VERSION_1_0[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x30};
 
-    byte ALGTEST_JAVACARD_VERSION_CURRENT[] = ALGTEST_JAVACARD_VERSION_1_7_3;
+    byte ALGTEST_JAVACARD_VERSION_CURRENT[] = ALGTEST_JAVACARD_VERSION_1_7_4;
     // lower byte of exception is value as defined in JCSDK/api_classic/constant-values.htm
     final static short SW_Exception = (short) 0xff01;
     final static short SW_ArrayIndexOutOfBoundsException = (short) 0xff02;
