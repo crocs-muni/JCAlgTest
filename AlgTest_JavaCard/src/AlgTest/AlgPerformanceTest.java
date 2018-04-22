@@ -1206,17 +1206,21 @@ import javacardx.crypto.*;
         m_testSettings.parse(apdu); 
         short repeats = (short) (m_testSettings.numRepeatWholeOperation * m_testSettings.numRepeatSubOperation);
         short chunkDataLen = (short) (m_testSettings.dataLength1 / m_testSettings.numRepeatSubOperation);
-
+        m_digest.reset();
+        
         switch (m_testSettings.algorithmMethod) {
             case JCConsts.MessageDigest_update:   
-                for (short i = 0; i < repeats; i++) { m_digest.update(m_ram1, (short) 0, chunkDataLen); } 
+                for (short i = 0; i < repeats; i++) { 
+                    m_digest.update(m_ram1, (short) 0, chunkDataLen); 
+                    m_digest.reset();   // NOTE: added because some cards freeze after many update() then doFinal() call; time substraction needed                               
+                } 
                 break;
             case JCConsts.MessageDigest_doFinal:  
-                for (short i = 0; i < repeats; i++) { m_digest.doFinal(m_ram1, (short) 0, chunkDataLen, m_ram1, chunkDataLen); } 
+                for (short i = 0; i < repeats; i++) { m_digest.doFinal(m_ram1, (short) 0, chunkDataLen, m_ram2, (short) 0); } 
                 break;
             case JCConsts.MessageDigest_reset:  
                 for (short i = 0; i < m_testSettings.numRepeatWholeOperation; i++) { 
-                    m_digest.doFinal(m_ram1, (short) 0, chunkDataLen, m_ram1, chunkDataLen);    // NOTE: time substraction needed
+                    m_digest.doFinal(m_ram1, (short) 0, chunkDataLen, m_ram2, (short) 0);    // NOTE: time substraction needed
                     m_digest.reset(); 
                 } 
                 break; 

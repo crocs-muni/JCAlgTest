@@ -54,11 +54,17 @@ public class AlgTestJClient {
     public static final String ALGTEST_PERFORMANCE = "AT_PERFORMANCE";          // for performance testing
     
     /**
+     * Version 1.7.4 (20.04.2018) 
+     * + fixed occasional freeze on some cards when testing MessageDigest performance
+     */
+    public final static String ALGTEST_JCLIENT_VERSION_1_7_4 = "1.7.4";
+    
+    /**
      * Version 1.7.3 (10.06.2017) 
      * + added new constants from JC3.0.5
      * - fixed bug with incorrect testing of KeyAgreement 
      */
-    public final static String ALGTEST_JCLIENT_VERSION_1_7_3 = "1.7.3";
+    //public final static String ALGTEST_JCLIENT_VERSION_1_7_3 = "1.7.3";
 
     /**
      * Version 1.7.2 (06.05.2017) 
@@ -115,7 +121,7 @@ public class AlgTestJClient {
     /**
      * Current version
      */
-    public final static String ALGTEST_JCLIENT_VERSION = ALGTEST_JCLIENT_VERSION_1_7_3;
+    public final static String ALGTEST_JCLIENT_VERSION = ALGTEST_JCLIENT_VERSION_1_7_4;
     
     public final static int STAT_OK = 0;    
     /**
