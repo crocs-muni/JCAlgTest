@@ -16,9 +16,14 @@ Automated testing tool for algorithms supported by particular smart card with Ja
    card, try to upload one with the highest version (AlgTest_v1.6_jc2.2.2.cap)
    and if upload fail, use lower version).
 
-2. Run Java application AlgTestJClient ('java -jar AlgTestJClient.jar'). Choose
-   the target reader for card with uploaded AlgTest applet and let it run. CSV
-   file with values separated by the semicolon is created (AlgTest_ATR.csv).
+2. Run Java application AlgTestJClient ('java -jar AlgTestJClient.jar'). On
+   Linux you might need to set the smartcardio library, for example use: 'java
+   -Dsun.security.smartcardio.library=/usr/lib64/libpcsclite.so.1 -jar
+   AlgTestJClient.jar'
+
+   Choose the target reader for card with uploaded AlgTest applet and let it
+   run. CSV file with values separated by the semicolon is created
+   (AlgTest_ATR.csv).
 
 3. Please consider to send us (petr@svenda.com) your results in case your card
    is not yet in the database at https://www.fi.muni.cz/~xsvenda/jcalgtest/
