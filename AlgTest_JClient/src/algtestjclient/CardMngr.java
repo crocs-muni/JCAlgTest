@@ -314,6 +314,8 @@ public class CardMngr {
             m_SystemOutLogger.println(message); file.write(message.getBytes());
             message = "Card name; " + cardName + "\r\n";
             m_SystemOutLogger.println(message); file.write(message.getBytes());
+            message = "Card provider; please insert link/description of shop where card was bought\r\n";
+            m_SystemOutLogger.println(message); file.write(message.getBytes());
             message = "Used protocol; " + protocol + "\r\n";
             m_SystemOutLogger.println(message); file.write(message.getBytes());
 

@@ -952,12 +952,12 @@ public class SingleModeTest {
     public static void TestClassKeyPair_ALG_RSA (FileOutputStream file) throws IOException, Exception{
         long       elapsedCard = 0;
         byte[] apdu = new byte[8];
-            apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;      // for AlgTest applet
-            apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;      // for AlgTest applet switch to 'TestSupportedModeSingle'
-            apdu[OFFSET_P1] = Consts.CLASS_KEYPAIR;    // 0x19
-            apdu[OFFSET_P2] = (byte)0x00;
-            apdu[OFFSET_LC] = (byte)0x03;
-            apdu[OFFSET_DATA] = ALG_RSA;        // 1
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;      // for AlgTest applet
+        apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;      // for AlgTest applet switch to 'TestSupportedModeSingle'
+        apdu[OFFSET_P1] = Consts.CLASS_KEYPAIR;    // 0x19
+        apdu[OFFSET_P2] = (byte)0x00;
+        apdu[OFFSET_LC] = (byte)0x03;
+        apdu[OFFSET_DATA] = ALG_RSA;        // 1
         
         /* Creates message with class name and writes it in the output file and on the screen. */
         String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_RSA_STR[0]) + "\r\n";
