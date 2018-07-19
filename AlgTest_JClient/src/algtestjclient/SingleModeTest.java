@@ -37,6 +37,8 @@ import algtest.JCConsts;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -239,6 +241,92 @@ public class SingleModeTest {
     public static final String RAWRSA_1024_STR[] = {"Variable RSA 1024 - support for variable public exponent. If supported, user-defined fast modular exponentiation can be executed on the smart card via cryptographic coprocessor. This is very specific feature and you will probably not need it", 
         "Allocate RSA 1024 objects", "Set random modulus", "Set random public exponent", "Initialize cipher with public key with random exponent", "Use random public exponent"}; 
 
+    public static final String PACKAGE_AID_STR[] = {"Package AID support test - a direct testing of supported packages from the standard JavaCard API including version. Not all constants from supported package are necessarily supported.",
+        "000107A0000000620001#2.1", // java.lang
+        "000107A0000000620002#2.2.0",  // java.io
+        "000107A0000000620003#2.2.0", // java.rmi
+        // javacard.framework
+        "000107A0000000620101#2.1", "010107A0000000620101#2.2.0", "020107A0000000620101#2.2.1",
+        "030107A0000000620101#2.2.2", "040107A0000000620101#3.0.1", "050107A0000000620101#3.0.4",
+        "060107A0000000620101#3.0.5",
+        // javacard.framework.service
+        "000108A000000062010101#2.2.0",
+        // javacard.security
+        "000107A0000000620102#2.1", "010107A0000000620102#2.1.1", "020107A0000000620102#2.2.1",
+        "030107A0000000620102#2.2.2", "040107A0000000620102#3.0.1", "050107A0000000620102#3.0.4",
+        "060107A0000000620102#3.0.5",
+        // javacardx.crypto
+        "000107A0000000620201#2.1", "010107A0000000620201#2.1.1", "020107A0000000620201#2.2.1",
+        "030107A0000000620201#2.2.2", "040107A0000000620201#3.0.1", "050107A0000000620201#3.0.4",
+        "060107A0000000620201#3.0.5",
+        // javacardx.biometry (starting directly from version 1.2 - previous versions all from 2.2.2)
+        "000107A0000000620202#2.2.2", "010107A0000000620202#2.2.2", "020107A0000000620202#2.2.2",
+        "030107A0000000620202#3.0.5",
+        "000107A0000000620203#2.2.2",  // javacardx.external
+        "000107A0000000620204#3.0.5",  // javacardx.biometry1toN
+        "000107A0000000620205#3.0.5",  // javacardx.security
+        // javacardx.framework.util
+        "000108A000000062020801#2.2.2", "010108A000000062020801#3.0.5",
+        "000109A00000006202080101#2.2.2",  // javacardx.framework.util.intx
+        "000108A000000062020802#2.2.2",  // javacardx.framework.math
+        "000108A000000062020803#2.2.2",  // javacardx.framework.tlv
+        "000108A000000062020804#3.0.4",  // javacardx.framework.string
+        "000107A0000000620209#2.2.2",  // javacardx.apdu
+        "000108A000000062020901#3.0.5"  // javacardx.apdu.util
+    };
+
+    public static final Map<String, String> PACKAGE_AID_NAMES_STR;
+    static {
+        PACKAGE_AID_NAMES_STR = new HashMap<>();
+        PACKAGE_AID_NAMES_STR.put("000107A0000000620001", "java.lang v1.0"); 
+        PACKAGE_AID_NAMES_STR.put("000107A0000000620002", "java.io v1.0");
+        PACKAGE_AID_NAMES_STR.put("000107A0000000620003", "java.rmi v1.0");
+        // javacard.framework
+        PACKAGE_AID_NAMES_STR.put("000107A0000000620101", "javacard.framework v1.0");
+        PACKAGE_AID_NAMES_STR.put("010107A0000000620101", "javacard.framework v1.1");
+        PACKAGE_AID_NAMES_STR.put("020107A0000000620101", "javacard.framework v1.2");
+        PACKAGE_AID_NAMES_STR.put("030107A0000000620101", "javacard.framework v1.3");
+        PACKAGE_AID_NAMES_STR.put("040107A0000000620101", "javacard.framework v1.4");
+        PACKAGE_AID_NAMES_STR.put("050107A0000000620101", "javacard.framework v1.5");
+        PACKAGE_AID_NAMES_STR.put("060107A0000000620101", "javacard.framework v1.6");
+        // javacard.framework.service
+        PACKAGE_AID_NAMES_STR.put("000108A000000062010101", "javacard.framework.service v1.0");
+        // javacard.security
+        PACKAGE_AID_NAMES_STR.put("000107A0000000620102", "javacard.security v1.0");
+        PACKAGE_AID_NAMES_STR.put("010107A0000000620102", "javacard.security v1.1");
+        PACKAGE_AID_NAMES_STR.put("020107A0000000620102", "javacard.security v1.2");
+        PACKAGE_AID_NAMES_STR.put("030107A0000000620102", "javacard.security v1.3");
+        PACKAGE_AID_NAMES_STR.put("040107A0000000620102", "javacard.security v1.4");
+        PACKAGE_AID_NAMES_STR.put("050107A0000000620102", "javacard.security v1.5");
+        PACKAGE_AID_NAMES_STR.put("060107A0000000620102", "javacard.security v1.6");
+        // javacardx.crypto
+        PACKAGE_AID_NAMES_STR.put("000107A0000000620201", "javacardx.crypto v1.0");
+        PACKAGE_AID_NAMES_STR.put("010107A0000000620201", "javacardx.crypto v1.1");
+        PACKAGE_AID_NAMES_STR.put("020107A0000000620201", "javacardx.crypto v1.2");
+        PACKAGE_AID_NAMES_STR.put("030107A0000000620201", "javacardx.crypto v1.3");
+        PACKAGE_AID_NAMES_STR.put("040107A0000000620201", "javacardx.crypto v1.4");
+        PACKAGE_AID_NAMES_STR.put("050107A0000000620201", "javacardx.crypto v1.5");
+        PACKAGE_AID_NAMES_STR.put("060107A0000000620201", "javacardx.crypto v1.6");
+        // javacardx.biometry (starting directly from version 1.2 - previous versions all from 2.2.2)
+        PACKAGE_AID_NAMES_STR.put("000107A0000000620202", "javacardx.biometry v1.0");
+        PACKAGE_AID_NAMES_STR.put("010107A0000000620202", "javacardx.biometry v1.1");
+        PACKAGE_AID_NAMES_STR.put("020107A0000000620202", "javacardx.biometry v1.2");
+        PACKAGE_AID_NAMES_STR.put("030107A0000000620202", "javacardx.biometry v1.3");
+
+        PACKAGE_AID_NAMES_STR.put("000107A0000000620203", "javacardx.external v1.0");
+        PACKAGE_AID_NAMES_STR.put("000107A0000000620204", "javacardx.biometry1toN v1.0");
+        PACKAGE_AID_NAMES_STR.put("000107A0000000620205", "javacardx.security v1.0");
+        // javacardx.framework.util
+        PACKAGE_AID_NAMES_STR.put("000108A000000062020801", "javacardx.framework.util v1.0");
+        PACKAGE_AID_NAMES_STR.put("010108A000000062020801", "javacardx.framework.util v1.1");
+        PACKAGE_AID_NAMES_STR.put("000109A00000006202080101", "javacardx.framework.util.intx v1.0");
+        PACKAGE_AID_NAMES_STR.put("000108A000000062020802", "javacardx.framework.math v1.0");
+        PACKAGE_AID_NAMES_STR.put("000108A000000062020803", "javacardx.framework.tlv v1.0");
+        PACKAGE_AID_NAMES_STR.put("000108A000000062020804", "javacardx.framework.string v1.0"); 
+        PACKAGE_AID_NAMES_STR.put("000107A0000000620209", "javacardx.apdu v1.0");
+        PACKAGE_AID_NAMES_STR.put("000108A000000062020901", "javacardx.apdu.util v1.0");
+    }
+    
     public static final String EXTENDEDAPDU_STR[] = {"javacardx.apdu.ExtendedLength", "Extended APDU#2.2.2"}; 
 
     public static final String BASIC_INFO[] = {"Basic info", "JavaCard support version"}; 
@@ -246,7 +334,7 @@ public class SingleModeTest {
     public static final String[] ALL_CLASSES_STR[] = {
         BASIC_INFO, JCSYSTEM_STR, EXTENDEDAPDU_STR, CIPHER_STR, SIGNATURE_STR, MESSAGEDIGEST_STR, RANDOMDATA_STR, KEYBUILDER_STR, 
         KEYPAIR_RSA_STR, KEYPAIR_RSACRT_STR, KEYPAIR_DSA_STR, KEYPAIR_EC_F2M_STR, 
-        KEYPAIR_EC_FP_STR, KEYAGREEMENT_STR, CHECKSUM_STR, RAWRSA_1024_STR
+        KEYPAIR_EC_FP_STR, KEYAGREEMENT_STR, CHECKSUM_STR, RAWRSA_1024_STR, PACKAGE_AID_STR
     };
     
     
@@ -407,6 +495,7 @@ public class SingleModeTest {
     public final static byte[] RESET_APDU = {(byte) 0xb0, (byte) 0xe2, (byte) 0x00, (byte) 0x00, (byte) 0x00};
        
     static DirtyLogger m_SystemOutLogger = null;
+    private Object ImmutableMap;
     public SingleModeTest(DirtyLogger logger) {
         m_SystemOutLogger = logger;
         cardManager = new CardMngr(m_SystemOutLogger);        
