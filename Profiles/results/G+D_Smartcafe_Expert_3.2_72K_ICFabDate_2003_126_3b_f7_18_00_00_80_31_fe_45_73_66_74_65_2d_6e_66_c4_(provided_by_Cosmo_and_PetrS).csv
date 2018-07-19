@@ -7,7 +7,9 @@ Used reader; PC/SC terminal Gemplus USB Smart Card Reader 0
 Card ATR; 3b f7 18 00 00 80 31 fe 45 73 66 74 65 2d 6e 66 c4
 Card name; G+D Smartcafe Expert 3.2 72K
 Used protocol; T=1
+Package_AID_test; GD_SmartCafe_Expert_3.2_72K_AIDSUPPORT_3BF71800008031FE45736674652D6E66C4.csv
 
+JavaCard support version;2.2.2
 JCSystem.getVersion()[Major.Minor];2.2;
 JCSystem.isObjectDeletionSupported;yes;
 JCSystem.MEMORY_TYPE_PERSISTENT;>32767B;

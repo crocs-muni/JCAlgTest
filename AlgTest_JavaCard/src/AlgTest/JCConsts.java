@@ -515,4 +515,45 @@ public class JCConsts {
     public static final short SWAlgs_xor                                            = 1;    
     public static final short SWAlgs_AES                                            = 2;    
     
+    
+    // javacard.framework.SystemException
+    public final static short SW_SystemException_prefix                 = (short) 0xf200;
+    public static final short SystemException_ILLEGAL_VALUE             = 1;
+    public static final short SystemException_NO_TRANSIENT_SPACE        = 2;
+    public static final short SystemException_ILLEGAL_TRANSIENT         = 3;
+    public static final short SystemException_ILLEGAL_AID               = 4;
+    public static final short SystemException_NO_RESOURCE               = 5;
+    public static final short SystemException_ILLEGAL_USE               = 6;
+    
+    // javacard.security.CryptoException
+    public static final short SW_CryptoException_prefix         = (short) 0xf100;
+    public static final short CryptoException_ILLEGAL_VALUE	= 1;
+    public static final short CryptoException_UNINITIALIZED_KEY	= 2;       
+    public static final short CryptoException_NO_SUCH_ALGORITHM = 3;
+    public static final short CryptoException_INVALID_INIT      = 4;
+    public static final short CryptoException_ILLEGAL_USE       = 5;
+    
+    // javacard.framework.PINException
+    public static final short SW_PINException_prefix                   = (short) 0xf300;
+    public static final short PINException_ILLEGAL_VALUE	= 1;    
+    public static final short PINException_ILLEGAL_STATE	= 2;
+    
+    // javacard.framework.TransactionException 
+    public static final short SW_TransactionException_prefix               = (short) 0xf400;
+    public static final short TransactionException_IN_PROGRESS      = 1;
+    public static final short TransactionException_NOT_IN_PROGRESS  = 2;
+    public static final short TransactionException_BUFFER_FULL      = 3;
+    public static final short TransactionException_INTERNAL_FAILURE = 4;
+    public static final short TransactionException_ILLEGAL_USE      = 5;
+    
+    // Named exceptions
+    public final static short SW_Exception_prefix                          = (short) 0xff00;
+    public final static short SW_Exception                                 = (short) 0x0001;
+    public final static short SW_ArrayIndexOutOfBoundsException            = (short) 0x0002;
+    public final static short SW_ArithmeticException                       = (short) 0x0003;
+    public final static short SW_ArrayStoreException                       = (short) 0x0004;
+    public final static short SW_NullPointerException                      = (short) 0x0005;
+    public final static short SW_NegativeArraySizeException                = (short) 0x0006;
+
+    public final static short SW_CardRuntimeException_prefix               = (short) 0xf500;
 } 

@@ -1,0 +1,115 @@
+jcAIDScan version; 0.1.1
+Card ATR; 3BF81300008131FE454A434F5076323431B7
+Card name; NXP JCOP 31 v2.4.1 72K
+CPLC;;
+
+ICFabricator; 4790
+ICType; 5040
+OperatingSystemID; 4791
+OperatingSystemReleaseDate; 8102
+OperatingSystemReleaseLevel; 3100
+ICFabricationDate; 1035
+ICSerialNumber; 00114095
+ICBatchIdentifier; 4830
+ICModuleFabricator; 0000
+ICModulePackagingDate; 0000
+ICCManufacturer; 0000
+ICEmbeddingDate; 0000
+ICPrePersonalizer; 072B
+ICPrePersonalizationEquipmentDate; 2430
+ICPrePersonalizationEquipmentID; 31313430
+ICPersonalizer; 0000
+ICPersonalizationDate; 0000
+ICPersonalizationEquipmentID; 00000000
+***** CARD DATA
+GlobalPlatform card
+Version; 2.1.1
+TAG3; 1.2.840.114283.3
+SCP version; SCP_02_15
+TAG5; 1.3.656.840.100.2.1.3
+TAG6; 1.3.6.1.4.1.42.2.110.1.2
+***** KEY INFO
+VER;255 ID;1 TYPE;DES3 LEN;16
+VER;255 ID;2 TYPE;DES3 LEN;16
+VER;255 ID;3 TYPE;DES3 LEN;16
+Key version suggests factory keys
+
+PACKAGE AID; MAJOR VERSION; MINOR VERSION; PACKAGE NAME; INTRODUCING JC API VERSION;
+a0000000620001; 1; 0; java.lang; 2.1
+a0000000620002; 1; 0; java.io; 2.2.0
+a0000000620003; 1; 0; java.rmi; 2.2.0
+a0000000620101; 1; 0; javacard.framework; 2.1
+a0000000620101; 1; 1; javacard.framework; 2.2.0
+a0000000620101; 1; 2; javacard.framework; 2.2.1
+a0000000620101; 1; 3; javacard.framework; 2.2.2
+a000000062010101; 1; 0; javacard.framework.service; 2.2.0
+a0000000620102; 1; 0; javacard.security; 2.1
+a0000000620102; 1; 1; javacard.security; 2.1.1
+a0000000620102; 1; 2; javacard.security; 2.2.1
+a0000000620102; 1; 3; javacard.security; 2.2.2
+a0000000620201; 1; 0; javacardx.crypto; 2.1
+a0000000620201; 1; 1; javacardx.crypto; 2.1.1
+a0000000620201; 1; 2; javacardx.crypto; 2.2.1
+a0000000620201; 1; 3; javacardx.crypto; 2.2.2
+a0000000620203; 1; 0; javacardx.external; 2.2.2
+a0000000620209; 1; 0; javacardx.apdu; 2.2.2
+
+FULL PACKAGE AID; IS SUPPORTED?; PACKAGE NAME WITH VERSION; 
+000107A0000000620001; 	yes; 	java.lang v1.0 a0000000620001;
+010107A0000000620001; 	no; 	java.lang v1.1 a0000000620001;
+000107A0000000620002; 	yes; 	java.io v1.0 a0000000620002;
+010107A0000000620002; 	no; 	java.io v1.1 a0000000620002;
+000107A0000000620003; 	yes; 	java.rmi v1.0 a0000000620003;
+010107A0000000620003; 	no; 	java.rmi v1.1 a0000000620003;
+000107A0000000620101; 	yes; 	javacard.framework v1.0 a0000000620101;
+010107A0000000620101; 	yes; 	javacard.framework v1.1 a0000000620101;
+020107A0000000620101; 	yes; 	javacard.framework v1.2 a0000000620101;
+030107A0000000620101; 	yes; 	javacard.framework v1.3 a0000000620101;
+040107A0000000620101; 	no; 	javacard.framework v1.4 a0000000620101;
+050107A0000000620101; 	no; 	javacard.framework v1.5 a0000000620101;
+060107A0000000620101; 	no; 	javacard.framework v1.6 a0000000620101;
+070107A0000000620101; 	no; 	javacard.framework v1.7 a0000000620101;
+000108A000000062010101; 	yes; 	javacard.framework.service v1.0 a000000062010101;
+010108A000000062010101; 	no; 	javacard.framework.service v1.1 a000000062010101;
+000107A0000000620102; 	yes; 	javacard.security v1.0 a0000000620102;
+010107A0000000620102; 	yes; 	javacard.security v1.1 a0000000620102;
+020107A0000000620102; 	yes; 	javacard.security v1.2 a0000000620102;
+030107A0000000620102; 	yes; 	javacard.security v1.3 a0000000620102;
+040107A0000000620102; 	no; 	javacard.security v1.4 a0000000620102;
+050107A0000000620102; 	no; 	javacard.security v1.5 a0000000620102;
+060107A0000000620102; 	no; 	javacard.security v1.6 a0000000620102;
+070107A0000000620102; 	no; 	javacard.security v1.7 a0000000620102;
+000107A0000000620201; 	yes; 	javacardx.crypto v1.0 a0000000620201;
+010107A0000000620201; 	yes; 	javacardx.crypto v1.1 a0000000620201;
+020107A0000000620201; 	yes; 	javacardx.crypto v1.2 a0000000620201;
+030107A0000000620201; 	yes; 	javacardx.crypto v1.3 a0000000620201;
+040107A0000000620201; 	no; 	javacardx.crypto v1.4 a0000000620201;
+050107A0000000620201; 	no; 	javacardx.crypto v1.5 a0000000620201;
+060107A0000000620201; 	no; 	javacardx.crypto v1.6 a0000000620201;
+070107A0000000620201; 	no; 	javacardx.crypto v1.7 a0000000620201;
+000107A0000000620202; 	no; 	javacardx.biometry v1.0 a0000000620202;
+010107A0000000620202; 	no; 	javacardx.biometry v1.1 a0000000620202;
+020107A0000000620202; 	no; 	javacardx.biometry v1.2 a0000000620202;
+030107A0000000620202; 	no; 	javacardx.biometry v1.3 a0000000620202;
+040107A0000000620202; 	no; 	javacardx.biometry v1.4 a0000000620202;
+000107A0000000620203; 	yes; 	javacardx.external v1.0 a0000000620203;
+010107A0000000620203; 	no; 	javacardx.external v1.1 a0000000620203;
+000107A0000000620204; 	no; 	javacardx.biometry1toN v1.0 a0000000620204;
+010107A0000000620204; 	no; 	javacardx.biometry1toN v1.1 a0000000620204;
+000107A0000000620205; 	no; 	javacardx.security v1.0 a0000000620205;
+010107A0000000620205; 	no; 	javacardx.security v1.1 a0000000620205;
+000108A000000062020801; 	no; 	javacardx.framework.util v1.0 a000000062020801;
+010108A000000062020801; 	no; 	javacardx.framework.util v1.1 a000000062020801;
+020108A000000062020801; 	no; 	javacardx.framework.util v1.2 a000000062020801;
+000109A00000006202080101; 	no; 	javacardx.framework.util.intx v1.0 a00000006202080101;
+010109A00000006202080101; 	no; 	javacardx.framework.util.intx v1.1 a00000006202080101;
+000108A000000062020802; 	no; 	javacardx.framework.math v1.0 a000000062020802;
+010108A000000062020802; 	no; 	javacardx.framework.math v1.1 a000000062020802;
+000108A000000062020803; 	no; 	javacardx.framework.tlv v1.0 a000000062020803;
+010108A000000062020803; 	no; 	javacardx.framework.tlv v1.1 a000000062020803;
+000108A000000062020804; 	no; 	javacardx.framework.string v1.0 a000000062020804;
+010108A000000062020804; 	no; 	javacardx.framework.string v1.1 a000000062020804;
+000107A0000000620209; 	yes; 	javacardx.apdu v1.0 a0000000620209;
+010107A0000000620209; 	no; 	javacardx.apdu v1.1 a0000000620209;
+000108A000000062020901; 	no; 	javacardx.apdu.util v1.0 a000000062020901;
+010108A000000062020901; 	no; 	javacardx.apdu.util v1.1 a000000062020901;

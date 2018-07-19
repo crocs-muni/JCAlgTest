@@ -7,7 +7,9 @@ Used reader; PC/SC terminal Feitian SCR301 0
 Card ATR; 3b fc 18 00 00 81 31 80 45 90 67 46 4a 01 00 05 24 c0 72 7e 00 86
 Card name; Samsung
 Used protocol; T=1
+Package_AID_test; Feitian_C21C_AIDSUPPORT_3BFC180000813180459067464A006A0424C0727E00EC.csv
 
+JavaCard support version;3.0.4
 JCSystem.getVersion()[Major.Minor];3.0;
 JCSystem.isObjectDeletionSupported;yes;
 JCSystem.MEMORY_TYPE_PERSISTENT;>32767B;

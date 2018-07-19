@@ -7,7 +7,9 @@ Used reader; PC/SC terminal Generic EMV Smartcard Reader 0
 Card ATR; 3b fa 13 00 00 81 31 fe 45 4a 43 4f 50 31 30 56 32 33 31 93
 Card name; NXP JCOP 10_18 v2.3.1
 Used protocol; T=1
+Package_AID_test; NXP_JCOP_1018_v2.3.1_AIDSUPPORT_3BFA1300008131FE454A434F5031305632333193.csv
 
+JavaCard support version;2.2.1
 JCSystem.getVersion()[Major.Minor];2.2;
 JCSystem.isObjectDeletionSupported;yes;
 JCSystem.MEMORY_TYPE_PERSISTENT;11168B;

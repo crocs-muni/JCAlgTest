@@ -7,7 +7,9 @@ Used reader; PC/SC terminal Gemplus USB Smart Card Reader 0
 Card ATR; 3b fc 18 00 00 81 31 80 45 90 67 46 4a 00 68 08 04 00 00 00 00 0e
 Card name; JavaCOS A22
 Used protocol; T=1
+Package_AID_test; Feitian_A22_AIDSUPPORT_3BFC180000813180459067464A00680804000000000E.csv
 
+JavaCard support version;3.0.4
 JCSystem.getVersion()[Major.Minor];3.0;
 JCSystem.isObjectDeletionSupported;yes;
 JCSystem.MEMORY_TYPE_PERSISTENT;>32767B;

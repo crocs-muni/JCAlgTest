@@ -63,9 +63,12 @@ public class SupportTable {
     // if multiple card results are generated
     private static List<String> java_card_version_array = new ArrayList<String>();
     private static String appletVersion = "";
+    private static String packageAIDTestPath = "";
     
     private static final int JC_SUPPORT_OFFSET = 25;
     private static final int AT_APPLET_OFFSET = 23;
+    private static final int PACKAGE_AID_PATH_OFFSET = 17;
+    
 
     
      /**
@@ -323,10 +326,15 @@ public class SupportTable {
         // class (e.g., javacardx.crypto.Cipher)
         String algorithm = "<tr>\r\n" + "<td class='dark'>" + classInfo[0] + "</td>\r\n";
         algorithm += "  <td class='dark'>introduced in JC ver.</td>\r\n"; 
-        if(classInfo[0] == "Basic info")
+        boolean bPackageAIDSupport = false; // detect specific subsection with AID support
+        if (classInfo[0].equalsIgnoreCase("Basic info")) {
             for (int i = 0; i < filesSupport.length; i++) { algorithm += "  <th class='dark_index "+i+"' title = '" + getLongCardName(filesArray[i]) + "'>c" + i + "</th>\r\n"; }
-         else
+        } else {
+            if (classInfo[0].contains("Package AID support test")) {
+                bPackageAIDSupport = true;
+            }
             for (int i = 0; i < filesSupport.length; i++) { algorithm += "  <td class='dark_index' title = '" + getLongCardName(filesArray[i]) + "'>c" + i + "</td>\r\n"; }
+        }
         
         String[] jcvArray = java_card_version_array.toArray(new String[java_card_version_array.size()]);
         algorithm += "</tr>\r\n";
@@ -334,24 +342,32 @@ public class SupportTable {
         for (int i = 0; i < classInfo.length; i++) {
             if (!classInfo[i].startsWith("@@@")) { // ignore special informative types
                 String algorithmName = "";
+                String fullAlgorithmName = "";
                 String algorithmVersion = "";
                 
                 if (appletVersion != ""){
                     algorithmName = "AlgTest applet version";
                     algorithmVersion = appletVersion;
+                    fullAlgorithmName = algorithmName;
                 }
                 else{
                     // Parse algorithm name and version of JC which introduced it
                     if (i == 0){continue;}
                     CardMngr cman = new CardMngr(new DirtyLogger(null, true));
                     algorithmName = cman.GetAlgorithmName(classInfo[i]);
+                    if (bPackageAIDSupport) {
+                        fullAlgorithmName = String.format("%s (%s)", SingleModeTest.PACKAGE_AID_NAMES_STR.get(algorithmName), algorithmName);
+                    }
+                    else {
+                        fullAlgorithmName = algorithmName;
+                    }
                     algorithmVersion = cman.GetAlgorithmIntroductionVersion(classInfo[i]);
                     if (!cman.ShouldBeIncludedInOutput(classInfo[i])) continue; // ignore types with ignore flag set (algorith#version#include 1/0) 
                 }
                 
                 algorithm += "<tr>\r\n";
                 // Add algorithm name
-                algorithm += "  <td class='light'>" + algorithmName + "</td>\r\n";
+                algorithm += "  <td class='light'>" + fullAlgorithmName + "</td>\r\n";
                 // Add version of JavaCard standard that introduced given algorithm
                 if (algorithmVersion == appletVersion){
                     algorithm += "  <td class='light_error'>" + "</td>\r\n";
@@ -366,7 +382,7 @@ public class SupportTable {
                     HashMap fileSuppMap = filesSupport[fileIndex];
                     if (fileSuppMap.containsKey(algorithmName)) {
                         String secondToken = (String) fileSuppMap.get(algorithmName);
-                        String title = "title='" + getShortCardName(filesArray[fileIndex]) + " : " + algorithmName + " : " + secondToken + "'";
+                        String title = "title='" + getShortCardName(filesArray[fileIndex]) + " : " + fullAlgorithmName + " : " + secondToken + "'";
                         switch (secondToken) {
                             case "no": algorithm += "<td class='light_no' " + title + ">no</td>\r\n"; break;
                             case "yes":
@@ -406,6 +422,51 @@ public class SupportTable {
         file.write(algorithm.getBytes());            
     }
     
+    static void parseAIDSupportFile(String filePath, HashMap suppMap) throws IOException {
+        try {
+            //create BufferedReader to read csv file
+            BufferedReader br = new BufferedReader(new FileReader(filePath));
+            String strLine;
+            int tokenNumber = 0;
+            boolean bSupportStartReached = false;
+
+            //read comma separated file line by line
+            while ((strLine = br.readLine()) != null) {
+                if (strLine.contains("FULL PACKAGE AID;")) {
+                    bSupportStartReached = true;
+                    continue;
+                }
+
+                if (bSupportStartReached) { // parse all lines till the end of file
+                    //break comma separated line using ";"
+                    StringTokenizer st = new StringTokenizer(strLine, ";,");
+
+                    String firstToken = "";
+                    String secondToken = "";
+                    while (st.hasMoreTokens()) {
+                        tokenNumber++;
+                        String tokenValue = st.nextToken();
+                        tokenValue = tokenValue.trim();
+                        if (tokenNumber == 1) {
+                            firstToken = tokenValue;
+                        }
+                        if (tokenNumber == 2) {
+                            secondToken = tokenValue;
+                        }
+                    }
+                    if (!firstToken.isEmpty()) {
+                        suppMap.put(firstToken, secondToken);
+                    }
+
+                    //reset token number
+                    tokenNumber = 0;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Exception while reading csv file: " + e);
+        }
+    }
+    
     static void parseSupportFile(String filePath, HashMap suppMap) throws IOException {
         try {
             //create BufferedReader to read csv file
@@ -419,7 +480,8 @@ public class SupportTable {
             while ((strLine = br.readLine()) != null) {
                 // in case valid JavaCard support version is present
                 if (strLine.contains("JavaCard support version")){
-                    String jcSupportVersion = (String)strLine.subSequence(JC_SUPPORT_OFFSET, strLine.length()-1);
+                    String jcSupportVersion = (String)strLine.subSequence(JC_SUPPORT_OFFSET, strLine.length());
+                    jcSupportVersion = jcSupportVersion.replace(";", "");
                     if (jcSupportVersion.length() > 0) {
                         java_card_version_array.add(jcSupportVersion);
                         bJCSupportVersionPresent = true;
@@ -427,6 +489,23 @@ public class SupportTable {
                 }
                 if (strLine.contains("AlgTest applet version")){
                     appletVersion = strLine.substring(AT_APPLET_OFFSET, strLine.length() - 1);                    
+                }
+                if (strLine.contains("Package_AID_test")) {
+                    packageAIDTestPath = strLine.substring(PACKAGE_AID_PATH_OFFSET, strLine.length());
+                    packageAIDTestPath = packageAIDTestPath.trim();
+                    
+                    if (!packageAIDTestPath.isEmpty()) {
+                        // Open target path and load additional info from here
+                        int lastPos = filePath.lastIndexOf('\\');
+                        if (lastPos == -1) {
+                            lastPos = filePath.lastIndexOf('/');
+                        }
+                        if (lastPos != -1) {
+                            String basePath = filePath.substring(0, lastPos);
+                            String aidSupportFilePath = String.format("%s/../aid/%s", basePath, packageAIDTestPath);
+                            parseAIDSupportFile(aidSupportFilePath, suppMap);
+                        }
+                    }
                 }
                 lineNumber++;
 

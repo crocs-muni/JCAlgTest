@@ -8,6 +8,7 @@ Card ATR; 3b f9 18 00 00 81 31 fe 45 4a 43 4f 50 32 31 56 32 32 a9
 Card name; NXP JCOP 21 V2.2 36K
 Performance; yes
 Used protocol; T=1
+Package_AID_test; NXP_JCOP_21_V2.2_36K_AIDSUPPORT_3BF91800008131FE454A434F503231563232A9.csv
 
 JavaCard support version;2.2.1;
 

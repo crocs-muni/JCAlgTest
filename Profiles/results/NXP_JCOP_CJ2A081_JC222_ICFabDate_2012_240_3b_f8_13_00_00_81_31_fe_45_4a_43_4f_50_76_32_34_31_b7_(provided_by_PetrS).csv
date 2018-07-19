@@ -8,6 +8,7 @@ Card ATR; 3b f8 13 00 00 81 31 fe 45 4a 43 4f 50 76 32 34 31 b7
 Card name; NXP JCOP CJ2A081 
 Performance; yes
 Used protocol; T=1
+Package_AID_test; NXP_JCOP_CJ2A081_AIDSUPPORT_3BF81300008131FE454A434F5076323431B7.csv
 
 JavaCard support version;2.2.2;
 
