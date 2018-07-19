@@ -7,7 +7,9 @@ Used reader; PC/SC terminal Gemplus USB Smart Card Reader 0
 Card ATR; 3b f8 18 00 00 81 31 fe 45 4a 43 4f 50 76 32 34 31 bc
 Card name; NXP J2A080 80K
 Used protocol; T=1
+Package_AID_test; NXP_J2A080_80K_AIDSUPPORT_3BF81800008131FE454A434F5076323431BC.csv
 
+JavaCard support version;2.2.2
 JCSystem.getVersion()[Major.Minor];2.2;
 JCSystem.isObjectDeletionSupported;yes;
 JCSystem.MEMORY_TYPE_PERSISTENT;>32767B;

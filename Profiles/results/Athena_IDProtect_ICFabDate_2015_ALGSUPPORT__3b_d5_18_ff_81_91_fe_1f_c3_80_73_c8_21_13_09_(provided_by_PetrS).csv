@@ -7,6 +7,7 @@ Used reader; PC/SC terminal Generic EMV Smartcard Reader 0
 Card ATR; 3b d5 18 ff 81 91 fe 1f c3 80 73 c8 21 13 09
 Card name; Athena IDProtect
 Used protocol; T=1
+Package_AID_test; Athena_IDProtect_AIDSUPPORT_3BD518FF8191FE1FC38073C8211309.csv 
 
 JavaCard support version;2.2.2;
 JCSystem.getVersion()[Major.Minor];2.2;

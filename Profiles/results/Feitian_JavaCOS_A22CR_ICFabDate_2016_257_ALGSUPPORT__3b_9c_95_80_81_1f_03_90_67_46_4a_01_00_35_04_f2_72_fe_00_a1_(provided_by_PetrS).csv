@@ -7,7 +7,9 @@ Used reader; PC/SC terminal Generic EMV Smartcard Reader 0
 Card ATR; 3b 9c 95 80 81 1f 03 90 67 46 4a 01 00 35 04 f2 72 fe 00 a1
 Card name; Feitian JavaCOS A22CR
 Used protocol; T=1
+Package_AID_test; Feitian_A22CR_AIDSUPPORT_3B9C9580811F039067464A01003504F272FE00A1.csv
 
+JavaCard support version;3.0.4
 JCSystem.getVersion()[Major.Minor];3.0;
 JCSystem.isObjectDeletionSupported;yes;
 JCSystem.MEMORY_TYPE_PERSISTENT;>32767B;

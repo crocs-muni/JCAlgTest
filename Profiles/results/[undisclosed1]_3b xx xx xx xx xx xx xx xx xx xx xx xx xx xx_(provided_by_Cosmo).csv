@@ -235,7 +235,7 @@ ALG_EC_FP LENGTH_EC_FP_256;error(ILLEGAL_VALUE);
 ALG_EC_FP LENGTH_EC_FP_384;no;
 ALG_EC_FP LENGTH_EC_FP_521;no;
 
-javacard\.security\.KeyAgreement
+javacard.security.KeyAgreement
 ALG_EC_SVDP_DH/ALG_EC_SVDP_DH_KDF;yes;
 ALG_EC_SVDP_DHC/ALG_EC_SVDP_DHC_KDF;no;
 ALG_EC_SVDP_DH_PLAIN;no;
@@ -250,5 +250,4 @@ Allocate RSA 1024 objects;yes;0.094000 sec;
 Set random modulus;yes;0.049000 sec;
 Set random public exponent;yes;0.083000 sec;
 Initialize cipher with public key with random exponent;yes;0.019000 sec;
-JavaCard support version;???
 Use random public exponent;yes;0.218000 sec;

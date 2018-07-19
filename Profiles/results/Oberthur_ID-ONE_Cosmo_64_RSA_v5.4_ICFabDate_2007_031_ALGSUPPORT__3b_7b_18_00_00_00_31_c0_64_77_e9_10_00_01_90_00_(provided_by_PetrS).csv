@@ -8,6 +8,7 @@ Card ATR; 3b 7b 18 00 00 00 31 c0 64 77 e9 10 00 01 90 00
 Card name; Oberthur ID-ONE Cosmo 64 RSA v5.4
 Performance; yes
 Used protocol; T=0
+Package_AID_test; Oberthur_ID-One_Cosmo_64_RSA_v5.4_AIDSUPPORT_3B7B1800000031C06477E91000019000.csv
 
 JavaCard support version;2.2.1;
 JCSystem.getVersion()[Major.Minor];2.2;

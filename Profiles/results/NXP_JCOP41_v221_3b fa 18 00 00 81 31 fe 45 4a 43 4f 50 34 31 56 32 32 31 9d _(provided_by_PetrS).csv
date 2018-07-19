@@ -7,6 +7,7 @@ Card ATR; 3b fa 18 00 00 81 31 fe 45 4a 43 4f 50 34 31 56 32 32 31 9d
 Card name; NXP JCOP41 v2.2.1 72K
 Performance; yes
 Used protocol; T=1
+Package_AID_test; NXP_JCOP_41_v2.2.1_72K_AIDSUPPORT_3BFA1800008131FE454A434F503431563232319D.csv
 
 JavaCard support version;2.2.1;
 JCSystem.getVersion()[Major.Minor];2.2;
