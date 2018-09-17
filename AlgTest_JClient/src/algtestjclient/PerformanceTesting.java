@@ -95,7 +95,7 @@ public class PerformanceTesting {
         m_testDataLengths.add(512);        
     }
     
-    String getCurrentTestInfoString() {
+    String getCurrentTestInfoString(boolean bAppendTime) {
         String testInfo = m_cardName + "___";
         testInfo += "_PERFORMANCE_";
 
@@ -111,7 +111,9 @@ public class PerformanceTesting {
             testInfo += "DATAFIXED_";
         }
 
-        testInfo += System.currentTimeMillis() + "_";   // add unique time counter 
+        if (bAppendTime) {
+            testInfo += System.currentTimeMillis() + "_";   // add unique time counter 
+        }
         
         return testInfo;
     }
@@ -176,9 +178,10 @@ public class PerformanceTesting {
         m_cardName = requestCardName(sc);
 
         // Try to open and load list of already measured algorithms (if provided)
-        LoadAlreadyMeasuredAlgs(m_cardName);
+        String testType = getCurrentTestInfoString(false);
+        LoadAlreadyMeasuredAlgs(m_cardName, testType);
 
-        String testInfo = getCurrentTestInfoString();
+        String testInfo = getCurrentTestInfoString(true);
         
         // Connect to card
         this.m_perfResultsFile = m_cardManager.establishConnection(testClassPerformance, m_cardName, testInfo, selectedTerminal);
@@ -386,8 +389,8 @@ public class PerformanceTesting {
         m_perfResultsFile.write(message.getBytes());
     }
     
-    void LoadAlreadyMeasuredAlgs(String cardName) {
-        String filePath = cardName + "_already_measured.list";
+    void LoadAlreadyMeasuredAlgs(String cardName, String testType) {
+        String filePath = cardName + testType + "_already_measured.list";
         String filePathOld = filePath + ".old";
         File f = new File(filePath);
         File fOld = new File(filePathOld);
@@ -765,7 +768,10 @@ public class PerformanceTesting {
         if (m_algsMeasuredList.contains(info)) {
             // we already measured this algorithm before, just log it into new measurementsDone file
             String message = info + "\n";
-            if (m_algsMeasuredFile != null) { m_algsMeasuredFile.write(message.getBytes()); }        
+            if (m_algsMeasuredFile != null) { 
+                m_algsMeasuredFile.write(message.getBytes());
+                m_algsMeasuredFile.flush();
+            }        
             
             message = "\nmethod name:; " + info + "\n";    
             message += "ALREADY_MEASURED\n";
@@ -811,7 +817,10 @@ public class PerformanceTesting {
                     // log succesfull measurement of current algorithm - although exception ocurred, it is expected value like NO_SUCH_ALGORITHM
                     m_bAlgsMeasuredSomeNew = true;
                     message = info + "\n";
-                    if (m_algsMeasuredFile != null) {m_algsMeasuredFile.write(message.getBytes()); }       
+                    if (m_algsMeasuredFile != null) {
+                        m_algsMeasuredFile.write(message.getBytes()); 
+                        m_algsMeasuredFile.flush();
+                    }       
 
                     return -1;
                 }
