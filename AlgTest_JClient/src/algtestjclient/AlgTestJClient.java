@@ -54,10 +54,16 @@ public class AlgTestJClient {
     public static final String ALGTEST_PERFORMANCE = "AT_PERFORMANCE";          // for performance testing
     
     /**
-     * Version 1.7.4 (20.04.2018) 
-     * + fixed occasional freeze on some cards when testing MessageDigest performance
+     * Version 1.7.5 (17.09.2018) 
+     * - update of preallocated size of RAM (applet updated)
      */
-    public final static String ALGTEST_JCLIENT_VERSION_1_7_4 = "1.7.4";
+    public final static String ALGTEST_JCLIENT_VERSION_1_7_5 = "1.7.5";
+    
+    /**
+     * Version 1.7.4 (20.04.2018) 
+     * - fixed occasional freeze on some cards when testing MessageDigest performance
+     */
+    //public final static String ALGTEST_JCLIENT_VERSION_1_7_4 = "1.7.4";
     
     /**
      * Version 1.7.3 (10.06.2017) 
@@ -121,7 +127,7 @@ public class AlgTestJClient {
     /**
      * Current version
      */
-    public final static String ALGTEST_JCLIENT_VERSION = ALGTEST_JCLIENT_VERSION_1_7_4;
+    public final static String ALGTEST_JCLIENT_VERSION = ALGTEST_JCLIENT_VERSION_1_7_5;
     
     public final static int STAT_OK = 0;    
     /**
