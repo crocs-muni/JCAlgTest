@@ -418,46 +418,88 @@ public class SingleModeTest {
      */
     public static final byte[] KEY_LENGTHS_HEX = {
         // class EC FP [00 - 15]
+        (byte) 0x00, (byte) 0x70, // [00,01] - 112
+        (byte) 0x00, (byte) 0x80, // [02,03] - 128
+        (byte) 0x00, (byte) 0xA0, // [04,05] - 160
+        (byte) 0x00, (byte) 0xC0, // [06,07] - 192
+        (byte) 0x00, (byte) 0xE0, // [08,09] - 224
+        (byte) 0x01, (byte) 0x00, // [10,11] - 256
+        (byte) 0x01, (byte) 0x80, // [12,13] - 384
+        (byte) 0x02, (byte) 0x09, // [14,15] - 521
+        // class EC F2M [16 - 23]
+        (byte) 0x00, (byte) 0x71, // [16,17] - 113
+        (byte) 0x00, (byte) 0x83, // [18,19] - 131
+        (byte) 0x00, (byte) 0xA3, // [20,21] - 163
+        (byte) 0x00, (byte) 0xC1, // [22,23] - 193
+        // classes RSA, RSACRT [24 - 43]
+        (byte) 0x02, (byte) 0x00, // [24,25] - 512
+        (byte) 0x02, (byte) 0xE0, // [26,27] - 736
+        (byte) 0x03, (byte) 0x00, // [28,29] - 768
+        (byte) 0x03, (byte) 0x80, // [30,31] - 896
+        (byte) 0x04, (byte) 0x00, // [32,33] - 1024
+        (byte) 0x05, (byte) 0x00, // [34,35] - 1280
+        (byte) 0x06, (byte) 0x00, // [36,37] - 1536
+        (byte) 0x07, (byte) 0xC0, // [38,39] - 1984
+        (byte) 0x08, (byte) 0x00, // [40,41] - 2048
+        (byte) 0x10, (byte) 0x00, // [42,43] - 4096
+        // class DES [44 - 49]
+        (byte) 0x00, (byte) 0x40, // [44,45] - 64
+        (byte) 0x00, (byte) 0x80, // [46,47] - 128
+        (byte) 0x00, (byte) 0xC0, // [48,49] - 192
+        // class AES [50 - 55]
+        (byte) 0x00, (byte) 0x80, // [50,51] - 128
+        (byte) 0x00, (byte) 0xC0, // [52,53] - 192
+        (byte) 0x01, (byte) 0x00, // [54,55] - 256
+        // class HMAC [56 - 63]
+        (byte) 0x00, (byte) 0x01, // [56,57] - 1
+        (byte) 0x01, (byte) 0x00, // [58,59] - 256
+        (byte) 0x01, (byte) 0x80, // [60,61] - 384
+        (byte) 0x02, (byte) 0x00, // [62,63] - 512
+    };    
+/* 20181201 Version with added EC FP 320 and 512 key lengths
+    public static final byte[] KEY_LENGTHS_HEX = {
+        // class EC FP [00 - 15]
         (byte)0x00, (byte)0x70,         // [00,01] - 112
         (byte)0x00, (byte)0x80,         // [02,03] - 128
         (byte)0x00, (byte)0xA0,         // [04,05] - 160
         (byte)0x00, (byte)0xC0,         // [06,07] - 192
         (byte)0x00, (byte)0xE0,         // [08,09] - 224
         (byte)0x01, (byte)0x00,         // [10,11] - 256
-        //(byte)0x01, (byte)0x40,         // [12,13] - 320
-        (byte)0x01, (byte)0x80,         // [12,13] - 384
-        //(byte)0x02, (byte)0x00,         // [14,15] - 512
-        (byte)0x02, (byte)0x09,         // [14,15] - 521
+        (byte)0x01, (byte)0x40,         // [12,13] - 320
+        (byte)0x01, (byte)0x80,         // [14,15] - 384
+        (byte)0x02, (byte)0x00,         // [16,17] - 512
+        (byte)0x02, (byte)0x09,         // [18,19] - 521
         // class EC F2M [16 - 23]
-        (byte)0x00, (byte)0x71,         // [16,17] - 113
-        (byte)0x00, (byte)0x83,         // [18,19] - 131
-        (byte)0x00, (byte)0xA3,         // [20,21] - 163
-        (byte)0x00, (byte)0xC1,         // [22,23] - 193
+        (byte)0x00, (byte)0x71,         // [20,21] - 113
+        (byte)0x00, (byte)0x83,         // [22,23] - 131
+        (byte)0x00, (byte)0xA3,         // [24,25] - 163
+        (byte)0x00, (byte)0xC1,         // [26,27] - 193
         // classes RSA, RSACRT [24 - 43]
-        (byte)0x02, (byte)0x00,         // [24,25] - 512
-        (byte)0x02, (byte)0xE0,         // [26,27] - 736
-        (byte)0x03, (byte)0x00,         // [28,29] - 768
-        (byte)0x03, (byte)0x80,         // [30,31] - 896
-        (byte)0x04, (byte)0x00,         // [32,33] - 1024
-        (byte)0x05, (byte)0x00,         // [34,35] - 1280
-        (byte)0x06, (byte)0x00,         // [36,37] - 1536
-        (byte)0x07, (byte)0xC0,         // [38,39] - 1984
-        (byte)0x08, (byte)0x00,         // [40,41] - 2048
-        (byte)0x10, (byte)0x00,         // [42,43] - 4096
+        (byte)0x02, (byte)0x00,         // [28,29] - 512
+        (byte)0x02, (byte)0xE0,         // [30,31] - 736
+        (byte)0x03, (byte)0x00,         // [32,33] - 768
+        (byte)0x03, (byte)0x80,         // [34,35] - 896
+        (byte)0x04, (byte)0x00,         // [36,37] - 1024
+        (byte)0x05, (byte)0x00,         // [38,39] - 1280
+        (byte)0x06, (byte)0x00,         // [40,41] - 1536
+        (byte)0x07, (byte)0xC0,         // [42,43] - 1984
+        (byte)0x08, (byte)0x00,         // [44,45] - 2048
+        (byte)0x10, (byte)0x00,         // [46,47] - 4096
         // class DES [44 - 49]
-        (byte)0x00, (byte)0x40,         // [44,45] - 64
-        (byte)0x00, (byte)0x80,         // [46,47] - 128
-        (byte)0x00, (byte)0xC0,         // [48,49] - 192
-        // class AES [50 - 55]
+        (byte)0x00, (byte)0x40,         // [48,49] - 64
         (byte)0x00, (byte)0x80,         // [50,51] - 128
         (byte)0x00, (byte)0xC0,         // [52,53] - 192
-        (byte)0x01, (byte)0x00,         // [54,55] - 256
-        // class HMAC [56 - 63]
-        (byte)0x00, (byte)0x01,         // [56,57] - 1
+        // class AES [50 - 55]
+        (byte)0x00, (byte)0x80,         // [54,55] - 128
+        (byte)0x00, (byte)0xC0,         // [56,57] - 192
         (byte)0x01, (byte)0x00,         // [58,59] - 256
-        (byte)0x01, (byte)0x80,         // [60,61] - 384
-        (byte)0x02, (byte)0x00,         // [62,63] - 512
+        // class HMAC [56 - 63]
+        (byte)0x00, (byte)0x01,         // [60,61] - 1
+        (byte)0x01, (byte)0x00,         // [62,63] - 256
+        (byte)0x01, (byte)0x80,         // [64,65] - 384
+        (byte)0x02, (byte)0x00,         // [66,67] - 512
     };
+*/    
     
     public final static int CLOCKS_PER_SEC = 1000;
     
