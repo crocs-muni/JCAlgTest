@@ -85,7 +85,8 @@ public class Consts {
     public static final short CLASS_KEYENCRYPTION               = (short) 0x18;      
     public static final short CLASS_KEYPAIR                     = (short) 0x19;      
     public static final short CLASS_KEYBUILDER                  = (short) 0x20;  
-    public static final short CLASS_UTIL                        = (short) 0x21;  
+    public static final short CLASS_UTIL                        = (short) 0x21;
+    public static final short CLASS_BIOBUILDER                  = (short) 0x22;
     
     
     public static final byte UNUSED    = (byte) -1;     

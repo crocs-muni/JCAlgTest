@@ -165,7 +165,7 @@ public class AlgSupportTest {
            case (byte) 0x19: // no break
            case (byte) 0x1C: { // no break
              try {
-               offset++;m_keyPair1 = new KeyPair(algorithmClass, algorithmParam1);
+               offset++; m_keyPair1 = new KeyPair(algorithmClass, algorithmParam1);
                
                if ((algorithmClass == KeyPair.ALG_EC_FP) || (algorithmClass == KeyPair.ALG_EC_F2M)) {
                    // Key pair for ECC need to be initialized by proper curve for some cards in some cases
@@ -188,6 +188,13 @@ public class AlgSupportTest {
              catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
              break;
            }
+/*           
+           case Consts.CLASS_BIOBUILDER: {
+               try { offset++; m_object = javacardx.biometry.BioBuilder.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;} 
+               catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET);}
+               break;
+           }
+*/           
         }
        // ENDING 0xFF
        offset++;

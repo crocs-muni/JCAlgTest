@@ -142,6 +142,15 @@ public class SingleModeTest {
         "ALG_EC_PACE_GM#3.0.5", "ALG_EC_SVDP_DH_PLAIN_XY#3.0.5", "ALG_DH_PLAIN#3.0.5"
     };
     public static final int KEYAGREEMENT_STR_LAST_INDEX = JCConsts.KeyAgreement_ALG_DH_PLAIN;
+    
+    public static final String BIOBUILDER_STR[] = {"javacardx.biometry.BioBuilder",
+        //2.2.2
+        "FACIAL_FEATURE#2.2.2", "VOICE_PRINT#2.2.2", "FINGERPRINT#2.2.2", "IRIS_SCAN#2.2.2", "RETINA_SCAN#2.2.2", "HAND_GEOMETRY#2.2.2",
+        "SIGNATURE#2.2.2", "KEYSTROKES#2.2.2", "LIP_MOVEMENT#2.2.2", "THERMAL_FACE#2.2.2", "THERMAL_HAND#2.2.2", "GAIT_STYLE#2.2.2",
+        "BODY_ODOR#2.2.2", "DNA_SCAN#2.2.2", "EAR_GEOMETRY#2.2.2", "FINGER_GEOMETRY#2.2.2", "PALM_GEOMETRY#2.2.2", "VEIN_PATTERN#2.2.2"
+        // ommit as password has constant 31 which is not continuious with previous ones "PASSWORD#2.2.2"
+    };
+    
     /**
      * String array used in KeyBuilder testing for printing alg names.
      */
@@ -1351,6 +1360,44 @@ public class SingleModeTest {
     }
     
     /**
+     * Tests all algorithms in class 'javacardx.crypto.KeyAgreement' and results
+     * writes into the output file.
+     *
+     * @param file FileOutputStream object containing output file.
+     * @throws IOException
+     * @throws Exception
+     */
+    public static void TestClassBioBuilder(FileOutputStream file) throws IOException, Exception {
+        long elapsedCard = 0;
+        byte[] apdu = new byte[6];
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
+        apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
+        apdu[OFFSET_P1] = Consts.CLASS_BIOBUILDER;   
+        apdu[OFFSET_P2] = (byte) 0x00;
+        apdu[OFFSET_LC] = (byte) 0x01;
+
+        // Creates message with class name and writes it in the output file and on the screen.
+        String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.BIOBUILDER_STR[0]) + "\r\n";
+        m_SystemOutLogger.println(message);
+        file.write(message.getBytes());
+
+        for (int i = 1; i < SingleModeTest.BIOBUILDER_STR.length; i++) {    // i = 1 because KeyAgreement[0] is class name
+            // Reset applet before call
+            cardManager.sendAPDU(RESET_APDU);
+            apdu[OFFSET_DATA] = (byte) i;
+            // get starting time of communication cycle
+            elapsedCard = -System.currentTimeMillis();
+            ResponseAPDU response = cardManager.sendAPDU(apdu);
+            // save time of card response
+            elapsedCard += System.currentTimeMillis();
+            byte[] resp = response.getData();
+
+            // Calls method CheckResult - should add to output error messages. 
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.BIOBUILDER_STR[i]), resp, elapsedCard, response.getSW());
+        }
+    }    
+    
+    /**
      * Method that will test all algorithms in SingleModeTest class.
      * @param file FileOutputStream object containing file for output data.
      * @throws Exception
@@ -1368,6 +1415,7 @@ public class SingleModeTest {
         TestClassKeyPair_ALG_DSA(file);
         TestClassKeyPair_ALG_EC_F2M(file);
         TestClassKeyPair_ALG_EC_FP(file);
+        //TestClassBioBuilder(file);
         // test RSA exponent
         StringBuilder value = new StringBuilder();
         value.setLength(0);
