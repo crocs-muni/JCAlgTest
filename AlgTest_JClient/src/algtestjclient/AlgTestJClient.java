@@ -41,6 +41,7 @@ import java.util.regex.PatternSyntaxException;
 import javax.smartcardio.ATR;
 import javax.smartcardio.Card;
 import javax.smartcardio.CardException;
+import javax.smartcardio.CardNotPresentException;
 import javax.smartcardio.CardTerminal;
 
 /**
@@ -336,7 +337,7 @@ public class AlgTestJClient {
     
     static CardTerminal selectTargetReader() {
         // Test available card - if more present, let user to select one
-        List<CardTerminal> terminalList = CardMngr.GetReaderList(true);
+        List<CardTerminal> terminalList = CardMngr.GetReaderList(false);
         CardTerminal selectedTerminal = null;
         if (terminalList.isEmpty()) {
             m_SystemOutLogger.println("ERROR: No suitable reader with card detected. Please check your reader connection");
@@ -349,18 +350,22 @@ public class AlgTestJClient {
             else {
                 int terminalIndex = 1;
                 // Let user select target terminal
+                m_SystemOutLogger.println("\nAvailable readers:");
                 for (CardTerminal terminal : terminalList) {
                     Card card;
                     try {
                         card = terminal.connect("*");
                         ATR atr = card.getATR();
-                        m_SystemOutLogger.println(terminalIndex + " : " + terminal.getName() + " - " + CardMngr.bytesToHex(atr.getBytes()));    
+                        m_SystemOutLogger.println(String.format("%d : [*] %s - %s", terminalIndex, terminal.getName(), CardMngr.bytesToHex(atr.getBytes())));
+                        terminalIndex++;                        
+                    } catch (CardNotPresentException ex) {
+                        m_SystemOutLogger.println(String.format("%d : [ ] %s - NO CARD", terminalIndex, terminal.getName()));
                         terminalIndex++;
                     } catch (CardException ex) {
                         Logger.getLogger(AlgTestJClient.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }   
-                m_SystemOutLogger.print("Select index of target reader you like to use 1.." + (terminalIndex - 1) + ": ");
+                m_SystemOutLogger.print("Select index of target reader you like to use [1.." + (terminalIndex - 1) + "]: ");
                 Scanner sc = new Scanner(System.in);
                 int answ = sc.nextInt();
                 m_SystemOutLogger.println(String.format("%d", answ));
