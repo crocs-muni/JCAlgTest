@@ -76,17 +76,17 @@ public class Consts {
     
     
    
-    public static final short CLASS_CIPHER                      = (short) 0x11;      
-    public static final short CLASS_SIGNATURE                   = (short) 0x12;      
-    public static final short CLASS_KEYAGREEMENT                = (short) 0x13;      
-    public static final short CLASS_MESSAGEDIGEST               = (short) 0x15;      
-    public static final short CLASS_RANDOMDATA                  = (short) 0x16;      
-    public static final short CLASS_CHECKSUM                    = (short) 0x17;      
-    public static final short CLASS_KEYENCRYPTION               = (short) 0x18;      
-    public static final short CLASS_KEYPAIR                     = (short) 0x19;      
-    public static final short CLASS_KEYBUILDER                  = (short) 0x20;  
-    public static final short CLASS_UTIL                        = (short) 0x21;
-    public static final short CLASS_BIOBUILDER                  = (short) 0x22;
+    public static final byte CLASS_CIPHER                      = (byte) 0x11;      
+    public static final byte CLASS_SIGNATURE                   = (byte) 0x12;      
+    public static final byte CLASS_KEYAGREEMENT                = (byte) 0x13;      
+    public static final byte CLASS_MESSAGEDIGEST               = (byte) 0x15;      
+    public static final byte CLASS_RANDOMDATA                  = (byte) 0x16;      
+    public static final byte CLASS_CHECKSUM                    = (byte) 0x17;      
+    public static final byte CLASS_KEYPAIR                     = (byte) 0x19;      
+    public static final byte CLASS_KEYBUILDER                  = (byte) 0x20;  
+    public static final byte CLASS_UTIL                        = (byte) 0x21;
+    public static final byte CLASS_BIOBUILDER                  = (byte) 0x22;
+    public static final byte CLASS_AEADCIPHER                  = (byte) 0x23;
     
     
     public static final byte UNUSED    = (byte) -1;     

@@ -359,7 +359,13 @@ public class JCConsts {
     public static final byte BioBuilder_PALM_GEOMETRY                               = 17;		
     public static final byte BioBuilder_VEIN_PATTERN                                = 18;		
     public static final byte BioBuilder_PASSWORD                                    = 31;		
-    public static final byte BioBuilder_DEFAULT_INITPARAM                           = 0;		    
+    public static final byte BioBuilder_DEFAULT_INITPARAM                           = 0;		
+
+
+    // Class javacardx.crypto.AEADCipher
+    // javacardx.crypto.AEADCipher Fields:
+    public static final byte AEADCipher_CIPHER_AES_CCM                              = (byte) -14;
+    public static final byte AEADCipher_CIPHER_AES_GCM                              = (byte) -15;
 
     // Class javacardx.crypto.KeyEncryption
     // javacardx.crypto.KeyEncryption Fields:

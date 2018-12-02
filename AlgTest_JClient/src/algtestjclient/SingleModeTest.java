@@ -36,6 +36,7 @@ import algtest.Consts;
 import algtest.JCConsts;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -150,6 +151,11 @@ public class SingleModeTest {
         "BODY_ODOR#2.2.2", "DNA_SCAN#2.2.2", "EAR_GEOMETRY#2.2.2", "FINGER_GEOMETRY#2.2.2", "PALM_GEOMETRY#2.2.2", "VEIN_PATTERN#2.2.2"
         // ommit as password has constant 31 which is not continuious with previous ones "PASSWORD#2.2.2"
     };
+    
+    public static final String AEADCIPHER_STR[] = {"javacardx.crypto.AEADCipher",
+        //3.0.5
+        "CIPHER_AES_CCM#3.0.5", "CIPHER_AES_GCM#3.0.5", "ALG_AES_CCM#3.0.5", "ALG_AES_GCM#3.0.5"
+    };    
     
     /**
      * String array used in KeyBuilder testing for printing alg names.
@@ -1360,7 +1366,7 @@ public class SingleModeTest {
     }
     
     /**
-     * Tests all algorithms in class 'javacardx.crypto.KeyAgreement' and results
+     * Tests all algorithms in class 'javacardx.biometry.BioBuilder' and results
      * writes into the output file.
      *
      * @param file FileOutputStream object containing output file.
@@ -1381,7 +1387,7 @@ public class SingleModeTest {
         m_SystemOutLogger.println(message);
         file.write(message.getBytes());
 
-        for (int i = 1; i < SingleModeTest.BIOBUILDER_STR.length; i++) {    // i = 1 because KeyAgreement[0] is class name
+        for (int i = 1; i < SingleModeTest.BIOBUILDER_STR.length; i++) {    // i = 1 because BIOBUILDER_STR[0] is class name
             // Reset applet before call
             cardManager.sendAPDU(RESET_APDU);
             apdu[OFFSET_DATA] = (byte) i;
@@ -1394,6 +1400,48 @@ public class SingleModeTest {
 
             // Calls method CheckResult - should add to output error messages. 
             CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.BIOBUILDER_STR[i]), resp, elapsedCard, response.getSW());
+        }
+    }    
+    
+    /**
+     * Tests all algorithms in class 'javacardx.crypto.AEADCipher' and results
+     * writes into the output file.
+     *
+     * @param file FileOutputStream object containing output file.
+     * @throws IOException
+     * @throws Exception
+     */
+    public static void TestClassAEADCipher(FileOutputStream file) throws IOException, Exception {
+        long elapsedCard = 0;
+        byte[] apdu = new byte[6];
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
+        apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
+        apdu[OFFSET_P1] = Consts.CLASS_CIPHER;
+        apdu[OFFSET_P2] = (byte) 0x00;
+        apdu[OFFSET_LC] = (byte) 0x01;
+
+        // Creates message with class name and writes it in the output file and on the screen.
+        String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.AEADCIPHER_STR[0]) + "\r\n";
+        m_SystemOutLogger.println(message);
+        file.write(message.getBytes());
+        // Prepare list of indexes for testing together with algorithm name
+        ArrayList<Pair<Integer, String>> algsToTest = new ArrayList<>();
+        algsToTest.add(new Pair(new Integer(JCConsts.AEADCipher_CIPHER_AES_CCM), AEADCIPHER_STR[1]));
+        algsToTest.add(new Pair(new Integer(JCConsts.AEADCipher_CIPHER_AES_GCM), AEADCIPHER_STR[2]));
+ 
+        for (Pair algToTest : algsToTest) {    
+            // Reset applet before call
+            cardManager.sendAPDU(RESET_APDU);
+            apdu[OFFSET_DATA] = ((Integer) algToTest.getL()).byteValue();
+            // get starting time of communication cycle
+            elapsedCard = -System.currentTimeMillis();
+            ResponseAPDU response = cardManager.sendAPDU(apdu);
+            // save time of card response
+            elapsedCard += System.currentTimeMillis();
+            byte[] resp = response.getData();
+
+            // Calls method CheckResult - should add to output error messages. 
+            CheckResult(file, cardManager.GetAlgorithmName((String) algToTest.getR()), resp, elapsedCard, response.getSW());
         }
     }    
     
@@ -1416,6 +1464,7 @@ public class SingleModeTest {
         TestClassKeyPair_ALG_EC_F2M(file);
         TestClassKeyPair_ALG_EC_FP(file);
         //TestClassBioBuilder(file);
+        TestClassAEADCipher(file);
         // test RSA exponent
         StringBuilder value = new StringBuilder();
         value.setLength(0);

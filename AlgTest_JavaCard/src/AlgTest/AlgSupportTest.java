@@ -161,9 +161,9 @@ public class AlgSupportTest {
              catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
              break;
            }
-           case (byte) 0x18: // no break
+           case (byte) 0x18: // no break - TODO remove this constant, unused
            case (byte) 0x19: // no break
-           case (byte) 0x1C: { // no break
+           case (byte) 0x1C: { // no break - TODO remove this constant, unused
              try {
                offset++; m_keyPair1 = new KeyPair(algorithmClass, algorithmParam1);
                
@@ -191,6 +191,11 @@ public class AlgSupportTest {
 /*           
            case Consts.CLASS_BIOBUILDER: {
                try { offset++; m_object = javacardx.biometry.BioBuilder.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;} 
+               catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET);}
+               break;
+           }
+           case Consts.CLASS_AEADCIPHER: {
+               try { offset++; m_object = javacardx.crypto.AEADCipher.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;} 
                catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET);}
                break;
            }

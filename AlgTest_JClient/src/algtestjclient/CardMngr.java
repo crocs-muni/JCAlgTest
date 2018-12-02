@@ -125,18 +125,18 @@ public class CardMngr {
     public static final byte FORCE_TEST = 1;        // variable to force test of alg in given method
 
     /* Byte values for choosing method on on-card app. */
-    public static final byte CLASS_CIPHER          = 0x11;
-    public static final byte CLASS_SIGNATURE       = 0x12;
-    public static final byte CLASS_KEYAGREEMENT    = 0x13;
-    public static final byte CLASS_MESSAGEDIGEST   = 0x15;
-    public static final byte CLASS_RANDOMDATA      = 0x16;
-    public static final byte CLASS_CHECKSUM        = 0x17;
-    public static final byte CLASS_KEYPAIR_RSA     = 0x18;
-    public static final byte CLASS_KEYPAIR_RSA_CRT = 0x19;
-    public static final byte CLASS_KEYBUILDER      = 0x20;
-    public static final byte CLASS_KEYPAIR_DSA     = 0x1A;
-    public static final byte CLASS_KEYPAIR_EC_F2M  = 0x1B;
-    public static final byte CLASS_KEYPAIR_EC_FP   = 0x1C;
+    public static final byte CLASS_CIPHER          = (byte) 0x11;
+    public static final byte CLASS_SIGNATURE       = (byte) 0x12;
+    public static final byte CLASS_KEYAGREEMENT    = (byte) 0x13;
+    public static final byte CLASS_MESSAGEDIGEST   = (byte) 0x15;
+    public static final byte CLASS_RANDOMDATA      = (byte) 0x16;
+    public static final byte CLASS_CHECKSUM        = (byte) 0x17;
+    public static final byte CLASS_KEYPAIR_RSA     = (byte) 0x18;
+    public static final byte CLASS_KEYPAIR_RSA_CRT = (byte) 0x19;
+    public static final byte CLASS_KEYPAIR_DSA     = (byte) 0x1A;
+    public static final byte CLASS_KEYPAIR_EC_F2M  = (byte) 0x1B;
+    public static final byte CLASS_KEYPAIR_EC_FP   = (byte) 0x1C;
+    public static final byte CLASS_KEYBUILDER      = (byte) 0x20;
 
    
     public CardTerminal m_terminal = null;
