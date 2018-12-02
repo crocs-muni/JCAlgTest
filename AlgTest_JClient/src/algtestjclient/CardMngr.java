@@ -58,11 +58,8 @@ import com.licel.jcardsim.io.CAD;
 import com.licel.jcardsim.io.JavaxSmartCardInterface;
 import java.io.File;
 import java.lang.ProcessBuilder.Redirect;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javacard.framework.AID;
 import javacard.framework.ISO7816;
 
@@ -155,7 +152,11 @@ public class CardMngr {
         (byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00, (byte) 0x0a,
         (byte) 0x4a, (byte) 0x43, (byte) 0x41, (byte) 0x6c, (byte) 0x67, (byte) 0x54, (byte) 0x65, (byte) 0x73, (byte) 0x74, (byte) 0x31};
 
-    
+    // ETSI 102 221 power consumption rules allow to consume only up to 4mA at 1.8 Volt. Up to 10mA may be consumed if ADFusim is selected.
+    // ADFusim AID == 00 A4 04 05 07 A0 00 00 00 87 10 02
+    public static final byte selectADFusim[] = { 
+        (byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x05, (byte) 0x07,
+        (byte) 0xA0, (byte)0x00, (byte) 0x00, (byte) 0x00, (byte) 0x87, (byte) 0x10, (byte) 0x02};
     
     public static final String helpString = "This program can be used with following parameters:\r\n"
             + ALGTEST_MULTIPERAPDU + " -> for using classic AlgTest with multiple tests per APDU command\r\n"
@@ -216,6 +217,7 @@ public class CardMngr {
     public StringBuilder atr = new StringBuilder(); 
     public StringBuilder reader = new StringBuilder();
     public StringBuilder protocol = new StringBuilder();
+    public boolean bHighPowerMode = false; // If true, high power mode was enabled using ETSI 102 221 ADFusim select == 00 A4 04 05 07 A0 00 00 00 87 10 02
     
     /* ATR of jCardSim. */
     static final String SIMULATOR_ATR = "3BFA1800008131FE454A434F5033315632333298";
@@ -318,6 +320,8 @@ public class CardMngr {
             m_SystemOutLogger.println(message); file.write(message.getBytes());
             message = "Used protocol; " + protocol + "\r\n";
             m_SystemOutLogger.println(message); file.write(message.getBytes());
+            message = String.format("High-power mode supported; %s\r\n", bHighPowerMode ? "yes" : "no");
+            m_SystemOutLogger.println(message); file.write(message.getBytes());
 
             
             m_SystemOutLogger.println("\n\n#########################");
@@ -393,6 +397,7 @@ public class CardMngr {
     
     public boolean ConnectToCard(Class ClassToTest, CardTerminal targetReader, StringBuilder selectedReader, StringBuilder selectedATR, StringBuilder usedProtocol) throws Exception {
         boolean cardFound = false;        
+        bHighPowerMode = false;
         
         if (ClassToTest != null) {
             m_SystemOutLogger.println("No terminals found");
@@ -425,6 +430,12 @@ public class CardMngr {
                         ATR atr = m_card.getATR();
                         m_SystemOutLogger.println(bytesToHex(atr.getBytes()));
 
+                        // Attempt to allow for high-power mode by selecting specific applet called 
+                        ResponseAPDU resp2 = sendAPDU(selectADFusim);
+                        if (resp2.getSW() == 0x9000) {
+                            bHighPowerMode = true;
+                        }
+                                
                         // SELECT APPLET
                         cardFound = false;
                         ResponseAPDU resp = sendAPDU(selectApplet);
