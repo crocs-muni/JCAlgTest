@@ -273,7 +273,7 @@ public class AlgTestJClient {
                         isAcceptedInput = true;
                         // Simulated range with single value only
                         bitLength_start = (short) acceptedInput;
-                        bitLength_step = (short) 0;
+                        bitLength_step = (short) 1;
                         bitLength_end = (short) acceptedInput;                        
                         break;
                     }
@@ -297,7 +297,7 @@ public class AlgTestJClient {
         if (useCrtString.toLowerCase().equals("y")) {
             useCrt = true;
         } else if (!useCrtString.toLowerCase().equals("n")) {
-            m_SystemOutLogger.println("Wrong answer. CRT is disabled.");
+            m_SystemOutLogger.println("Ìncorrect answer. CRT is not used.");
         }
 
         // Check if folder !card_uploaders is correctly set
