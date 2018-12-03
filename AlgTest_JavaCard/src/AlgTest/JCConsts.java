@@ -243,7 +243,9 @@ public class JCConsts {
     public static final short KeyBuilder_LENGTH_EC_F2M_193                          = 193;
     public static final short KeyBuilder_LENGTH_EC_FP_224                           = 224;
     public static final short KeyBuilder_LENGTH_EC_FP_256                           = 256;
+    public static final short KeyBuilder_LENGTH_EC_FP_320                           = 320;
     public static final short KeyBuilder_LENGTH_EC_FP_384                           = 384;
+    public static final short KeyBuilder_LENGTH_EC_FP_512                           = 512;
     public static final short KeyBuilder_LENGTH_EC_FP_521                           = 521;
     public static final short KeyBuilder_LENGTH_AES_128                             = 128;
     public static final short KeyBuilder_LENGTH_AES_192                             = 192;
@@ -335,6 +337,35 @@ public class JCConsts {
     public static final short Checksum_init                                         = 3;
     public static final short Checksum_getAlgorithm                                 = 4;
     public static final short Checksum_doFinal                                      = 5;
+    
+    // Class javacardx.biometry.BioBuilder
+    // javacardx.biometry.BioBuilder Fields:
+    public static final byte BioBuilder_FACIAL_FEATURE                              = 1;		
+    public static final byte BioBuilder_VOICE_PRINT                                 = 2;		
+    public static final byte BioBuilder_FINGERPRINT                                 = 3;		
+    public static final byte BioBuilder_IRIS_SCAN                                   = 4;		
+    public static final byte BioBuilder_RETINA_SCAN                                 = 5;		
+    public static final byte BioBuilder_HAND_GEOMETRY                               = 6;		
+    public static final byte BioBuilder_SIGNATURE                                   = 7;		
+    public static final byte BioBuilder_KEYSTROKES                                  = 8;		
+    public static final byte BioBuilder_LIP_MOVEMENT                                = 9;		
+    public static final byte BioBuilder_THERMAL_FACE                                = 10;		
+    public static final byte BioBuilder_THERMAL_HAND                                = 11;		
+    public static final byte BioBuilder_GAIT_STYLE                                  = 12;		
+    public static final byte BioBuilder_BODY_ODOR                                   = 13;		
+    public static final byte BioBuilder_DNA_SCAN                                    = 14;		
+    public static final byte BioBuilder_EAR_GEOMETRY                                = 15;		
+    public static final byte BioBuilder_FINGER_GEOMETRY                             = 16;		
+    public static final byte BioBuilder_PALM_GEOMETRY                               = 17;		
+    public static final byte BioBuilder_VEIN_PATTERN                                = 18;		
+    public static final byte BioBuilder_PASSWORD                                    = 31;		
+    public static final byte BioBuilder_DEFAULT_INITPARAM                           = 0;		
+
+
+    // Class javacardx.crypto.AEADCipher
+    // javacardx.crypto.AEADCipher Fields:
+    public static final byte AEADCipher_CIPHER_AES_CCM                              = (byte) -14;
+    public static final byte AEADCipher_CIPHER_AES_GCM                              = (byte) -15;
 
     // Class javacardx.crypto.KeyEncryption
     // javacardx.crypto.KeyEncryption Fields:

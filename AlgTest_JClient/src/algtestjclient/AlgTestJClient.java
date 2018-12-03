@@ -41,6 +41,7 @@ import java.util.regex.PatternSyntaxException;
 import javax.smartcardio.ATR;
 import javax.smartcardio.Card;
 import javax.smartcardio.CardException;
+import javax.smartcardio.CardNotPresentException;
 import javax.smartcardio.CardTerminal;
 
 /**
@@ -148,11 +149,7 @@ public class AlgTestJClient {
         m_SystemOutLogger.println("-----------------------------------------------------------------------\n");
         // If arguments are present. 
         if(args.length > 0){
-            if (args[0].equals(ALGTEST_MULTIPERAPDU)){
-                CardMngr cardManager = new CardMngr(m_SystemOutLogger);
-                cardManager.testClassic(args, 0, null);
-            }  
-            else if (args[0].equals(ALGTEST_SINGLEPERAPDU)){
+            if (args[0].equals(ALGTEST_SINGLEPERAPDU)){
                 SingleModeTest singleTest = new SingleModeTest(m_SystemOutLogger);
                 singleTest.TestSingleAlg(args, null);
             }
@@ -276,7 +273,7 @@ public class AlgTestJClient {
                         isAcceptedInput = true;
                         // Simulated range with single value only
                         bitLength_start = (short) acceptedInput;
-                        bitLength_step = (short) 0;
+                        bitLength_step = (short) 1;
                         bitLength_end = (short) acceptedInput;                        
                         break;
                     }
@@ -300,7 +297,7 @@ public class AlgTestJClient {
         if (useCrtString.toLowerCase().equals("y")) {
             useCrt = true;
         } else if (!useCrtString.toLowerCase().equals("n")) {
-            m_SystemOutLogger.println("Wrong answer. CRT is disabled.");
+            m_SystemOutLogger.println("Ìncorrect answer. CRT is not used.");
         }
 
         // Check if folder !card_uploaders is correctly set
@@ -336,7 +333,7 @@ public class AlgTestJClient {
     
     static CardTerminal selectTargetReader() {
         // Test available card - if more present, let user to select one
-        List<CardTerminal> terminalList = CardMngr.GetReaderList(true);
+        List<CardTerminal> terminalList = CardMngr.GetReaderList(false);
         CardTerminal selectedTerminal = null;
         if (terminalList.isEmpty()) {
             m_SystemOutLogger.println("ERROR: No suitable reader with card detected. Please check your reader connection");
@@ -349,18 +346,22 @@ public class AlgTestJClient {
             else {
                 int terminalIndex = 1;
                 // Let user select target terminal
+                m_SystemOutLogger.println("\nAvailable readers:");
                 for (CardTerminal terminal : terminalList) {
                     Card card;
                     try {
                         card = terminal.connect("*");
                         ATR atr = card.getATR();
-                        m_SystemOutLogger.println(terminalIndex + " : " + terminal.getName() + " - " + CardMngr.bytesToHex(atr.getBytes()));    
+                        m_SystemOutLogger.println(String.format("%d : [*] %s - %s", terminalIndex, terminal.getName(), CardMngr.bytesToHex(atr.getBytes())));
+                        terminalIndex++;                        
+                    } catch (CardNotPresentException ex) {
+                        m_SystemOutLogger.println(String.format("%d : [ ] %s - NO CARD", terminalIndex, terminal.getName()));
                         terminalIndex++;
                     } catch (CardException ex) {
                         Logger.getLogger(AlgTestJClient.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }   
-                m_SystemOutLogger.print("Select index of target reader you like to use 1.." + (terminalIndex - 1) + ": ");
+                m_SystemOutLogger.print("Select index of target reader you like to use [1.." + (terminalIndex - 1) + "]: ");
                 Scanner sc = new Scanner(System.in);
                 int answ = sc.nextInt();
                 m_SystemOutLogger.println(String.format("%d", answ));

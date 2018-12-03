@@ -36,6 +36,7 @@ import algtest.Consts;
 import algtest.JCConsts;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,7 +50,7 @@ import javax.smartcardio.ResponseAPDU;
  * AlgTest class to test smart card supported algorithms using multiple APDU's each testing one algorithm.
  * Requires 'AlgTestSinglePerApdu' applet installed on card.
  * Supports running without connected card using jCardSim. (www.jcardsim.org)
- * @author lukas.srom
+ * @author lukas.srom, github.com/petrs
  * @version 1.0
  */
 public class SingleModeTest {
@@ -142,28 +143,20 @@ public class SingleModeTest {
         "ALG_EC_PACE_GM#3.0.5", "ALG_EC_SVDP_DH_PLAIN_XY#3.0.5", "ALG_DH_PLAIN#3.0.5"
     };
     public static final int KEYAGREEMENT_STR_LAST_INDEX = JCConsts.KeyAgreement_ALG_DH_PLAIN;
-/*
-    public static final String KEYBUILDER_STR[] = {
-        "javacard.security.KeyBuilder", 
-        "@@@DES_KEY@@@", "TYPE_DES_TRANSIENT_RESET#&le;2.1", "TYPE_DES_TRANSIENT_DESELECT#&le;2.1", "TYPE_DES LENGTH_DES#&le;2.1", "TYPE_DES LENGTH_DES3_2KEY#&le;2.1", "TYPE_DES LENGTH_DES3_3KEY#&le;2.1",
-        //2.2.0
-        "@@@AES_KEY@@@", "TYPE_AES_TRANSIENT_RESET#2.2.0", "TYPE_AES_TRANSIENT_DESELECT#2.2.0", "TYPE_AES LENGTH_AES_128#2.2.0", "TYPE_AES LENGTH_AES_192#2.2.0", "TYPE_AES LENGTH_AES_256#2.2.0",
-        "@@@RSA_PUBLIC_KEY@@@", "TYPE_RSA_PUBLIC LENGTH_RSA_512#&le;2.1", "TYPE_RSA_PUBLIC LENGTH_RSA_736#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_768#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_896#2.2.0",
-            "TYPE_RSA_PUBLIC LENGTH_RSA_1024#&le;2.1", "TYPE_RSA_PUBLIC LENGTH_RSA_1280#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_1536#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_1984#2.2.0", "TYPE_RSA_PUBLIC LENGTH_RSA_2048#&le;2.1", "TYPE_RSA_PUBLIC LENGTH_RSA_3072#never#0", "TYPE_RSA_PUBLIC LENGTH_RSA_4096#3.0.1",
-        "@@@RSA_PRIVATE_KEY@@@", "TYPE_RSA_PRIVATE LENGTH_RSA_512#&le;2.1", "TYPE_RSA_PRIVATE LENGTH_RSA_736#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_768#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_896#2.2.0",
-            "TYPE_RSA_PRIVATE LENGTH_RSA_1024#&le;2.1", "TYPE_RSA_PRIVATE LENGTH_RSA_1280#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_1536#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_1984#2.2.0", "TYPE_RSA_PRIVATE LENGTH_RSA_2048#&le;2.1", "TYPE_RSA_PRIVATE LENGTH_RSA_3072#never#0", "TYPE_RSA_PRIVATE LENGTH_RSA_4096#3.0.1", 
-            "TYPE_RSA_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_RSA_PRIVATE_TRANSIENT_DESELECT#3.0.1",
-        "@@@RSA_CRT_PRIVATE_KEY@@@", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_512#&le;2.1", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_736#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_768#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_896#2.2.0",
-            "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1024#&le;2.1", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1280#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1536#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1984#2.2.0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_2048#&le;2.1", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_3072#never#0", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_4096#3.0.1",
-            "TYPE_RSA_CRT_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_RSA_CRT_PRIVATE_TRANSIENT_DESELECT#3.0.1",
-        "@@@DSA_PRIVATE_KEY@@@", "TYPE_DSA_PRIVATE LENGTH_DSA_512#&le;2.1", "TYPE_DSA_PRIVATE LENGTH_DSA_768#&le;2.1", "TYPE_DSA_PRIVATE LENGTH_DSA_1024#&le;2.1", "TYPE_DSA_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_DSA_PRIVATE_TRANSIENT_DESELECT#3.0.1", 
-        "@@@DSA_PUBLIC_KEY@@@", "TYPE_DSA_PUBLIC LENGTH_DSA_512#&le;2.1", "TYPE_DSA_PUBLIC LENGTH_DSA_768#&le;2.1", "TYPE_DSA_PUBLIC LENGTH_DSA_1024#&le;2.1", 
-        "@@@EC_F2M_PRIVATE_KEY@@@", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_113#2.2.0", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_131#2.2.0", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_163#2.2.0", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_193#2.2.0", "TYPE_EC_F2M_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_EC_F2M_PRIVATE_TRANSIENT_DESELECT#3.0.1",
-        "@@@EC_FP_PRIVATE_KEY@@@", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_112#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_128#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_160#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_192#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_224#3.0.1", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_256#3.0.1", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_384#3.0.1", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_521#3.0.4", "TYPE_EC_FP_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_EC_FP_PRIVATE_TRANSIENT_DESELECT#3.0.1",
-        "@@@KOREAN_SEED_KEY@@@", "TYPE_KOREAN_SEED_TRANSIENT_RESET#2.2.2", "TYPE_KOREAN_SEED_TRANSIENT_DESELECT#2.2.2", "TYPE_KOREAN_SEED LENGTH_KOREAN_SEED_128#2.2.2", 
-        "@@@HMAC_KEY@@@", "TYPE_HMAC_TRANSIENT_RESET#2.2.2", "TYPE_HMAC_TRANSIENT_DESELECT#2.2.2", "TYPE_HMAC LENGTH_HMAC_SHA_1_BLOCK_64#2.2.2", "TYPE_HMAC LENGTH_HMAC_SHA_256_BLOCK_64#2.2.2", "TYPE_HMAC LENGTH_HMAC_SHA_384_BLOCK_64#2.2.2", "TYPE_HMAC LENGTH_HMAC_SHA_512_BLOCK_64#2.2.2",
-    }; 
-*/    
+    
+    public static final String BIOBUILDER_STR[] = {"javacardx.biometry.BioBuilder",
+        //2.2.2
+        "FACIAL_FEATURE#2.2.2", "VOICE_PRINT#2.2.2", "FINGERPRINT#2.2.2", "IRIS_SCAN#2.2.2", "RETINA_SCAN#2.2.2", "HAND_GEOMETRY#2.2.2",
+        "SIGNATURE#2.2.2", "KEYSTROKES#2.2.2", "LIP_MOVEMENT#2.2.2", "THERMAL_FACE#2.2.2", "THERMAL_HAND#2.2.2", "GAIT_STYLE#2.2.2",
+        "BODY_ODOR#2.2.2", "DNA_SCAN#2.2.2", "EAR_GEOMETRY#2.2.2", "FINGER_GEOMETRY#2.2.2", "PALM_GEOMETRY#2.2.2", "VEIN_PATTERN#2.2.2"
+        // ommit as password has constant 31 which is not continuious with previous ones "PASSWORD#2.2.2"
+    };
+    
+    public static final String AEADCIPHER_STR[] = {"javacardx.crypto.AEADCipher",
+        //3.0.5
+        "CIPHER_AES_CCM#3.0.5", "CIPHER_AES_GCM#3.0.5", "ALG_AES_CCM#3.0.5", "ALG_AES_GCM#3.0.5"
+    };    
+    
     /**
      * String array used in KeyBuilder testing for printing alg names.
      */
@@ -183,7 +176,7 @@ public class SingleModeTest {
         "TYPE_DSA_PRIVATE LENGTH_DSA_512#&le;2.1", "TYPE_DSA_PRIVATE LENGTH_DSA_768#&le;2.1", "TYPE_DSA_PRIVATE LENGTH_DSA_1024#&le;2.1", "TYPE_DSA_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_DSA_PRIVATE_TRANSIENT_DESELECT#3.0.1", 
         "TYPE_DSA_PUBLIC LENGTH_DSA_512#&le;2.1", "TYPE_DSA_PUBLIC LENGTH_DSA_768#&le;2.1", "TYPE_DSA_PUBLIC LENGTH_DSA_1024#&le;2.1", 
         "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_113#2.2.0", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_131#2.2.0", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_163#2.2.0", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_193#2.2.0", "TYPE_EC_F2M_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_EC_F2M_PRIVATE_TRANSIENT_DESELECT#3.0.1",
-        "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_112#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_128#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_160#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_192#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_224#3.0.1", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_256#3.0.1", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_384#3.0.1", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_521#3.0.4", "TYPE_EC_FP_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_EC_FP_PRIVATE_TRANSIENT_DESELECT#3.0.1",
+        "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_112#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_128#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_160#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_192#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_224#3.0.1", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_256#3.0.1", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_320#never#0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_384#3.0.1", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_512#never#0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_521#3.0.4", "TYPE_EC_FP_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_EC_FP_PRIVATE_TRANSIENT_DESELECT#3.0.1",
         "TYPE_KOREAN_SEED_TRANSIENT_RESET#2.2.2", "TYPE_KOREAN_SEED_TRANSIENT_DESELECT#2.2.2", "TYPE_KOREAN_SEED LENGTH_KOREAN_SEED_128#2.2.2", 
         "TYPE_HMAC_TRANSIENT_RESET#2.2.2", "TYPE_HMAC_TRANSIENT_DESELECT#2.2.2", "TYPE_HMAC LENGTH_HMAC_SHA_1_BLOCK_64#2.2.2", "TYPE_HMAC LENGTH_HMAC_SHA_256_BLOCK_64#2.2.2", "TYPE_HMAC LENGTH_HMAC_SHA_384_BLOCK_64#2.2.2", "TYPE_HMAC LENGTH_HMAC_SHA_512_BLOCK_64#2.2.2",
     };
@@ -209,6 +202,7 @@ public class SingleModeTest {
     };
  
     public static final String KEYPAIR_EC_FP_STR[] = {"javacard.security.KeyPair ALG_EC_FP on-card generation", 
+//        "ALG_EC_FP LENGTH_EC_FP_112#2.2.1", "ALG_EC_FP LENGTH_EC_FP_128#2.2.1", "ALG_EC_FP LENGTH_EC_FP_160#2.2.1", "ALG_EC_FP LENGTH_EC_FP_192#2.2.1", "ALG_EC_FP LENGTH_EC_FP_224#3.0.1", "ALG_EC_FP LENGTH_EC_FP_256#3.0.1", "ALG_EC_FP LENGTH_EC_FP_320#never#0", "ALG_EC_FP LENGTH_EC_FP_384#3.0.1", "ALG_EC_FP LENGTH_EC_FP_512#never#0", "ALG_EC_FP LENGTH_EC_FP_521#3.0.4"
         "ALG_EC_FP LENGTH_EC_FP_112#2.2.1", "ALG_EC_FP LENGTH_EC_FP_128#2.2.1", "ALG_EC_FP LENGTH_EC_FP_160#2.2.1", "ALG_EC_FP LENGTH_EC_FP_192#2.2.1", "ALG_EC_FP LENGTH_EC_FP_224#3.0.1", "ALG_EC_FP LENGTH_EC_FP_256#3.0.1", "ALG_EC_FP LENGTH_EC_FP_384#3.0.1", "ALG_EC_FP LENGTH_EC_FP_521#3.0.4"
     };
     
@@ -345,110 +339,139 @@ public class SingleModeTest {
     public static final byte ALG_EC_F2M = 4;
     public static final byte ALG_EC_FP = 5;
     
-
+    public static final Map<String, KBTestCfg> KEYBUILDER_TEST_CFGS;
+    static {
+        KEYBUILDER_TEST_CFGS = new HashMap<>();
+        KEYBUILDER_TEST_CFGS.put("TYPE_DES_TRANSIENT_RESET#&le;2.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_DES_TRANSIENT_RESET, (short) 64));
+        KEYBUILDER_TEST_CFGS.put("TYPE_DES_TRANSIENT_DESELECT#&le;2.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_DES_TRANSIENT_DESELECT, (short) 64));
+        KEYBUILDER_TEST_CFGS.put("TYPE_DES LENGTH_DES#&le;2.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_DES, (short) 64));
+        KEYBUILDER_TEST_CFGS.put("TYPE_DES LENGTH_DES3_2KEY#&le;2.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_DES, (short) 128));
+        KEYBUILDER_TEST_CFGS.put("TYPE_DES LENGTH_DES3_3KEY#&le;2.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_DES, (short) 192));
+        KEYBUILDER_TEST_CFGS.put("TYPE_AES_TRANSIENT_RESET#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_AES_TRANSIENT_RESET, (short) 128));
+        KEYBUILDER_TEST_CFGS.put("TYPE_AES_TRANSIENT_DESELECT#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_AES_TRANSIENT_DESELECT, (short) 128));
+        KEYBUILDER_TEST_CFGS.put("TYPE_AES LENGTH_AES_128#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_AES, (short) 128));
+        KEYBUILDER_TEST_CFGS.put("TYPE_AES LENGTH_AES_192#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_AES, (short) 192));
+        KEYBUILDER_TEST_CFGS.put("TYPE_AES LENGTH_AES_256#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_AES, (short) 256));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_PUBLIC LENGTH_RSA_512#&le;2.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, (short) 512));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_PUBLIC LENGTH_RSA_736#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, (short) 736));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_PUBLIC LENGTH_RSA_768#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, (short) 768));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_PUBLIC LENGTH_RSA_896#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, (short) 896));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_PUBLIC LENGTH_RSA_1024#&le;2.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, (short) 1024));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_PUBLIC LENGTH_RSA_1280#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, (short) 1280));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_PUBLIC LENGTH_RSA_1536#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, (short) 1536));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_PUBLIC LENGTH_RSA_1984#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, (short) 1984));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_PUBLIC LENGTH_RSA_2048#&le;2.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, (short) 2048));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_PUBLIC LENGTH_RSA_3072#never#0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, (short) 3072));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_PUBLIC LENGTH_RSA_4096#3.0.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, (short) 4096));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_PRIVATE LENGTH_RSA_512#&le;2.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, (short) 512));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_PRIVATE LENGTH_RSA_736#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, (short) 736));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_PRIVATE LENGTH_RSA_768#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, (short) 768));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_PRIVATE LENGTH_RSA_896#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, (short) 896));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_PRIVATE LENGTH_RSA_1024#&le;2.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, (short) 1024));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_PRIVATE LENGTH_RSA_1280#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, (short) 1280));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_PRIVATE LENGTH_RSA_1536#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, (short) 1536));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_PRIVATE LENGTH_RSA_1984#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, (short) 1984));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_PRIVATE LENGTH_RSA_2048#&le;2.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, (short) 2048));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_PRIVATE LENGTH_RSA_3072#never#0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, (short) 3072));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_PRIVATE LENGTH_RSA_4096#3.0.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE, (short) 4096));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_PRIVATE_TRANSIENT_RESET#3.0.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE_TRANSIENT_RESET, (short) 1024));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_PRIVATE_TRANSIENT_DESELECT#3.0.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_PRIVATE_TRANSIENT_DESELECT, (short) 1024));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_CRT_PRIVATE LENGTH_RSA_512#&le;2.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, (short) 512));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_CRT_PRIVATE LENGTH_RSA_736#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, (short) 736));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_CRT_PRIVATE LENGTH_RSA_768#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, (short) 768));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_CRT_PRIVATE LENGTH_RSA_896#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, (short) 896));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1024#&le;2.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, (short) 1024));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1280#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, (short) 1280));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1536#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, (short) 1536));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1984#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, (short) 1984));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_CRT_PRIVATE LENGTH_RSA_2048#&le;2.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, (short) 2048));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_CRT_PRIVATE LENGTH_RSA_3072#never#0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, (short) 3072));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_CRT_PRIVATE LENGTH_RSA_4096#3.0.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, (short) 4096));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_CRT_PRIVATE_TRANSIENT_RESET#3.0.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE_TRANSIENT_RESET, (short) 1024));
+        KEYBUILDER_TEST_CFGS.put("TYPE_RSA_CRT_PRIVATE_TRANSIENT_DESELECT#3.0.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE_TRANSIENT_DESELECT, (short) 1024));
+        KEYBUILDER_TEST_CFGS.put("TYPE_DSA_PRIVATE LENGTH_DSA_512#&le;2.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_DSA_PRIVATE, (short) 512));
+        KEYBUILDER_TEST_CFGS.put("TYPE_DSA_PRIVATE LENGTH_DSA_768#&le;2.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_DSA_PRIVATE, (short) 768));
+        KEYBUILDER_TEST_CFGS.put("TYPE_DSA_PRIVATE LENGTH_DSA_1024#&le;2.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_DSA_PRIVATE, (short) 1024));
+        KEYBUILDER_TEST_CFGS.put("TYPE_DSA_PRIVATE_TRANSIENT_RESET#3.0.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_DSA_PRIVATE_TRANSIENT_RESET, (short) 1024));
+        KEYBUILDER_TEST_CFGS.put("TYPE_DSA_PRIVATE_TRANSIENT_DESELECT#3.0.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_DSA_PRIVATE_TRANSIENT_DESELECT, (short) 1024));
+        KEYBUILDER_TEST_CFGS.put("TYPE_DSA_PUBLIC LENGTH_DSA_512#&le;2.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_DSA_PUBLIC, (short) 512));
+        KEYBUILDER_TEST_CFGS.put("TYPE_DSA_PUBLIC LENGTH_DSA_768#&le;2.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_DSA_PUBLIC, (short) 768));
+        KEYBUILDER_TEST_CFGS.put("TYPE_DSA_PUBLIC LENGTH_DSA_1024#&le;2.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_DSA_PUBLIC, (short) 1024));
+        KEYBUILDER_TEST_CFGS.put("TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_113#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE, (short) 113));
+        KEYBUILDER_TEST_CFGS.put("TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_131#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE, (short) 131));
+        KEYBUILDER_TEST_CFGS.put("TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_163#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE, (short) 163));
+        KEYBUILDER_TEST_CFGS.put("TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_193#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE, (short) 193));
+        KEYBUILDER_TEST_CFGS.put("TYPE_EC_F2M_PRIVATE_TRANSIENT_RESET#3.0.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE_TRANSIENT_RESET, (short) 193));
+        KEYBUILDER_TEST_CFGS.put("TYPE_EC_F2M_PRIVATE_TRANSIENT_DESELECT#3.0.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE_TRANSIENT_DESELECT, (short) 193));
+        KEYBUILDER_TEST_CFGS.put("TYPE_EC_FP_PRIVATE LENGTH_EC_FP_112#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, (short) 112));
+        KEYBUILDER_TEST_CFGS.put("TYPE_EC_FP_PRIVATE LENGTH_EC_FP_128#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, (short) 128));
+        KEYBUILDER_TEST_CFGS.put("TYPE_EC_FP_PRIVATE LENGTH_EC_FP_160#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, (short) 160));
+        KEYBUILDER_TEST_CFGS.put("TYPE_EC_FP_PRIVATE LENGTH_EC_FP_192#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, (short) 192));
+        KEYBUILDER_TEST_CFGS.put("TYPE_EC_FP_PRIVATE LENGTH_EC_FP_224#3.0.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, (short) 224));
+        KEYBUILDER_TEST_CFGS.put("TYPE_EC_FP_PRIVATE LENGTH_EC_FP_256#3.0.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, (short) 256));
+        KEYBUILDER_TEST_CFGS.put("TYPE_EC_FP_PRIVATE LENGTH_EC_FP_320#never#0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, (short) 320));
+        KEYBUILDER_TEST_CFGS.put("TYPE_EC_FP_PRIVATE LENGTH_EC_FP_384#3.0.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, (short) 384));
+        KEYBUILDER_TEST_CFGS.put("TYPE_EC_FP_PRIVATE LENGTH_EC_FP_512#never#0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, (short) 512));
+        KEYBUILDER_TEST_CFGS.put("TYPE_EC_FP_PRIVATE LENGTH_EC_FP_521#3.0.4", new KBTestCfg(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, (short) 521));
+        KEYBUILDER_TEST_CFGS.put("TYPE_EC_FP_PRIVATE_TRANSIENT_RESET#3.0.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE_TRANSIENT_RESET, (short) 128));
+        KEYBUILDER_TEST_CFGS.put("TYPE_EC_FP_PRIVATE_TRANSIENT_DESELECT#3.0.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE_TRANSIENT_DESELECT, (short) 128));
+        KEYBUILDER_TEST_CFGS.put("TYPE_KOREAN_SEED_TRANSIENT_RESET#2.2.2", new KBTestCfg(JCConsts.KeyBuilder_TYPE_KOREAN_SEED_TRANSIENT_RESET, (short) 128));
+        KEYBUILDER_TEST_CFGS.put("TYPE_KOREAN_SEED_TRANSIENT_DESELECT#2.2.2", new KBTestCfg(JCConsts.KeyBuilder_TYPE_KOREAN_SEED_TRANSIENT_DESELECT, (short) 128));
+        KEYBUILDER_TEST_CFGS.put("TYPE_KOREAN_SEED LENGTH_KOREAN_SEED_128#2.2.2", new KBTestCfg(JCConsts.KeyBuilder_TYPE_KOREAN_SEED, (short) 128));
+        KEYBUILDER_TEST_CFGS.put("TYPE_HMAC_TRANSIENT_RESET#2.2.2", new KBTestCfg(JCConsts.KeyBuilder_TYPE_HMAC_TRANSIENT_RESET, (short) 64));
+        KEYBUILDER_TEST_CFGS.put("TYPE_HMAC_TRANSIENT_DESELECT#2.2.2", new KBTestCfg(JCConsts.KeyBuilder_TYPE_HMAC_TRANSIENT_DESELECT, (short) 64));
+        KEYBUILDER_TEST_CFGS.put("TYPE_HMAC LENGTH_HMAC_SHA_1_BLOCK_64#2.2.2", new KBTestCfg(JCConsts.KeyBuilder_TYPE_HMAC, (short) 64));
+        KEYBUILDER_TEST_CFGS.put("TYPE_HMAC LENGTH_HMAC_SHA_256_BLOCK_64#2.2.2", new KBTestCfg(JCConsts.KeyBuilder_TYPE_HMAC, (short) 64));
+        KEYBUILDER_TEST_CFGS.put("TYPE_HMAC LENGTH_HMAC_SHA_384_BLOCK_64#2.2.2", new KBTestCfg(JCConsts.KeyBuilder_TYPE_HMAC, (short) 128));
+        KEYBUILDER_TEST_CFGS.put("TYPE_HMAC LENGTH_HMAC_SHA_512_BLOCK_64#2.2.2", new KBTestCfg(JCConsts.KeyBuilder_TYPE_HMAC, (short) 128));
+    }
     
-    /**
-     * Array of bytes used in KeyBuilder testing.
-     */
-    public static final byte[] KEYBUILDER_LENGTHS ={
-        (byte)0xFF,
-        (byte)0x00, (byte)0x40,     // [01] 64
-        (byte)0x00, (byte)0x40,     // [02] 64
-        (byte)0x00, (byte)0x40,     // [03] 64
-        (byte)0x00, (byte)0x80,     // [04] 128
-        (byte)0x00, (byte)0xC0,     // [05] 192
-        (byte)0x00, (byte)0x80,     // [06] 128
-        (byte)0x00, (byte)0x80,     // [07] 128
-        (byte)0x00, (byte)0x80,     // [08] 128
-        (byte)0x00, (byte)0xC0,     // [09] 192
-        (byte)0x01, (byte)0x00,     // [10] 256
-        (byte)0x02, (byte)0x00,     // [11] 512
-        (byte)0x02, (byte)0xE0,     // [12] 736
-        (byte)0x03, (byte)0x00,     // [13] 768
-        (byte)0x03, (byte)0x80,     // [14] 896
-        (byte)0x04, (byte)0x00,     // [15] 1024
-        (byte)0x05, (byte)0x00,     // [16] 1280
-        (byte)0x06, (byte)0x00,     // [17] 1536
-        (byte)0x07, (byte)0xC0,     // [18] 1984
-        (byte)0x08, (byte)0x00,     // [19] 2048
-        (byte)0x0C, (byte)0x00,     // [20] 3072
-        (byte)0x10, (byte)0x00,     // [21] 4096
-        (byte)0x02, (byte)0x00,     // [22] 512
-        (byte)0x02, (byte)0xE0,     // [23] 736
-        (byte)0x03, (byte)0x00,     // [24] 768
-        (byte)0x03, (byte)0x80,     // [25] 896
-        (byte)0x04, (byte)0x00,     // [26] 1024
-        (byte)0x05, (byte)0x00,     // [27] 1280
-        (byte)0x06, (byte)0x00,     // [28] 1536
-        (byte)0x07, (byte)0xC0,     // [29] 1984
-        (byte)0x08, (byte)0x00,     // [30] 2048
-        (byte)0x0C, (byte)0x00,     // [31] 3072
-        (byte)0x10, (byte)0x00,     // [32] 4096
-        (byte)0x04, (byte)0x00,     // [33] 1024
-        (byte)0x04, (byte)0x00,     // [34] 1024
-        (byte)0x02, (byte)0x00,     // [35] 512
-        (byte)0x02, (byte)0xE0,     // [36] 736
-        (byte)0x03, (byte)0x00,     // [37] 768
-        (byte)0x03, (byte)0x80,     // [38] 896
-        (byte)0x04, (byte)0x00,     // [39] 1024
-        (byte)0x05, (byte)0x00,     // [40] 1280
-        (byte)0x06, (byte)0x00,     // [41] 1536
-        (byte)0x07, (byte)0xC0,     // [42] 1984
-        (byte)0x08, (byte)0x00,     // [43] 2048
-        (byte)0x0C, (byte)0x00,     // [44] 3072
-        (byte)0x10, (byte)0x00,     // [45] 4096
-        (byte)0x04, (byte)0x00,     // [46] 1024
-        (byte)0x04, (byte)0x00,     // [47] 1024
-        (byte)0x02, (byte)0x00,     // [48] 512
-        (byte)0x03, (byte)0x00,     // [49] 768
-        (byte)0x04, (byte)0x00,     // [50] 1024
-        (byte)0x04, (byte)0x00,     // [51] 1024
-        (byte)0x04, (byte)0x00,     // [52] 1024
-        (byte)0x02, (byte)0x00,     // [53] 512
-        (byte)0x03, (byte)0x00,     // [54] 768
-        (byte)0x04, (byte)0x00,     // [55] 1024
-        (byte)0x00, (byte)0x71,     // [56] 113
-        (byte)0x00, (byte)0x83,     // [57] 131
-        (byte)0x00, (byte)0xA3,     // [58] 163
-        (byte)0x00, (byte)0xC1,     // [59] 193
-        (byte)0x00, (byte)0xC1,     // [60] 193
-        (byte)0x00, (byte)0xC1,     // [61] 193
-        (byte)0x00, (byte)0x70,     // [62] 112
-        (byte)0x00, (byte)0x80,     // [63] 128
-        (byte)0x00, (byte)0xA0,     // [64] 160
-        (byte)0x00, (byte)0xC0,     // [65] 192
-        (byte)0x00, (byte)0xE0,     // [66] 224
-        (byte)0x01, (byte)0x00,     // [67] 256
-        (byte)0x01, (byte)0x80,     // [68] 384
-        (byte)0x02, (byte)0x09,     // [69] 521
-        (byte)0x00, (byte)0x80,     // [70] 128
-        (byte)0x00, (byte)0x80,     // [71] 128
-        (byte)0x00, (byte)0x80,     // [72] 128
-        (byte)0x00, (byte)0x80,     // [73] 128
-        (byte)0x00, (byte)0x80,     // [74] 128
-        (byte)0x00, (byte)0x40,     // [75] 64
-        (byte)0x00, (byte)0x40,     // [76] 64
-        (byte)0x00, (byte)0x40,     // [77] 64
-        (byte)0x00, (byte)0x40,     // [78] 64
-        (byte)0x00, (byte)0x80,     // [79] 128
-        (byte)0x00, (byte)0x80,     // [80] 128
-    };
-    
-    public static final byte[] KEYBUILDER_CONST = {
-        (byte)0x01, (byte)0x02, (byte)0x03, (byte)0x03, (byte)0x03, (byte)0x0D, (byte)0x0E, (byte)0x0F, (byte)0x0F, (byte)0x0F,
-        (byte)0x04, (byte)0x04, (byte)0x04, (byte)0x04, (byte)0x04, (byte)0x04, (byte)0x04, (byte)0x04, (byte)0x04, (byte)0x04,
-        (byte)0x04, (byte)0x05, (byte)0x05, (byte)0x05, (byte)0x05, (byte)0x05, (byte)0x05, (byte)0x05, (byte)0x05, (byte)0x05,
-        (byte)0x05, (byte)0x05, (byte)0x16, (byte)0x17, (byte)0x06, (byte)0x06, (byte)0x06, (byte)0x06, (byte)0x06, (byte)0x06,
-        (byte)0x06, (byte)0x06, (byte)0x06, (byte)0x06, (byte)0x06, (byte)0x18, (byte)0x19, (byte)0x08, (byte)0x08, (byte)0x08,
-        (byte)0x1A, (byte)0x1B, (byte)0x07, (byte)0x07, (byte)0x07, (byte)0x0A, (byte)0x0A, (byte)0x0A, (byte)0x0A, (byte)0x1C,
-        (byte)0x1D, (byte)0x0C, (byte)0x0C, (byte)0x0C, (byte)0x0C, (byte)0x0C, (byte)0x0C, (byte)0x0C, (byte)0x0C, (byte)0x1E,
-        (byte)0x1F, (byte)0x10, (byte)0x11, (byte)0x12, (byte)0x13, (byte)0x14, (byte)0x15, (byte)0x15, (byte)0x15, (byte)0x15
-    };
     
     /**
      * Byte array containing lengths of keys in 'javacard.security.KeyPair' class in hexadecimal form.
      * Every line is one key length value.
      */
+    public static final byte[] KEY_LENGTHS_HEX = {
+        // class EC FP [00 - 15]
+        (byte) 0x00, (byte) 0x70, // [00,01] - 112
+        (byte) 0x00, (byte) 0x80, // [02,03] - 128
+        (byte) 0x00, (byte) 0xA0, // [04,05] - 160
+        (byte) 0x00, (byte) 0xC0, // [06,07] - 192
+        (byte) 0x00, (byte) 0xE0, // [08,09] - 224
+        (byte) 0x01, (byte) 0x00, // [10,11] - 256
+        (byte) 0x01, (byte) 0x80, // [12,13] - 384
+        (byte) 0x02, (byte) 0x09, // [14,15] - 521
+        // class EC F2M [16 - 23]
+        (byte) 0x00, (byte) 0x71, // [16,17] - 113
+        (byte) 0x00, (byte) 0x83, // [18,19] - 131
+        (byte) 0x00, (byte) 0xA3, // [20,21] - 163
+        (byte) 0x00, (byte) 0xC1, // [22,23] - 193
+        // classes RSA, RSACRT [24 - 43]
+        (byte) 0x02, (byte) 0x00, // [24,25] - 512
+        (byte) 0x02, (byte) 0xE0, // [26,27] - 736
+        (byte) 0x03, (byte) 0x00, // [28,29] - 768
+        (byte) 0x03, (byte) 0x80, // [30,31] - 896
+        (byte) 0x04, (byte) 0x00, // [32,33] - 1024
+        (byte) 0x05, (byte) 0x00, // [34,35] - 1280
+        (byte) 0x06, (byte) 0x00, // [36,37] - 1536
+        (byte) 0x07, (byte) 0xC0, // [38,39] - 1984
+        (byte) 0x08, (byte) 0x00, // [40,41] - 2048
+        (byte) 0x10, (byte) 0x00, // [42,43] - 4096
+        // class DES [44 - 49]
+        (byte) 0x00, (byte) 0x40, // [44,45] - 64
+        (byte) 0x00, (byte) 0x80, // [46,47] - 128
+        (byte) 0x00, (byte) 0xC0, // [48,49] - 192
+        // class AES [50 - 55]
+        (byte) 0x00, (byte) 0x80, // [50,51] - 128
+        (byte) 0x00, (byte) 0xC0, // [52,53] - 192
+        (byte) 0x01, (byte) 0x00, // [54,55] - 256
+        // class HMAC [56 - 63]
+        (byte) 0x00, (byte) 0x01, // [56,57] - 1
+        (byte) 0x01, (byte) 0x00, // [58,59] - 256
+        (byte) 0x01, (byte) 0x80, // [60,61] - 384
+        (byte) 0x02, (byte) 0x00, // [62,63] - 512
+    };    
+/* 20181201 Version with added EC FP 320 and 512 key lengths
     public static final byte[] KEY_LENGTHS_HEX = {
         // class EC FP [00 - 15]
         (byte)0x00, (byte)0x70,         // [00,01] - 112
@@ -457,45 +480,47 @@ public class SingleModeTest {
         (byte)0x00, (byte)0xC0,         // [06,07] - 192
         (byte)0x00, (byte)0xE0,         // [08,09] - 224
         (byte)0x01, (byte)0x00,         // [10,11] - 256
-        (byte)0x01, (byte)0x80,         // [12,13] - 384
-        (byte)0x02, (byte)0x09,         // [14,15] - 521
+        (byte)0x01, (byte)0x40,         // [12,13] - 320
+        (byte)0x01, (byte)0x80,         // [14,15] - 384
+        (byte)0x02, (byte)0x00,         // [16,17] - 512
+        (byte)0x02, (byte)0x09,         // [18,19] - 521
         // class EC F2M [16 - 23]
-        (byte)0x00, (byte)0x71,         // [16,17] - 113
-        (byte)0x00, (byte)0x83,         // [18,19] - 131
-        (byte)0x00, (byte)0xA3,         // [20,21] - 163
-        (byte)0x00, (byte)0xC1,         // [22,23] - 193
+        (byte)0x00, (byte)0x71,         // [20,21] - 113
+        (byte)0x00, (byte)0x83,         // [22,23] - 131
+        (byte)0x00, (byte)0xA3,         // [24,25] - 163
+        (byte)0x00, (byte)0xC1,         // [26,27] - 193
         // classes RSA, RSACRT [24 - 43]
-        (byte)0x02, (byte)0x00,         // [24,25] - 512
-        (byte)0x02, (byte)0xE0,         // [26,27] - 736
-        (byte)0x03, (byte)0x00,         // [28,29] - 768
-        (byte)0x03, (byte)0x80,         // [30,31] - 896
-        (byte)0x04, (byte)0x00,         // [32,33] - 1024
-        (byte)0x05, (byte)0x00,         // [34,35] - 1280
-        (byte)0x06, (byte)0x00,         // [36,37] - 1536
-        (byte)0x07, (byte)0xC0,         // [38,39] - 1984
-        (byte)0x08, (byte)0x00,         // [40,41] - 2048
-        (byte)0x10, (byte)0x00,         // [42,43] - 4096
+        (byte)0x02, (byte)0x00,         // [28,29] - 512
+        (byte)0x02, (byte)0xE0,         // [30,31] - 736
+        (byte)0x03, (byte)0x00,         // [32,33] - 768
+        (byte)0x03, (byte)0x80,         // [34,35] - 896
+        (byte)0x04, (byte)0x00,         // [36,37] - 1024
+        (byte)0x05, (byte)0x00,         // [38,39] - 1280
+        (byte)0x06, (byte)0x00,         // [40,41] - 1536
+        (byte)0x07, (byte)0xC0,         // [42,43] - 1984
+        (byte)0x08, (byte)0x00,         // [44,45] - 2048
+        (byte)0x10, (byte)0x00,         // [46,47] - 4096
         // class DES [44 - 49]
-        (byte)0x00, (byte)0x40,         // [44,45] - 64
-        (byte)0x00, (byte)0x80,         // [46,47] - 128
-        (byte)0x00, (byte)0xC0,         // [48,49] - 192
-        // class AES [50 - 55]
+        (byte)0x00, (byte)0x40,         // [48,49] - 64
         (byte)0x00, (byte)0x80,         // [50,51] - 128
         (byte)0x00, (byte)0xC0,         // [52,53] - 192
-        (byte)0x01, (byte)0x00,         // [54,55] - 256
-        // class HMAC [56 - 63]
-        (byte)0x00, (byte)0x01,         // [56,57] - 1
+        // class AES [50 - 55]
+        (byte)0x00, (byte)0x80,         // [54,55] - 128
+        (byte)0x00, (byte)0xC0,         // [56,57] - 192
         (byte)0x01, (byte)0x00,         // [58,59] - 256
-        (byte)0x01, (byte)0x80,         // [60,61] - 384
-        (byte)0x02, (byte)0x00,         // [62,63] - 512
+        // class HMAC [56 - 63]
+        (byte)0x00, (byte)0x01,         // [60,61] - 1
+        (byte)0x01, (byte)0x00,         // [62,63] - 256
+        (byte)0x01, (byte)0x80,         // [64,65] - 384
+        (byte)0x02, (byte)0x00,         // [66,67] - 512
     };
+*/    
     
     public final static int CLOCKS_PER_SEC = 1000;
     
     public final static byte[] RESET_APDU = {(byte) 0xb0, (byte) 0xe2, (byte) 0x00, (byte) 0x00, (byte) 0x00};
        
     static DirtyLogger m_SystemOutLogger = null;
-    private Object ImmutableMap;
     public SingleModeTest(DirtyLogger logger) {
         m_SystemOutLogger = logger;
         cardManager = new CardMngr(m_SystemOutLogger);        
@@ -559,110 +584,6 @@ public class SingleModeTest {
             file.write(message.getBytes());
 
             CloseFile(file);
-            
-/*            
-            
-            // in case there are no arguments from command line present
-            m_logger.println("Do you want to test all possible algorithms at once? (y/n)");
-            br.reset();
-            answ = br.nextLine();       
-        
-            // Chooses action based on input argument 'answ' (y/n). 
-            switch (answ) {
-                // Program will ask for every class. 
-                case "n":
-                    m_logger.println("Do you want to test algorithms from class 'Cipher'? (y/n)");
-                        answ = br.nextLine();
-                        if (answ.equals("y")){TestClassCipher(file);}
-                        else{ClassSkipped(file, "javacardx.crypto.Cipher");}
-
-                    m_logger.println("Do you want to test algorithms from class 'Signature'? (y/n)");
-                        answ = br.nextLine();
-                        if (answ.equals("y")){TestClassSignature(file);}
-                        else{ClassSkipped(file, "javacard.security.Signature");}
-
-                    m_logger.println("Do you want to test algorithms from class 'MessageDigest'? (y/n)");
-                        answ = br.nextLine();
-                        if (answ.equals("y")){TestClassMessageDigest(file);}
-                        else{ClassSkipped(file, "javacard.security.MessageDigest");}
-
-                    m_logger.println("Do you want to test algorithms from class 'RandomData'? (y/n)");
-                        answ = br.nextLine();
-                        if (answ.equals("y")){TestClassRandomData(file);}
-                        else{ClassSkipped(file, "javacard.security.RandomData");}
-
-                    m_logger.println("Do you want to test algorithms from class 'KeyBuilder'? (y/n)");
-                        answ = br.nextLine();
-                        if (answ.equals("y")){TestClassKeyBuilder(file);}
-                        else{ClassSkipped(file, "javacard.security.KeyBuilder");}
-
-                    m_logger.println("Do you want to test algorithms from class 'KeyAgreement'? (y/n)");
-                        answ = br.nextLine();
-                        if (answ.equals("y")){TestClassKeyAgreement(file);}
-                        else{ClassSkipped(file, "javacard.security.KeyAgreement");}
-
-                    m_logger.println("Do you want to test algorithms from class 'Checksum'? (y/n)");
-                        answ = br.nextLine();
-                        if (answ.equals("y")){TestClassChecksum(file);}
-                        else{ClassSkipped(file, "javacard.security.Checksum");}
-
-                    m_logger.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_RSA on-card generation'? (y/n)");
-                        answ = br.nextLine();
-                        if (answ.equals("y")){TestClassKeyPair_ALG_RSA(file);}
-                        else{ClassSkipped(file, "javacard.security.KeyPair ALG_RSA on-card generation");}
-
-                    m_logger.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_RSA_CRT on-card generation'? (y/n)");
-                        answ = br.nextLine();
-                        if (answ.equals("y")){TestClassKeyPair_ALG_RSA_CRT(file);}
-                        else{ClassSkipped(file, "javacard.security.KeyPair ALG_RSA_CRT on-card generation");}   
-
-                    m_logger.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_DSA on-card generation'? (y/n)");
-                        answ = br.nextLine();
-                        if (answ.equals("y")){TestClassKeyPair_ALG_DSA(file);}
-                        else{ClassSkipped(file, "javacard.security.KeyPair ALG_DSA on-card generation");} 
-
-                    m_logger.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_EC_F2M on-card generation'? (y/n)");
-                        answ = br.nextLine();
-                        if (answ.equals("y")){TestClassKeyPair_ALG_EC_F2M(file);}
-                        else{ClassSkipped(file, "javacard.security.KeyPair ALG_EC_F2M on-card generation");}
-
-                    m_logger.println("Do you want to test algorithms from class 'javacard.security.KeyPair ALG_EC_FP on-card generation'? (y/n)");
-                        answ = br.nextLine();
-                        if (answ.equals("y")){TestClassKeyPair_ALG_EC_FP(file);}
-                        else{ClassSkipped(file, "javacard.security.KeyPair ALG_EC_FP on-card generation");}
-                    // RSA exponent 
-                    m_logger.println("\n\nQ: Do you like to test support for variable RSA public exponent? (y/n)");
-                        answ = br.nextLine();
-                        if (answ.equals("y")) {
-                        // Variable public exponent
-                        StringBuilder value = new StringBuilder();
-                        value.setLength(0);
-                        cardManager.TestVariableRSAPublicExponentSupport(value, file, (byte) 0);}
-                        else{
-                            String message = "\nERROR: Test variable public exponent support fail\n"; 
-                            m_logger.println(message); file.write(message.getBytes());
-                        }
-                    CloseFile(file);
-                break;
-
-                // Program will test all algorithms at once. 
-                case "y":
-                    long elapsedTimeWholeTest = -System.currentTimeMillis();
-                    testAllAtOnce(file);
-                    elapsedTimeWholeTest += System.currentTimeMillis();
-                    String message = "\n\nTotal test time:; " + elapsedTimeWholeTest / 1000 + " seconds."; 
-                    m_logger.println(message);
-                    file.write(message.getBytes());
-                    
-                    CloseFile(file);
-                break;
-
-                // In case of wrong argument.
-                default:
-                    System.err.println("First argument must be \"y\" or \"n\"!");
-                break;
-            }
-            */
         }
         CloseFile(file);
     }
@@ -1031,12 +952,23 @@ public class SingleModeTest {
         for (int i = 1; i < KEYBUILDER_STR.length; i++){
             // Reset applet before call
             cardManager.sendAPDU(RESET_APDU);
+            
+            String keyBuilderStr = KEYBUILDER_STR[i];
+            KBTestCfg cfg = KEYBUILDER_TEST_CFGS.get(keyBuilderStr);
+            if (cfg == null) {
+                m_SystemOutLogger.println(keyBuilderStr);
+            }
             // byte to choose subclass
+            apdu[OFFSET_DATA] = cfg.keyBuilderType;
+            // bytes to carry the length of tested key
+            CardMngr.setShort(apdu, (short) (OFFSET_DATA + 1), cfg.keyBuilderLength);
+            
+/* REMOVE 20181201: original approach with direct array access - error prone and inflexible for addition of new constants             
             apdu[OFFSET_DATA] = KEYBUILDER_CONST[i-1];    // (byte)3 => TYPE DES
             // bytes to carry the length of tested key
             apdu[OFFSET_DATA + 1] = KEYBUILDER_LENGTHS[(i*2)-1];
             apdu[OFFSET_DATA + 2] = KEYBUILDER_LENGTHS[(i*2)];
-
+*/
             // get starting time of communication cycle
             elapsedCard = -System.currentTimeMillis();
             ResponseAPDU response = cardManager.sendAPDU(apdu);
@@ -1045,9 +977,11 @@ public class SingleModeTest {
             byte[] resp = response.getData();
 
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, cardManager.GetAlgorithmName(KEYBUILDER_STR[i]), resp, elapsedCard, response.getSW());
+            CheckResult(file, cardManager.GetAlgorithmName(keyBuilderStr), resp, elapsedCard, response.getSW());
         }
     }
+    
+ 
     
     /**
      * Tests all algorithms in class 'javacardx.crypto.KeyAgreement' and results writes into the output file.
@@ -1328,6 +1262,86 @@ public class SingleModeTest {
     }
     
     /**
+     * Tests all algorithms in class 'javacardx.biometry.BioBuilder' and results
+     * writes into the output file.
+     *
+     * @param file FileOutputStream object containing output file.
+     * @throws IOException
+     * @throws Exception
+     */
+    public static void TestClassBioBuilder(FileOutputStream file) throws IOException, Exception {
+        long elapsedCard = 0;
+        byte[] apdu = new byte[6];
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
+        apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
+        apdu[OFFSET_P1] = Consts.CLASS_BIOBUILDER;   
+        apdu[OFFSET_P2] = (byte) 0x00;
+        apdu[OFFSET_LC] = (byte) 0x01;
+
+        // Creates message with class name and writes it in the output file and on the screen.
+        String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.BIOBUILDER_STR[0]) + "\r\n";
+        m_SystemOutLogger.println(message);
+        file.write(message.getBytes());
+
+        for (int i = 1; i < SingleModeTest.BIOBUILDER_STR.length; i++) {    // i = 1 because BIOBUILDER_STR[0] is class name
+            // Reset applet before call
+            cardManager.sendAPDU(RESET_APDU);
+            apdu[OFFSET_DATA] = (byte) i;
+            // get starting time of communication cycle
+            elapsedCard = -System.currentTimeMillis();
+            ResponseAPDU response = cardManager.sendAPDU(apdu);
+            // save time of card response
+            elapsedCard += System.currentTimeMillis();
+            byte[] resp = response.getData();
+
+            // Calls method CheckResult - should add to output error messages. 
+            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.BIOBUILDER_STR[i]), resp, elapsedCard, response.getSW());
+        }
+    }    
+    
+    /**
+     * Tests all algorithms in class 'javacardx.crypto.AEADCipher' and results
+     * writes into the output file.
+     *
+     * @param file FileOutputStream object containing output file.
+     * @throws IOException
+     * @throws Exception
+     */
+    public static void TestClassAEADCipher(FileOutputStream file) throws IOException, Exception {
+        long elapsedCard = 0;
+        byte[] apdu = new byte[6];
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
+        apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
+        apdu[OFFSET_P1] = Consts.CLASS_CIPHER;
+        apdu[OFFSET_P2] = (byte) 0x00;
+        apdu[OFFSET_LC] = (byte) 0x01;
+
+        // Creates message with class name and writes it in the output file and on the screen.
+        String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.AEADCIPHER_STR[0]) + "\r\n";
+        m_SystemOutLogger.println(message);
+        file.write(message.getBytes());
+        // Prepare list of indexes for testing together with algorithm name
+        ArrayList<Pair<Integer, String>> algsToTest = new ArrayList<>();
+        algsToTest.add(new Pair(new Integer(JCConsts.AEADCipher_CIPHER_AES_CCM), AEADCIPHER_STR[1]));
+        algsToTest.add(new Pair(new Integer(JCConsts.AEADCipher_CIPHER_AES_GCM), AEADCIPHER_STR[2]));
+ 
+        for (Pair algToTest : algsToTest) {    
+            // Reset applet before call
+            cardManager.sendAPDU(RESET_APDU);
+            apdu[OFFSET_DATA] = ((Integer) algToTest.getL()).byteValue();
+            // get starting time of communication cycle
+            elapsedCard = -System.currentTimeMillis();
+            ResponseAPDU response = cardManager.sendAPDU(apdu);
+            // save time of card response
+            elapsedCard += System.currentTimeMillis();
+            byte[] resp = response.getData();
+
+            // Calls method CheckResult - should add to output error messages. 
+            CheckResult(file, cardManager.GetAlgorithmName((String) algToTest.getR()), resp, elapsedCard, response.getSW());
+        }
+    }    
+    
+    /**
      * Method that will test all algorithms in SingleModeTest class.
      * @param file FileOutputStream object containing file for output data.
      * @throws Exception
@@ -1345,11 +1359,176 @@ public class SingleModeTest {
         TestClassKeyPair_ALG_DSA(file);
         TestClassKeyPair_ALG_EC_F2M(file);
         TestClassKeyPair_ALG_EC_FP(file);
+        //TestClassBioBuilder(file);
+        TestClassAEADCipher(file);
         // test RSA exponent
         StringBuilder value = new StringBuilder();
         value.setLength(0);
         cardManager.TestVariableRSAPublicExponentSupport(value, file, OFFSET_P2);
     }
+    
+/*    
+    // OBSOLETE, REMOVE 20181201
+    // Array of bytes used in KeyBuilder testing.
+    public static final byte[] KEYBUILDER_LENGTHS = {
+        (byte) 0xFF,
+        (byte) 0x00, (byte) 0x40, // [01] 64
+        (byte) 0x00, (byte) 0x40, // [02] 64
+        (byte) 0x00, (byte) 0x40, // [03] 64
+        (byte) 0x00, (byte) 0x80, // [04] 128
+        (byte) 0x00, (byte) 0xC0, // [05] 192
+        (byte) 0x00, (byte) 0x80, // [06] 128
+        (byte) 0x00, (byte) 0x80, // [07] 128
+        (byte) 0x00, (byte) 0x80, // [08] 128
+        (byte) 0x00, (byte) 0xC0, // [09] 192
+        (byte) 0x01, (byte) 0x00, // [10] 256
+        (byte) 0x02, (byte) 0x00, // [11] 512
+        (byte) 0x02, (byte) 0xE0, // [12] 736
+        (byte) 0x03, (byte) 0x00, // [13] 768
+        (byte) 0x03, (byte) 0x80, // [14] 896
+        (byte) 0x04, (byte) 0x00, // [15] 1024
+        (byte) 0x05, (byte) 0x00, // [16] 1280
+        (byte) 0x06, (byte) 0x00, // [17] 1536
+        (byte) 0x07, (byte) 0xC0, // [18] 1984
+        (byte) 0x08, (byte) 0x00, // [19] 2048
+        (byte) 0x0C, (byte) 0x00, // [20] 3072
+        (byte) 0x10, (byte) 0x00, // [21] 4096
+        (byte) 0x02, (byte) 0x00, // [22] 512
+        (byte) 0x02, (byte) 0xE0, // [23] 736
+        (byte) 0x03, (byte) 0x00, // [24] 768
+        (byte) 0x03, (byte) 0x80, // [25] 896
+        (byte) 0x04, (byte) 0x00, // [26] 1024
+        (byte) 0x05, (byte) 0x00, // [27] 1280
+        (byte) 0x06, (byte) 0x00, // [28] 1536
+        (byte) 0x07, (byte) 0xC0, // [29] 1984
+        (byte) 0x08, (byte) 0x00, // [30] 2048
+        (byte) 0x0C, (byte) 0x00, // [31] 3072
+        (byte) 0x10, (byte) 0x00, // [32] 4096
+        (byte) 0x04, (byte) 0x00, // [33] 1024
+        (byte) 0x04, (byte) 0x00, // [34] 1024
+        (byte) 0x02, (byte) 0x00, // [35] 512
+        (byte) 0x02, (byte) 0xE0, // [36] 736
+        (byte) 0x03, (byte) 0x00, // [37] 768
+        (byte) 0x03, (byte) 0x80, // [38] 896
+        (byte) 0x04, (byte) 0x00, // [39] 1024
+        (byte) 0x05, (byte) 0x00, // [40] 1280
+        (byte) 0x06, (byte) 0x00, // [41] 1536
+        (byte) 0x07, (byte) 0xC0, // [42] 1984
+        (byte) 0x08, (byte) 0x00, // [43] 2048
+        (byte) 0x0C, (byte) 0x00, // [44] 3072
+        (byte) 0x10, (byte) 0x00, // [45] 4096
+        (byte) 0x04, (byte) 0x00, // [46] 1024
+        (byte) 0x04, (byte) 0x00, // [47] 1024
+        (byte) 0x02, (byte) 0x00, // [48] 512
+        (byte) 0x03, (byte) 0x00, // [49] 768
+        (byte) 0x04, (byte) 0x00, // [50] 1024
+        (byte) 0x04, (byte) 0x00, // [51] 1024
+        (byte) 0x04, (byte) 0x00, // [52] 1024
+        (byte) 0x02, (byte) 0x00, // [53] 512
+        (byte) 0x03, (byte) 0x00, // [54] 768
+        (byte) 0x04, (byte) 0x00, // [55] 1024
+        (byte) 0x00, (byte) 0x71, // [56] 113
+        (byte) 0x00, (byte) 0x83, // [57] 131
+        (byte) 0x00, (byte) 0xA3, // [58] 163
+        (byte) 0x00, (byte) 0xC1, // [59] 193
+        (byte) 0x00, (byte) 0xC1, // [60] 193
+        (byte) 0x00, (byte) 0xC1, // [61] 193
+        (byte) 0x00, (byte) 0x70, // [62] 112
+        (byte) 0x00, (byte) 0x80, // [63] 128
+        (byte) 0x00, (byte) 0xA0, // [64] 160
+        (byte) 0x00, (byte) 0xC0, // [65] 192
+        (byte) 0x00, (byte) 0xE0, // [66] 224
+        (byte) 0x01, (byte) 0x00, // [67] 256
+        (byte) 0x01, (byte) 0x80, // [68] 384
+        (byte) 0x02, (byte) 0x09, // [69] 521
+        (byte) 0x00, (byte) 0x80, // [70] 128
+        (byte) 0x00, (byte) 0x80, // [71] 128
+        (byte) 0x00, (byte) 0x80, // [72] 128
+        (byte) 0x00, (byte) 0x80, // [73] 128
+        (byte) 0x00, (byte) 0x80, // [74] 128
+        (byte) 0x00, (byte) 0x40, // [75] 64
+        (byte) 0x00, (byte) 0x40, // [76] 64
+        (byte) 0x00, (byte) 0x40, // [77] 64
+        (byte) 0x00, (byte) 0x40, // [78] 64
+        (byte) 0x00, (byte) 0x80, // [79] 128
+        (byte) 0x00, (byte) 0x80 // [80] 128
+    };
+
+    public static final byte[] KEYBUILDER_CONST = {
+        (byte) 0x01, (byte) 0x02, (byte) 0x03, (byte) 0x03, (byte) 0x03, (byte) 0x0D, (byte) 0x0E, (byte) 0x0F, (byte) 0x0F, (byte) 0x0F,
+        (byte) 0x04, (byte) 0x04, (byte) 0x04, (byte) 0x04, (byte) 0x04, (byte) 0x04, (byte) 0x04, (byte) 0x04, (byte) 0x04, (byte) 0x04,
+        (byte) 0x04, (byte) 0x05, (byte) 0x05, (byte) 0x05, (byte) 0x05, (byte) 0x05, (byte) 0x05, (byte) 0x05, (byte) 0x05, (byte) 0x05,
+        (byte) 0x05, (byte) 0x05, (byte) 0x16, (byte) 0x17, (byte) 0x06, (byte) 0x06, (byte) 0x06, (byte) 0x06, (byte) 0x06, (byte) 0x06,
+        (byte) 0x06, (byte) 0x06, (byte) 0x06, (byte) 0x06, (byte) 0x06, (byte) 0x18, (byte) 0x19, (byte) 0x08, (byte) 0x08, (byte) 0x08,
+        (byte) 0x1A, (byte) 0x1B, (byte) 0x07, (byte) 0x07, (byte) 0x07, (byte) 0x0A, (byte) 0x0A, (byte) 0x0A, (byte) 0x0A, (byte) 0x1C,
+        (byte) 0x1D, (byte) 0x0C, (byte) 0x0C, (byte) 0x0C, (byte) 0x0C, (byte) 0x0C, (byte) 0x0C, (byte) 0x0C, (byte) 0x0C, (byte) 0x1E,
+        (byte) 0x1F, (byte) 0x10, (byte) 0x11, (byte) 0x12, (byte) 0x13, (byte) 0x14, (byte) 0x15, (byte) 0x15, (byte) 0x15, (byte) 0x15
+    };
+    
+    // Create human-readable list of testing tuples for class
+    public static void TestClassKeyBuilder_DumpNames() throws IOException, Exception {
+        ArrayList<Pair<String, Integer>> keyBuilderList = new ArrayList<>();
+        keyBuilderList.add(new Pair("bogus", 0));
+        keyBuilderList.add(new Pair("JCConsts.KeyBuilder_TYPE_DES_TRANSIENT_RESET", 1));
+        keyBuilderList.add(new Pair("JCConsts.KeyBuilder_TYPE_DES_TRANSIENT_DESELECT", 2));
+        keyBuilderList.add(new Pair("JCConsts.KeyBuilder_TYPE_DES", 3));
+        keyBuilderList.add(new Pair("JCConsts.KeyBuilder_TYPE_RSA_PUBLIC", 4));
+        keyBuilderList.add(new Pair("JCConsts.KeyBuilder_TYPE_RSA_PRIVATE", 5));
+        keyBuilderList.add(new Pair("JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE", 6));
+        keyBuilderList.add(new Pair("JCConsts.KeyBuilder_TYPE_DSA_PUBLIC", 7));
+        keyBuilderList.add(new Pair("JCConsts.KeyBuilder_TYPE_DSA_PRIVATE", 8));
+        keyBuilderList.add(new Pair("JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC", 9));
+        keyBuilderList.add(new Pair("JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE", 10));
+        keyBuilderList.add(new Pair("JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC", 11));
+        keyBuilderList.add(new Pair("JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE", 12));
+        keyBuilderList.add(new Pair("JCConsts.KeyBuilder_TYPE_AES_TRANSIENT_RESET", 13));
+        keyBuilderList.add(new Pair("JCConsts.KeyBuilder_TYPE_AES_TRANSIENT_DESELECT", 14));
+        keyBuilderList.add(new Pair("JCConsts.KeyBuilder_TYPE_AES", 15));
+        keyBuilderList.add(new Pair("JCConsts.KeyBuilder_TYPE_KOREAN_SEED_TRANSIENT_RESET", 16));
+        keyBuilderList.add(new Pair("JCConsts.KeyBuilder_TYPE_KOREAN_SEED_TRANSIENT_DESELECT", 17));
+        keyBuilderList.add(new Pair("JCConsts.KeyBuilder_TYPE_KOREAN_SEED", 18));
+        keyBuilderList.add(new Pair("JCConsts.KeyBuilder_TYPE_HMAC_TRANSIENT_RESET", 19));
+        keyBuilderList.add(new Pair("JCConsts.KeyBuilder_TYPE_HMAC_TRANSIENT_DESELECT", 20));
+        keyBuilderList.add(new Pair("JCConsts.KeyBuilder_TYPE_HMAC", 21));
+        keyBuilderList.add(new Pair("JCConsts.KeyBuilder_TYPE_RSA_PRIVATE_TRANSIENT_RESET", 22));
+        keyBuilderList.add(new Pair("JCConsts.KeyBuilder_TYPE_RSA_PRIVATE_TRANSIENT_DESELECT", 23));
+        keyBuilderList.add(new Pair("JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE_TRANSIENT_RESET", 24));
+        keyBuilderList.add(new Pair("JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE_TRANSIENT_DESELECT", 25));
+        keyBuilderList.add(new Pair("JCConsts.KeyBuilder_TYPE_DSA_PRIVATE_TRANSIENT_RESET", 26));
+        keyBuilderList.add(new Pair("JCConsts.KeyBuilder_TYPE_DSA_PRIVATE_TRANSIENT_DESELECT", 27));
+        keyBuilderList.add(new Pair("JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE_TRANSIENT_RESET", 28));
+        keyBuilderList.add(new Pair("JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE_TRANSIENT_DESELECT", 29));
+        keyBuilderList.add(new Pair("JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE_TRANSIENT_RESET", 30));
+        keyBuilderList.add(new Pair("JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE_TRANSIENT_DESELECT", 31));
+
+        // Creates message with class name and writes it in the output file and on the screen. 
+        String message = "\n" + cardManager.GetAlgorithmName(KEYBUILDER_STR[0]) + "\r\n";
+        m_SystemOutLogger.println(message);
+
+        HashMap<String, KBTestCfg> KEYBUILDER_TEST_CFGS = new HashMap<>();
+        m_SystemOutLogger.println("public static final Map<String, KBTestCfg> KEYBUILDER_TEST_CFGS;");
+        m_SystemOutLogger.println("static {");
+        m_SystemOutLogger.println("    KEYBUILDER_TEST_CFGS = new HashMap<>();");
+        for (int i = 1; i < KEYBUILDER_STR.length; i++) {
+            short keyLength = KEYBUILDER_LENGTHS[(i * 2) - 1];
+            keyLength *= 256;
+            keyLength += KEYBUILDER_LENGTHS[(i * 2)] & 0xff;
+
+            String keyTypeStr = keyBuilderList.get(KEYBUILDER_CONST[i - 1]).getL();
+
+            KEYBUILDER_TEST_CFGS.put(KEYBUILDER_STR[i], new KBTestCfg(KEYBUILDER_CONST[i - 1], keyLength)); // KEYBUILDER_STR[i], KEYBUILDER_CONST[i-1], KEYBUILDER_LENGTHS[(i*2)-1], KEYBUILDER_LENGTHS[(i*2)]
+            message = String.format("    KEYBUILDER_TEST_CFGS.put(\"%s\", new KBTestCfg(%s, (short) %d));", KEYBUILDER_STR[i], keyTypeStr, keyLength);
+            m_SystemOutLogger.println(message);
+        }
+        m_SystemOutLogger.println("}\r\n");
+    }    
+*/    
+    
+    
+    
+    
+    
+    
 }   // END OF CLASS 'SINGLEMODETEST'
 
 
