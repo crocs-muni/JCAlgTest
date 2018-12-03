@@ -149,11 +149,7 @@ public class AlgTestJClient {
         m_SystemOutLogger.println("-----------------------------------------------------------------------\n");
         // If arguments are present. 
         if(args.length > 0){
-            if (args[0].equals(ALGTEST_MULTIPERAPDU)){
-                CardMngr cardManager = new CardMngr(m_SystemOutLogger);
-                cardManager.testClassic(args, 0, null);
-            }  
-            else if (args[0].equals(ALGTEST_SINGLEPERAPDU)){
+            if (args[0].equals(ALGTEST_SINGLEPERAPDU)){
                 SingleModeTest singleTest = new SingleModeTest(m_SystemOutLogger);
                 singleTest.TestSingleAlg(args, null);
             }
