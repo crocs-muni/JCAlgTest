@@ -1361,10 +1361,12 @@ public class SingleModeTest {
         TestClassKeyPair_ALG_EC_FP(file);
         //TestClassBioBuilder(file);
         TestClassAEADCipher(file);
+        /* Disabled for now, at it seems to be causing crash for J3H081 cards
         // test RSA exponent
         StringBuilder value = new StringBuilder();
         value.setLength(0);
         cardManager.TestVariableRSAPublicExponentSupport(value, file, OFFSET_P2);
+        */
     }
     
 /*    
