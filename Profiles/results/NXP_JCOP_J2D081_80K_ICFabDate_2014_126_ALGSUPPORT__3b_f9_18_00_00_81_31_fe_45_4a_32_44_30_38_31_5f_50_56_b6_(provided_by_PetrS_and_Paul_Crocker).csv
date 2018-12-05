@@ -8,6 +8,7 @@ Card ATR; 3b f9 18 00 00 81 31 fe 45 4a 32 44 30 38 31 5f 50 56 b6
 Card name; NXP J2D081 80K
 Performance; yes
 Used protocol; T=1
+Package_AID_test; NXP_J2D081_80K_AIDSUPPORT_3BF91800008131FE454A32443038315F5056B6.csv
 
 JCSystem.getVersion()[Major.Minor];3.0;
 JCSystem.isObjectDeletionSupported;yes;

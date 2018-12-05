@@ -9,7 +9,7 @@ OperatingSystemID; 544C
 OperatingSystemReleaseDate; 2151
 OperatingSystemReleaseLevel; 2E10
 ICFabricationDate; 2001
-ICSerialNumber; 00020724
+ICSerialNumber; 00020726
 ICBatchIdentifier; 4FC2
 ICModuleFabricator; 4092
 ICModulePackagingDate; 2339
@@ -117,3 +117,10 @@ FULL PACKAGE AID; IS SUPPORTED?; PACKAGE NAME WITH VERSION;
 010107A0000000620209; 	no; 	javacardx.apdu v1.1 a0000000620209;
 000108A000000062020901; 	no; 	javacardx.apdu.util v1.0 a000000062020901;
 010108A000000062020901; 	no; 	javacardx.apdu.util v1.1 a000000062020901;
+
+JC CONVERTOR VERSION; CAP SUCCESSFULLY UPLOADED?;;
+2.2.1; yes;
+2.2.2; yes;
+3.0.1; yes;
+3.0.4; yes;
+3.0.5; no;

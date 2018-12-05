@@ -7,6 +7,8 @@ Used reader; PC/SC terminal SCM Microsystems Inc. SDI011G Contactless Reader 0,
 Card ATR; 3b 80 80 01 01,
 Card name; JC10M24R_Release,
 Used protocol; T=1,
+Package_AID_test; JavaCardOS_JC10M24_AIDSUPPORT_3B8580010578F7B1023D.csv
+
 ,
 JCSystem.getVersion()[Major.Minor];3.0;,
 JCSystem.isObjectDeletionSupported;yes;,

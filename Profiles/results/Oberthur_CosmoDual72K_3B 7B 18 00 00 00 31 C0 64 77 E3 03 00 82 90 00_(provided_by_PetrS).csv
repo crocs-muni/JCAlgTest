@@ -2,7 +2,7 @@ Oberthur Cosmo Dual 72K,,
 Card ATR: 3B:7B:18:00:00:00:31:C0:64:77:E3:03:00:82:90:00,,
 AlgTestJClient version; 1.1
 AlgTest applet version; 1.1
-Package_AID_test; Oberthur_Cosmo_Dual_72K_AIDSUPPORT_3B7B1800000031C06477E30300829000.csv
+Package_AID_test; Oberthur_CosmoDual72K_AIDSUPPORT_3B7B1800000031C06477E30300829000.csv
 
 JavaCard support version;2.2.1;
 javacardx.apdu.ExtendedLength; 

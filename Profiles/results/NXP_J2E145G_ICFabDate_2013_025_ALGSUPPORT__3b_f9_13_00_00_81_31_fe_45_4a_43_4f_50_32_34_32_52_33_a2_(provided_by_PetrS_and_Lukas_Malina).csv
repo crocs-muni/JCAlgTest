@@ -7,6 +7,7 @@ Used reader; PC/SC terminal Gemplus USB Smart Card Reader 0
 Card ATR; 3b f9 13 00 00 81 31 fe 45 4a 43 4f 50 32 34 32 52 33 a2
 Card name; NXP J2E145G
 Used protocol; T=1
+Package_AID_test; NXP_J2E145G_v2.4.2_R3_AIDSUPPORT_3BF91300008131FE454A434F503234325233A2.csv
 
 JCSystem.getVersion()[Major.Minor];3.0;
 JCSystem.isObjectDeletionSupported;yes;
