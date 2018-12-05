@@ -1,41 +1,61 @@
 jcAIDScan version; 0.1.1
-Card ATR; 3BFC180000813180459067464A01002005000000004E
-Card name; Feitian JavaCOS A40
+Card ATR; 3BF99600008131FE4553434537200E00202028
+Card name; G+D SmartCafe 7.0 215K USB Token S
 CPLC;;
-
-ICFabricator; 4090
-ICType; 7794
-OperatingSystemID; 86AA
-OperatingSystemReleaseDate; 6028
-OperatingSystemReleaseLevel; 0120
-ICFabricationDate; 6101
-ICSerialNumber; 17044023
-ICBatchIdentifier; 0537
-ICModuleFabricator; 4090
-ICModulePackagingDate; 6101
-ICCManufacturer; 86AA
-ICEmbeddingDate; 6101
-ICPrePersonalizer; 86AA
-ICPrePersonalizationEquipmentDate; 6101
-ICPrePersonalizationEquipmentID; 00000000
-ICPersonalizer; 0000
-ICPersonalizationDate; 0000
-ICPersonalizationEquipmentID; 00000000
-***** CARD DATA
-GlobalPlatform card
-Version; 2.1.1
-TAG3; 1.2.840.114283.3
-SCP version; SCP_02_55
-TAG5; 1.3.656.840.100.2.1.3
-TAG6; 1.3.6.1.4.1.42.2.110.1.2
-***** KEY INFO
-VER;255 ID;1 TYPE;DES3 LEN;16
-VER;255 ID;2 TYPE;DES3 LEN;16
-VER;255 ID;3 TYPE;DES3 LEN;16
+tformPro 18.09.14-0-gb439b52
+Running on Windows 10 10.0 amd64, Java 1.8.0_181 by Oracle Corporation
+Reader; Giesecke & Devrient GmbH StarSign CUT S 0
+ATR; 3BF99600008131FE4553434537200E00202028
+More information about your card;
+    http;//smartcard-atr.appspot.com/parse?ATR=3BF99600008131FE4553434537200E00202028
+
+CPLC; ICFabricator=0005
+      ICType=0056
+      OperatingSystemID=D001
+      OperatingSystemReleaseDate=4212 (2014-07-31)
+      OperatingSystemReleaseLevel=0102
+      ICFabricationDate=059C (invalid date format)
+      ICSerialNumber=00300028
+      ICBatchIdentifier=4D0F
+      ICModuleFabricator=0000
+      ICModulePackagingDate=0000 (2010-01-01)
+      ICCManufacturer=0000
+      ICEmbeddingDate=0000 (2010-01-01)
+      ICPrePersonalizer=0000
+      ICPrePersonalizationEquipmentDate=0000 (2010-01-01)
+      ICPrePersonalizationEquipmentID=00000000
+      ICPersonalizer=0000
+      ICPersonalizationDate=0000 (2010-01-01)
+      ICPersonalizationEquipmentID=00000000
+
+Card Data; 
+Tag 6; 1.2.840.114283.1
+-> Global Platform card
+Tag 60; 1.2.840.114283.2.2.2.1
+-> GP Version; 2.2.1
+Tag 63; 1.2.840.114283.3
+Tag 64; 1.2.840.114283.4.3.16
+-> GP SCP03 i=10
+Tag 65; 1.3.656.840.100.2.1.3
+Tag 66; 1.3.6.1.4.1.42.2.110.1.3
+-> JavaCard v3
+Card Capabilities; 
+Supports; SCP03 i=00 i=10 i=20 i=30 i=60 i=70 with AES-128 AES-196 AES-256
+Supports; SCP02 i=15 i=55
+Supported DOM privileges; SecurityDomain, DelegatedManagement, CardLock, CardTerminate, CardReset, CVMManagement, MandatedDAPVerification, TrustedPath, GlobalDelete, GlobalLock, GlobalRegistry, FinalApplication
+Supported APP privileges; CardLock, CardTerminate, CardReset, CVMManagement, GlobalDelete, GlobalRegistry, FinalApplication
+Supported LFDB hash; 02
+Supported Token Verification ciphers; FF02
+Supported Receipt Generation ciphers; FF02
+Supported DAP Verification ciphers; FF02
+Version; 255 (0xFF) ID;   1 (0x01) type; AES  length;  16 (AES-128)
+Version; 255 (0xFF) ID;   2 (0x02) type; AES  length;  16 (AES-128)
+Version; 255 (0xFF) ID;   3 (0x03) type; AES  length;  16 (AES-128)
 Key version suggests factory keys
 
 PACKAGE AID; MAJOR VERSION; MINOR VERSION; PACKAGE NAME; INTRODUCING JC API VERSION;
 a0000000620001; 1; 0; java.lang; 2.1
+a0000000620002; 1; 0; java.io; 2.2.0
 a0000000620101; 1; 0; javacard.framework; 2.1
 a0000000620101; 1; 1; javacard.framework; 2.2.0
 a0000000620101; 1; 2; javacard.framework; 2.2.1
@@ -54,14 +74,15 @@ a0000000620201; 1; 2; javacardx.crypto; 2.2.1
 a0000000620201; 1; 3; javacardx.crypto; 2.2.2
 a0000000620201; 1; 4; javacardx.crypto; 3.0.1
 a0000000620201; 1; 5; javacardx.crypto; 3.0.4
-a0000000620203; 1; 0; javacardx.external; 2.2.2
-a00000006202080101; 1; 0; javacardx.framework.util.intx; 2.2.2
+a0000000620202; 1; 0; javacardx.biometry; 2.2.2
+a0000000620202; 1; 1; javacardx.biometry; 2.2.2
+a0000000620202; 1; 2; javacardx.biometry; 2.2.2
 a0000000620209; 1; 0; javacardx.apdu; 2.2.2
 
 FULL PACKAGE AID; IS SUPPORTED?; PACKAGE NAME WITH VERSION; 
 000107A0000000620001; 	yes; 	java.lang v1.0 a0000000620001;
 010107A0000000620001; 	no; 	java.lang v1.1 a0000000620001;
-000107A0000000620002; 	no; 	java.io v1.0 a0000000620002;
+000107A0000000620002; 	yes; 	java.io v1.0 a0000000620002;
 010107A0000000620002; 	no; 	java.io v1.1 a0000000620002;
 000107A0000000620003; 	no; 	java.rmi v1.0 a0000000620003;
 010107A0000000620003; 	no; 	java.rmi v1.1 a0000000620003;
@@ -91,12 +112,12 @@ FULL PACKAGE AID; IS SUPPORTED?; PACKAGE NAME WITH VERSION;
 050107A0000000620201; 	yes; 	javacardx.crypto v1.5 a0000000620201;
 060107A0000000620201; 	no; 	javacardx.crypto v1.6 a0000000620201;
 070107A0000000620201; 	no; 	javacardx.crypto v1.7 a0000000620201;
-000107A0000000620202; 	no; 	javacardx.biometry v1.0 a0000000620202;
-010107A0000000620202; 	no; 	javacardx.biometry v1.1 a0000000620202;
-020107A0000000620202; 	no; 	javacardx.biometry v1.2 a0000000620202;
+000107A0000000620202; 	yes; 	javacardx.biometry v1.0 a0000000620202;
+010107A0000000620202; 	yes; 	javacardx.biometry v1.1 a0000000620202;
+020107A0000000620202; 	yes; 	javacardx.biometry v1.2 a0000000620202;
 030107A0000000620202; 	no; 	javacardx.biometry v1.3 a0000000620202;
 040107A0000000620202; 	no; 	javacardx.biometry v1.4 a0000000620202;
-000107A0000000620203; 	yes; 	javacardx.external v1.0 a0000000620203;
+000107A0000000620203; 	no; 	javacardx.external v1.0 a0000000620203;
 010107A0000000620203; 	no; 	javacardx.external v1.1 a0000000620203;
 000107A0000000620204; 	no; 	javacardx.biometry1toN v1.0 a0000000620204;
 010107A0000000620204; 	no; 	javacardx.biometry1toN v1.1 a0000000620204;
@@ -105,7 +126,7 @@ FULL PACKAGE AID; IS SUPPORTED?; PACKAGE NAME WITH VERSION;
 000108A000000062020801; 	no; 	javacardx.framework.util v1.0 a000000062020801;
 010108A000000062020801; 	no; 	javacardx.framework.util v1.1 a000000062020801;
 020108A000000062020801; 	no; 	javacardx.framework.util v1.2 a000000062020801;
-000109A00000006202080101; 	yes; 	javacardx.framework.util.intx v1.0 a00000006202080101;
+000109A00000006202080101; 	no; 	javacardx.framework.util.intx v1.0 a00000006202080101;
 010109A00000006202080101; 	no; 	javacardx.framework.util.intx v1.1 a00000006202080101;
 000108A000000062020802; 	no; 	javacardx.framework.math v1.0 a000000062020802;
 010108A000000062020802; 	no; 	javacardx.framework.math v1.1 a000000062020802;
@@ -119,6 +140,8 @@ FULL PACKAGE AID; IS SUPPORTED?; PACKAGE NAME WITH VERSION;
 010108A000000062020901; 	no; 	javacardx.apdu.util v1.1 a000000062020901;
 
 JC CONVERTOR VERSION; CAP SUCCESSFULLY UPLOADED?;;
+2.1.1; yes;
+2.2.0; yes;
 2.2.1; yes;
 2.2.2; yes;
 3.0.1; yes;

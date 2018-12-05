@@ -300,7 +300,7 @@ public class CardMngr {
             m_SystemOutLogger.println(message); file.write(message.getBytes());
             message = "Used protocol; " + protocol + "\r\n";
             m_SystemOutLogger.println(message); file.write(message.getBytes());
-            message = String.format("High-power mode supported; %s\r\n", bHighPowerMode ? "yes" : "no");
+            message = String.format("High-power mode supported (relevant only to SIM cards according to ETSI 102 221); %s\r\n", bHighPowerMode ? "yes" : "no");
             m_SystemOutLogger.println(message); file.write(message.getBytes());
 
             
