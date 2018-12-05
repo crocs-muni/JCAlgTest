@@ -32,6 +32,7 @@
 package algtestjclient;
 
 import algtest.JCConsts;
+import cardTools.SimulatedCardTerminal;
 import java.io.*;
 import java.util.List;
 import java.util.Scanner;
@@ -53,6 +54,7 @@ public class AlgTestJClient {
     public static final String ALGTEST_MULTIPERAPDU = "AT_MULTIPERAPDU";        // for 'old' AlgTest
     public static final String ALGTEST_SINGLEPERAPDU = "AT_SINGLEPERAPDU";      // for 'New' AlgTest
     public static final String ALGTEST_PERFORMANCE = "AT_PERFORMANCE";          // for performance testing
+    public static final String ALGTEST_USE_SIMULATOR = "JCARDSIM";          // use simulator instead of real card
     
     /**
      * Version 1.7.5 (17.09.2018) 
@@ -131,6 +133,9 @@ public class AlgTestJClient {
     public final static String ALGTEST_JCLIENT_VERSION = ALGTEST_JCLIENT_VERSION_1_7_5;
     
     public final static int STAT_OK = 0;    
+    
+    // If required to be run with simulator, run as: >java -cp "AlgTestJClient.jar;jcardsim-3.0.5-SNAPSHOT.jar" -noverify algtestjclient.AlgTestJClient JCARDSIM
+    static boolean USE_JCARDSIM = false;
     /**
      * @param args the command line arguments
      */
@@ -147,6 +152,16 @@ public class AlgTestJClient {
         m_SystemOutLogger.println("Please check if you use the latest version at\n  https://github.com/crocs-muni/JCAlgTest/releases/latest.");
         
         m_SystemOutLogger.println("-----------------------------------------------------------------------\n");
+        
+        if (args.length > 0) {
+            for (String arg : args) {
+                if (arg.equals(ALGTEST_USE_SIMULATOR)) {
+                    USE_JCARDSIM = true;
+                }
+            }
+        }
+                    
+/* fix arguments processing       
         // If arguments are present. 
         if(args.length > 0){
             if (args[0].equals(ALGTEST_SINGLEPERAPDU)){
@@ -165,6 +180,7 @@ public class AlgTestJClient {
         }
         // If there are no arguments present
         else {   
+*/
             CardTerminal selectedTerminal = null;
             PerformanceTesting testingPerformance = new PerformanceTesting(m_SystemOutLogger);
             m_SystemOutLogger.println("NOTE: JCAlgTest applet (AlgTest.cap) must be already installed on tested card.");
@@ -222,8 +238,9 @@ public class AlgTestJClient {
                     System.err.println("Incorrect parameter!");
                 break;
             }
-        
+/* fix arguments processing       
         }
+*/
     }
     
     static void performKeyHarvest() throws CardException {
@@ -332,46 +349,52 @@ public class AlgTestJClient {
     }
     
     static CardTerminal selectTargetReader() {
-        // Test available card - if more present, let user to select one
-        List<CardTerminal> terminalList = CardMngr.GetReaderList(false);
-        CardTerminal selectedTerminal = null;
-        if (terminalList.isEmpty()) {
-            m_SystemOutLogger.println("ERROR: No suitable reader with card detected. Please check your reader connection");
-            return null;
+        // If required, return simulated card (jCardSim), otherwise let user to choose
+        if (USE_JCARDSIM) {
+            return new SimulatedCardTerminal();
         }
         else {
-            if (terminalList.size() == 1) {
-                selectedTerminal = terminalList.get(0); // return first and only reader
+            // Test available card - if more present, let user to select one
+            List<CardTerminal> terminalList = CardMngr.GetReaderList(false);
+            CardTerminal selectedTerminal = null;
+            if (terminalList.isEmpty()) {
+                m_SystemOutLogger.println("ERROR: No suitable reader with card detected. Please check your reader connection");
+                return null;
             }
             else {
-                int terminalIndex = 1;
-                // Let user select target terminal
-                m_SystemOutLogger.println("\nAvailable readers:");
-                for (CardTerminal terminal : terminalList) {
-                    Card card;
-                    try {
-                        card = terminal.connect("*");
-                        ATR atr = card.getATR();
-                        m_SystemOutLogger.println(String.format("%d : [*] %s - %s", terminalIndex, terminal.getName(), CardMngr.bytesToHex(atr.getBytes())));
-                        terminalIndex++;                        
-                    } catch (CardNotPresentException ex) {
-                        m_SystemOutLogger.println(String.format("%d : [ ] %s - NO CARD", terminalIndex, terminal.getName()));
-                        terminalIndex++;
-                    } catch (CardException ex) {
-                        Logger.getLogger(AlgTestJClient.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }   
-                m_SystemOutLogger.print("Select index of target reader you like to use [1.." + (terminalIndex - 1) + "]: ");
-                Scanner sc = new Scanner(System.in);
-                int answ = sc.nextInt();
-                m_SystemOutLogger.println(String.format("%d", answ));
-                answ--; // is starting with 0 
-                // BUGBUG; verify allowed index range
-                selectedTerminal = terminalList.get(answ); 
+                if (terminalList.size() == 1) {
+                    selectedTerminal = terminalList.get(0); // return first and only reader
+                }
+                else {
+                    int terminalIndex = 1;
+                    // Let user select target terminal
+                    m_SystemOutLogger.println("\nAvailable readers:");
+                    for (CardTerminal terminal : terminalList) {
+                        Card card;
+                        try {
+                            card = terminal.connect("*");
+                            ATR atr = card.getATR();
+                            m_SystemOutLogger.println(String.format("%d : [*] %s - %s", terminalIndex, terminal.getName(), CardMngr.bytesToHex(atr.getBytes())));
+                            terminalIndex++;                        
+                        } catch (CardNotPresentException ex) {
+                            m_SystemOutLogger.println(String.format("%d : [ ] %s - NO CARD", terminalIndex, terminal.getName()));
+                            terminalIndex++;
+                        } catch (CardException ex) {
+                            Logger.getLogger(AlgTestJClient.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }   
+                    m_SystemOutLogger.print("Select index of target reader you like to use [1.." + (terminalIndex - 1) + "]: ");
+                    Scanner sc = new Scanner(System.in);
+                    int answ = sc.nextInt();
+                    m_SystemOutLogger.println(String.format("%d", answ));
+                    answ--; // is starting with 0 
+                    // BUGBUG; verify allowed index range
+                    selectedTerminal = terminalList.get(answ); 
+                }
             }
+
+            return selectedTerminal;
         }
-        
-        return selectedTerminal;
     }
   
 }

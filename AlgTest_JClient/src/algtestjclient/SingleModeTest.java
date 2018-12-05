@@ -33,6 +33,7 @@ package algtestjclient;
 
 /* Import 'ALGTEST_JCLIENT_VERSION' variable - possibly replace with actual import of those variables later? */
 import algtest.Consts;
+import algtest.JCAlgTestApplet;
 import algtest.JCConsts;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -235,7 +236,7 @@ public class SingleModeTest {
     public static final String RAWRSA_1024_STR[] = {"Variable RSA 1024 - support for variable public exponent. If supported, user-defined fast modular exponentiation can be executed on the smart card via cryptographic coprocessor. This is very specific feature and you will probably not need it", 
         "Allocate RSA 1024 objects", "Set random modulus", "Set random public exponent", "Initialize cipher with public key with random exponent", "Use random public exponent"}; 
 
-    public static final String PACKAGE_AID_STR[] = {"Package AID support test - a direct testing of supported packages from the standard JavaCard API including version. Not all constants from supported package are necessarily supported.",
+    public static final String PACKAGE_AID_STR[] = {"<a name=\"package_support\"></a>Package AID support test - a direct testing of supported packages from the standard JavaCard API including version. Not all constants from supported package are necessarily supported.",
         "000107A0000000620001#2.1", // java.lang
         "000107A0000000620002#2.2.0",  // java.io
         "000107A0000000620003#2.2.0", // java.rmi
@@ -521,9 +522,9 @@ public class SingleModeTest {
     public final static byte[] RESET_APDU = {(byte) 0xb0, (byte) 0xe2, (byte) 0x00, (byte) 0x00, (byte) 0x00};
        
     static DirtyLogger m_SystemOutLogger = null;
-    public SingleModeTest(DirtyLogger logger) {
+    public SingleModeTest(DirtyLogger logger) throws Exception {
         m_SystemOutLogger = logger;
-        cardManager = new CardMngr(m_SystemOutLogger);        
+        cardManager = new CardMngr(m_SystemOutLogger);       
     }
     
     /**
@@ -794,7 +795,7 @@ public class SingleModeTest {
         apdu[OFFSET_LC] = (byte)0x01;
 
         /* Creates message with class name and writes it in the output file and on the screen. */
-        String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.CIPHER_STR[0]) + "\r\n";
+        String message = "\n" + Utils.GetAlgorithmName(SingleModeTest.CIPHER_STR[0]) + "\r\n";
         m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         
@@ -814,7 +815,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
 
             // Calls method CheckResult - should add to output error messages.
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.CIPHER_STR[i]), resp, elapsedCard, response.getSW());
+            CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.CIPHER_STR[i]), resp, elapsedCard, response.getSW());
         }        
     }
     
@@ -834,7 +835,7 @@ public class SingleModeTest {
         apdu[OFFSET_LC] = (byte)0x01;
         
         /* Creates message with class name and writes it in the output file and on the screen. */
-        String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.SIGNATURE_STR[0]) + "\r\n";
+        String message = "\n" + Utils.GetAlgorithmName(SingleModeTest.SIGNATURE_STR[0]) + "\r\n";
         m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         
@@ -852,7 +853,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
        
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.SIGNATURE_STR[i]), resp, elapsedCard, response.getSW());
+            CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.SIGNATURE_STR[i]), resp, elapsedCard, response.getSW());
         }        
     }
     
@@ -872,7 +873,7 @@ public class SingleModeTest {
         apdu[OFFSET_LC] = (byte)0x01;
         
         /* Creates message with class name and writes it in the output file and on the screen. */
-        String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.MESSAGEDIGEST_STR[0]) + "\r\n";
+        String message = "\n" + Utils.GetAlgorithmName(SingleModeTest.MESSAGEDIGEST_STR[0]) + "\r\n";
         m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         
@@ -889,7 +890,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
             
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.MESSAGEDIGEST_STR[i]), resp, elapsedCard, response.getSW());
+            CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.MESSAGEDIGEST_STR[i]), resp, elapsedCard, response.getSW());
         }
     }
     
@@ -909,7 +910,7 @@ public class SingleModeTest {
         apdu[OFFSET_LC] = (byte)0x01;
         
         /* Creates message with class name and writes it in the output file and on the screen. */
-        String message = "\r\n" + cardManager.GetAlgorithmName(SingleModeTest.RANDOMDATA_STR[0]) + "\r\n";
+        String message = "\r\n" + Utils.GetAlgorithmName(SingleModeTest.RANDOMDATA_STR[0]) + "\r\n";
         m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         
@@ -925,7 +926,7 @@ public class SingleModeTest {
             elapsedCard += System.currentTimeMillis();
             byte[] resp = response.getData();
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.RANDOMDATA_STR[i]), resp, elapsedCard, response.getSW());
+            CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.RANDOMDATA_STR[i]), resp, elapsedCard, response.getSW());
         }
     }
     
@@ -945,7 +946,7 @@ public class SingleModeTest {
         apdu[OFFSET_LC] = (byte)0x03;
             
         // Creates message with class name and writes it in the output file and on the screen. 
-        String message = "\n" + cardManager.GetAlgorithmName(KEYBUILDER_STR[0]) + "\r\n";
+        String message = "\n" + Utils.GetAlgorithmName(KEYBUILDER_STR[0]) + "\r\n";
         m_SystemOutLogger.println(message);
         file.write(message.getBytes());
 
@@ -977,7 +978,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
 
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, cardManager.GetAlgorithmName(keyBuilderStr), resp, elapsedCard, response.getSW());
+            CheckResult(file, Utils.GetAlgorithmName(keyBuilderStr), resp, elapsedCard, response.getSW());
         }
     }
     
@@ -999,7 +1000,7 @@ public class SingleModeTest {
         apdu[OFFSET_LC] = (byte)0x01;
     
         // Creates message with class name and writes it in the output file and on the screen.
-        String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.KEYAGREEMENT_STR[0]) + "\r\n";
+        String message = "\n" + Utils.GetAlgorithmName(SingleModeTest.KEYAGREEMENT_STR[0]) + "\r\n";
         m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         
@@ -1016,7 +1017,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
             
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYAGREEMENT_STR[i]), resp, elapsedCard, response.getSW());
+            CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.KEYAGREEMENT_STR[i]), resp, elapsedCard, response.getSW());
         }
     }
     
@@ -1036,7 +1037,7 @@ public class SingleModeTest {
         apdu[OFFSET_LC] = (byte)0x01;
     
         // Creates message with class name and writes it in the output file and on the screen. 
-        String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.CHECKSUM_STR[0]) + "\r\n";
+        String message = "\n" + Utils.GetAlgorithmName(SingleModeTest.CHECKSUM_STR[0]) + "\r\n";
         m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         
@@ -1052,7 +1053,7 @@ public class SingleModeTest {
             elapsedCard += System.currentTimeMillis();
             byte[] resp = response.getData();
             /* Calls method CheckResult - should add to output error messages. */
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.CHECKSUM_STR[i]), resp, elapsedCard, response.getSW());
+            CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.CHECKSUM_STR[i]), resp, elapsedCard, response.getSW());
         }
     }
     
@@ -1073,7 +1074,7 @@ public class SingleModeTest {
         apdu[OFFSET_DATA] = ALG_RSA;        // 1
         
         /* Creates message with class name and writes it in the output file and on the screen. */
-        String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_RSA_STR[0]) + "\r\n";
+        String message = "\n" + Utils.GetAlgorithmName(SingleModeTest.KEYPAIR_RSA_STR[0]) + "\r\n";
         m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         
@@ -1093,7 +1094,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
             
             // Calls method CheckResult - should add to output error messages. */
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_RSA_STR[i]), resp, elapsedCard, response.getSW());
+            CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.KEYPAIR_RSA_STR[i]), resp, elapsedCard, response.getSW());
         }
     }
     
@@ -1114,7 +1115,7 @@ public class SingleModeTest {
         apdu[OFFSET_DATA] = ALG_RSA_CRT;    // 2
         
         /* Creates message with class name and writes it in the output file and on the screen. */
-        String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_RSACRT_STR[0]) + "\r\n";
+        String message = "\n" + Utils.GetAlgorithmName(SingleModeTest.KEYPAIR_RSACRT_STR[0]) + "\r\n";
         m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         
@@ -1134,7 +1135,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
             
             // Calls method CheckResult - should add to output error messages.
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_RSACRT_STR[i]), resp, elapsedCard, response.getSW());
+            CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.KEYPAIR_RSACRT_STR[i]), resp, elapsedCard, response.getSW());
         }
     }
     
@@ -1155,7 +1156,7 @@ public class SingleModeTest {
         apdu[OFFSET_DATA] = ALG_DSA;        // 3
         
         /* Creates message with class name and writes it in the output file and on the screen. */
-        String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_DSA_STR[0]) + "\r\n";
+        String message = "\n" + Utils.GetAlgorithmName(SingleModeTest.KEYPAIR_DSA_STR[0]) + "\r\n";
         m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         
@@ -1175,7 +1176,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
             
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_DSA_STR[i]), resp, elapsedCard, response.getSW());
+            CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.KEYPAIR_DSA_STR[i]), resp, elapsedCard, response.getSW());
         }
     }
     
@@ -1196,7 +1197,7 @@ public class SingleModeTest {
         apdu[OFFSET_DATA] = ALG_EC_F2M;     // 4
         
         /* Creates message with class name and writes it in the output file and on the screen. */
-        String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_EC_F2M_STR[0]) + "\r\n";
+        String message = "\n" + Utils.GetAlgorithmName(SingleModeTest.KEYPAIR_EC_F2M_STR[0]) + "\r\n";
         m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         
@@ -1216,7 +1217,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
             
             // Calls method CheckResult - should add to output error messages.
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_EC_F2M_STR[i]), resp, elapsedCard, response.getSW());
+            CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.KEYPAIR_EC_F2M_STR[i]), resp, elapsedCard, response.getSW());
         }
     }
     
@@ -1237,7 +1238,7 @@ public class SingleModeTest {
         apdu[OFFSET_DATA] = ALG_EC_FP;      // 5
         
         // Creates message with class name and writes it in the output file and on the screen 
-        String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_EC_FP_STR[0]) + "\r\n";
+        String message = "\n" + Utils.GetAlgorithmName(SingleModeTest.KEYPAIR_EC_FP_STR[0]) + "\r\n";
         m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         
@@ -1257,7 +1258,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
             
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.KEYPAIR_EC_FP_STR[i]), resp, elapsedCard, response.getSW());
+            CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.KEYPAIR_EC_FP_STR[i]), resp, elapsedCard, response.getSW());
         }
     }
     
@@ -1279,7 +1280,7 @@ public class SingleModeTest {
         apdu[OFFSET_LC] = (byte) 0x01;
 
         // Creates message with class name and writes it in the output file and on the screen.
-        String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.BIOBUILDER_STR[0]) + "\r\n";
+        String message = "\n" + Utils.GetAlgorithmName(SingleModeTest.BIOBUILDER_STR[0]) + "\r\n";
         m_SystemOutLogger.println(message);
         file.write(message.getBytes());
 
@@ -1295,7 +1296,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
 
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, cardManager.GetAlgorithmName(SingleModeTest.BIOBUILDER_STR[i]), resp, elapsedCard, response.getSW());
+            CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.BIOBUILDER_STR[i]), resp, elapsedCard, response.getSW());
         }
     }    
     
@@ -1317,7 +1318,7 @@ public class SingleModeTest {
         apdu[OFFSET_LC] = (byte) 0x01;
 
         // Creates message with class name and writes it in the output file and on the screen.
-        String message = "\n" + cardManager.GetAlgorithmName(SingleModeTest.AEADCIPHER_STR[0]) + "\r\n";
+        String message = "\n" + Utils.GetAlgorithmName(SingleModeTest.AEADCIPHER_STR[0]) + "\r\n";
         m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         // Prepare list of indexes for testing together with algorithm name
@@ -1337,7 +1338,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
 
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, cardManager.GetAlgorithmName((String) algToTest.getR()), resp, elapsedCard, response.getSW());
+            CheckResult(file, Utils.GetAlgorithmName((String) algToTest.getR()), resp, elapsedCard, response.getSW());
         }
     }    
     
@@ -1504,7 +1505,7 @@ public class SingleModeTest {
         keyBuilderList.add(new Pair("JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE_TRANSIENT_DESELECT", 31));
 
         // Creates message with class name and writes it in the output file and on the screen. 
-        String message = "\n" + cardManager.GetAlgorithmName(KEYBUILDER_STR[0]) + "\r\n";
+        String message = "\n" + Utils.GetAlgorithmName(KEYBUILDER_STR[0]) + "\r\n";
         m_SystemOutLogger.println(message);
 
         HashMap<String, KBTestCfg> KEYBUILDER_TEST_CFGS = new HashMap<>();
