@@ -534,12 +534,6 @@ public class SingleModeTest {
      * @throws Exception
      */
     public void TestSingleAlg (String[] args, CardTerminal selectedReader) throws IOException, Exception{
-        /* BUGBUG: we need to figure out how to support JCardSim in nice way (copy of class files, directory structure...)
-        Class testClassSingleApdu = AlgTestSinglePerApdu.class;
-        */
-        Class testClassSingleApdu = null;
-        /* Reads text from a character-input stream, buffering characters so as to provide
-           for the efficient reading of characters, arrays, and lines. */
         Scanner br = new Scanner(System.in);  
         String answ = "";   // When set to 0, program will ask for each algorithm to test.
                 
@@ -550,7 +544,7 @@ public class SingleModeTest {
         if (cardName.isEmpty()) {
             cardName = "noname";
         }            
-        FileOutputStream file = cardManager.establishConnection(testClassSingleApdu, cardName, cardName + "_ALGSUPPORT_", selectedReader);
+        FileOutputStream file = cardManager.establishConnection(cardName, cardName + "_ALGSUPPORT_", selectedReader);
     
         // Checking for arguments 
         if (args.length > 1){       // in case there are arguments from command line present
