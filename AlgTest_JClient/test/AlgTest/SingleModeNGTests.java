@@ -5,11 +5,8 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import algtestjclient.SingleModeTest;
-import static algtestjclient.SingleModeTest.cardManager;
 import java.io.FileOutputStream;
 
-import AlgTest.JCAlgTestApplet;
 import static org.testng.Assert.*;
 
 /**
@@ -35,13 +32,14 @@ public class SingleModeNGTests {
     
     @Test
     void getSupportedAlgorithms() throws Exception {
+/*        
         // Prepare connection to simulated card
         FileOutputStream file = cardManager.establishConnection(JCAlgTestApplet.class);
         assertNotEquals(file, null);
         
         // Run test 
         SingleModeTest.testAllAtOnce(file);
-        
+*/        
         // BUGBUG: Check content of file
         assertTrue(false);
     }

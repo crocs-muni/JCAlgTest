@@ -5,8 +5,8 @@
         <data xmlns="http://www.netbeans.org/ns/j2se-project/3">
             <name>AlgTestJClient</name>
             <source-roots>
+                <root id="src.src2.dir"/>
                 <root id="src.dir"/>
-                <root id="src.src.dir"/>
             </source-roots>
             <test-roots>
                 <root id="test.src.dir"/>

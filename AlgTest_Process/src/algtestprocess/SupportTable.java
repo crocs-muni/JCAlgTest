@@ -33,6 +33,7 @@ package algtestprocess;
 import algtestjclient.CardMngr;
 import algtestjclient.DirtyLogger;
 import algtestjclient.SingleModeTest;
+import algtestjclient.Utils;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -152,7 +153,10 @@ public class SupportTable {
                     + "</head>\r\n"
                     + "<body style=\\\"margin-top:50px; padding:20px\\\">\\n\\n\";\r\n\r\n"; 
 
-			String cardList = "<div class=\"container-fluid\">\n<h3 id=\"LIST\">Tested cards abbreviations</h3>\r\n";
+            String cardList = "<div class=\"container-fluid\">\n<h3 id=\"LIST\">Tested cards abbreviations</h3>\r\n";
+            
+            HashMap<String, Integer> authors = new HashMap<>();
+            String shortNamesList[] = new String[filesArray.length];            
             for (int i = 0; i < filesArray.length; i++) {
                 String cardIdentification = filesArray[i];
                 cardIdentification = cardIdentification.replace('_', ' ');
@@ -162,8 +166,34 @@ public class SupportTable {
                 cardIdentification = cardIdentification.replace("ALGSUPPORT", "");
                 
                 String cardShortName = cardIdentification.substring(0, cardIdentification.indexOf("ATR"));
+                // Get rid of '   , ' at the end of card name
+                cardShortName = cardShortName.trim();
+                if (cardShortName.charAt(cardShortName.length() - 1) == ',') { cardShortName = cardShortName.substring(0, cardShortName.length() - 1); }
+                cardShortName = cardShortName.trim();
+                
+                shortNamesList[i] = cardShortName;
+                
+                // Extract providing person name
+                String PROVIDED_BY = "provided by ";
+                String AND = " and ";
+                int startAuthorsOffset = 0;
+                if ((startAuthorsOffset = cardIdentification.indexOf(PROVIDED_BY)) > -1) {
+                    startAuthorsOffset += PROVIDED_BY.length();
+                    
+                    if (cardIdentification.indexOf(" and ", startAuthorsOffset) > -1) {
+                        // Two authors, extract first one
+                        String authorName = cardIdentification.substring(startAuthorsOffset, cardIdentification.indexOf(AND, startAuthorsOffset));
+                        if (authors.containsKey(authorName)) { authors.replace(authorName, authors.get(authorName) + 1); }
+                        else { authors.put(authorName, 1); }
+                        startAuthorsOffset = cardIdentification.indexOf(AND, startAuthorsOffset) + AND.length();
+                    }
+                    String authorName = cardIdentification.substring(startAuthorsOffset, cardIdentification.indexOf(")", startAuthorsOffset));
+                    if (authors.containsKey(authorName)) { authors.replace(authorName, authors.get(authorName) + 1); }
+                    else { authors.put(authorName, 1); }
+                }
+                
                 String cardRestName = cardIdentification.substring(cardIdentification.indexOf("ATR"));
-                cardList += "<b>c" + i + "</b>	" + "<a href=\"https://github.com/crocs-muni/JCAlgTest/tree/master/Profiles/results/" + filesArray[i] + "\">" + cardShortName + "</a>" + cardRestName + ",";
+                cardList += "<b>c" + i + "</b>	" + "<a href=\"https://github.com/crocs-muni/JCAlgTest/tree/master/Profiles/results/" + filesArray[i] + "\">" + cardShortName + "</a> , " + cardRestName + ",";
 
                 String cardName = "";
                 if (filesSupport[i].containsKey("Performance")) { 
@@ -185,7 +215,33 @@ public class SupportTable {
             
             note = "Note: If you have card of unknown type, try to obtain ATR and take a look at smartcard list available here: <a href=\"http://smartcard-atr.appspot.com/\"> http://smartcard-atr.appspot.com/</a><br><br>\r\n\r\n"; 
             file.write(note.getBytes());
-
+            
+            // Create bat script to copy files with results to corresponding folders for the same card type
+            for (int i = 0; i < shortNamesList.length; i++) {
+                String justName = shortNamesList[i];
+                if (justName.indexOf("ICFabDate") != -1) {
+                    justName = justName.substring(0, justName.indexOf("ICFabDate"));
+                    justName = justName.trim();
+                }
+                System.out.println("mkdir \"" + justName + "\"");
+                System.out.println("copy ..\\results\\\"" + filesArray[i] + "\" \"" + justName + "\"");
+            }            
+            System.out.println();
+            
+            // Print all providing people names found
+            for (String authorName : authors.keySet()) {
+                System.out.print(authorName + " (" + authors.get(authorName) + "x), ");
+/*                
+                if (authors.get(authorName) > 1) {
+                    System.out.print(authorName + " (" + authors.get(authorName) + " cards), ");
+                }
+                else {
+                    System.out.print(authorName + " (" + authors.get(authorName) + " card), ");
+                }
+*/
+            }
+            
+            
             String explain = "<table id=\"explanation\" min-width=\"1000\" border=\"0\" cellspacing=\"2\" cellpadding=\"4\" >\r\n" 
                     + "<tr>\r\n"
                     + "  <td class='dark_index' style=\"min-width:100px\">Symbol</td>\r\n"
@@ -293,18 +349,28 @@ public class SupportTable {
         
         String shortCardName = "";
         String cardName = fileName;
-        if (cardName.indexOf("_3B ") != -1) {
-            shortCardName = cardName.substring(0, cardName.indexOf("_3B "));
+        
+        cardName = cardName.replace("_ALGSUPPORT_", "");
+        
+        int atrIndex = -1;
+        int index = -1;    
+        if ((index = cardName.indexOf("_3B ")) != -1) {
+            atrIndex = index;
         }
-        if (cardName.indexOf("_3B_") != -1) {
-            shortCardName = cardName.substring(0, cardName.indexOf("_3B_"));
+        if ((index = cardName.indexOf("_3b ")) != -1) {
+            atrIndex = index;
         }
-        if (cardName.indexOf("_3b ") != -1) {
-            shortCardName = cardName.substring(0, cardName.indexOf("_3b "));
+        if ((index = cardName.indexOf("_3b_")) != -1) {
+            atrIndex = index;
         }
-        if (cardName.indexOf("_3b_") != -1) {
-            shortCardName = cardName.substring(0, cardName.indexOf("_3b_"));
+        if ((index = cardName.indexOf("_3B_")) != -1) {
+            atrIndex = index;
         }
+        if (atrIndex < 0) {
+            shortCardName = cardName.substring(0, atrIndex);
+        }
+        shortCardName = cardName.substring(0, atrIndex);
+
         shortCardName = shortCardName.replace('_', ' ');
         cardName = cardName.replace('_', ' ');   
         if (cardName.indexOf("(provided") != -1) cardName = cardName.substring(0, cardName.indexOf("(provided"));
@@ -354,15 +420,15 @@ public class SupportTable {
                     // Parse algorithm name and version of JC which introduced it
                     if (i == 0){continue;}
                     CardMngr cman = new CardMngr(new DirtyLogger(null, true));
-                    algorithmName = cman.GetAlgorithmName(classInfo[i]);
+                    algorithmName = Utils.GetAlgorithmName(classInfo[i]);
                     if (bPackageAIDSupport) {
                         fullAlgorithmName = String.format("%s (%s)", SingleModeTest.PACKAGE_AID_NAMES_STR.get(algorithmName), algorithmName);
                     }
                     else {
                         fullAlgorithmName = algorithmName;
                     }
-                    algorithmVersion = cman.GetAlgorithmIntroductionVersion(classInfo[i]);
-                    if (!cman.ShouldBeIncludedInOutput(classInfo[i])) continue; // ignore types with ignore flag set (algorith#version#include 1/0) 
+                    algorithmVersion = Utils.GetAlgorithmIntroductionVersion(classInfo[i]);
+                    if (!Utils.ShouldBeIncludedInOutput(classInfo[i])) continue; // ignore types with ignore flag set (algorith#version#include 1/0) 
                 }
                 
                 algorithm += "<tr>\r\n";
