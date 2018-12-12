@@ -9,12 +9,14 @@ Card name; GD Smartcafe Expert 7
 Card provider; please insert link/description of shop where card was bought
 Used protocol; T=1
 
+JavaCard support version;3.0.4
+
 JCSystem.getVersion()[Major.Minor];3.0;
 JCSystem.isObjectDeletionSupported;yes;
 JCSystem.MEMORY_TYPE_PERSISTENT;>32767B;
 JCSystem.MEMORY_TYPE_TRANSIENT_RESET;2019B;
 JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT;755B;
-JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT;755B;
+JCSystem.getMaxCommitCapacity();755B;
 
 CPLC; 9f 7f 2a 00 05 00 45 d0 01 40 21 01 01 04 47 00 25 00 2a a7 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 CPLC.ICFabricator;0005;unknown

@@ -8,12 +8,14 @@ Card ATR; 3b 8c 80 01 90 67 46 4a 01 00 25 04 00 00 00 00 d6
 Card name; Feitian JavaCOS A22CR
 Used protocol; T=1
 
+JavaCard support version;3.0.4
+
 JCSystem.getVersion()[Major.Minor];3.0;
 JCSystem.isObjectDeletionSupported;yes;
 JCSystem.MEMORY_TYPE_PERSISTENT;>32767B;
 JCSystem.MEMORY_TYPE_TRANSIENT_RESET;1071B;
 JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT;512B;
-JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT;512B;
+JCSystem.getMaxCommitCapacity();512B;
 
 CPLC; 9f 7f 2a 40 90 78 92 86 aa 60 83 01 25 60 84 0a 01 e0 3c 04 04 40 90 60 84 86 aa 60 84 86 aa 60 84 00 00 00 00 00 00 00 00 00 00 00 00
 CPLC.ICFabricator;4090;Infineon

@@ -10,12 +10,15 @@ Card provider; please insert link/description of shop where card was bought
 Used protocol; T=1
 Package_AID_test; Oberthur_Cosmo_v7_AIDSUPPORT_3BDB960080B1FE451F830031C064C308010001900095.csv
 
+
+JavaCard support version;2.2.2
+
 JCSystem.getVersion()[Major.Minor];2.2;
 JCSystem.isObjectDeletionSupported;yes;
 JCSystem.MEMORY_TYPE_PERSISTENT;>32767B;
 JCSystem.MEMORY_TYPE_TRANSIENT_RESET;1436B;
 JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT;570B;
-JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT;570B;
+JCSystem.getMaxCommitCapacity();570B;
 
 CPLC; 9f 7f 2a 41 80 88 72 82 31 81 50 00 64 59 4a 14 91 dd f5 4e 4a 11 42 12 83 11 43 12 83 11 44 12 83 14 02 00 00 00 00 00 00 00 00 00 00
 CPLC.ICFabricator;4180;Atmel

@@ -1,11 +1,17 @@
-package algtestjclient;
+package AlgTest;
 
+import algtestjclient.DirtyLogger;
+import algtestjclient.PerformanceTesting;
+import algtestjclient.StorageTesting;
 import java.io.File;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import static java.lang.System.out;
+import java.lang.reflect.*;
 import static org.testng.Assert.*;
 import org.testng.annotations.Test;
 
@@ -37,7 +43,7 @@ public class PerformanceTestingNGTest {
     
     @Test
     void perftest_testAll() throws Exception {    
-        perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection(null) : perfTesting.m_cardManager.establishConnection(JCAlgTestApplet.class);   
+        perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection() : perfTesting.m_cardManager.establishConnection();   
         assertNotEquals(perfTesting.m_perfResultsFile, null);
 
         short numRepeatWholeOperation = 10;
@@ -63,7 +69,7 @@ public class PerformanceTestingNGTest {
 
     @Test
     void perftest_testClass_AESKey() throws Exception {
-        perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection(null) : perfTesting.m_cardManager.establishConnection(JCAlgTestApplet.class);   
+        perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection() : perfTesting.m_cardManager.establishConnection();   
         assertNotEquals(perfTesting.m_perfResultsFile, null);
 
         // Prepare test
@@ -97,7 +103,7 @@ public class PerformanceTestingNGTest {
     
     @Test
     void perftest_testClass_Cipher() throws Exception {
-        perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection(null) : perfTesting.m_cardManager.establishConnection(JCAlgTestApplet.class);   
+        perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection() : perfTesting.m_cardManager.establishConnection();   
         assertNotEquals(perfTesting.m_perfResultsFile, null);
 
         // Prepare test
@@ -141,7 +147,7 @@ public class PerformanceTestingNGTest {
     @Test
     void perftest_testClass_Cipher_RSA() throws Exception {
         bTestRealCards = true;
-        perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection(null) : perfTesting.m_cardManager.establishConnection(JCAlgTestApplet.class);   
+        perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection() : perfTesting.m_cardManager.establishConnection();   
         assertNotEquals(perfTesting.m_perfResultsFile, null);
 
         perfTesting.testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_512, JCConsts.Cipher_ALG_RSA_NOPAD, "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_512 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, (short) 1, (short) 3);
@@ -149,7 +155,7 @@ public class PerformanceTestingNGTest {
     
     @Test
     void perftest_testClass_Signature() throws Exception {
-        perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection(null) : perfTesting.m_cardManager.establishConnection(JCAlgTestApplet.class);   
+        perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection() : perfTesting.m_cardManager.establishConnection();   
         assertNotEquals(perfTesting.m_perfResultsFile, null);
 
 
@@ -187,7 +193,7 @@ public class PerformanceTestingNGTest {
     
     @Test
     void perftest_testClass_RandomData() throws Exception {
-        perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection(null) : perfTesting.m_cardManager.establishConnection(JCAlgTestApplet.class);   
+        perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection() : perfTesting.m_cardManager.establishConnection();   
         assertNotEquals(perfTesting.m_perfResultsFile, null);
 
 
@@ -214,7 +220,7 @@ public class PerformanceTestingNGTest {
     
    @Test
     void perftest_testClass_MessageDigest() throws Exception {
-        perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection(null) : perfTesting.m_cardManager.establishConnection(JCAlgTestApplet.class);   
+        perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection() : perfTesting.m_cardManager.establishConnection();   
         assertNotEquals(perfTesting.m_perfResultsFile, null);
 
 
@@ -240,7 +246,7 @@ public class PerformanceTestingNGTest {
     
    @Test
     void perftest_testClass_Checksum() throws Exception {
-        perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection(null) : perfTesting.m_cardManager.establishConnection(JCAlgTestApplet.class);   
+        perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection() : perfTesting.m_cardManager.establishConnection();   
         assertNotEquals(perfTesting.m_perfResultsFile, null);
 
 
@@ -272,7 +278,7 @@ public class PerformanceTestingNGTest {
     
    @Test
     void perftest_testClass_KeyPair() throws Exception {
-        perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection(null) : perfTesting.m_cardManager.establishConnection(JCAlgTestApplet.class);   
+        perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection() : perfTesting.m_cardManager.establishConnection();   
         assertNotEquals(perfTesting.m_perfResultsFile, null);
 
 
@@ -293,7 +299,7 @@ public class PerformanceTestingNGTest {
     
    @Test
     void perftest_testClass_KeyAgreement() throws Exception {
-        perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection(null) : perfTesting.m_cardManager.establishConnection(JCAlgTestApplet.class);   
+        perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection() : perfTesting.m_cardManager.establishConnection();   
         assertNotEquals(perfTesting.m_perfResultsFile, null);
 
 
@@ -315,21 +321,21 @@ public class PerformanceTestingNGTest {
 
    @Test
     void perftest_HOTP() throws Exception {
-        perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection(null) : perfTesting.m_cardManager.establishConnection(JCAlgTestApplet.class);   
+        perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection() : perfTesting.m_cardManager.establishConnection();   
         assertNotEquals(perfTesting.m_perfResultsFile, null);
 
         perfTesting.testSWAlg_HOTP("HOTPMeasurement", 1);
     }        
    @Test
     void perftest_SWAlgs() throws Exception {
-        perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection(null) : perfTesting.m_cardManager.establishConnection(JCAlgTestApplet.class);   
+        perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection() : perfTesting.m_cardManager.establishConnection();   
         assertNotEquals(perfTesting.m_perfResultsFile, null);
 
         perfTesting.testAllSWAlgs(1, 5);
     }     
    @Test
     void perftest_testClass_Util() throws Exception {
-        perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection(null) : perfTesting.m_cardManager.establishConnection(JCAlgTestApplet.class);   
+        perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection() : perfTesting.m_cardManager.establishConnection();   
         assertNotEquals(perfTesting.m_perfResultsFile, null);
 
         perfTesting.testAllUtil(100, 5);
@@ -337,7 +343,7 @@ public class PerformanceTestingNGTest {
     @Test
     void debug() throws Exception { 
         bTestRealCards = true;
-        perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection(null) : perfTesting.m_cardManager.establishConnection(JCAlgTestApplet.class);   
+        perfTesting.m_perfResultsFile = (bTestRealCards) ? perfTesting.m_cardManager.establishConnection() : perfTesting.m_cardManager.establishConnection();   
 
         perfTesting.testAESKey(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128, "TYPE_AES LENGTH_AES_128", Consts.NUM_REPEAT_WHOLE_OPERATION, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
 
@@ -377,13 +383,13 @@ public class PerformanceTestingNGTest {
 
         p.waitFor();   
         
-        storageTesting.m_perfResultsFile = (bTestRealCards) ? storageTesting.m_cardManager.establishConnection(null) : storageTesting.m_cardManager.establishConnection(JCAlgTestApplet.class);   
+        storageTesting.m_perfResultsFile = (bTestRealCards) ? storageTesting.m_cardManager.establishConnection() : storageTesting.m_cardManager.establishConnection();   
         
     }
     @Test
     void storage_keys() throws Exception {
         bTestRealCards = true;
-//        storageTesting.m_perfResultsFile = (bTestRealCards) ? storageTesting.m_cardManager.establishConnection(null) : storageTesting.m_cardManager.establishConnection(JCAlgTestApplet.class);   
+//        storageTesting.m_perfResultsFile = (bTestRealCards) ? storageTesting.m_cardManager.establishConnection() : storageTesting.m_cardManager.establishConnection();   
 //        assertNotEquals(storageTesting.m_perfResultsFile, null);
 
         StringBuilder value = new StringBuilder();
@@ -468,7 +474,7 @@ public class PerformanceTestingNGTest {
     @Test
     void storage_keys_overlapped() throws Exception {
         bTestRealCards = true;
-        storageTesting.m_perfResultsFile = (bTestRealCards) ? storageTesting.m_cardManager.establishConnection(null) : storageTesting.m_cardManager.establishConnection(JCAlgTestApplet.class);   
+        storageTesting.m_perfResultsFile = (bTestRealCards) ? storageTesting.m_cardManager.establishConnection() : storageTesting.m_cardManager.establishConnection();   
         assertNotEquals(storageTesting.m_perfResultsFile, null);
 
         StringBuilder value = new StringBuilder();

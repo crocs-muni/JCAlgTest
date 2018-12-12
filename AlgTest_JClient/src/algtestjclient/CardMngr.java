@@ -30,10 +30,7 @@
 /**/
 package algtestjclient;
 
-/* BUGBUG: we need to figure out how to support JCardSim in nice way (copy of class files, directory structure...)
-import com.licel.jcardsim.io.CAD;
-import com.licel.jcardsim.io.JavaxSmartCardInterface;
-*/
+import algtest.AlgSupportTest;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -44,16 +41,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
-/* BUGBUG: we need to figure out how to support JCardSim in nice way (copy of class files, directory structure...)
-//import javacard.framework.AID;
-*/
 import javax.smartcardio.*;
 import algtest.Consts;
+import algtest.JCAlgTestApplet;
 import algtest.JCConsts;
 import algtest.TestSettings;
-
+import cardTools.SimulatedCardChannelLocal;
+import cardTools.SimulatedCardTerminal;
 import com.licel.jcardsim.io.CAD;
 import com.licel.jcardsim.io.JavaxSmartCardInterface;
+
 import java.io.File;
 import java.lang.ProcessBuilder.Redirect;
 import java.util.ArrayList;
@@ -67,8 +64,7 @@ import javacard.framework.ISO7816;
  * @author petrs
  */
 public class CardMngr {
-    public CAD m_cad = null;
-    public JavaxSmartCardInterface m_simulator = null;
+    //public static CardManager cardVirtManager = null;
     
     final static byte SUCCESS =                    (byte) 0xAA;
     
@@ -121,7 +117,7 @@ public class CardMngr {
     public static final byte ALGTEST_AID_LEN       = 9;
     public static final byte FORCE_TEST = 1;        // variable to force test of alg in given method
  
-    public CardTerminal m_terminal = null;
+    CardTerminal m_terminal = null;
     CardChannel m_channel = null;
     Card m_card = null;
     public static String cardUploadersFolder = System.getProperty("user.dir")+File.separator+"!card_uploaders";
@@ -200,11 +196,7 @@ public class CardMngr {
     public boolean bHighPowerMode = false; // If true, high power mode was enabled using ETSI 102 221 ADFusim select == 00 A4 04 05 07 A0 00 00 00 87 10 02
     
     /* ATR of jCardSim. */
-    static final String SIMULATOR_ATR = "3BFA1800008131FE454A434F5033315632333298";
-
-    /* BUGBUG: we need to figure out how to support JCardSim in nice way (copy of class files, directory structure...)
-    JavaxSmartCardInterface simulator = null;
-    */
+    static final String SIMULATOR_ATR = "3B FA 18 00 00 81 31 FE 45 4A 43 4F 50 33 31 56 32 33 32 98";
     
     /* CLOCKS_PER_SEC also used in 'PerformanceTesting.java' */
     public static final int CLOCKS_PER_SEC = 1000;
@@ -229,33 +221,43 @@ public class CardMngr {
     }  
     
     public String getTerminalName() {
-        if (m_terminal != null) { return m_terminal.getName(); }
-        if (m_simulator != null) { return "JCardSim simulator"; }
-        return "No terminal found";
+        if (m_terminal != null) {
+            return m_terminal.getName();
+        }
+        return "No terminal found";    
     }
     public String getATR() {
-        if (m_card != null) { return bytesToHex(m_card.getATR().getBytes()); }
-        if (m_simulator != null) { return SIMULATOR_ATR; }
-        return "No card available";
+        if (m_card != null) {
+           return bytesToHex(m_card.getATR().getBytes());
+        } else {
+            return "No card available";
+        }
     }    
-    public FileOutputStream establishConnection(Class ClassToTest) throws Exception{
-        return establishConnection(ClassToTest, "", "", null);
+    public String getProtocol() {
+        if (m_card != null) {
+            return m_card.getProtocol();
+        } else {
+            return "Not connected yet";
+        }
+    }    
+    public FileOutputStream establishConnection() throws Exception{
+        return establishConnection("", "", null);
     }
-    public FileOutputStream establishConnection(Class ClassToTest, String cardName, String testInfo, CardTerminal selectedTerminal) throws Exception{
+    public FileOutputStream establishConnection(String cardName, String testInfo, CardTerminal selectedTerminal) throws Exception{
         boolean bConnected = false;
         // Connnect to targer card to obtain information
         reader.setLength(0);
         atr.setLength(0);
         protocol.setLength(0);
         if (selectedTerminal != null) {
-            bConnected = ConnectToCard(ClassToTest, selectedTerminal, reader, atr, protocol);            
+            bConnected = ConnectToCard(selectedTerminal, reader, atr, protocol);            
         } 
         else {
-            bConnected = ConnectToFirstCard(ClassToTest, reader, atr, protocol);            
+            bConnected = ConnectToFirstCard(reader, atr, protocol);            
         }
         if (bConnected) {
             String message = "";
-            if (atr.toString().equals("")){atr.append(SIMULATOR_ATR + " (provided by jCardSimulator)");} // if atr == "" it means that simulator is running and thus simulator atr must be used
+            if (atr.toString().equals("")){atr.append(SIMULATOR_ATR + " (provided_by_Licel_jCardSim)");} // if atr == "" it means that simulator is running and thus simulator atr must be used
             m_SystemOutLogger.println("ATR: " + atr);
             String fileName = testInfo + "_" + atr + ".csv";
             fileName = fileName.replace(":", "");
@@ -312,14 +314,14 @@ public class CardMngr {
             m_SystemOutLogger.println("\n\n#########################");
             m_SystemOutLogger.println("\nGlobalPlatform information");
             if (GetGPInfo(value, file) == CardMngr.STAT_OK) {}
-            else { m_SystemOutLogger.println("\nERROR: GetGPInfo fail"); }            
+            else { m_SystemOutLogger.println("\nERROR: GetGPInfo fail"); }       
             
             // Connnect to target card again 
             if (selectedTerminal != null) {
-                bConnected = ConnectToCard(ClassToTest, selectedTerminal, reader, atr, protocol);            
+                bConnected = ConnectToCard(selectedTerminal, reader, atr, protocol);            
             } 
             else {
-                bConnected = ConnectToFirstCard(ClassToTest, reader, atr, protocol);            
+                bConnected = ConnectToFirstCard(reader, atr, protocol);            
             }        
             
             return file; // if succesfull, returns open file for AlgTest output
@@ -331,10 +333,10 @@ public class CardMngr {
         StringBuilder selectedReader = new StringBuilder();
         StringBuilder selectedATR = new StringBuilder();
         StringBuilder usedProtocol = new StringBuilder();
-        return ConnectToFirstCard(null, selectedReader, selectedATR, usedProtocol);
+        return ConnectToFirstCard(selectedReader, selectedATR, usedProtocol);
     }
     
-    public boolean ConnectToFirstCard(Class ClassToTest, StringBuilder selectedReader, StringBuilder selectedATR, StringBuilder usedProtocol) throws Exception {
+    public boolean ConnectToFirstCard(StringBuilder selectedReader, StringBuilder selectedATR, StringBuilder usedProtocol) throws Exception {
         boolean cardFound = false;       
         
         CardTerminal targetReader = null;
@@ -356,7 +358,7 @@ public class CardMngr {
         }
 
         if (targetReader != null) {
-            cardFound = ConnectToCard(ClassToTest, targetReader, selectedReader, selectedATR, usedProtocol);
+            cardFound = ConnectToCard(targetReader, selectedReader, selectedATR, usedProtocol);
         }
         else {
             cardFound = false;
@@ -365,6 +367,21 @@ public class CardMngr {
         return cardFound;        
     }
     
+    private CardChannel ConnectJCardSimLocalSimulator(Class appletClass, byte[] appletId, byte[] installData) throws Exception {
+        System.setProperty("com.licel.jcardsim.terminal.type", "2");
+        CAD cad = new CAD(System.getProperties());
+        JavaxSmartCardInterface simulator = (JavaxSmartCardInterface) cad.getCardInterface();
+        if (installData == null) {
+            installData = new byte[0];
+        }
+        AID appletAID = new AID(appletId, (short) 0, (byte) appletId.length);
+
+        AID appletAIDRes = simulator.installApplet(appletAID, appletClass, installData, (short) 0, (byte) installData.length);
+        simulator.selectApplet(appletAID);
+
+        return new SimulatedCardChannelLocal(simulator);
+    }    
+    
     public boolean ConnectToCard() throws Exception {
         StringBuilder selectedReader = new StringBuilder();
         StringBuilder selectedATR = new StringBuilder();
@@ -372,23 +389,23 @@ public class CardMngr {
         reader.setLength(0);
         atr.setLength(0);
         protocol.setLength(0);
-        return ConnectToCard(null, m_terminal, selectedReader, selectedATR, usedProtocol);
+        return ConnectToCard(m_terminal, selectedReader, selectedATR, usedProtocol);
     }
     
-    public boolean ConnectToCard(Class ClassToTest, CardTerminal targetReader, StringBuilder selectedReader, StringBuilder selectedATR, StringBuilder usedProtocol) throws Exception {
+    public boolean ConnectToCard(CardTerminal targetReader, StringBuilder selectedReader, StringBuilder selectedATR, StringBuilder usedProtocol) throws Exception {
         boolean cardFound = false;        
         bHighPowerMode = false;
         
-        if (ClassToTest != null) {
-            m_SystemOutLogger.println("No terminals found");
-            m_SystemOutLogger.println("Creating simulator...");
-            MakeSim(ClassToTest);
+        m_terminal = targetReader;
 
-            m_SystemOutLogger.println("Simulator created.");
-            cardFound = true;
+        if (targetReader instanceof SimulatedCardTerminal) {
+            m_SystemOutLogger.print("\n\n!!!!!!!!!!!!!!!!!!!!!!!!\n\t\tRUNNING WITH jCardSim SIMULATOR\n!!!!!!!!!!!!!!!!!!!!!!!! \n\n");
+            m_channel = ConnectJCardSimLocalSimulator(JCAlgTestApplet.class, selectApplet, new byte[1]); // bogus install data used
+            if (m_channel != null) {
+                cardFound = true;
+            }
         }
         else {
-            m_terminal = targetReader;
             if (m_terminal.isCardPresent()) {
                 for (int maxAttempts = 2; maxAttempts > 0; ) {
                     maxAttempts--;
@@ -411,11 +428,16 @@ public class CardMngr {
                         m_SystemOutLogger.println(bytesToHex(atr.getBytes()));
 
                         // Attempt to allow for high-power mode by selecting specific applet called 
-                        ResponseAPDU resp2 = sendAPDU(selectADFusim);
-                        if (resp2.getSW() == 0x9000) {
-                            bHighPowerMode = true;
+                        try {
+                            ResponseAPDU resp2 = sendAPDU(selectADFusim);
+                            if (resp2.getSW() == 0x9000) {
+                                bHighPowerMode = true;
+                            }
                         }
-                                
+                        catch (Exception e) {
+                            m_SystemOutLogger.print("Exception when testing high-power mode");
+                        }
+
                         // SELECT APPLET
                         cardFound = false;
                         ResponseAPDU resp = sendAPDU(selectApplet);
@@ -433,9 +455,9 @@ public class CardMngr {
                     }
 
                     if (cardFound) {
-                        if (selectedATR != null) { selectedATR.append(bytesToHex(m_card.getATR().getBytes())); }
-                        if (selectedReader != null) { selectedReader.append(m_terminal.toString()); }
-                        if (usedProtocol != null) { usedProtocol.append(m_card.getProtocol()); }
+                        if (selectedATR != null) { selectedATR.append(getATR()); }
+                        if (selectedReader != null) { selectedReader.append(getTerminalName()); }
+                        if (usedProtocol != null) { usedProtocol.append(getProtocol()); }
                         return true;
                     }
                 }
@@ -445,9 +467,8 @@ public class CardMngr {
     }    
 
     public void DisconnectFromCard() throws Exception {
-        if (m_card != null) {
-            m_card.disconnect(false);
-            m_card = null;
+        if (m_channel != null) {
+            m_channel.getCard().disconnect(false); // Disconnect from the card
         }
     }
 
@@ -528,13 +549,7 @@ public class CardMngr {
 
         m_SystemOutLogger.println(bytesToHex(commandAPDU.getBytes()));
         
-        if (m_simulator != null){  // in case simulator is running
-            responseAPDU = m_simulator.transmitCommand(commandAPDU);
-            Thread.sleep(20);   // introduce some delay to simulate card communication speed bit more accuratelly 
-        }
-        else {                  // in case there is actual card present
-            responseAPDU = m_channel.transmit(commandAPDU);
-        }
+        responseAPDU = m_channel.transmit(commandAPDU);
 
         m_SystemOutLogger.println(responseAPDU.toString());
         m_SystemOutLogger.println(bytesToHex(responseAPDU.getBytes()));
@@ -582,7 +597,7 @@ public class CardMngr {
         return (buf.toString());
     }
         
-
+/*
     
     // Parse algorithm name and version of JC which introduced it
     //algParts[0] == algorithm name
@@ -602,7 +617,7 @@ public class CardMngr {
         String includeInfo = (algParts.length > 2) ? algParts[2] : "1";
         return Integer.decode(includeInfo) != 0;
     }
-                                
+*/                                
     public int GetAppletVersion(StringBuilder pValue) throws Exception {
         int         status = STAT_OK;
     
@@ -642,8 +657,9 @@ public class CardMngr {
 	// Prepare test memory apdu
         byte apdu[] = new byte[HEADER_LENGTH+1];
         apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
-        apdu[OFFSET_INS] = (byte) 0x73;
-        apdu[OFFSET_P1] = 0x00;
+        apdu[OFFSET_INS] = Consts.INS_CARD_JCSYSTEM_INFO;
+        //apdu[OFFSET_P1] = 0x00;
+        apdu[OFFSET_P1] = AlgSupportTest.RETURN_INSTALL_TIME_RAM_SIZE;
         apdu[OFFSET_P2] = 0x00;
         apdu[OFFSET_LC] = 0x01;
         apdu[OFFSET_DATA] = 0x01;
@@ -674,26 +690,26 @@ public class CardMngr {
 
 
                 String message;
-                message = String.format("\r\n%1s;%d.%d;", GetAlgorithmName(SingleModeTest.JCSYSTEM_STR[1]), versionMajor, versionMinor); 
+                message = String.format("\r\n%1s;%d.%d;", Utils.GetAlgorithmName(SingleModeTest.JCSYSTEM_STR[1]), versionMajor, versionMinor); 
                 m_SystemOutLogger.println(message);
                 pFile.write(message.getBytes());
                 pValue.append(message);
-                message = String.format("\r\n%s;%s;", GetAlgorithmName(SingleModeTest.JCSYSTEM_STR[2]),(bDeletionSupported != 0) ? "yes" : "no"); 
+                message = String.format("\r\n%s;%s;", Utils.GetAlgorithmName(SingleModeTest.JCSYSTEM_STR[2]),(bDeletionSupported != 0) ? "yes" : "no"); 
 
                 m_SystemOutLogger.println(message);
                 pFile.write(message.getBytes());
                 pValue.append(message);
-                message = String.format("\r\n%s;%s%dB;", GetAlgorithmName(SingleModeTest.JCSYSTEM_STR[3]),(eepromSize == 32767) ? ">" : "", eepromSize); 
+                message = String.format("\r\n%s;%s%dB;", Utils.GetAlgorithmName(SingleModeTest.JCSYSTEM_STR[3]),(eepromSize == 32767) ? ">" : "", eepromSize); 
                 m_SystemOutLogger.println(message);
                 pFile.write(message.getBytes());
                 pValue.append(message);
-                message = String.format("\r\n%s;%s%dB;", GetAlgorithmName(SingleModeTest.JCSYSTEM_STR[4]),(ramResetSize == 32767) ? ">" : "", ramResetSize); 
+                message = String.format("\r\n%s;%s%dB;", Utils.GetAlgorithmName(SingleModeTest.JCSYSTEM_STR[4]),(ramResetSize == 32767) ? ">" : "", ramResetSize); 
                 m_SystemOutLogger.println(message);
                 pFile.write(message.getBytes());
                 pValue.append(message);
-                message = String.format("\r\n%s;%s%dB;\n", GetAlgorithmName(SingleModeTest.JCSYSTEM_STR[5]),(ramDeselectSize == 32767) ? ">" : "", ramDeselectSize); 
+                message = String.format("\r\n%s;%s%dB;\n", Utils.GetAlgorithmName(SingleModeTest.JCSYSTEM_STR[5]),(ramDeselectSize == 32767) ? ">" : "", ramDeselectSize); 
                 m_SystemOutLogger.println(message);
-                message = String.format("\r\n%s;%dB;", GetAlgorithmName(SingleModeTest.JCSYSTEM_STR[5]), maxCommitSize); 
+                message = String.format("\r\n%s;%dB;", Utils.GetAlgorithmName(SingleModeTest.JCSYSTEM_STR[6]), maxCommitSize); 
                 m_SystemOutLogger.println(message);
                 pFile.write(message.getBytes());
                 pValue.append(message);
@@ -1093,24 +1109,6 @@ public class CardMngr {
         return (double) elapsedCard ;
     }       
     
-    
-    /**
-     * Sets up simulator using jCardSim API.
-     * @param m_applet Class of on-card AlgTest to be installed in simulator.
-     */
-    public void MakeSim(Class applet){
-    ///* BUGBUG: we need to figure out how to support JCardSim in nice way (copy of class files, directory structure...)
-        System.setProperty("com.licel.jcardsim.terminal.type", "2");
-        CAD cad = new CAD(System.getProperties());
-        m_simulator = (JavaxSmartCardInterface) cad.getCardInterface();
-        AID appletAID = new AID(selectApplet, (short)0, (byte) selectApplet.length);
-        // installs applet
-        m_simulator.installApplet(appletAID, applet);
-        // selects applet
-        m_simulator.selectApplet(appletAID);
-    }
-
-    
     public static byte[] hexStringToByteArray(String s) {
         String sanitized = s.replace(" ", "");
         byte[] b = new byte[sanitized.length() / 2];
@@ -1147,7 +1145,7 @@ public class CardMngr {
 
             Thread.sleep(3000);
 
-            ConnectToCard(null, m_terminal, null, null, null);
+            ConnectToCard(m_terminal, null, null, null);
         }
         catch (Exception ex) {
             m_SystemOutLogger.println(getTerminalName() + " : Failed with " + ex.getMessage());
@@ -1269,7 +1267,7 @@ public class CardMngr {
         if (numRepeats == -1) numRepeats = 300000;
         if (uploadBeforeStart) {
             UploadApplet();
-            ConnectToCard(null, m_terminal, null, null, null);
+            ConnectToCard(m_terminal, null, null, null);
         }
         
         if (PrepareRSAEngine(file, bitLength, useCrt)) {
@@ -1295,8 +1293,8 @@ public class CardMngr {
                         key.append("# Card reseted\n\n");
                         file.write(key.toString().getBytes());
 
-                        m_card.disconnect(true);
-                        ConnectToCard(null, m_terminal, null, null, null);
+                        m_channel.getCard().disconnect(true);
+                        ConnectToCard(m_terminal, null, null, null);
                         bResetCard = false;
                     }
 
@@ -1316,7 +1314,7 @@ public class CardMngr {
                         key.append("# Applet uploaded\n\n");
                         file.write(key.toString().getBytes());
 
-                        ConnectToCard(null, m_terminal, null, null, null);
+                        ConnectToCard(m_terminal, null, null, null);
                         continue;
                     }
                     else {

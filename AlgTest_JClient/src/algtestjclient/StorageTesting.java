@@ -64,7 +64,7 @@ public class StorageTesting {
         if (cardName.isEmpty()) {
             cardName = "noname";
         }            
-        FileOutputStream file = m_cardManager.establishConnection(testClassSingleApdu, cardName, cardName + "_STORAGE_", selectedReader);
+        FileOutputStream file = m_cardManager.establishConnection(cardName, cardName + "_STORAGE_", selectedReader);
         StringBuilder value = new StringBuilder();
         long elapsedTimeWholeTest = -System.currentTimeMillis();
         //testKeysStorage(file, value);

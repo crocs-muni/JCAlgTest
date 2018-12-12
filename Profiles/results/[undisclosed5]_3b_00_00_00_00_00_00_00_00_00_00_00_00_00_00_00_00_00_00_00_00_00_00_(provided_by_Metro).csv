@@ -16,7 +16,7 @@ JCSystem.isObjectDeletionSupported;yes;
 JCSystem.MEMORY_TYPE_PERSISTENT;>32767B;
 JCSystem.MEMORY_TYPE_TRANSIENT_RESET;12891B;
 JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT;32767B;
-JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT;32767B;
+JCSystem.getMaxCommitCapacity();32767B;
 ;;
 ;;
 javacardx.crypto.Cipher;;
