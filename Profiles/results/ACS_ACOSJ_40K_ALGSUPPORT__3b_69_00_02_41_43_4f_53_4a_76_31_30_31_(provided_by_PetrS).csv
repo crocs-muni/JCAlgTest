@@ -11,6 +11,8 @@ Used protocol; T=0
 High-power mode supported; no
 Package_AID_test; ACS_ACOSJ_40K_AIDSUPPORT_3B69000241434F534A76313031.csv
 
+JavaCard support version;3.0.4;
+
 JCSystem.getVersion()[Major.Minor];3.0;
 JCSystem.isObjectDeletionSupported;yes;
 JCSystem.MEMORY_TYPE_PERSISTENT;19961B;

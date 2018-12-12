@@ -9,7 +9,7 @@ Card name; JC10M24R_Release,
 Used protocol; T=1,
 Package_AID_test; JavaCardOS_JC10M24_AIDSUPPORT_3B8580010578F7B1023D.csv
 
-,
+JavaCard support version;3.0.4
 JCSystem.getVersion()[Major.Minor];3.0;,
 JCSystem.isObjectDeletionSupported;yes;,
 JCSystem.MEMORY_TYPE_PERSISTENT;6380B;,

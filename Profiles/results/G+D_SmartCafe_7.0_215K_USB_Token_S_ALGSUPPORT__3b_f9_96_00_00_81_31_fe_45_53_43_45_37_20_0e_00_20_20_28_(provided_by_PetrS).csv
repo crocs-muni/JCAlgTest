@@ -11,6 +11,8 @@ Used protocol; T=1
 High-power mode supported; no
 Package_AID_test; G+D_SmartCafe_7.0_215K_USB_Token_S_AIDSUPPORT_3BF99600008131FE4553434537200E00202028.csv
 
+JavaCard support version;3.0.4
+
 JCSystem.getVersion()[Major.Minor];3.0;
 JCSystem.isObjectDeletionSupported;yes;
 JCSystem.MEMORY_TYPE_PERSISTENT;>32767B;

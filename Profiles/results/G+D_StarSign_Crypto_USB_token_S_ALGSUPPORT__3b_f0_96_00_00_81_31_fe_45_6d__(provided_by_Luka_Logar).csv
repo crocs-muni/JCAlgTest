@@ -9,6 +9,8 @@ Card name; G+D StarSign Crypto USB token S
 Card provider; https://www.idpendant.de
 Used protocol; T=1
 
+JavaCard support version;3.0.4
+
 JCSystem.getVersion()[Major.Minor];3.0;
 JCSystem.isObjectDeletionSupported;yes;
 JCSystem.MEMORY_TYPE_PERSISTENT;>32767B;

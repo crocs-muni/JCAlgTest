@@ -8,6 +8,9 @@ Card ATR; 3b 6a 00 00 09 44 31 31 43 52 02 00 25 c3
 Card name; Feitian Java Card D11CR
 Used protocol; T=0
 
+
+JavaCard support version;2.2.2
+
 JCSystem.getVersion()[Major.Minor];2.2;
 JCSystem.isObjectDeletionSupported;yes;
 JCSystem.MEMORY_TYPE_PERSISTENT;16406B;
