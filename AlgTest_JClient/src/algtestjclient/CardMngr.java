@@ -30,6 +30,7 @@
 /**/
 package algtestjclient;
 
+import algtest.AlgSupportTest;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -313,7 +314,7 @@ public class CardMngr {
             m_SystemOutLogger.println("\n\n#########################");
             m_SystemOutLogger.println("\nGlobalPlatform information");
             if (GetGPInfo(value, file) == CardMngr.STAT_OK) {}
-            else { m_SystemOutLogger.println("\nERROR: GetGPInfo fail"); }            
+            else { m_SystemOutLogger.println("\nERROR: GetGPInfo fail"); }       
             
             // Connnect to target card again 
             if (selectedTerminal != null) {
@@ -427,9 +428,14 @@ public class CardMngr {
                         m_SystemOutLogger.println(bytesToHex(atr.getBytes()));
 
                         // Attempt to allow for high-power mode by selecting specific applet called 
-                        ResponseAPDU resp2 = sendAPDU(selectADFusim);
-                        if (resp2.getSW() == 0x9000) {
-                            bHighPowerMode = true;
+                        try {
+                            ResponseAPDU resp2 = sendAPDU(selectADFusim);
+                            if (resp2.getSW() == 0x9000) {
+                                bHighPowerMode = true;
+                            }
+                        }
+                        catch (Exception e) {
+                            m_SystemOutLogger.print("Exception when testing high-power mode");
                         }
 
                         // SELECT APPLET
@@ -461,7 +467,9 @@ public class CardMngr {
     }    
 
     public void DisconnectFromCard() throws Exception {
-        m_channel.getCard().disconnect(false); // Disconnect from the card
+        if (m_channel != null) {
+            m_channel.getCard().disconnect(false); // Disconnect from the card
+        }
     }
 
     public static List<CardTerminal> GetReaderList() {
@@ -649,8 +657,9 @@ public class CardMngr {
 	// Prepare test memory apdu
         byte apdu[] = new byte[HEADER_LENGTH+1];
         apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
-        apdu[OFFSET_INS] = (byte) 0x73;
-        apdu[OFFSET_P1] = 0x00;
+        apdu[OFFSET_INS] = Consts.INS_CARD_JCSYSTEM_INFO;
+        //apdu[OFFSET_P1] = 0x00;
+        apdu[OFFSET_P1] = AlgSupportTest.RETURN_INSTALL_TIME_RAM_SIZE;
         apdu[OFFSET_P2] = 0x00;
         apdu[OFFSET_LC] = 0x01;
         apdu[OFFSET_DATA] = 0x01;
@@ -700,7 +709,7 @@ public class CardMngr {
                 pValue.append(message);
                 message = String.format("\r\n%s;%s%dB;\n", Utils.GetAlgorithmName(SingleModeTest.JCSYSTEM_STR[5]),(ramDeselectSize == 32767) ? ">" : "", ramDeselectSize); 
                 m_SystemOutLogger.println(message);
-                message = String.format("\r\n%s;%dB;", Utils.GetAlgorithmName(SingleModeTest.JCSYSTEM_STR[5]), maxCommitSize); 
+                message = String.format("\r\n%s;%dB;", Utils.GetAlgorithmName(SingleModeTest.JCSYSTEM_STR[6]), maxCommitSize); 
                 m_SystemOutLogger.println(message);
                 pFile.write(message.getBytes());
                 pValue.append(message);

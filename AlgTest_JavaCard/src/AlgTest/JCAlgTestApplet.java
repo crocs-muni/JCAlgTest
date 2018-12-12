@@ -55,10 +55,15 @@ public class JCAlgTestApplet extends javacard.framework.Applet
 {
     // NOTE: when incrementing version, don't forget to update ALGTEST_JAVACARD_VERSION_CURRENT value
     /**
-     * Version 1.7.4 (20.04.2018) + fixed occasional freeze on some cards when
+     * Version 1.7.6 (12.12.2018) 
+     * + added free RAM measurement before all objects allocation
+     */
+    final static byte ALGTEST_JAVACARD_VERSION_1_7_6[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x37, (byte) 0x2e, (byte) 0x36};
+    /**
+     * Version 1.7.5 (20.04.2018) + fixed occasional freeze on some cards when
      * testing MessageDigest performance
      */
-    final static byte ALGTEST_JAVACARD_VERSION_1_7_5[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x37, (byte) 0x2e, (byte) 0x35};
+    //final static byte ALGTEST_JAVACARD_VERSION_1_7_5[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x37, (byte) 0x2e, (byte) 0x35};
 
     /**
      * Version 1.7.4 (20.04.2018) + fixed occasional freeze on some cards when
@@ -153,7 +158,8 @@ public class JCAlgTestApplet extends javacard.framework.Applet
      */
     //final static byte ALGTEST_JAVACARD_VERSION_1_0[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x30};
 
-    byte ALGTEST_JAVACARD_VERSION_CURRENT[] = ALGTEST_JAVACARD_VERSION_1_7_5;
+    byte ALGTEST_JAVACARD_VERSION_CURRENT[] = ALGTEST_JAVACARD_VERSION_1_7_6;
+    
     // lower byte of exception is value as defined in JCSDK/api_classic/constant-values.htm
     final static short SW_Exception = (short) 0xff01;
     final static short SW_ArrayIndexOutOfBoundsException = (short) 0xff02;
@@ -172,6 +178,9 @@ public class JCAlgTestApplet extends javacard.framework.Applet
     AlgPerformanceTest  m_perfTest = null;
     AlgStorageTest      m_storageTest = null;
 
+    short m_freeRAMReset = 0;
+    short m_freeRAMDeselect = 0;
+    
     public final static short RAM1_ARRAY_LENGTH = (short) 600;
     public final static short RAM2_ARRAY_LENGTH = (short) 528;
     byte[] m_ramArray = null;  // auxalarity array used for various purposes. Length of this array is added to value returned as amount of available RAM memory
@@ -195,12 +204,17 @@ public class JCAlgTestApplet extends javacard.framework.Applet
             // update flag
             isOP2 = true;
        } else {}
-
+        
+        // Save free RAM before allocation of objects
+        m_freeRAMReset = JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_RESET);
+        m_freeRAMDeselect = JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT);
+        
+        // Allocate all engines
         m_ramArray = JCSystem.makeTransientByteArray(RAM1_ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);
         m_ramArray2 = JCSystem.makeTransientByteArray(RAM2_ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);
 
         m_keyHarvest = new AlgKeyHarvest();
-        m_supportTest = new AlgSupportTest(m_ramArray, m_ramArray2);
+        m_supportTest = new AlgSupportTest(m_ramArray, m_ramArray2, m_freeRAMReset, m_freeRAMDeselect);
         m_perfTest = new AlgPerformanceTest(m_ramArray, m_ramArray2);
         m_storageTest = new AlgStorageTest();
         

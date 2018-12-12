@@ -62,7 +62,10 @@ public class AlgSupportTest {
 
     private RSAPublicKey       m_rsaPublicKey = null;
     private RSAPrivateCrtKey   m_rsaPrivateKey = null;
-  
+    
+    short m_freeRAMReset = 0;
+    short m_freeRAMDeselect = 0;
+
     
     // for class 'javacard.security.KeyAgreement'
     public static final byte ALG_EC_SVDP_DH = 1;
@@ -74,6 +77,9 @@ public class AlgSupportTest {
     final static byte SUPP_ALG_UNTOUCHED = (byte) 0xf0;
     final static byte SUPP_ALG_SUPPORTED = (byte) 0x00;
     final static byte SUPP_ALG_EXCEPTION_CODE_OFFSET = (byte) 0;
+    
+    public final static byte RETURN_INSTALL_TIME_RAM_SIZE = (byte) 1;
+    
     
     
     final static byte SUCCESS =                    (byte) 0xAA;
@@ -94,9 +100,11 @@ public class AlgSupportTest {
     public static final byte CLASS_KEYPAIR         = 0x19;
     public static final byte CLASS_KEYBUILDER      = 0x20;
 
-    AlgSupportTest(byte[] auxRAMArray, byte[] auxRAMArray2) { 
+    AlgSupportTest(byte[] auxRAMArray, byte[] auxRAMArray2, short installFreeRAMReset, short installFreeRAMDeselect) { 
         m_ramArray = auxRAMArray;
         m_ramArray2 = auxRAMArray2;
+        m_freeRAMReset = installFreeRAMReset;
+        m_freeRAMDeselect = installFreeRAMDeselect;
     }
 
     public byte process(APDU apdu) throws ISOException {
@@ -221,13 +229,22 @@ public class AlgSupportTest {
 
         Util.setShort(apdubuf, offset, JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_PERSISTENT));
         offset = (short)(offset + 2);
-        short ramMemorySize = JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_RESET);
-        ramMemorySize += (short) m_ramArray.length; // This array is allocated by this applet and therefore consumed some space
-        ramMemorySize += (short) m_ramArray2.length; // This array is allocated by this applet and therefore consumed some space
-        Util.setShort(apdubuf, offset, ramMemorySize);
-        offset = (short)(offset + 2);
-        Util.setShort(apdubuf, offset, JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT));
-        offset = (short)(offset + 2);
+        
+        if (apdubuf[ISO7816.OFFSET_P1] == RETURN_INSTALL_TIME_RAM_SIZE) {
+            Util.setShort(apdubuf, offset, m_freeRAMReset);
+            offset = (short) (offset + 2);
+            Util.setShort(apdubuf, offset, m_freeRAMDeselect);
+            offset = (short) (offset + 2);
+        }
+        else {
+            short ramMemorySize = JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_RESET);
+            ramMemorySize += (short) m_ramArray.length; // This array is allocated by this applet and therefore consumed some space
+            ramMemorySize += (short) m_ramArray2.length; // This array is allocated by this applet and therefore consumed some space
+            Util.setShort(apdubuf, offset, ramMemorySize);
+            offset = (short)(offset + 2);
+            Util.setShort(apdubuf, offset, JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT));
+            offset = (short)(offset + 2);
+        }
         Util.setShort(apdubuf, offset, JCSystem.getMaxCommitCapacity());
         offset = (short)(offset + 2);
 
