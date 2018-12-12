@@ -227,7 +227,7 @@ public class CardMngr {
     }
     public String getATR() {
         if (m_card != null) {
-            return m_card.getATR().toString();
+           return bytesToHex(m_card.getATR().getBytes());
         } else {
             return "No card available";
         }
