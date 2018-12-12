@@ -51,16 +51,25 @@ import javax.smartcardio.CardTerminal;
  */
 public class AlgTestJClient {
     /* Arguments for choosing which AlgTest version to run. */
-    public static final String ALGTEST_MULTIPERAPDU = "AT_MULTIPERAPDU";        // for 'old' AlgTest
     public static final String ALGTEST_SINGLEPERAPDU = "AT_SINGLEPERAPDU";      // for 'New' AlgTest
     public static final String ALGTEST_PERFORMANCE = "AT_PERFORMANCE";          // for performance testing
     public static final String ALGTEST_USE_SIMULATOR = "JCARDSIM";          // use simulator instead of real card
     
     /**
+     * Version 1.7.6 (7.12.2018) 
+     * + Added support for jCardSim
+     * + Added testing of AEAD ciphers
+     * + added attempt to enable high-power mode for SIM cards
+     * - remove testing RSA arbitrary exponent (problem with J3H081 card)
+     * - fixed bugs
+     */
+    public final static String ALGTEST_JCLIENT_VERSION_1_7_6 = "1.7.6";
+
+    /**
      * Version 1.7.5 (17.09.2018) 
      * - update of preallocated size of RAM (applet updated)
      */
-    public final static String ALGTEST_JCLIENT_VERSION_1_7_5 = "1.7.5";
+    //public final static String ALGTEST_JCLIENT_VERSION_1_7_5 = "1.7.5";
     
     /**
      * Version 1.7.4 (20.04.2018) 
@@ -130,7 +139,7 @@ public class AlgTestJClient {
     /**
      * Current version
      */
-    public final static String ALGTEST_JCLIENT_VERSION = ALGTEST_JCLIENT_VERSION_1_7_5;
+    public final static String ALGTEST_JCLIENT_VERSION = ALGTEST_JCLIENT_VERSION_1_7_6;
     
     public final static int STAT_OK = 0;    
     
