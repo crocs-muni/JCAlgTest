@@ -354,7 +354,7 @@ public class AlgTestJClient {
             m_SystemOutLogger.println("Wrong number. Number of keys to generate is set to " + numOfKeys + ".");
         }
 
-        keyHarvest.gatherRSAKeys(autoUploadBefore, bitLength_start, bitLength_step, bitLength_end, useCrt, numOfKeys);        
+        keyHarvest.gatherRSAKeys(autoUploadBefore, bitLength_start, bitLength_step, bitLength_end, useCrt, numOfKeys, USE_JCARDSIM);        
     }
     
     static CardTerminal selectTargetReader() {
