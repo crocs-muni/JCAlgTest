@@ -17,7 +17,7 @@ public class SimulatedCardTerminal extends CardTerminal {
 
     @Override
     public String getName() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "JCardSim terminal"; 
     }
 
     @Override
@@ -27,7 +27,7 @@ public class SimulatedCardTerminal extends CardTerminal {
 
     @Override
     public boolean isCardPresent() throws CardException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return true;
     }
 
     @Override

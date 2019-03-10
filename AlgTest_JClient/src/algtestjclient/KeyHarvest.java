@@ -31,6 +31,7 @@
 
 package algtestjclient;
 
+import cardTools.SimulatedCardTerminal;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,25 +51,31 @@ public class KeyHarvest {
         cardManager = new CardMngr(m_SystemOutLogger);
     }
     
-    void gatherRSAKeys(boolean autoUploadBefore, short bitLength_start, short bitLength_step, short bitLength_end, boolean useCrt, int numOfKeys) throws CardException {
-	    //
-            // Obtain all readers with cards
-            //
-            List<CardTerminal> readersList = CardMngr.GetReaderList();
+    void gatherRSAKeys(boolean autoUploadBefore, short bitLength_start, short bitLength_step, short bitLength_end, boolean useCrt, int numOfKeys, boolean bUseSimulator) throws CardException {
             ArrayList<CardTerminal> readersWithCardList = new ArrayList();
-            if (readersList.isEmpty()) { m_SystemOutLogger.println("No terminals found"); }
-            for (int i = 0; i < readersList.size(); i++) {
-                CardTerminal terminal = (CardTerminal) readersList.get(i);
-                if (terminal.isCardPresent()) {
-                    // store readers with cards
-                    readersWithCardList.add(readersList.get(i));
-                    m_SystemOutLogger.println(i + " : " + readersList.get(i) + " : card present");
-                }
-                else {
-                    m_SystemOutLogger.println(i + " : " + readersList.get(i) + " : card NOT present");
+            // Add simulated card if required
+            if (bUseSimulator) {
+                readersWithCardList.add(new SimulatedCardTerminal());
+            }
+            else {
+                //
+                // Obtain all readers with cards
+                //
+                List<CardTerminal> readersList = CardMngr.GetReaderList();
+                if (readersList.isEmpty()) { m_SystemOutLogger.println("No terminals found"); }
+                for (int i = 0; i < readersList.size(); i++) {
+                    CardTerminal terminal = (CardTerminal) readersList.get(i);
+                    if (terminal.isCardPresent()) {
+                        // store readers with cards
+                        readersWithCardList.add(readersList.get(i));
+                        m_SystemOutLogger.println(i + " : " + readersList.get(i) + " : card present");
+                    }
+                    else {
+                        m_SystemOutLogger.println(i + " : " + readersList.get(i) + " : card NOT present");
+                    }
                 }
             }
-        
+            
             m_SystemOutLogger.println("TOTAL cards: " + readersWithCardList.size());
             
 	    // Run separate thread for every reader / card		
