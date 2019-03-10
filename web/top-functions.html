@@ -1,0 +1,83 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<meta name="description" content="The JCAlgTest is a tool designed for automatic gathering various performance properties of Java cards. ">
+	<meta name="author" content="JCAlgTest">
+    <title>JCAlgTest - TOP FUNCTIONS</title>
+    <link href="./dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="./assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+  </head>
+
+  <body style="padding-top:50px;  padding-bottom:20px;">
+	
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container">
+			<script type="text/javascript" src="header.js"></script>
+		</div>
+	</nav>
+<div class="container">
+      <div class="row">
+	  <h1>TOP FUNCTIONS</h1>
+		<h4>We selected 25 frequently used functions and marked them as TOP FUNCTIONS.</h4>
+		<p>They are used in outputs where it is hard to show performance results on all tested algorithms (e.g., <a href="comparative-table.html">Comparative table</a> or <a href=".radar_graphs/radar-graphs.html">Radar graphs</a>).</p>
+
+		<div class="col-md-12">
+		<h4>Symmetric crypto</h3>
+		<ul>
+		<li><strong>SECURE RANDOM (256B)</strong> = ALG_SECURE_RANDOM RandomData_generateData()</li>
+		<li><strong>SHA-1 hash (256B)</strong> = ALG_SHA MessageDigest_doFinal()</li>
+		<li><strong>SHA2-256 hash (256B)</strong> = ALG_SHA_256 MessageDigest_doFinal()</li>
+		<li><strong>3DES encrypt (256B)</strong> = TYPE_DES LENGTH_DES3_3KEY ALG_DES_CBC_NOPAD Cipher_doFinal()</li>
+		<li><strong>AES128 encrypt (256B)</strong> = TYPE_AES LENGTH_AES_128 ALG_AES_BLOCK_128_CBC_NOPAD Cipher_doFinal()</li>
+		<li><strong>AES256 encrypt (256B)</strong> = TYPE_AES LENGTH_AES_256 ALG_AES_BLOCK_128_CBC_NOPAD Cipher_doFinal()</li>
+		<li><strong>3DES setKey(192b)</strong> = TYPE_DES LENGTH_DES_192 setKey()</li>
+		<li><strong>AES setKey(128b)</strong> = TYPE_AES LENGTH_AES_128 setKey()</li>
+		<li><strong>AES setKey(256b)</strong> = TYPE_AES LENGTH_AES_256 setKey()</li>
+		<li><strong><a target="_blank" href="http://www.fi.muni.cz/~xsvenda/jcalgs.html#aes">SWAES oneblock (16B)</a></strong> &#x1f517; = SWALGS SWAlgs_AES()</li>
+		<li><strong> arrayCopy nonAtomic RAM2RAM (256B)</strong> = UTIL Util_arrayCopyNonAtomic_RAM()</li>
+		<li><strong> arrayCopy nonAtomic EEPROM2EEPROM (256B)</strong> = UTIL Util_arrayCopyNonAtomic_EEPROM()</li>
+		</ul>
+		</br>
+		</div>
+		
+		<div class="col-md-12">
+		<h4>Asymmetric crypto</h3>
+		<ul>
+		<li><strong>RSA1024 CRT decrypt</strong> = TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1024 ALG_RSA_NOPAD Cipher_doFinal()</li>
+		<li><strong>RSA1024 CRT encrypt</strong> = TYPE_RSA_CRT_PUBLIC LENGTH_RSA_1024 ALG_RSA_NOPAD Cipher_doFinal()</li>
+		<li><strong>RSA2048 CRT decrypt</strong> = TYPE_RSA_CRT_PRIVATE LENGTH_RSA_2048 ALG_RSA_NOPAD Cipher_doFinal()</li>
+		<li><strong>RSA2048 CRT encrypt</strong> = TYPE_RSA_CRT_PUBLIC LENGTH_RSA_2048 ALG_RSA_NOPAD Cipher_doFinal()</li>
+		<li><strong>RSA1024 CRT generate</strong> = ALG_RSA_CRT LENGTH_RSA_1024 KeyPair_genKeyPair()</li>
+		<li><strong>RSA2048 CRT generate</strong> = ALG_RSA_CRT LENGTH_RSA_2048 KeyPair_genKeyPair()</li>
+		<li><strong>RSA1024 decrypt</strong> = TYPE_RSA_PRIVATE LENGTH_RSA_1024 ALG_RSA_NOPAD Cipher_doFinal()</li>
+		<li><strong>RSA1024 encrypt</strong> = TYPE_RSA_PUBLIC LENGTH_RSA_1024 ALG_RSA_NOPAD Cipher_doFinal()</li>
+		<li><strong>RSA2048 decrypt</strong> = TYPE_RSA_PRIVATE LENGTH_RSA_2048 ALG_RSA_NOPAD Cipher_doFinal()</li>
+		<li><strong>RSA2048 encrypt</strong> = TYPE_RSA_PUBLIC LENGTH_RSA_2048 ALG_RSA_NOPAD Cipher_doFinal()</li>
+		<li><strong>RSA1024 generate</strong> = ALG_RSA LENGTH_RSA_1024 KeyPair_genKeyPair()</li>
+		<li><strong>RSA2048 generate</strong> = ALG_RSA LENGTH_RSA_2048 KeyPair_genKeyPair()</li>
+		</ul>
+		</br>
+		</div>
+	  </div>
+	  <div class="row">
+		 <div class="alert alert-info text-center" role="alert">
+		 We plan to extend the set of TOP FUNCTIONS with Elliptic curve cryptography functions.
+		</div>
+	  </div>
+</div>
+	<script type="text/javascript" src="footer.js"></script>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="assets/js/vendor/jquery.min.js"><\/script>')</script>
+    <script src="dist/js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="assets/js/ie10-viewport-bug-workaround.js"></script>
+  </body>
+</html>

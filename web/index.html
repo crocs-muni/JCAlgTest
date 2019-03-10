@@ -1,0 +1,147 @@
+ <html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<meta name="description" content="The JCAlgTest is a tool designed for automatic gathering various performance properties of Java cards. ">
+	<meta name="author" content="JCAlgTest">
+    <title>Java Card Algorithm Test</title>
+    <link href="./dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="./assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+  </head>
+
+  <body style="padding-top: 50px;  padding-bottom: 20px;"> 
+	
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container">
+			<script type="text/javascript" src="header.js"></script>
+		</div>
+	</nav>
+
+    <div class="jumbotron">
+      <div class="container">
+		<div class="row">
+			<div class="col-md-9 col-xs-9">
+			<h2>JavaCard Algorithm Test</h2>
+			<p style="margin-bottom: 20px;">Detailed analysis of cryptographic smart cards running with JavaCard platform</p>
+			
+			<p>
+			<a class="btn btn-default" href="table.html" role="button"><span class="glyphicon glyphicon-ok" aria-hidden="true"> </span> Supported algorithms</a>
+			<a class="btn btn-default" href="comparative-table.html" role="button"><span class="glyphicon glyphicon-sort-by-attributes" aria-hidden="true"> </span> Performance comparison</a>
+			<a class="btn btn-default" href="./scalability/scalability.html" role="button"><span class="glyphicon glyphicon-signal" aria-hidden="true"> </span> Length-dependent performance</a>
+			<a class="btn btn-default" href="./run_time/execution-time.html" role="button"><span class="glyphicon glyphicon-list" aria-hidden="true"> </span> Detailed card performance</a>
+
+
+			</p>
+			<p><a class="btn btn-primary btn-lg" href="https://github.com/crocs-muni/JCAlgTest/releases" role="button"><span class="glyphicon glyphicon-download" aria-hidden="true"> </span> Github download</a></p>
+			</div>
+			<div class="col-md-3 col-xs-3" style="overflow:hidden; margin:2em auto;">
+			<a href="index.html"><img src="pics/logo.png" alt="logo" class="img-responsive" align="right"></a>			
+			</div>
+		</div>
+	  </div>
+    </div>
+
+    <div id="about" class="container">
+	
+	<div class="row">
+        <div class="col-md-4">
+          <h2>What is JCAlgTest?</h2>
+          <p>The JCAlgTest tool is devoted to automatic testing of cryptographic smart cards running JavaCard platform. It gathers and visualizes information about card's hardware, supported cryptographic algorithms, and performance in various settings.  </p>          
+        </div>
+        <div class="col-md-4">
+          <h2>Who provides the results</h2>
+		  <p>The results are contributed by a) cards owned by us at <a target="_blank"  href="http://crcs.cz/">CRoCS laboratory</a> and b) the wider community which run JCAlgTest on available cards. Together, it creates the largest publicly available database with more than 50 different smart cards.
+          </p>
+       </div>
+        <div class="col-md-4">
+          <h2>How can I use it?</h2>
+          <p>You can select a card with required properties before you will buy it. Or you can assess card you already have in your hand and match it to cards in database based on the performance results. </p>
+        </div>
+    </div>
+	<hr>
+	<br>	  
+	  
+	<h3>JCAlgTest in more details</h3>
+	<img src="pics/scheme.png" alt="logo" class="img-responsive" style="width:50%; float:right; margin:0px 0px 20px 20px;">
+	<p>
+		The JCAlgTest is set of tools to measure, assess and provide detail information extracted from real cryptographic smart cards with JavaCard platform with corresponding cryptographic JavaCard API specification. Testing itself is easy - requires only to upload an applet to the target smart card and launch a host PC application which will start, collect and extract measurements.
+	</p>
+	<br>	
+	
+	<h4>JCAlgTest consists of 3 main modules:</h4>
+	
+	<p><strong>JCAlgTest</strong> - JavaCard applet which is uploaded to tested smart card and executes operations measured by the host application. The applet itself contains three main parts:</p>
+		<ul>
+		<li><u>Generic information</u> - obtainable via JCSystem class </li>
+		<li><u>Test for supported cryptographic algorithms</u> - checks if an algorithm can be instantiated and returns the result to the host. The whole testing is finished within few minutes. </li>
+		<li><u>Performance testing</u> - benchmarks specific card and provides execution times of cryptographic algorithms in various modes and with variable lengths of processed data. Based on the scope of performance testing, a single card is examined in several hours time. </li><br>
+		</ul>
+	<p><strong>JCAlgTestClient</strong> - Java-based application, running on a host PC that facilitates communication with the target smart card and measure execution time. Controls the whole testing process and stores the gathered information as CSV file. The tool is controlled with simple command line options.</p><br>
+	<p><strong>JCAlgTestProcess</strong> - -- Java-based application responsible for processing raw CSV file(s) and generation of various tabular and graphical outputs. It can process results for a single card as well as a whole database of previous measurements. The content of the pages you are currently reading were all produced by this tool.</p><br>
+	
+		
+	<hr>
+	<div class="row">
+		<div class="col-md-3">
+			<h3>Algorithms support database</h3>
+			<p>
+			Are you looking for a smart card that supports specific cryptographic algorithm? Or you like to see how widespread is support for the elliptic curves? Inspect results collected from more than 50 smart cards and organized in the support matrix. 
+			</p>
+			<p><a class="btn btn-default" href="table.html" role="button">View database &raquo;</a></p>
+		</div>
+		<div class="col-md-3">
+			<h3>Performance comparison</h3>
+			<p>
+			Would you like to know which smart card executes the operation with private RSA key in the shortest time? Or you like to compare two candidate smart cards before buying? Compare the performance of more than 15 current cards in sortable tables. 	
+			</p>	
+			<p><a class="btn btn-default" href="comparative-table.html" role="button">Compare cards &raquo;</a></p>
+		</div>
+		<div class="col-md-3">	
+			<h3>Performance with variable data length</h3>
+			<p>
+			The performance of the card and a particular algorithm is not always linear with the increasing length of processed data. See data length-dependency graphs which may help you to improve application speed by optimization of unseen bootlenecks. 
+			</p>
+			<p><a class="btn btn-default" href="scalability/scalability.html" role="button">Compare cards &raquo;</a></p>
+		</div>
+		<div class="col-md-3">	
+			<h3>Similarity<br> table</h3>
+			<p>
+			The smart card performance over many cryptographic algorithms can be used as nice metric to identify underlying hardware. Observe which smart cards have a very similar hardware and performs comparably and which are markedly different.  
+			</p>
+			<p><a class="btn btn-default" href="similarity-table.html" role="button">View table &raquo;</a></p>
+		</div>
+	</div>	
+		
+	<br>
+	<h3>Knowledge base</h3>
+	<p>
+		We played with a lot of different smart cards, developed helper tools and learned interesting not-so-documented behaviors. Would you like to know what can cause 0x6f00 exception? Or download software implementation of AES, SHA-2 or RSA OAEP when your card does not support what you need? Visit knowledge base for even more.
+		<p style='text-align:right; margin-top:-10px'><a class="btn btn-default" href="knowledgebase.html" role="button">View more &raquo;</a></p>
+	</p>
+	
+	<br>
+	<br>
+	
+	<div class="alert alert-info text-center" role="alert">
+		<strong>
+		<p>Please download packed binaries and source codes here: <a target="_blank" href="https://github.com/crocs-muni/JCAlgTest/releases"> JCAlgTest GitHub repository</a> (contains source codes, compiled versions, Java client)</p>    
+		<p>If you have results for smart card not listed below, consider to send me the resulting csv - We will be happy to publish it here and give you the credit.</p>
+		<p>Please, report any bugs or suggestions by <a href="contact.html">contacting us</a>. Thank you!</p>	
+		</strong>
+	</div>
+
+    </div> <!-- /container -->
+	<script type="text/javascript" src="footer.js"></script>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="assets/js/vendor/jquery.min.js"><\/script>')</script>
+    <script src="dist/js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="assets/js/ie10-viewport-bug-workaround.js"></script>
+  </body>
+</html>

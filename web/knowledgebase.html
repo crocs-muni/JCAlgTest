@@ -1,0 +1,192 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<meta name="description" content="The JCAlgTest is a tool designed for automatic gathering various performance properties of Java cards. ">
+	<meta name="author" content="JCAlgTest">
+    <title>JCAlgTest - How it works</title>
+    <link href="./dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="./assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+  </head>
+
+  <body style="padding-top:50px;  padding-bottom:20px;">
+	
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container">
+			<script type="text/javascript" src="header.js"></script>
+		</div>
+	</nav>
+<div class="container">
+      <div class="row">
+		<br>
+		<div class="alert alert-info" role="alert">
+			<strong>Still to be updated. </strong>
+		</div>
+
+	   <h1>Performance testing - How it works</h1>           
+			
+		<h3>Goal</h3>
+		<p>
+		Measure time (ms) of selected operation running on card (e.g., AESKey.setKey()). Problem: Selected operation cannot be measured directly (e.g., elapsed = timeEnd - timeStart) 
+		because of missing on-card timer and protected environment of smart card (no possibility to time start and end of operation inside surrounding code). 
+		As a result, one can only measure overall time between send of input data that will trigger operation (PC/SC SCardTransmit()) on host system.
+		</p>
+		<br>
+		<h3>General principles</h3>
+		<ul>
+		<li>Operations are performed over RAM-allocated arrays (unless specifically targeted to EEPROM)</li>
+		<li>Time measured on PC side - therefore communication costs also included. Can be mitigated either by enough repetitions of measured operation (so communication cost is negligible) or two runs with separate number of repetitions are used and subtracted for time computations</li>
+		<li>Allocation of new instance of measured algorithm is NOT included in measurement (as good practice is to pre-allocate all objects during applet's install time)</li>
+		</ul>
+		<br>
+		<h3>What is measured</h3>
+		<ul>
+		<li>Time necessary to execute separate method on given length of data (e.g., AESKey.setKey()) <strong>[SINGLE_METHOD]</strong></li>
+		<li>
+		<p>Time necessary to perform whole logical cryptographic operation on-card (e.g., transmit X bytes of data to card, encrypt it by AES and transmit back result) <strong>[FULL_OP]</strong>.</p>
+
+		<ul>
+		<li>Test scenario 1: (short packets - 5 to 32B?, key unchanged)</li>
+		<li>Test scenario 2: (longer packets - 128 to 256B?, key unchanged)</li>
+		<li>Test scenario 3: Test scenario 1 + key changed every call</li>
+		<li>Test scenario 4: Test scenario 2 + key changed every call</li>
+		<li>Test scenario 5: Custom software implementation of AES / SHA-2 (test of bytecode algorithmic performance)</li>
+		</ul>
+		</li>
+		<li><p>Some operations can be measured without additional preparation of target object (e.g., AESKey.setKey()). Target method call is then iterated on-card according to TEST_SETTINGS.numRepeatWholeOperation to suppress of significance of overhead (apdu transmission etc.) on measurement</p></li>
+		<li>Some operations requires some pre-processing (e.g., Cipher.update() requires init() with proper key etc.). This preparation is done in separate command and is not included into measurement.</li>
+		</ul>
+		<br>
+		<h3>List of tested properties</h3>
+		<ul>
+		<li><strong>Card information</strong> - Version of JavaCard, Answer To Reset (ATR), Card Production Life Cycle (CPLC)
+		<li><strong>Size of memory</strong> - Persistent (MEMORY_TYPE_PERSISTENT), Transient (MEMORY_TYPE_TRANSIENT_RESET, MEMORY_TYPE_TRAN-SIENT_DESELECT) 
+		<li><strong>Classes</strong> - AESKey, Checksum, Cipher, DESKey, DSAKey, DSAPrivateKey, DSAPublicKey, ECKey, ECPrivateKey, ECPublicKey, HMACKey, KeyPair, KoreanSEEDKey, MessageDigest, RandomData,  RSAPrivateCrtKey, RSAPrivateKey, RSAPublicKey, Signature, Util
+		<li><strong>Software reimplementation</strong> - AES, XOR
+		</ul>
+		<br>
+		
+		<h1>Performance testing methodology</h1>
+		<div class="row">	
+			<div class="col-md-4">
+			<h4>This measurement then includes time to:</h4>
+
+			<ol>
+			<li>send input to card reader (PC/SC stack)</li>
+			<li>transmit input data (T=1/T=0)</li>
+			<li>dispatch command and select on-card method (process())</li>
+			<li>execute code predeceasing target operation </li>
+			<li>execute target operation </li>
+			<li>execute trailing code after target operation</li>
+			<li>transmit response (dataOut, status word, (T=1/T=0))</li>
+			<li>receive response (PC/SC stack)</li>
+			</ol>
+			<p>Additionally, target operation usually takes only small fraction of measurement with majority taken by operations we like to exclude from measurement (~one ms vs. ~tens of ms). Situation is additionally worsen by possible non-determistic time fluctuations on a host side. </p>
+			<br>
+			
+			<p><strong>Note:</strong> Measurement fluctuations on host side can be mitigated if simpler host architecture is available (e.g., microcontroller-based card reader). </p>
+			<p><strong>Note:</strong> Very precise measurement of elapsed time can be obtained from a power trace, if start and end of selected operation can be identified. Such a measurement requires access to setup with osciloscope and significant time for identification of target operation. We verified selected operation using this method.</p>
+			<p><strong>Note:</strong> Some operations cannot be meaningfully measured without additional operation executed together (e.g., setKey before target operation Cipher.init). We measure both operations together and then substract time for additional operation.</p>
+			<p><strong>Note:</strong> We intentionally did not exclude outlayer measurements as it may contain interesting information regarding non-deterministic behaviour of a card</p>
+			</div>
+			
+			<div class="col-md-8">
+			<h4>Measurement procedure:</h4>
+			
+			<ul>
+			<li>start/stop time measured on host</li>
+			<li>repetitions on host with same data (5x, NUM_REPEAT_WHOLE_MEASUREMENT, 10x NUM_REPEAT_WHOLE_MEASUREMENT_KEYPAIRGEN)</li>
+			<li>default length of data for on-card operation (256B)</li>
+			<li>length of variable data for on-card operation  (16-512B)</li>
+			<li>repetitions of target operation on card (fixed length =&gt; 50x NUM_REPEAT_WHOLE_OPERATION, variable length =&gt; 5x (to keep overall running time reasonable))</li>
+			<li>perftest_measure method (outer):
+
+			<ul>
+			<li>check if not already measured before</li>
+			<li>try perftest_measure - catch exception, try again, then ask for user intervention (physical remove of card, reupload of applet)</li>
+			</ul>
+			</li>
+			<li>perftest_measure method (innner):
+
+			<ul>
+			<li>for every repetitions of measurement prepare fresh set of objects on card and reset it (prepare_class_XXX, APDU, not measured)</li>
+			<li>Measure processing time without actually calling measured operation (achieved by setting 0 to number of repetitions; testSet.numRepeatWholeOperation set to 0) - repeat 5x NUM_BASELINE_CALIBRATION_RUNS
+
+			<ul>
+			<li>ResetApplet (APDU, not measured)</li>
+			<li>PerfTestCommand </li>
+			<li>=&gt; baseline avg time</li>
+			</ul>
+			</li>
+			<li>Measure target operation (testSet.numRepeatWholeOperation = 50x fro fixed data or 5x for variable data):<br>
+
+			<ul>
+			<li>ResetApplet (APDU, not measured)</li>
+			<li>PerfTestCommand =&gt; time</li>
+			<li>measurement time = time - baseline avg time</li>
+			<li>=&gt; min, max, avg measurement time</li>
+			</ul>
+			</li>
+			</ul>
+			</li>
+			<li>prepare_class_XXX (on-card)
+
+			<ul>
+			<li>allocate new objects required for testing target operation</li>
+			<li>erase or set RAM/EEPROM arrays into default values </li>
+			</ul>
+			</li>
+			<li>perftest_class_XXX (on-card)
+
+			<ul>
+			<li>receive apdu data</li>
+			<li>parse incoming settings (num_repeats, data length...)</li>
+			<li>switch (algorithm type)</li>
+			<li>initializations done only once before for(num_repeats)</li>
+			<li>for(num_repeats)
+
+			<ul>
+			<li>target operation</li>
+			<li>(optional) alternate between two different objects to prevent (too quick) use of existing one when card actually decides not to execute operation as the object is still same (e.g., Cipher.init())</li>
+			</ul>
+			</li>
+			<li>end, send apdu out</li>
+			</ul>
+			</li>
+			</ul>
+			<br>
+			</div>
+			
+			<h4></h4>
+			<center>
+			<img src="pics/measurement_overview.png" alt="logo" class="img-responsive" align="center">
+			
+			<p>
+			<strong>
+			Listed segments show all parts of performance test execution. 
+			Part 5 executes target operation we want to measure (green). 
+			Since we are not able to perform this execution directly, by subtracting the time of execution of all operations in the left column from all operations in the right column, we gain quite an accurate operation run time. 
+			The subtracted time consists of host PC processing (yellow), data transmission between host PC and a card (yellow-blue) and smart card processing (blue).			
+			</strong>
+			</p>
+			</center>
+		</div>	
+		
+	  </div>
+</div>
+
+	<script type="text/javascript" src="footer.js"></script>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="assets/js/vendor/jquery.min.js"><\/script>')</script>
+    <script src="dist/js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="assets/js/ie10-viewport-bug-workaround.js"></script>
+  </body>
+</html>
