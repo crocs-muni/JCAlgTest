@@ -427,6 +427,7 @@ public class CardMngr {
                         ATR atr = m_card.getATR();
                         m_SystemOutLogger.println(bytesToHex(atr.getBytes()));
 
+                        /* Supressed as some cards stops responding till reset after this command   
                         // Attempt to allow for high-power mode by selecting specific applet called 
                         try {
                             ResponseAPDU resp2 = sendAPDU(selectADFusim);
@@ -437,6 +438,7 @@ public class CardMngr {
                         catch (Exception e) {
                             m_SystemOutLogger.print("Exception when testing high-power mode");
                         }
+                        */
 
                         // SELECT APPLET
                         cardFound = false;
