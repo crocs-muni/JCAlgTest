@@ -369,15 +369,20 @@ public class JCinfohtml {
                         toFile.append(ns+"</br>");
                     
                     float alpha = 0.0F;
-                    if (sum > 0.5F)
+                    String color;
+                    if (sum > 0.5F) {
                         alpha = (sum*sum*sum*sum*sum*sum);
-                    else
+                        color = "140,200,120";
+                    }
+                    else {
                         alpha = (Math.abs(sum-1)*Math.abs(sum-1)*Math.abs(sum-1)*Math.abs(sum-1));
+                        color = "200,120,140";
+                    }
                     
                     String card1 = namesOfCards.get(i);
                     String card2 = namesOfCards.get(j);
                     
-                    toFile.append("\" style=\"background:rgba(140,200,120,"+String.format("%.2f", alpha).replace(",", ".")+");\">"+"<a href='compare/"+card1 + "_vs_" + card2 + "_compare.html'>"+String.format("%.2f", sum*100).replace(",", ".")+"</a></td>\n");
+                    toFile.append("\" style=\"background:rgba(" + color + ","+String.format("%.2f", alpha).replace(",", ".")+");\">"+"<a href='compare/"+card1 + "_vs_" + card2 + "_compare.html'>"+String.format("%.2f", sum*100).replace(",", ".")+"</a></td>\n");
                     compareFile(dir, card1, card2, notSuppByRow, notSuppByCol);
                 } 
             }
