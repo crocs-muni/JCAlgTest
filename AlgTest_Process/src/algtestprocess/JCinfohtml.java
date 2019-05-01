@@ -48,6 +48,10 @@ public class JCinfohtml {
     public static final String topFunctionsFile = "top.txt";
 
     public static void beginHTML(FileOutputStream file, String title) throws IOException {
+        beginHTML(file, title, "");
+    }
+    
+    public static void beginHTML(FileOutputStream file, String title, String toRoot) throws IOException {
         String toFile = "";
         toFile += "<html lang=\"en\">\n";
         toFile += " <head>\n";
@@ -59,27 +63,31 @@ public class JCinfohtml {
                     "\t<meta name=\"author\" content=\"JCAlgTest\">\n"  +
                     "\t<title>"+title+"</title>\n";
 
-        toFile += "\t<link href=\"./dist/css/bootstrap.min.css\" rel=\"stylesheet\">\n"
-                + "<script type=\"text/javascript\" src=\"./dist/jquery-2.2.3.min.js\"></script>\n"
-                + "\t<link href=\"./assets/css/ie10-viewport-bug-workaround.css\" rel=\"stylesheet\">\n"                
-                + "\t<link rel=\"stylesheet\" type=\"text/css\" href=\"./dist/style.css\">\n";
+        toFile += "\t<link href=\"./" + toRoot + "dist/css/bootstrap.min.css\" rel=\"stylesheet\">\n"
+                + "<script type=\"text/javascript\" src=\"./" + toRoot + "dist/jquery-2.2.3.min.js\"></script>\n"
+                + "\t<link href=\"./" + toRoot + "assets/css/ie10-viewport-bug-workaround.css\" rel=\"stylesheet\">\n"                
+                + "\t<link rel=\"stylesheet\" type=\"text/css\" href=\"./" + toRoot + "dist/style.css\">\n";
         
         toFile += " </head>\n\n";
         toFile += " <body style=\"margin-top:50px; padding:20px\">\n\n";
 
-        toFile += " \t<nav class=\"navbar navbar-inverse navbar-fixed-top\">\n\t\t<div class=\"container-fluid\">\n\t\t<script type=\"text/javascript\" src=\"header.js\"></script>\n\t\t</div>\n\t</nav>\n\n";
+        toFile += " \t<nav class=\"navbar navbar-inverse navbar-fixed-top\">\n\t\t<div class=\"container-fluid\">\n\t\t<script type=\"text/javascript\" src=\"" + toRoot + "header" + (toRoot.equals("") ? "" : "-1") + ".js\"></script>\n\t\t</div>\n\t</nav>\n\n";
 
         file.write(toFile.getBytes());
     }
     
     public static void endHTML(FileOutputStream file) throws IOException {
+        endHTML(file, "");
+    }
+    
+    public static void endHTML(FileOutputStream file, String toRoot) throws IOException {
         String toFile = "";
-        toFile += "\t<script type=\"text/javascript\" src=\"footer.js\"></script>\n"+
+        toFile += "\t<script type=\"text/javascript\" src=\"" + toRoot + "footer.js\"></script>\n"+
                 "<a href=\"#\" class=\"back-to-top\"></a>" +
                 "\t<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js\"></script>\n" +
                 "\t<script>window.jQuery || document.write('<script src=\"../assets/js/vendor/jquery.min.js\"><\\/script>')</script>\n" +
-                "\t<script src=\"./dist/js/bootstrap.min.js\"></script>\n" +
-                "\t<script src=\"./assets/js/ie10-viewport-bug-workaround.js\"></script>\n";   
+                "\t<script src=\"./" + toRoot + "dist/js/bootstrap.min.js\"></script>\n" +
+                "\t<script src=\"./" + toRoot + "assets/js/ie10-viewport-bug-workaround.js\"></script>\n";   
         
         toFile += " </body>\n";
         toFile += "</html>\n";
@@ -328,16 +336,21 @@ public class JCinfohtml {
             
             for(int j=0; j<namesOfCards.size(); j++){
                 List<String> notSupp = new ArrayList<>();
+                List<String> notSuppByRow = new ArrayList<>();
+                List<String> notSuppByCol = new ArrayList<>();
                 float sum = 0.0F;
                 int num = 0;
                 if(i==j) 
                     toFile.append("\t\t\t<th></th>\n");
                 else {
                     for(int k=0; k<topNames_sym.size(); k++){
-                        if((rowsData.get(k).get(i) == 0.0F) && (rowsData.get(k).get(j) == 0.0F))
-                            {} else {
-                                //add method to unsupported list between two cards
-                                if((rowsData.get(k).get(i) == 0.0F) || (rowsData.get(k).get(j) == 0.0F)){
+                        if (rowsData.get(k).get(i) == 0.0F)
+                            notSuppByRow.add(topNames_sym.get(k));
+                        if (rowsData.get(k).get(j) == 0.0F)
+                            notSuppByCol.add(topNames_sym.get(k));
+                        if((rowsData.get(k).get(i) != 0.0F) || (rowsData.get(k).get(j) != 0.0F)) {
+                            //add method to unsupported list between two cards
+                            if((rowsData.get(k).get(i) == 0.0F) || (rowsData.get(k).get(j) == 0.0F)){
                                     notSupp.add(topNames_sym.get(k));  
                             } else {   
                                 sum += (rowsData.get(k).get(i) - rowsData.get(k).get(j))*(rowsData.get(k).get(i) - rowsData.get(k).get(j));
@@ -345,9 +358,9 @@ public class JCinfohtml {
                             }
                         }
                     }
-                     sum = sum/num;
-                     sum = (float)Math.sqrt(sum);
-                     sum = Math.abs(sum-1); //convert to percentage, close to 100% = very similar, close to 0% = not similar
+                    sum = sum/num;
+                    sum = (float)Math.sqrt(sum);
+                    sum = Math.abs(sum-1); //convert to percentage, close to 100% = very similar, close to 0% = not similar
                     
                     // toFile.append("\t\t\t<td>"+String.format("%.0f", sum).replace(",", ".")+"</td>\n");
                     toFile.append("\t\t\t<td data-toggle=\"tooltip\" class=\"table-tooltip\" data-html=\"true\" data-original-title=\"");
@@ -360,8 +373,13 @@ public class JCinfohtml {
                         alpha = (sum*sum*sum*sum*sum*sum);
                     else
                         alpha = (Math.abs(sum-1)*Math.abs(sum-1)*Math.abs(sum-1)*Math.abs(sum-1));
-                    toFile.append("\" style=\"background:rgba(140,200,120,"+String.format("%.2f", alpha).replace(",", ".")+");\">"+String.format("%.2f", sum*100).replace(",", ".")+"</td>\n");
-                    } 
+                    
+                    String card1 = namesOfCards.get(i);
+                    String card2 = namesOfCards.get(j);
+                    
+                    toFile.append("\" style=\"background:rgba(140,200,120,"+String.format("%.2f", alpha).replace(",", ".")+");\">"+"<a href='compare/"+card1 + "_vs_" + card2 + "_compare.html'>"+String.format("%.2f", sum*100).replace(",", ".")+"</a></td>\n");
+                    compareFile(dir, card1, card2, notSuppByRow, notSuppByCol);
+                } 
             }
             toFile.append("\t\t</tr>\n");            
         }
@@ -373,6 +391,24 @@ public class JCinfohtml {
             "    container: \"body\"\n" +
             "  })\n" +
             "});\n</script>\n");        
+        file.write(toFile.toString().getBytes());
+    }
+    
+    public static void compareFile(String dir, String card1, String card2, List<String> notSuppBy1, List<String> notSuppBy2) throws IOException {
+        FileOutputStream file = new FileOutputStream(dir + "//compare//" + card1 + "_vs_" + card2 + "_compare.html");
+        beginHTML(file, "JCAlgTest - Similarity of" + card1 +" and " + card2, "../");
+        addCompareFileInfo(file, card1, card2);
+        endHTML(file, "../");
+    }
+    
+    public static void addCompareFileInfo(FileOutputStream file, String card1, String card2) throws IOException {
+        StringBuilder toFile = new StringBuilder();
+        String concat = card1 + " and " + card2;
+        
+        toFile.append("<h1>Comparison of ").append(concat).append("</h1>");
+        toFile.append("<h4>What the numbers do tell?</h4>");
+        toFile.append("<p>Using performance results, we can compare these two cards.</p>");
+        
         file.write(toFile.toString().getBytes());
     }
       
