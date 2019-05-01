@@ -356,12 +356,10 @@ public class JCinfohtml {
                         toFile.append(ns+"</br>");
                     
                     float alpha = 0.0F;
-                    if (sum > 0.5F) {
+                    if (sum > 0.5F)
                         alpha = (sum*sum*sum*sum*sum*sum);
-                    }
-                    else {
+                    else
                         alpha = (Math.abs(sum-1)*Math.abs(sum-1)*Math.abs(sum-1)*Math.abs(sum-1));
-                    }
                     toFile.append("\" style=\"background:rgba(140,200,120,"+String.format("%.2f", alpha).replace(",", ".")+");\">"+String.format("%.2f", sum*100).replace(",", ".")+"</td>\n");
                     } 
             }
