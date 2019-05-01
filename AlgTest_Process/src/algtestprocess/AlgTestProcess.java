@@ -48,10 +48,11 @@ public class AlgTestProcess {
     public static final String GENERATE_JCINFO = "JCINFO";              //TABLE WITH PERF RESULTS
     public static final String GENERATE_SORTABLE = "SORTABLE";          //SORTABLE TABLE
     public static final String GENERATE_GRAPHS = "GRAPHS";              //GENERATE SINGLE GRAPHS PAGE FOR JCINFO
-    public static final String GENERATE_GRAPHS_ONEPAGE = "SCALABILITY";  //PAGE WITH VARIABLE PERFTEST GRAPHS
+    public static final String GENERATE_GRAPHS_ONEPAGE = "SCALABILITY"; //PAGE WITH VARIABLE PERFTEST GRAPHS
     public static final String GENERATE_COMPARE_GRAPH = "COMPAREGRAPH"; //ONE BIG GRAPH FOR COMPARE CARDS
-    public static final String GENERATE_COMPARE_TABLE = "SIMILARITY"; //ONE BIG TABLE FOR COMPARE CARDS      
-    public static final String GENERATE_RADAR_GRAPHS = "RADAR"; //ONE BIG TABLE FOR COMPARE CARDS      
+    public static final String GENERATE_COMPARE_TABLE = "SIMILARITY";   //ONE BIG TABLE FOR COMPARE CARDS
+    public static final String GENERATE_UNKNOWN_RESULTS = "UNKNOWN";    //ONE BIG TABLE FOR COMPARE CARDS
+    public static final String GENERATE_RADAR_GRAPHS = "RADAR";         //ONE BIG TABLE FOR COMPARE CARDS      
 
     /**
      * @param args the command line arguments
@@ -59,7 +60,6 @@ public class AlgTestProcess {
      */
     public static void main(String[] args) throws FileNotFoundException {
         System.out.println("Make sure to have JavaCard support version in your CSV file!");
-        System.out.println("Test output");
         try {
             if (args.length == 0) { // in case there are no arguments present
                 printHelp();
@@ -102,6 +102,14 @@ public class AlgTestProcess {
                     else if (args[1].equals(GENERATE_COMPARE_TABLE)){
                         System.out.println("Generating compare table from input dir.");
                         JCinfohtml.runCompareTable(args[0]);}
+                    else if (args[1].equals(GENERATE_UNKNOWN_RESULTS)){
+                        if (args.length <= 2) {
+                            System.out.println("AlgTestProcess.jar base_path_folder UNKNOWN unknown_csv_path");
+                        } else {
+                            System.out.println("Generating results page for unknown card.");
+                            JCinfohtml.runUnknownCard(args[0], args[2]);
+                        }
+                    }
                     else if (args[1].equals(GENERATE_GRAPHS_ONEPAGE)){
                         System.out.println("Generating graphs page from input file / folder.");
                         File file = new File(args[0]);                        
@@ -160,7 +168,7 @@ public class AlgTestProcess {
         System.out.println("Usage: java AlgTestProcess.jar base_path\n" 
                 + "  base_path/results/directory should contain *.csv files with results \n"
                 + "  html table will be generated into base_path/AlgTest_html_table.html \n\n" 
-                + "  AlgTestProcess.jar base_path_folder [JCINFO, RADAR, SIMILARITY, GRAPHSPAGE, SORTABLE]"        
+                + "  AlgTestProcess.jar base_path_folder [JCINFO, RADAR, SIMILARITY, GRAPHSPAGE, SORTABLE, (UNKNOWN unknown_csv_path)]"        
         );
     }
         

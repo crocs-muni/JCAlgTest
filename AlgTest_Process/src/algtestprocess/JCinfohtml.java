@@ -403,6 +403,8 @@ public class JCinfohtml {
         FileOutputStream file = new FileOutputStream(dir + "//compare//" + card1 + "_vs_" + card2 + "_compare.html");
         beginHTML(file, "JCAlgTest - Similarity of" + card1 +" and " + card2, "../");
         addCompareFileInfo(file, card1, card2);
+        
+        toFile.append("<h4>Di</h4>");
         endHTML(file, "../");
     }
     
@@ -856,6 +858,15 @@ public class JCinfohtml {
         FileOutputStream file = new FileOutputStream(dir + "//" + "similarity-table.html");
         beginHTML(file, "JCAlgTest - Similarity of smart cards");
         addInfoSimilarity(file);
+        compareTable(dir, file);
+        endHTML(file);
+        System.out.println("Make sure that CSS & JS files are present in output folder.");
+    }
+    
+    public static void runUnknownCard(String dir, String unknownCard) throws FileNotFoundException, IOException {
+        FileOutputStream file = new FileOutputStream(dir + "//" + "unknown-results.html");
+        beginHTML(file, "JCAlgTest - Results for unknown card");
+        //addInfoSimilarity(file);
         compareTable(dir, file);
         endHTML(file);
         System.out.println("Make sure that CSS & JS files are present in output folder.");
