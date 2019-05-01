@@ -355,10 +355,14 @@ public class JCinfohtml {
                     for(String ns:notSupp)
                         toFile.append(ns+"</br>");
                     
-                    if(sum>0.5F)
-                        toFile.append("\" style=\"background:rgba(140,200,120,"+String.format("%.2f", (sum*sum*sum*sum*sum*sum)).replace(",", ".")+");\">"+String.format("%.2f", sum*100).replace(",", ".")+"</td>\n");
-                    else 
-                        toFile.append("\" style=\"background:rgba(200,120,140,"+String.format("%.2f", (Math.abs(sum-1)*Math.abs(sum-1)*Math.abs(sum-1)*Math.abs(sum-1))).replace(",", ".")+");\">"+String.format("%.2f", sum*100).replace(",", ".")+"</td>\n");
+                    float alpha = 0.0F;
+                    if (sum > 0.5F) {
+                        alpha = (sum*sum*sum*sum*sum*sum);
+                    }
+                    else {
+                        alpha = (Math.abs(sum-1)*Math.abs(sum-1)*Math.abs(sum-1)*Math.abs(sum-1));
+                    }
+                    toFile.append("\" style=\"background:rgba(140,200,120,"+String.format("%.2f", alpha).replace(",", ".")+");\">"+String.format("%.2f", sum*100).replace(",", ".")+"</td>\n");
                     } 
             }
             toFile.append("\t\t</tr>\n");            
