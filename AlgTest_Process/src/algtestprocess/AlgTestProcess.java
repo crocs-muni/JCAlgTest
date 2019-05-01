@@ -59,6 +59,7 @@ public class AlgTestProcess {
      */
     public static void main(String[] args) throws FileNotFoundException {
         System.out.println("Make sure to have JavaCard support version in your CSV file!");
+        System.out.println("Test output");
         try {
             if (args.length == 0) { // in case there are no arguments present
                 printHelp();
@@ -159,7 +160,7 @@ public class AlgTestProcess {
         System.out.println("Usage: java AlgTestProcess.jar base_path\n" 
                 + "  base_path/results/directory should contain *.csv files with results \n"
                 + "  html table will be generated into base_path/AlgTest_html_table.html \n\n" 
-                + "  AlgTestProcess.jar base_path_folder [JCINFO, RADAR, COMPARETABLE, GRAPHSPAGE, SORTABLE]"        
+                + "  AlgTestProcess.jar base_path_folder [JCINFO, RADAR, SIMILARITY, GRAPHSPAGE, SORTABLE]"        
         );
     }
         
