@@ -742,7 +742,7 @@ public class CardMngr {
     // Functions for CPLC taken and modified from https://github.com/martinpaljak/GlobalPlatformPro 
     private static final byte CLA_GP = (byte) 0x80;     
     private static final byte ISO7816_INS_GET_DATA = (byte) 0xCA;   
-    private static final byte[] SELECT_CM = {(byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00};
+    private static final byte[] SELECT_CM = {(byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00, (byte) 0x00};
     private static final byte[] FETCH_GP_CPLC_APDU = {CLA_GP, ISO7816_INS_GET_DATA, (byte) 0x9F, (byte) 0x7F, (byte) 0x00};
     private static final byte[] FETCH_ISO_CPLC_APDU = {ISO7816.CLA_ISO7816, ISO7816_INS_GET_DATA, (byte) 0x9F, (byte) 0x7F, (byte) 0x00};
     private static final byte[] FETCH_GP_CARDDATA_APDU = {CLA_GP, ISO7816_INS_GET_DATA, (byte) 0x00, (byte) 0x66, (byte) 0x00};
