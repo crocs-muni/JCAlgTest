@@ -1095,10 +1095,15 @@ import javacardx.crypto.*;
                     m_signatureSign.init((i % 2 == 0) ? m_key1 : m_key2, Signature.MODE_SIGN); // (i % 2 == 0) ? m_key1 : m_key2 alteration between keys for forcing to init with new key
                 } 
                 break;
-/* JC 3.0.1                        
+/* JC 3.0.4                        
             case Consts.Signature_signPreComputedHash: for (short i = 0; i < repeats; i++) { m_signature.signPreComputedHash(m_ram1, (short) 0, chunkDataLen); } break;
             case Consts.Signature_setInitialDigest: for (short i = 0; i < repeats; i++) { m_signature.setInitialDigest(m_ram1, (short) 0, chunkDataLen); } break;
 */        
+/* JC 3.0.5                        
+            case JCConsts.Signature_verifyPreComputedHash:   
+                for (short i = 0; i < repeats; i++) { verifyPreComputedHash.verify(m_ram1, (short) 0, chunkDataLen, m_ram2, (short) 0, signLen); } 
+                break;
+*/
             default: ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
         }
 
