@@ -265,8 +265,13 @@ public class JCinfohtml {
         }
         return files;
     }
-   
+    
     public static void compareTable(String dir, FileOutputStream file) throws IOException {
+        compareTable(dir, file, false, null);
+    }
+    
+    public static void compareTable(String dir, FileOutputStream file,
+            boolean unknownMode, String unknownCard) throws IOException {
         // prepare input data - topFunctions, perf results
         List<String> topNames_sym = new ArrayList<>();
         List<String> topAcronyms_sym = new ArrayList<>();
@@ -274,6 +279,9 @@ public class JCinfohtml {
         List<String> topAcronyms_asym = new ArrayList<>();
         loadTopFunctions(topNames_sym, topAcronyms_sym, topNames_asym, topAcronyms_asym);
         List<String> files = listFilesForFolder(new File(dir));
+        if (unknownMode) {
+            files.add(0, unknownCard);
+        }
         List<String> namesOfCards = new ArrayList<>();
         List<List<Float>> rowsData = new ArrayList<>();
         
@@ -389,12 +397,16 @@ public class JCinfohtml {
                     }
                     
                     toFile
-                            .append("\" style=\"background:rgba(" + color + ","+String.format("%.2f", alpha).replace(",", "."))
-                            .append(");\">"+"<a href='compare/").append(card1).append("_vs_").append(card2).append("_compare.html'>")
+                            .append("\" style=\"background:rgba(" + color + ","+String.format("%.2f", alpha).replace(",", ".")).append(");\"><a href='")
+                            .append(unknownMode ? "unknown-" : "").append("compare/").append(card1).append("_vs_").append(card2).append("_compare.html'>")
                             .append(String.format("%.2f", sum*100).replace(",", ".")).append("</a></td>\n");
                     
-                    if (j > i)
-                        compareFile(dir, card1, card2, notSupp, notSuppByRow, notSuppByCol);
+                    if (j > i) {
+                        if (unknownMode)
+                            compareFile(dir, card1, card2, notSupp, notSuppByRow, notSuppByCol, "unknown-compare");
+                        else
+                            compareFile(dir, card1, card2, notSupp, notSuppByRow, notSuppByCol, "compare");
+                    }
                 } 
             }
             
@@ -411,8 +423,13 @@ public class JCinfohtml {
         file.write(toFile.toString().getBytes());
     }
     
-    public static void compareFile(String dir, String card1, String card2, List<String> notSupp, List<String> notSuppBy1, List<String> notSuppBy2) throws IOException {
-        FileOutputStream file = new FileOutputStream(dir + "//compare//" + card1 + "_vs_" + card2 + "_compare.html");
+    public static void compareFile(String dir, String card1, String card2,
+            List<String> notSupp, List<String> notSuppBy1,
+            List<String> notSuppBy2, String subdirectory) throws IOException {
+        
+        //TODO create subdirectory if not present
+        
+        FileOutputStream file = new FileOutputStream(dir + "//" + subdirectory + "//" + card1 + "_vs_" + card2 + "_compare.html");
         beginHTML(file, "JCAlgTest - Similarity of" + card1 +" and " + card2, "../");
         addCompareFileInfo(file, card1, card2);
         
@@ -912,7 +929,7 @@ public class JCinfohtml {
         FileOutputStream file = new FileOutputStream(dir + "//" + "unknown-results.html");
         beginHTML(file, "JCAlgTest - Results for unknown card");
         //addInfoSimilarity(file);
-        compareTable(dir, file);
+        compareTable(dir, file, true, unknownCard);
         endHTML(file);
         System.out.println("Make sure that CSS & JS files are present in output folder.");
     }
