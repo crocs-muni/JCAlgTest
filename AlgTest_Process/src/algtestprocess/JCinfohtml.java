@@ -382,10 +382,22 @@ public class JCinfohtml {
                     String card1 = namesOfCards.get(i);
                     String card2 = namesOfCards.get(j);
                     
-                    toFile.append("\" style=\"background:rgba(" + color + ","+String.format("%.2f", alpha).replace(",", ".")+");\">"+"<a href='compare/"+card1 + "_vs_" + card2 + "_compare.html'>"+String.format("%.2f", sum*100).replace(",", ".")+"</a></td>\n");
-                    compareFile(dir, card1, card2, notSupp, notSuppByRow, notSuppByCol);
+                    if (j < i) {
+                        String temp = card1;
+                        card1 = card2;
+                        card2 = temp;
+                    }
+                    
+                    toFile
+                            .append("\" style=\"background:rgba(" + color + ","+String.format("%.2f", alpha).replace(",", "."))
+                            .append(");\">"+"<a href='compare/").append(card1).append("_vs_").append(card2).append("_compare.html'>")
+                            .append(String.format("%.2f", sum*100).replace(",", ".")).append("</a></td>\n");
+                    
+                    if (j > i)
+                        compareFile(dir, card1, card2, notSupp, notSuppByRow, notSuppByCol);
                 } 
             }
+            
             toFile.append("\t\t</tr>\n");            
         }
         
@@ -408,28 +420,34 @@ public class JCinfohtml {
         
         toFile.append("<br>");
         toFile.append("<h4>Dissimilarities in algorithm support</h4>\n");
-        toFile.append("<strong><table class=\"compare\" cellspacing=\"0\" style=\"background:#FEFEFE; border-collapse: separate\"><tbody>\n");
-        toFile.append("\t<tr>\n");
-        toFile.append("\t\t<th>Support</th>\n");
-        toFile.append("\t\t<th>").append(card1).append("</th>\n");
-        toFile.append("\t\t<th>").append(card2).append("</th>\n");
-        toFile.append("\t</tr>\n");
-        for (String alg : notSupp) {
-            toFile.append("\t<tr>\n");
-            toFile.append("\t\t<th>").append(alg).append("</th>\n");
-            if (notSuppBy1.contains(alg)) {
-                toFile.append("\t\t<td style=\"background:rgba(200,120,140,0.30);\">").append("No").append("</td>\n");
-            } else {
-                toFile.append("\t\t<td style=\"background:rgba(140,200,120,0.30);\">").append("Yes").append("</td>\n");
-            }
-            if (notSuppBy2.contains(alg)) {
-                toFile.append("\t\t<td style=\"background:rgba(200,120,140,0.30);\">").append("No").append("</td>\n");
-            } else {
-                toFile.append("\t\t<td style=\"background:rgba(140,200,120,0.30);\">").append("Yes").append("</td>\n");
-            }
-            toFile.append("\t</tr>\n");
+        
+        if (notSupp.isEmpty()) {
+            toFile.append("<p>There are no differences in tested algorithm support between compared cards.</p>");
         }
-        toFile.append("</tbody></table></strong>\n");
+        else {
+            toFile.append("<strong><table class=\"compare\" cellspacing=\"0\" style=\"background:#FEFEFE; border-collapse: separate\"><tbody>\n");
+            toFile.append("\t<tr>\n");
+            toFile.append("\t\t<th>Support</th>\n");
+            toFile.append("\t\t<th>").append(card1).append("</th>\n");
+            toFile.append("\t\t<th>").append(card2).append("</th>\n");
+            toFile.append("\t</tr>\n");
+            for (String alg : notSupp) {
+                toFile.append("\t<tr>\n");
+                toFile.append("\t\t<th>").append(alg).append("</th>\n");
+                if (notSuppBy1.contains(alg)) {
+                    toFile.append("\t\t<td style=\"background:rgba(200,120,140,0.30);\">").append("No").append("</td>\n");
+                } else {
+                    toFile.append("\t\t<td style=\"background:rgba(140,200,120,0.30);\">").append("Yes").append("</td>\n");
+                }
+                if (notSuppBy2.contains(alg)) {
+                    toFile.append("\t\t<td style=\"background:rgba(200,120,140,0.30);\">").append("No").append("</td>\n");
+                } else {
+                    toFile.append("\t\t<td style=\"background:rgba(140,200,120,0.30);\">").append("Yes").append("</td>\n");
+                }
+                toFile.append("\t</tr>\n");
+            }
+            toFile.append("</tbody></table></strong>\n");
+        }
         
         file.write(toFile.toString().getBytes());
         endHTML(file, "../");
