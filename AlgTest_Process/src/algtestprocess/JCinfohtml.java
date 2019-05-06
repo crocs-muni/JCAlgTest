@@ -381,11 +381,16 @@ public class JCinfohtml {
                     sum = (float)Math.sqrt(sum);
                     sum = Math.abs(sum-1); //convert to percentage, close to 100% = very similar, close to 0% = not similar
                     
+                    String card1 = namesOfCards.get(i);
+                    String card2 = namesOfCards.get(j);
+                    
                     // toFile.append("\t\t\t<td>"+String.format("%.0f", sum).replace(",", ".")+"</td>\n");
                     toFile.append("\t\t\t<td data-toggle=\"tooltip\" class=\"table-tooltip\" data-html=\"true\" data-original-title=\"");
-                    toFile.append("Difference in num. of supported algs: <b>"+notSupp.size()+"/"+topNames_sym.size()+"</b></br>");
-                    for(String ns:notSupp)
-                        toFile.append(ns+"</br>");
+                    toFile.append("<b>" + card1 + "<br>" + card2 + "</b><br>Difference in num. of supported algs: <b>"+notSupp.size()+"/"+topNames_sym.size()+"</b></br>");
+                    
+                    //tooltip info about unsupported algorithms
+                    /*for(String ns:notSupp)
+                        toFile.append(ns+"</br>");*/
                     
                     float alpha = 0.0F;
                     String color;
@@ -397,9 +402,6 @@ public class JCinfohtml {
                         alpha = (Math.abs(sum-1)*Math.abs(sum-1)*Math.abs(sum-1)*Math.abs(sum-1));
                         color = "200,120,140";
                     }
-                    
-                    String card1 = namesOfCards.get(i);
-                    String card2 = namesOfCards.get(j);
                     
                     if (j < i) {
                         String temp = card1;
