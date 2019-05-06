@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import org.graalvm.compiler.graph.NodeList;
 
 /**
  *
@@ -299,6 +300,8 @@ public class JCinfohtml {
         topNames_sym.addAll(topNames_asym);
         topAcronyms_sym.addAll(topAcronyms_asym);
         
+        List<Float> unknownResults = new ArrayList<>();
+        
         //prepare rows (data added later)
         //one row(ArrayList<Float>) represent one algorithm, one column (get(i) in each row) represent one card
         for(String acr : topAcronyms_sym)            
@@ -359,68 +362,74 @@ public class JCinfohtml {
                 List<String> notSuppByCol = new ArrayList<>();
                 float sum = 0.0F;
                 int num = 0;
-                if(i==j) 
+                if(i==j) {
                     toFile.append("\t\t\t<th></th>\n");
-                else {
-                    for(int k=0; k<topNames_sym.size(); k++){
-                        if (rowsData.get(k).get(i) == 0.0F)
-                            notSuppByRow.add(topNames_sym.get(k));
-                        if (rowsData.get(k).get(j) == 0.0F)
-                            notSuppByCol.add(topNames_sym.get(k));
-                        if((rowsData.get(k).get(i) != 0.0F) || (rowsData.get(k).get(j) != 0.0F)) {
-                            //add method to unsupported list between two cards
-                            if((rowsData.get(k).get(i) == 0.0F) || (rowsData.get(k).get(j) == 0.0F)){
-                                    notSupp.add(topNames_sym.get(k));  
-                            } else {   
-                                sum += (rowsData.get(k).get(i) - rowsData.get(k).get(j))*(rowsData.get(k).get(i) - rowsData.get(k).get(j));
-                                num++;
-                            }
+                    continue;
+                }
+                
+                for(int k=0; k<topNames_sym.size(); k++){
+                    if (rowsData.get(k).get(i) == 0.0F)
+                        notSuppByRow.add(topNames_sym.get(k));
+                    if (rowsData.get(k).get(j) == 0.0F)
+                        notSuppByCol.add(topNames_sym.get(k));
+                    if((rowsData.get(k).get(i) != 0.0F) || (rowsData.get(k).get(j) != 0.0F)) {
+                        //add method to unsupported list between two cards
+                        if((rowsData.get(k).get(i) == 0.0F) || (rowsData.get(k).get(j) == 0.0F)){
+                                notSupp.add(topNames_sym.get(k));  
+                        } else {   
+                            sum += (rowsData.get(k).get(i) - rowsData.get(k).get(j))*(rowsData.get(k).get(i) - rowsData.get(k).get(j));
+                            num++;
                         }
                     }
-                    sum = sum/num;
-                    sum = (float)Math.sqrt(sum);
-                    sum = Math.abs(sum-1); //convert to percentage, close to 100% = very similar, close to 0% = not similar
-                    
-                    String card1 = namesOfCards.get(i);
-                    String card2 = namesOfCards.get(j);
-                    
-                    // toFile.append("\t\t\t<td>"+String.format("%.0f", sum).replace(",", ".")+"</td>\n");
-                    toFile.append("\t\t\t<td data-toggle=\"tooltip\" class=\"table-tooltip\" data-html=\"true\" data-original-title=\"");
-                    toFile.append("<b>" + card1 + "<br>" + card2 + "</b><br>Difference in num. of supported algs: <b>"+notSupp.size()+"/"+topNames_sym.size()+"</b></br>");
-                    
-                    //tooltip info about unsupported algorithms
-                    /*for(String ns:notSupp)
-                        toFile.append(ns+"</br>");*/
-                    
-                    float alpha = 0.0F;
-                    String color;
-                    if (sum > 0.5F) {
-                        alpha = (sum*sum*sum*sum*sum*sum);
-                        color = "140,200,120";
-                    }
-                    else {
-                        alpha = (Math.abs(sum-1)*Math.abs(sum-1)*Math.abs(sum-1)*Math.abs(sum-1));
-                        color = "200,120,140";
-                    }
-                    
-                    if (j < i) {
-                        String temp = card1;
-                        card1 = card2;
-                        card2 = temp;
-                    }
-                    
-                    toFile
-                            .append("\" style=\"background:rgba(" + color + ","+String.format("%.2f", alpha).replace(",", ".")).append(");\"><a href='")
-                            .append(unknownMode ? "unknown-" : "").append("compare/").append(card1).append("_vs_").append(card2).append("_compare.html'>")
-                            .append(String.format("%.2f", sum*100).replace(",", ".")).append("</a></td>\n");
-                    
-                    if (j > i) {
-                        if (unknownMode)
-                            compareFile(dir, card1, card2, notSupp, notSuppByRow, notSuppByCol, "unknown-compare");
-                        else
-                            compareFile(dir, card1, card2, notSupp, notSuppByRow, notSuppByCol, "compare");
-                    }
-                } 
+                }
+                sum = sum/num;
+                sum = (float)Math.sqrt(sum);
+                sum = Math.abs(sum-1); //convert to percentage, close to 100% = very similar, close to 0% = not similar
+                
+                String card1 = namesOfCards.get(i);
+                String card2 = namesOfCards.get(j);
+                
+                if (unknownMode && i == 0) {
+                    unknownResults.add(sum);
+                    card1 = "Unknown card";
+                }
+
+                // toFile.append("\t\t\t<td>"+String.format("%.0f", sum).replace(",", ".")+"</td>\n");
+                toFile.append("\t\t\t<td data-toggle=\"tooltip\" class=\"table-tooltip\" data-html=\"true\" data-original-title=\"");
+                toFile.append("<b>" + card1 + "<br>" + card2 + "</b><br>Difference in num. of supported algs: <b>"+notSupp.size()+"/"+topNames_sym.size()+"</b></br>");
+
+                //tooltip info about unsupported algorithms
+                /*for(String ns:notSupp)
+                    toFile.append(ns+"</br>");*/
+
+                float alpha = 0.0F;
+                String color;
+                if (sum > 0.5F) {
+                    alpha = (sum*sum*sum*sum*sum*sum);
+                    color = "140,200,120";
+                }
+                else {
+                    alpha = (Math.abs(sum-1)*Math.abs(sum-1)*Math.abs(sum-1)*Math.abs(sum-1));
+                    color = "200,120,140";
+                }
+
+                if (j < i) {
+                    String temp = card1;
+                    card1 = card2;
+                    card2 = temp;
+                }
+
+                toFile
+                        .append("\" style=\"background:rgba(" + color + ","+String.format("%.2f", alpha).replace(",", ".")).append(");\"><a href='")
+                        .append(unknownMode ? "unknown-" : "").append("compare/").append(card1).append("_vs_").append(card2).append("_compare.html'>")
+                        .append(String.format("%.2f", sum*100).replace(",", ".")).append("</a></td>\n");
+
+                if (j > i) {
+                    if (unknownMode)
+                        generateCompareFile(dir, card1, card2, notSupp, notSuppByRow, notSuppByCol, "unknown-compare");
+                    else
+                        generateCompareFile(dir, card1, card2, notSupp, notSuppByRow, notSuppByCol, "compare");
+                }
             }
             
             toFile.append("\t\t</tr>\n");            
@@ -432,11 +441,66 @@ public class JCinfohtml {
             "    selector: \"[data-toggle='tooltip']\",\n" +
             "    container: \"body\"\n" +
             "  })\n" +
-            "});\n</script>\n");        
+            "});\n</script>\n");
+        
+        if (unknownMode) {
+            addSimilarityUnknownInfo(toFile, namesOfCards.subList(1, namesOfCards.size()), unknownResults);
+        }
         file.write(toFile.toString().getBytes());
     }
     
-    public static void compareFile(String dir, String card1, String card2,
+    public static void addSimilarityUnknownInfo(StringBuilder toFile, List<String> cardNames, List<Float> similarities) {
+        
+        final float IDENTIC = 0.95F;
+        final float SIMILAR = 0.85F;
+        final float RELEVANT = 0.75F;
+        toFile.append("<br>\n");
+        
+        toFile.append("<h4>Almost identic cards</h4>\n");
+        toFile.append("<p>These cards from our database perform almost identically to unknown card.")
+                .append(" The cards are either the identical card type or members of the same product family with same underlying hardware and very similar implementation of JavaCard Virtual Machine.")
+                .append(" Clicking on the card name will bring you to the detailed comparison page.</p>\n");
+        addUnknownTable(toFile, cardNames, similarities, IDENTIC, 2.0F);
+        
+        toFile.append("<h4>Similar cards</h4>\n");
+        toFile.append("<p>These cards from our database perform similarly to unknown card.")
+                .append(" The cards probably belong to the same family of cards (or use similar underlying hardware) yet with detectable differences (possibly different co-processor for some of the supported algorithms).")
+                .append("</p>\n");
+        addUnknownTable(toFile, cardNames, similarities, SIMILAR, IDENTIC);
+        
+        toFile.append("<h4>Relevant cards</h4>\n");
+        toFile.append("<p>")
+                .append("The cards are only partially similar to unknown card, but the detailed comparison could contain relevant information.")
+                .append("</p>\n");
+        addUnknownTable(toFile, cardNames, similarities, RELEVANT, SIMILAR);
+    }
+    
+    public static void addUnknownTable(StringBuilder toFile, List<String> cardNames, List<Float> similarities, float lowerBound, float upperBound) {
+        boolean isEmpty = true;
+        for (int i = 0; i < similarities.size(); i++) {
+            if (similarities.get(i) >= lowerBound && similarities.get(i) < upperBound) isEmpty = false;
+        }
+        if (isEmpty) {
+            toFile.append("<p>No such cards were found in the database.</p>\n");
+            return;
+        }
+        toFile.append("<strong><table class=\"compare\" cellspacing=\"0\" style=\"background:#FEFEFE; border-collapse: separate\"><tbody>\n");
+        toFile.append("\t<tr>\n");
+        toFile.append("\t\t<th>Similarity >= ").append(String.format("%.0f", lowerBound*100).replace(",", ".")).append("%</th>\n");
+        toFile.append("\t\t<th>Similarity score</th>\n");
+        toFile.append("\t</tr>\n");
+        for (int i = 0; i < similarities.size(); i++) {
+            if (similarities.get(i) >= lowerBound && similarities.get(i) < upperBound) {
+                toFile.append("\t<tr>\n");
+                toFile.append("\t\t<th><a href='unknown-compare/Unknown card_vs_").append(cardNames.get(i)).append("_compare.html'>").append(cardNames.get(i)).append("</a></th>\n");
+                toFile.append("\t\t<td>").append(String.format("%.2f", similarities.get(i)*100).replace(",", ".")).append("</td>\n");
+                toFile.append("\t</tr>\n");
+            }
+        }
+        toFile.append("</tbody></table></strong>\n");
+    }
+    
+    public static void generateCompareFile(String dir, String card1, String card2,
             List<String> notSupp, List<String> notSuppBy1,
             List<String> notSuppBy2, String subdirectory) throws IOException {
         
@@ -939,8 +1003,9 @@ public class JCinfohtml {
         toFile.append("<p>MEMORY_TYPE_TRANSIENT_RESET: <strong>" + infoMap.get("JCSystem.MEMORY_TYPE_TRANSIENT_RESET") + "</strong></p>\n");
         toFile.append("<p>MEMORY_TYPE_TRANSIENT_DESELECT: <strong>" + infoMap.get("JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT") + "</strong></p>\n");
         
-        toFile.append("<br>\n<h3>Similarity with java cards available in the database</h3>");
-        toFile.append("<a href=\"https://www.fi.muni.cz/~xsvenda/jcalgtest/similarity-table.html\">Information about similarity testing</a>\n<br>");
+        toFile.append("<br>\n<h3>Similarity with java cards available in the database</h3>\n");
+        toFile.append("<a href=\"https://www.fi.muni.cz/~xsvenda/jcalgtest/similarity-table.html\">Information about similarity testing</a>\n<br>\n\n");
+        toFile.append("<h4>Similarity table</h4>\n");
         
         file.write(toFile.toString().getBytes());
     }
