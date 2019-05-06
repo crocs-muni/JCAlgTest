@@ -46,6 +46,7 @@ import java.util.List;
  */
 public class JCinfohtml {    
     public static final String topFunctionsFile = "top.txt";
+    public static final String SIMILARITY_FILE = "similarity.txt";
 
     public static void beginHTML(FileOutputStream file, String title) throws IOException {
         beginHTML(file, title, "");
@@ -194,11 +195,15 @@ public class JCinfohtml {
     }
 
     public static int loadTopFunctions(List<String> topNames, List<String> topAcronyms) throws IOException {
+        return loadTopFunctions(topNames, topAcronyms, false);
+    }
+    
+    public static int loadTopFunctions(List<String> topNames, List<String> topAcronyms, boolean similarity) throws IOException {
         List<String> topNames_sym = new ArrayList<>();
         List<String> topAcronyms_sym = new ArrayList<>();
         List<String> topNames_asym = new ArrayList<>();
         List<String> topAcronyms_asym = new ArrayList<>();
-        loadTopFunctions(topNames_sym, topAcronyms_sym, topNames_asym, topAcronyms_asym);
+        loadTopFunctions(topNames_sym, topAcronyms_sym, topNames_asym, topAcronyms_asym, similarity);
         topNames.addAll(topNames_sym);
         topNames.addAll(topNames_asym);
         if (topAcronyms != null) {
@@ -209,9 +214,15 @@ public class JCinfohtml {
     }
 
     public static void loadTopFunctions(List<String> topNames_sym, List<String> topAcronyms_sym, List<String> topNames_asym, List<String> topAcronyms_asym) throws IOException {
+        loadTopFunctions(topNames_sym, topAcronyms_sym, topNames_asym, topAcronyms_asym, false);
+    }
+    public static void loadTopFunctions(List<String> topNames_sym, List<String> topAcronyms_sym, List<String> topNames_asym, List<String> topAcronyms_asym, boolean similarity) throws IOException {
         BufferedReader reader = null;
         try {
-            reader = new BufferedReader(new FileReader(topFunctionsFile));
+            if (similarity)
+                reader = new BufferedReader(new FileReader(SIMILARITY_FILE));
+            else
+                reader = new BufferedReader(new FileReader(topFunctionsFile));
         } catch (IOException e) {
             System.out.println("INFO: Top Functions file not found");
         }
@@ -277,7 +288,7 @@ public class JCinfohtml {
         List<String> topAcronyms_sym = new ArrayList<>();
         List<String> topNames_asym = new ArrayList<>();
         List<String> topAcronyms_asym = new ArrayList<>();
-        loadTopFunctions(topNames_sym, topAcronyms_sym, topNames_asym, topAcronyms_asym);
+        loadTopFunctions(topNames_sym, topAcronyms_sym, topNames_asym, topAcronyms_asym, true);
         List<String> files = listFilesForFolder(new File(dir));
         if (unknownMode) {
             files.add(0, unknownCard);
@@ -896,6 +907,41 @@ public class JCinfohtml {
                 
         file.write(toFile.toString().getBytes());
     }
+    
+    private static void addInfoUnknown(FileOutputStream file, List<String> lines) throws IOException {
+        StringBuilder toFile = new StringBuilder();
+        
+        //TODO write information
+        String[] info;
+
+        // Transform lines into hashmap
+        HashMap<String, String> infoMap = new HashMap<>();
+        for (int i = 0; i < 150; i++) {
+            info = lines.get(i).split(";");
+            if (info.length > 1) {
+                infoMap.put(info[0], info[1]);
+            }
+        }
+        
+        toFile.append("<h1>Unknown card details</h1>\n");
+        toFile.append("<p>Execution date/time: <strong>" + infoMap.get("Execution date/time") + "</strong></p>\n");
+        toFile.append("<p>AlgTestJClient version: <strong>" + infoMap.get("AlgTestJClient version") + "</strong></p>\n");
+        toFile.append("<p>AlgTest applet version: <strong>" + infoMap.get("AlgTest applet version") + "</strong></p>\n");
+        toFile.append("<p>Used reader: <strong>" + infoMap.get("Used reader") + "</strong></p>\n");
+        toFile.append("<p><strong>Card ATR: " + infoMap.get("Card ATR") + "</strong></p>\n");
+        toFile.append("<p>Consult the following link if ATR parsing was not tried before. The ATR parsing could reveal the exact model of the tested smart card.</p>\n");
+        toFile.append("<p><u><a href=\"https://smartcard-atr.appspot.com/parse?ATR=" + infoMap.get("Card ATR").replaceAll(" ", "") + "\" target=\"_blank\">More information parsed from ATR</a></u></p>\n</br>\n");
+
+        toFile.append("<p>JavaCard version: <strong>" + infoMap.get("JCSystem.getVersion()[Major.Minor]") + "</strong></p>\n");
+        toFile.append("<p>MEMORY_TYPE_PERSISTENT: <strong>" + infoMap.get("JCSystem.MEMORY_TYPE_PERSISTENT") + "</strong></p>\n");
+        toFile.append("<p>MEMORY_TYPE_TRANSIENT_RESET: <strong>" + infoMap.get("JCSystem.MEMORY_TYPE_TRANSIENT_RESET") + "</strong></p>\n");
+        toFile.append("<p>MEMORY_TYPE_TRANSIENT_DESELECT: <strong>" + infoMap.get("JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT") + "</strong></p>\n");
+        
+        toFile.append("<br>\n<h3>Similarity with java cards available in the database</h3>");
+        toFile.append("<a href=\"https://www.fi.muni.cz/~xsvenda/jcalgtest/similarity-table.html\">Information about similarity testing</a>\n<br>");
+        
+        file.write(toFile.toString().getBytes());
+    }
    
     public static void runGraphs(String input) throws IOException {
         StringBuilder cardName = new StringBuilder();
@@ -928,7 +974,7 @@ public class JCinfohtml {
     public static void runUnknownCard(String dir, String unknownCard) throws FileNotFoundException, IOException {
         FileOutputStream file = new FileOutputStream(dir + "//" + "unknown-results.html");
         beginHTML(file, "JCAlgTest - Results for unknown card");
-        //addInfoSimilarity(file);
+        addInfoUnknown(file, initalize(unknownCard, new StringBuilder("Unknown card")));
         compareTable(dir, file, true, unknownCard);
         endHTML(file);
         System.out.println("Make sure that CSS & JS files are present in output folder.");
