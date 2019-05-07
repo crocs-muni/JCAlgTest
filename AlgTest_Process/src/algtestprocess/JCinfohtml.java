@@ -70,6 +70,10 @@ public class JCinfohtml {
                 + "\t<link href=\"./" + toRoot + "assets/css/ie10-viewport-bug-workaround.css\" rel=\"stylesheet\">\n"                
                 + "\t<link rel=\"stylesheet\" type=\"text/css\" href=\"./" + toRoot + "dist/style.css\">\n";
         
+        if (!toRoot.equals(""))
+            toFile += "\t<script src=\"http://d3js.org/d3.v3.min.js\"></script>\n"
+                    + "\t<script src=\"RadarChart.js\"></script>\n";
+        
         toFile += " </head>\n\n";
         toFile += " <body style=\"margin-top:50px; padding:20px\">\n\n";
 
@@ -297,6 +301,9 @@ public class JCinfohtml {
         List<String> namesOfCards = new ArrayList<>();
         List<List<Float>> rowsData = new ArrayList<>();
         
+        List<List<Float>> radarData = new ArrayList<>();
+        List<List<Float>> radarDataCopy = new ArrayList<>();
+        
         topNames_sym.addAll(topNames_asym);
         topAcronyms_sym.addAll(topAcronyms_asym);
         
@@ -304,8 +311,11 @@ public class JCinfohtml {
         
         //prepare rows (data added later)
         //one row(ArrayList<Float>) represent one algorithm, one column (get(i) in each row) represent one card
-        for(String acr : topAcronyms_sym)            
+        for(String acr : topAcronyms_sym) {            
             rowsData.add(new ArrayList<Float>());
+            radarData.add(new ArrayList<Float>());
+            radarDataCopy.add(new ArrayList<Float>());
+        }
                 
         //beginning of graph table
         StringBuilder toFile = new StringBuilder();        
@@ -313,8 +323,11 @@ public class JCinfohtml {
                         "\t\t<tr>\n\t\t\t<th>"+"Higher percentage = more similar"+"</th>\n");
        
         //load data from input files (fixed-size perf data) and store name of card
-        for(String fileName : files)
+        for(String fileName : files) {
             namesOfCards.add(addCard(topNames_sym, rowsData, fileName));
+            addCard(topNames_sym, radarData, fileName); 
+            addCard(topNames_sym, radarDataCopy, fileName);
+        }
            
         //head of table with cards names
         for(String name : namesOfCards)
@@ -332,8 +345,10 @@ public class JCinfohtml {
             }
             
             for(int j=0; j<rowsData.get(i).size(); j++){
-                if(rowsData.get(i).get(j) != 0.0F)
+                if(rowsData.get(i).get(j) != 0.0F) {
                     rowsData.get(i).set(j, rowsData.get(i).get(j)/max);
+                    radarData.get(i).set(j, radarData.get(i).get(j)/(max*1.11F));
+                }
             }            
         }
         
@@ -351,7 +366,7 @@ public class JCinfohtml {
                 
             System.out.println(namesOfCards.get(i)+"\t"+Math.abs(1-avg/sum));
         }
-         
+        
         for(int i=0; i<namesOfCards.size(); i++){
             toFile.append("\t\t<tr>\n");
             toFile.append("\t\t\t<th>"+namesOfCards.get(i)+"</th>\n");
@@ -426,9 +441,9 @@ public class JCinfohtml {
 
                 if (j > i) {
                     if (unknownMode)
-                        generateCompareFile(dir, card1, card2, notSupp, notSuppByRow, notSuppByCol, "unknown-compare");
+                        generateCompareFile(dir, card1, card2, notSupp, notSuppByRow, notSuppByCol, "unknown-compare", topAcronyms_sym, radarData, radarDataCopy, i, j);
                     else
-                        generateCompareFile(dir, card1, card2, notSupp, notSuppByRow, notSuppByCol, "compare");
+                        generateCompareFile(dir, card1, card2, notSupp, notSuppByRow, notSuppByCol, "compare", topAcronyms_sym, radarData, radarDataCopy, i, j);
                 }
             }
             
@@ -456,6 +471,9 @@ public class JCinfohtml {
         final float RELEVANT = 0.75F;
         toFile.append("<br>\n");
         
+        toFile.append("<div class=\"container\">\n");
+        toFile.append("<div class=\"row\">\n");
+        
         toFile.append("<h4>Almost identic cards</h4>\n");
         toFile.append("<p>These cards from our database perform almost identically to unknown card.")
                 .append(" The cards are either the identical card type or members of the same product family with same underlying hardware and very similar implementation of JavaCard Virtual Machine.")
@@ -473,6 +491,8 @@ public class JCinfohtml {
                 .append("The cards are only partially similar to unknown card, but the detailed comparison could contain relevant information.")
                 .append("</p>\n");
         addUnknownTable(toFile, cardNames, similarities, RELEVANT, SIMILAR);
+        
+        toFile.append("</div></div>\n");
     }
     
     public static void addUnknownTable(StringBuilder toFile, List<String> cardNames, List<Float> similarities, float lowerBound, float upperBound) {
@@ -502,18 +522,26 @@ public class JCinfohtml {
     
     public static void generateCompareFile(String dir, String card1, String card2,
             List<String> notSupp, List<String> notSuppBy1,
-            List<String> notSuppBy2, String subdirectory) throws IOException {
+            List<String> notSuppBy2, String subdirectory,
+            List<String> topAcronyms_sym, List<List<Float>> radarData, List<List<Float>> radarDataCopy,
+            int i, int j) throws IOException {
         
         //TODO create subdirectory if not present
         
-        FileOutputStream file = new FileOutputStream(dir + "//" + subdirectory + "//" + card1 + "_vs_" + card2 + "_compare.html");
+        String fileNameActual = card1 + "_vs_" + card2 + "_compare";
+        String filename = dir + "//" + subdirectory + "//" + fileNameActual;
+        FileOutputStream file = new FileOutputStream(filename + ".html");
         beginHTML(file, "JCAlgTest - Similarity of" + card1 +" and " + card2, "../");
         addCompareFileInfo(file, card1, card2);
         
+        generateCompareGraph(file, filename, fileNameActual, card1, card2, topAcronyms_sym, radarData, radarDataCopy, i, j);
+        
         StringBuilder toFile = new StringBuilder();
         
+        toFile.append("\t<div class=\"container\">\n");
+        toFile.append("\t\t<div class=\"row\">\n");
         toFile.append("<br>");
-        toFile.append("<h4>Dissimilarities in algorithm support</h4>\n");
+        toFile.append("<h3>Dissimilarities in algorithm support</h3>\n");
         
         if (notSupp.isEmpty()) {
             toFile.append("<p>There are no differences in tested algorithm support between compared cards.</p>");
@@ -542,6 +570,7 @@ public class JCinfohtml {
             }
             toFile.append("</tbody></table></strong>\n");
         }
+        toFile.append("\t\t</div>\t</div>\n");
         
         file.write(toFile.toString().getBytes());
         endHTML(file, "../");
@@ -551,11 +580,61 @@ public class JCinfohtml {
         StringBuilder toFile = new StringBuilder();
         String concat = card1 + " and " + card2;
         
+        toFile.append("\t<div class=\"container\">\n");
+        toFile.append("\t\t<div class=\"row\">\n");
         toFile.append("<h1>Comparison of ").append(concat).append("</h1>");
         toFile.append("<h4>What the numbers do tell?</h4>");
-        toFile.append("<p>Using performance results, we can compare these two cards.</p>");
+        toFile.append("<p>Using performance results, we can compare these two cards.</p>\n");
         
         file.write(toFile.toString().getBytes());
+    }
+    
+    public static void generateCompareGraph(FileOutputStream file, String fileName, String fileNameActual,String card1, String card2,
+            List<String> topAcronyms_sym, List<List<Float>> radarData, List<List<Float>> radarDataCopy,
+            int i, int j) throws IOException {
+        StringBuilder toFile = new StringBuilder();
+        
+        
+        toFile.append("\t\t<h2>Radar graph</h2>\n");
+        toFile.append("\t\t<p>This is the comparation radar graph of " + card1 + "(blue)" + " and " + card2 + "(Orange).</p>\n");
+        toFile.append("\t\t<p>The closest value to 100% represents the fastest result in particular method from all tested cards. Values closer to 10% supply slower results. 0% value means unsupported or not tested algorithms.</p><br>\n");
+        toFile.append("\t\t<div id=\"chart\"></div>\n\t\t</div>\n");
+        toFile.append("\t\t<script type=\"text/javascript\" src=\""+fileNameActual+".js\"></script>\n");
+        toFile.append("\t</div>\n");
+        file.write(toFile.toString().getBytes());
+        
+        FileOutputStream script = new FileOutputStream(fileName + ".js");
+
+        toFile = new StringBuilder();
+        
+        toFile.append("var w = document.getElementById('chart').offsetWidth,\n");
+        toFile.append("    h = window.innerHeight -70;\n");
+        toFile.append("var colorscale = d3.scale.category10();\n");
+        toFile.append("var data = [\n[\n");
+
+        for(int k=0; k<topAcronyms_sym.size(); k++)
+            if(radarData.get(k).get(i) == 0.0F){
+                toFile.append("{axis:\"" +topAcronyms_sym.get(k)+"\",value:"+0.0F+",title:\""+"NS"+"\"},\n");    
+            } else {
+                toFile.append("{axis:\"" +topAcronyms_sym.get(k)+"\",value:"+String.format("%.3f", Math.abs(1-radarData.get(k).get(i))).replaceAll(",", ".")+",title:\""+radarDataCopy.get(k).get(i)+" ms\"},\n");
+            }
+        
+        toFile.append("],\n[\n");
+        
+        for(int k=0; k<topAcronyms_sym.size(); k++)
+            if(radarData.get(k).get(j) == 0.0F){
+                toFile.append("{axis:\"" +topAcronyms_sym.get(k)+"\",value:"+0.0F+",title:\""+"NS"+"\"},\n");    
+            } else {
+                toFile.append("{axis:\"" +topAcronyms_sym.get(k)+"\",value:"+String.format("%.3f", Math.abs(1-radarData.get(k).get(j))).replaceAll(",", ".")+",title:\""+radarDataCopy.get(k).get(j)+" ms\"},\n");
+            }
+
+        toFile.append("],\n];\n\n");
+        toFile.append("var config = {");
+        toFile.append(" w: w-175,\n h: h-175,\n maxValue: 1.0,\n levels: 10,\n }\n\n");
+        toFile.append("RadarChart.draw(\"#chart\", data, config);");
+
+        script.write(toFile.toString().getBytes());
+        script.close();
     }
       
     public static void compareGraph(String dir, FileOutputStream file) throws IOException {
@@ -988,7 +1067,8 @@ public class JCinfohtml {
                 infoMap.put(info[0], info[1]);
             }
         }
-        
+        toFile.append("<div class=\"container\">\n");
+        toFile.append("<div class=\"row\">\n");
         toFile.append("<h1>Unknown card details</h1>\n");
         toFile.append("<p>Execution date/time: <strong>" + infoMap.get("Execution date/time") + "</strong></p>\n");
         toFile.append("<p>AlgTestJClient version: <strong>" + infoMap.get("AlgTestJClient version") + "</strong></p>\n");
@@ -1006,6 +1086,7 @@ public class JCinfohtml {
         toFile.append("<br>\n<h3>Similarity with java cards available in the database</h3>\n");
         toFile.append("<a href=\"https://www.fi.muni.cz/~xsvenda/jcalgtest/similarity-table.html\">Information about similarity testing</a>\n<br>\n\n");
         toFile.append("<h4>Similarity table</h4>\n");
+        toFile.append("</div></div>\n");
         
         file.write(toFile.toString().getBytes());
     }
