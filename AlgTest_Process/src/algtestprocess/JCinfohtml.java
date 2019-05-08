@@ -382,6 +382,9 @@ public class JCinfohtml {
                     continue;
                 }
                 
+                double cosineSum = 0.0;
+                double cosineSumI = 0.0;
+                double cosineSumJ = 0.0;
                 for(int k=0; k<topNames_sym.size(); k++){
                     if (rowsData.get(k).get(i) == 0.0F)
                         notSuppByRow.add(topNames_sym.get(k));
@@ -393,6 +396,9 @@ public class JCinfohtml {
                                 notSupp.add(topNames_sym.get(k));  
                         } else {   
                             sum += (rowsData.get(k).get(i) - rowsData.get(k).get(j))*(rowsData.get(k).get(i) - rowsData.get(k).get(j));
+                            cosineSum += (rowsData.get(k).get(i) * rowsData.get(k).get(j));
+                            cosineSumI += (rowsData.get(k).get(i) * rowsData.get(k).get(i));
+                            cosineSumJ += (rowsData.get(k).get(j) * rowsData.get(k).get(j));
                             num++;
                         }
                     }
@@ -400,6 +406,11 @@ public class JCinfohtml {
                 sum = sum/num;
                 sum = (float)Math.sqrt(sum);
                 sum = Math.abs(sum-1); //convert to percentage, close to 100% = very similar, close to 0% = not similar
+                
+                double cosineSimilarity = 1.0 - 2 * Math.acos(cosineSum / (Math.sqrt(cosineSumI) * Math.sqrt(cosineSumJ))) / Math.PI;
+                //sum = (float) cosineSimilarity;
+                
+                //System.out.println(sum);
                 
                 String card1 = namesOfCards.get(i);
                 String card2 = namesOfCards.get(j);
@@ -596,8 +607,8 @@ public class JCinfohtml {
         
         
         toFile.append("\t\t<h2>Radar graph</h2>\n");
-        toFile.append("\t\t<p>This is the comparation radar graph of " + card1 + "(blue)" + " and " + card2 + "(Orange).</p>\n");
-        toFile.append("\t\t<p>The closest value to 100% represents the fastest result in particular method from all tested cards. Values closer to 10% supply slower results. 0% value means unsupported or not tested algorithms.</p><br>\n");
+        toFile.append("\t\t<p>This is the comparation radar graph of <span style=\"color:orange;\">" + card1 + "</span> and <span style=\"color:blue;\">" + card2 + "</span>.</p>\n");
+        toFile.append("\t\t<p>The values closer to 100% represent the times close to the fastest result among all tested cards, whereas values close to 10% suggest slower performance in the corresponding algorithm. Value of 0%(NS) indicates a lack of support or occurrence of unexpected error during the tested algorithm.</p><br>\n");
         toFile.append("\t\t<div id=\"chart\"></div>\n\t\t</div>\n");
         toFile.append("\t\t<script type=\"text/javascript\" src=\""+fileNameActual+".js\"></script>\n");
         toFile.append("\t</div>\n");

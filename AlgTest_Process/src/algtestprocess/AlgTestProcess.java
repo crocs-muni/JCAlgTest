@@ -50,8 +50,8 @@ public class AlgTestProcess {
     public static final String GENERATE_GRAPHS = "GRAPHS";              //GENERATE SINGLE GRAPHS PAGE FOR JCINFO
     public static final String GENERATE_GRAPHS_ONEPAGE = "SCALABILITY"; //PAGE WITH VARIABLE PERFTEST GRAPHS
     public static final String GENERATE_COMPARE_GRAPH = "COMPAREGRAPH"; //ONE BIG GRAPH FOR COMPARE CARDS
-    public static final String GENERATE_COMPARE_TABLE = "SIMILARITY";   //ONE BIG TABLE FOR COMPARE CARDS
-    public static final String GENERATE_UNKNOWN_RESULTS = "UNKNOWN";    //ONE BIG TABLE FOR COMPARE CARDS
+    public static final String GENERATE_COMPARE_TABLE = "SIMILARITY";   //SIMILARITY TABLE FOR COMPARE CARDS
+    public static final String GENERATE_UNKNOWN_RESULTS = "UNKNOWN";    //RESULTS FOR UNKNOWN CARD
     public static final String GENERATE_RADAR_GRAPHS = "RADAR";         //ONE BIG TABLE FOR COMPARE CARDS      
 
     /**
