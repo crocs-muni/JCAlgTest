@@ -96,7 +96,7 @@ public class PerformanceTesting {
     }
     
     String getCurrentTestInfoString(boolean bAppendTime) {
-        String testInfo = m_cardName + "___";
+        String testInfo = "___";
         testInfo += "_PERFORMANCE_";
 
         if (m_bTestSymmetricAlgs) {
