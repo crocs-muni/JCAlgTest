@@ -550,10 +550,11 @@ public class CardMngr {
         m_SystemOutLogger.println(commandAPDU.toString());
 
         m_SystemOutLogger.println(bytesToHex(commandAPDU.getBytes()));
-        
+        long elapsedCard = -System.currentTimeMillis();
         responseAPDU = m_channel.transmit(commandAPDU);
-
-        m_SystemOutLogger.println(responseAPDU.toString());
+        elapsedCard += System.currentTimeMillis();
+        
+        m_SystemOutLogger.println(String.format("%s, elapsed=%d ms", responseAPDU.toString(), elapsedCard));
         m_SystemOutLogger.println(bytesToHex(responseAPDU.getBytes()));
 
         if (responseAPDU.getSW1() == (byte) 0x61) {
