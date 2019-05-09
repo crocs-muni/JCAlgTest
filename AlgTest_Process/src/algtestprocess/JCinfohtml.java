@@ -373,7 +373,11 @@ public class JCinfohtml {
         
         for(int i=0; i<namesOfCards.size(); i++){
             toFile.append("\t\t<tr>\n");
-            toFile.append("\t\t\t<th>"+namesOfCards.get(i)+"</th>\n");
+            toFile.append("\t\t\t<th>")
+                    .append((unknownMode && i == 0) ? "<mark>" : "")
+                    .append(namesOfCards.get(i))
+                    .append((unknownMode && i == 0) ? "</mark>" : "")
+                    .append("</th>\n");
             
             for(int j=0; j<namesOfCards.size(); j++){
                 List<String> notSupp = new ArrayList<>();
@@ -451,7 +455,8 @@ public class JCinfohtml {
                 toFile
                         .append("\" style=\"background:rgba(" + color + ","+String.format("%.2f", alpha).replace(",", ".")).append(");\"><a href='")
                         .append(unknownMode ? "unknown-" : "").append("compare/").append(card1).append("_vs_").append(card2).append("_compare.html'>")
-                        .append(String.format("%.2f", sum*100).replace(",", ".")).append("</a></td>\n");
+                        .append((unknownMode && (i == 0 || j == 0)) ? "<mark>" : "")
+                        .append(String.format("%.2f", sum*100).replace(",", ".")).append((unknownMode && (i == 0 || j == 0)) ? "</mark>" : "").append("</a></td>\n");
 
                 if (j > i) {
                     if (unknownMode)
