@@ -62,6 +62,54 @@ import javacardx.crypto.*;
     RandomData       m_random = null;
     KeyPair          m_keyPair1 = null;
     KeyPair          m_keyPair2 = null;
+    
+    // Cached RSA keys to prevent need for repeated keygen during perf test preparation
+    KeyPair m_cached_keyPair_RSA_CRT_512_1 = null;
+    KeyPair m_cached_keyPair_RSA_CRT_512_2 = null;
+    KeyPair m_cached_keyPair_RSA_CRT_736_1 = null;
+    KeyPair m_cached_keyPair_RSA_CRT_736_2 = null;
+    KeyPair m_cached_keyPair_RSA_CRT_768_1 = null;
+    KeyPair m_cached_keyPair_RSA_CRT_768_2 = null;
+    KeyPair m_cached_keyPair_RSA_CRT_896_1 = null;
+    KeyPair m_cached_keyPair_RSA_CRT_896_2 = null;
+    KeyPair m_cached_keyPair_RSA_CRT_1024_1 = null;
+    KeyPair m_cached_keyPair_RSA_CRT_1024_2 = null;
+    KeyPair m_cached_keyPair_RSA_CRT_1280_1 = null;
+    KeyPair m_cached_keyPair_RSA_CRT_1280_2 = null;
+    KeyPair m_cached_keyPair_RSA_CRT_1536_1 = null;
+    KeyPair m_cached_keyPair_RSA_CRT_1536_2 = null;
+    KeyPair m_cached_keyPair_RSA_CRT_1984_1 = null;
+    KeyPair m_cached_keyPair_RSA_CRT_1984_2 = null;
+    KeyPair m_cached_keyPair_RSA_CRT_2048_1 = null;
+    KeyPair m_cached_keyPair_RSA_CRT_2048_2 = null;
+    KeyPair m_cached_keyPair_RSA_CRT_3072_1 = null;
+    KeyPair m_cached_keyPair_RSA_CRT_3072_2 = null;
+    KeyPair m_cached_keyPair_RSA_CRT_4096_1 = null;
+    KeyPair m_cached_keyPair_RSA_CRT_4096_2 = null;
+    KeyPair m_cached_keyPair_RSA_512_1 = null;
+    KeyPair m_cached_keyPair_RSA_512_2 = null;
+    KeyPair m_cached_keyPair_RSA_736_1 = null;
+    KeyPair m_cached_keyPair_RSA_736_2 = null;
+    KeyPair m_cached_keyPair_RSA_768_1 = null;
+    KeyPair m_cached_keyPair_RSA_768_2 = null;
+    KeyPair m_cached_keyPair_RSA_896_1 = null;
+    KeyPair m_cached_keyPair_RSA_896_2 = null;
+    KeyPair m_cached_keyPair_RSA_1024_1 = null;
+    KeyPair m_cached_keyPair_RSA_1024_2 = null;
+    KeyPair m_cached_keyPair_RSA_1280_1 = null;
+    KeyPair m_cached_keyPair_RSA_1280_2 = null;
+    KeyPair m_cached_keyPair_RSA_1536_1 = null;
+    KeyPair m_cached_keyPair_RSA_1536_2 = null;
+    KeyPair m_cached_keyPair_RSA_1984_1 = null;
+    KeyPair m_cached_keyPair_RSA_1984_2 = null;
+    KeyPair m_cached_keyPair_RSA_2048_1 = null;
+    KeyPair m_cached_keyPair_RSA_2048_2 = null;
+    KeyPair m_cached_keyPair_RSA_3072_1 = null;
+    KeyPair m_cached_keyPair_RSA_3072_2 = null;
+    KeyPair m_cached_keyPair_RSA_4096_1 = null;
+    KeyPair m_cached_keyPair_RSA_4096_2 = null;
+    
+             
     Checksum         m_checksum = null;
     KeyAgreement     m_keyAgreement = null;   
     RandomData       m_trng = null; 
@@ -100,14 +148,6 @@ import javacardx.crypto.*;
     Key                 m_keyInv2 = null;
     PrivateKey          m_privateKey = null;
     PublicKey           m_publicKey = null;
-/* Potentially, we can pre-generate asymetric keys and later only set these to speedup initailizations of tests   
-    ECPrivateKey       m_ecprivate_key_PREGEN = null;
-    ECPublicKey        m_ecpublic_key_PREGEN = null;
-    RSAPrivateCrtKey   m_rsaprivatecrt_key_PREGEN = null;
-    RSAPublicKey       m_rsapubliccrt_key_PREGEN = null;
-    RSAPrivateKey      m_rsaprivate_key_PREGEN = null;
-    RSAPublicKey       m_rsapublic_key_PREGEN = null;
-*/    
     
     
     Cipher              m_cipher = null;
@@ -378,6 +418,158 @@ import javacardx.crypto.*;
          }
      }
 */   
+   
+   KeyPair getKeyPairObject(byte typeRSA, short keyPairIndex, short keyLength) {
+        KeyPair tmp = null;       
+        
+        switch (keyLength) {
+            case (short) 512:
+                if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) tmp = m_cached_keyPair_RSA_CRT_512_1;
+                if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA) tmp = m_cached_keyPair_RSA_512_1;
+                if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) tmp = m_cached_keyPair_RSA_CRT_512_2;
+                if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA) tmp = m_cached_keyPair_RSA_512_2;
+                break;
+             case (short) 736:
+                if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) tmp = m_cached_keyPair_RSA_CRT_736_1;
+                if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA) tmp = m_cached_keyPair_RSA_736_1;
+                if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) tmp = m_cached_keyPair_RSA_CRT_736_2;
+                if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA) tmp = m_cached_keyPair_RSA_736_2;
+                break;
+             case (short) 768:
+                if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) tmp = m_cached_keyPair_RSA_CRT_768_1;
+                if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA) tmp = m_cached_keyPair_RSA_768_1;
+                if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) tmp = m_cached_keyPair_RSA_CRT_768_2;
+                if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA) tmp = m_cached_keyPair_RSA_768_2;
+                break;
+             case (short) 896:
+                if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) tmp = m_cached_keyPair_RSA_CRT_896_1;
+                if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA) tmp = m_cached_keyPair_RSA_896_1;
+                if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) tmp = m_cached_keyPair_RSA_CRT_896_2;
+                if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA) tmp = m_cached_keyPair_RSA_896_2;
+                break;
+             case (short) 1024:
+                if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) tmp = m_cached_keyPair_RSA_CRT_1024_1;
+                if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA) tmp = m_cached_keyPair_RSA_1024_1;
+                if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) tmp = m_cached_keyPair_RSA_CRT_1024_2;
+                if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA) tmp = m_cached_keyPair_RSA_1024_2;
+                break;
+             case (short) 1280:
+                if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) tmp = m_cached_keyPair_RSA_CRT_1280_1;
+                if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA) tmp = m_cached_keyPair_RSA_1280_1;
+                if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) tmp = m_cached_keyPair_RSA_CRT_1280_2;
+                if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA) tmp = m_cached_keyPair_RSA_1280_2;
+                break;
+             case (short) 1536:
+                if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) tmp = m_cached_keyPair_RSA_CRT_1536_1;
+                if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA) tmp = m_cached_keyPair_RSA_1536_1;
+                if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) tmp = m_cached_keyPair_RSA_CRT_1536_2;
+                if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA) tmp = m_cached_keyPair_RSA_1536_2;
+                break;
+             case (short) 1984:
+                if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) tmp = m_cached_keyPair_RSA_CRT_1984_1;
+                if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA) tmp = m_cached_keyPair_RSA_1984_1;
+                if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) tmp = m_cached_keyPair_RSA_CRT_1984_2;
+                if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA) tmp = m_cached_keyPair_RSA_1984_2;
+                break;
+            case (short) 2048:
+                if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) tmp = m_cached_keyPair_RSA_CRT_2048_1;
+                if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA) tmp = m_cached_keyPair_RSA_2048_1;
+                if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) tmp = m_cached_keyPair_RSA_CRT_2048_2;
+                if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA) tmp = m_cached_keyPair_RSA_2048_2;
+                break;
+            case (short) 3072:
+                if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) tmp = m_cached_keyPair_RSA_CRT_3072_1;
+                if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA) tmp = m_cached_keyPair_RSA_3072_1;
+                if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) tmp = m_cached_keyPair_RSA_CRT_3072_2;
+                if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA) tmp = m_cached_keyPair_RSA_3072_2;
+                break;
+            case (short) 4096:
+                if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) tmp = m_cached_keyPair_RSA_CRT_4096_1;
+                if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA) tmp = m_cached_keyPair_RSA_4096_1;
+                if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) tmp = m_cached_keyPair_RSA_CRT_4096_2;
+                if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA) tmp = m_cached_keyPair_RSA_4096_2;
+                break;
+        }
+       
+        // If not yet allocated, alocate and generate it
+        if (tmp == null) {
+            tmp = new KeyPair(typeRSA, keyLength);
+            tmp.genKeyPair();
+        
+            // Cache the keypair if of specific lengths
+            switch (keyLength) {
+                case (short) 512:
+                    if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) m_cached_keyPair_RSA_CRT_512_1 = tmp;
+                    if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA) m_cached_keyPair_RSA_512_1 = tmp;
+                    if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) m_cached_keyPair_RSA_CRT_512_2 = tmp;
+                    if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA) m_cached_keyPair_RSA_512_2 = tmp;
+                    break;
+                case (short) 736:
+                    if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) m_cached_keyPair_RSA_CRT_736_1 = tmp;
+                    if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA) m_cached_keyPair_RSA_736_1 = tmp;
+                    if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) m_cached_keyPair_RSA_CRT_736_2 = tmp;
+                    if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA) m_cached_keyPair_RSA_736_2 = tmp;
+                    break;
+                case (short) 768:
+                    if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) m_cached_keyPair_RSA_CRT_768_1 = tmp;
+                    if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA) m_cached_keyPair_RSA_768_1 = tmp;
+                    if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) m_cached_keyPair_RSA_CRT_768_2 = tmp;
+                    if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA) m_cached_keyPair_RSA_768_2 = tmp;
+                    break;
+                case (short) 896:
+                    if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) m_cached_keyPair_RSA_CRT_896_1 = tmp;
+                    if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA) m_cached_keyPair_RSA_896_1 = tmp;
+                    if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) m_cached_keyPair_RSA_CRT_896_2 = tmp;
+                    if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA) m_cached_keyPair_RSA_896_2 = tmp;
+                    break;
+                case (short) 1024:
+                    if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) m_cached_keyPair_RSA_CRT_1024_1 = tmp;
+                    if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA) m_cached_keyPair_RSA_1024_1 = tmp;
+                    if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) m_cached_keyPair_RSA_CRT_1024_2 = tmp;
+                    if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA) m_cached_keyPair_RSA_1024_2 = tmp;
+                    break;
+                case (short) 1280:
+                    if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) m_cached_keyPair_RSA_CRT_1280_1 = tmp;
+                    if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA) m_cached_keyPair_RSA_1280_1 = tmp;
+                    if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) m_cached_keyPair_RSA_CRT_1280_2 = tmp;
+                    if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA) m_cached_keyPair_RSA_1280_2 = tmp;
+                    break;
+                case (short) 1536:
+                    if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) m_cached_keyPair_RSA_CRT_1536_1 = tmp;
+                    if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA) m_cached_keyPair_RSA_1536_1 = tmp;
+                    if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) m_cached_keyPair_RSA_CRT_1536_2 = tmp;
+                    if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA) m_cached_keyPair_RSA_1536_2 = tmp;
+                    break;
+                case (short) 1984:
+                    if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) m_cached_keyPair_RSA_CRT_1984_1 = tmp;
+                    if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA) m_cached_keyPair_RSA_1984_1 = tmp;
+                    if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) m_cached_keyPair_RSA_CRT_1984_2 = tmp;
+                    if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA) m_cached_keyPair_RSA_1984_2 = tmp;
+                    break;
+                case (short) 2048:
+                    if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) m_cached_keyPair_RSA_CRT_2048_1 = tmp;
+                    if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA) m_cached_keyPair_RSA_2048_1 = tmp;
+                    if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) m_cached_keyPair_RSA_CRT_2048_2 = tmp;
+                    if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA) m_cached_keyPair_RSA_2048_2 = tmp;
+                    break;
+                case (short) 3072:
+                    if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) m_cached_keyPair_RSA_CRT_3072_1 = tmp;
+                    if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA) m_cached_keyPair_RSA_3072_1 = tmp;
+                    if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) m_cached_keyPair_RSA_CRT_3072_2 = tmp;
+                    if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA) m_cached_keyPair_RSA_3072_2 = tmp;
+                    break;
+                case (short) 4096:
+                    if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) m_cached_keyPair_RSA_CRT_4096_1 = tmp;
+                    if (keyPairIndex == 1 && typeRSA == JCConsts.KeyPair_ALG_RSA) m_cached_keyPair_RSA_4096_1 = tmp;
+                    if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA_CRT) m_cached_keyPair_RSA_CRT_4096_2 = tmp;
+                    if (keyPairIndex == 2 && typeRSA == JCConsts.KeyPair_ALG_RSA) m_cached_keyPair_RSA_4096_2 = tmp;
+                    break;
+            }
+        }
+        
+        return tmp;
+    }
+
     void prepare_class_Key(APDU apdu) {
         byte[] apdubuf = apdu.getBuffer();
         m_testSettings.parse(apdu);  
@@ -457,14 +649,16 @@ import javacardx.crypto.*;
 /**/                    
                 case JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE:
                     if (bSetKeyValue == Consts.TRUE) {
-                        m_keyPair1 = new KeyPair(KeyPair.ALG_RSA_CRT, m_testSettings.keyLength);
-                        m_keyPair1.genKeyPair();
+                        m_keyPair1 = getKeyPairObject(KeyPair.ALG_RSA_CRT, (short) 1, m_testSettings.keyLength);
+                        //m_keyPair1 = new KeyPair(KeyPair.ALG_RSA_CRT, m_testSettings.keyLength);
+                        //m_keyPair1.genKeyPair();
                         m_key1 = m_keyPair1.getPrivate();
                         m_rsaprivatecrt_key = (RSAPrivateCrtKey) m_keyPair1.getPrivate();
                         m_rsapublic_key = (RSAPublicKey) m_keyPair1.getPublic();
                         m_keyInv1 = m_rsapublic_key;
-                        m_keyPair2 = new KeyPair(KeyPair.ALG_RSA_CRT, m_testSettings.keyLength);
-                        m_keyPair2.genKeyPair();
+                        m_keyPair2 = getKeyPairObject(KeyPair.ALG_RSA_CRT, (short) 2, m_testSettings.keyLength);
+                        //m_keyPair2 = new KeyPair(KeyPair.ALG_RSA_CRT, m_testSettings.keyLength);
+                        //m_keyPair2.genKeyPair();
                         m_key2 = m_keyPair2.getPrivate();
                         m_rsaprivatecrt_key2 = (RSAPrivateCrtKey) m_keyPair2.getPrivate();
                         m_rsapublic_key2 = (RSAPublicKey) m_keyPair2.getPublic();
@@ -473,14 +667,16 @@ import javacardx.crypto.*;
                     break;
                 case JCConsts.KeyBuilder_TYPE_RSA_PRIVATE:
                     if (bSetKeyValue == Consts.TRUE) {
-                        m_keyPair1 = new KeyPair(KeyPair.ALG_RSA, m_testSettings.keyLength);
-                        m_keyPair1.genKeyPair();
+                        m_keyPair1 = getKeyPairObject(KeyPair.ALG_RSA, (short) 1, m_testSettings.keyLength);
+                        //m_keyPair1 = new KeyPair(KeyPair.ALG_RSA, m_testSettings.keyLength);
+                        //m_keyPair1.genKeyPair();
                         m_key1 = m_keyPair1.getPrivate();
                         m_rsaprivate_key = (RSAPrivateKey) m_keyPair1.getPrivate();
                         m_rsapublic_key = (RSAPublicKey) m_keyPair1.getPublic();
                         m_keyInv1 = m_rsapublic_key;
-                        m_keyPair2 = new KeyPair(KeyPair.ALG_RSA, m_testSettings.keyLength);
-                        m_keyPair2.genKeyPair();
+                        m_keyPair2 = getKeyPairObject(KeyPair.ALG_RSA, (short) 2, m_testSettings.keyLength);
+                        //m_keyPair2 = new KeyPair(KeyPair.ALG_RSA, m_testSettings.keyLength);
+                        //m_keyPair2.genKeyPair();
                         m_key2 = m_keyPair2.getPrivate();
                         m_rsapublic_key2 = (RSAPublicKey) m_keyPair2.getPublic();
                         m_keyInv2 = m_rsapublic_key2;
@@ -488,16 +684,16 @@ import javacardx.crypto.*;
                     break;                
                 case JCConsts.KeyBuilder_TYPE_RSA_PUBLIC:   
                     if (bSetKeyValue == Consts.TRUE){
-                        m_keyPair1 = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
-                        m_keyPair1.genKeyPair(); // TODO: use fixed key value to shorten time required for key generation?
+                        m_keyPair1 = getKeyPairObject((byte) m_testSettings.keyClass, (short) 1, m_testSettings.keyLength);
+                        //m_keyPair1 = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
+                        //m_keyPair1.genKeyPair(); 
                         m_key1 = m_keyPair1.getPublic();        
                         m_rsapublic_key = (RSAPublicKey) m_keyPair1.getPublic();
-                        m_keyPair2 = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
-                        m_keyPair2.genKeyPair(); // TODO: use fixed key value to shorten time required for key generation?
+                        m_keyPair2 = getKeyPairObject((byte) m_testSettings.keyClass, (short) 2, m_testSettings.keyLength);
+                        //m_keyPair2 = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
+                        //m_keyPair2.genKeyPair(); 
                         m_key2 = m_keyPair2.getPublic();                
                         m_rsapublic_key2 = (RSAPublicKey) m_keyPair2.getPublic();
-                        //m_rsaprivate_key2 = (RSAPrivateKey) m_keyPair2.getPrivate();
-                        //m_keyInv2 = m_rsaprivate_key2;
                         if (m_testSettings.keyClass == JCConsts.KeyPair_ALG_RSA) {
                             m_rsaprivate_key = (RSAPrivateKey) m_keyPair1.getPrivate();
                             m_keyInv1 = m_rsaprivate_key;
@@ -934,7 +1130,6 @@ import javacardx.crypto.*;
         
         // Prepare required key object into m_key
         short len = prepare_Key(apdu, m_testSettings, Consts.TRUE);
-        
         try {
             m_cipher = Cipher.getInstance((byte) m_testSettings.algorithmSpecification, false);
             m_cipher.init(m_key1, (byte) m_testSettings.initMode);
