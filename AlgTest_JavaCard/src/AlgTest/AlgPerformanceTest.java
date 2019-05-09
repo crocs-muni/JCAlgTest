@@ -496,8 +496,8 @@ import javacardx.crypto.*;
                         m_keyPair2.genKeyPair(); // TODO: use fixed key value to shorten time required for key generation?
                         m_key2 = m_keyPair2.getPublic();                
                         m_rsapublic_key2 = (RSAPublicKey) m_keyPair2.getPublic();
-                        m_rsaprivate_key2 = (RSAPrivateKey) m_keyPair2.getPrivate();
-                        m_keyInv2 = m_rsaprivate_key2;
+                        //m_rsaprivate_key2 = (RSAPrivateKey) m_keyPair2.getPrivate();
+                        //m_keyInv2 = m_rsaprivate_key2;
                         if (m_testSettings.keyClass == JCConsts.KeyPair_ALG_RSA) {
                             m_rsaprivate_key = (RSAPrivateKey) m_keyPair1.getPrivate();
                             m_keyInv1 = m_rsaprivate_key;
