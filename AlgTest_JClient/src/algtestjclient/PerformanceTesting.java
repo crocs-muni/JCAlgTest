@@ -96,7 +96,7 @@ public class PerformanceTesting {
     }
     
     String getCurrentTestInfoString(boolean bAppendTime) {
-        String testInfo = "___";
+        String testInfo = m_cardName + "___";
         testInfo += "_PERFORMANCE_";
 
         if (m_bTestSymmetricAlgs) {
@@ -385,7 +385,7 @@ public class PerformanceTesting {
     }
     
     void LoadAlreadyMeasuredAlgs(String cardName, String testType) {
-        String filePath = cardName + testType + "_already_measured.list";
+        String filePath = testType + "_already_measured.list";
         String filePathOld = filePath + ".old";
         File f = new File(filePath);
         File fOld = new File(filePathOld);
