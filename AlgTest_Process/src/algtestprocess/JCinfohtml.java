@@ -367,6 +367,10 @@ public class JCinfohtml {
             System.out.println(namesOfCards.get(i)+"\t"+Math.abs(1-avg/sum));
         }
         
+        if (unknownMode && namesOfCards.get(0).equals("")) {
+            namesOfCards.set(0, "Unknown card");
+        }
+        
         for(int i=0; i<namesOfCards.size(); i++){
             toFile.append("\t\t<tr>\n");
             toFile.append("\t\t\t<th>"+namesOfCards.get(i)+"</th>\n");
@@ -417,7 +421,6 @@ public class JCinfohtml {
                 
                 if (unknownMode && i == 0) {
                     unknownResults.add(sum);
-                    card1 = "Unknown card";
                 }
 
                 // toFile.append("\t\t\t<td>"+String.format("%.0f", sum).replace(",", ".")+"</td>\n");
@@ -541,6 +544,12 @@ public class JCinfohtml {
         
         String fileNameActual = card1 + "_vs_" + card2 + "_compare";
         String filename = dir + "//" + subdirectory + "//" + fileNameActual;
+        
+        File directory = new File(dir + "//" + subdirectory);
+        if (! directory.exists()){
+            directory.mkdir();
+        }
+        
         FileOutputStream file = new FileOutputStream(filename + ".html");
         beginHTML(file, "JCAlgTest - Similarity of" + card1 +" and " + card2, "../");
         addCompareFileInfo(file, card1, card2);
