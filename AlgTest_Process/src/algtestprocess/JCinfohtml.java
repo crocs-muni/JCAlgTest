@@ -607,7 +607,7 @@ public class JCinfohtml {
         
         
         toFile.append("\t\t<h2>Radar graph</h2>\n");
-        toFile.append("\t\t<p>This is the comparation radar graph of <span style=\"color:orange;\">" + card1 + "</span> and <span style=\"color:blue;\">" + card2 + "</span>.</p>\n");
+        toFile.append("\t\t<p>This is the comparation radar graph of <span style=\"color:blue;\">" + card1 + "</span> and <span style=\"color:orange;\">" + card2 + "</span>.</p>\n");
         toFile.append("\t\t<p>The values closer to 100% represent the times close to the fastest result among all tested cards, whereas values close to 10% suggest slower performance in the corresponding algorithm. Value of 0%(NS) indicates a lack of support or occurrence of unexpected error during the tested algorithm.</p><br>\n");
         toFile.append("\t\t<div id=\"chart\"></div>\n\t\t</div>\n");
         toFile.append("\t\t<script type=\"text/javascript\" src=\""+fileNameActual+".js\"></script>\n");
