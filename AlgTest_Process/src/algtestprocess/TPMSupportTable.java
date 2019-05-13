@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.Arrays;
 
 
-public class TpmSupportTable {
+public class TPMSupportTable {
     enum ParsePhase { PROPERTIES, ALGORITHMS, COMMANDS, ECC_CURVES }
 
     static String HEADER = "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n"
@@ -25,7 +25,7 @@ public class TpmSupportTable {
                 + "</head>\n\n"
                 + "<body style=\"margin-top:50px; padding:20px\">\n\n";
 
-    static final String BASIC_INFO[] = {"Basic info", "Image version"};
+    static final String BASIC_INFO[] = {"Basic info", "Image tag"};
 
     static final String QUICKTEST_PROPERTIES_FIXED_STR[] = {
         "Quicktest_properties-fixed",
@@ -74,6 +74,8 @@ public class TpmSupportTable {
         "TPM_PT_VENDOR_COMMANDS",
         "TPM_PT_NV_BUFFER_MAX",
     };
+
+
 
     static final HashMap<Integer, String> TPM2_ALG_ID_STR;
     static {
@@ -238,7 +240,7 @@ public class TpmSupportTable {
         TPM2_CC_STR.put(0x00000196, "TPM2_CC_Policy_AC_SendSelect");
     }
 
-    static final HashMap<Integer, String> TPM2_ECC_CURVE_STR;
+    public static final HashMap<Integer, String> TPM2_ECC_CURVE_STR;
     static {
         TPM2_ECC_CURVE_STR = new HashMap<>();
         TPM2_ECC_CURVE_STR.put(0x0001, "TPM2_ECC_NIST_P192");
@@ -322,18 +324,8 @@ public class TpmSupportTable {
         }
     }
 
-    static String[] parseTpmName(String fileName) {
-        int firmwareIdx = fileName.indexOf("%");
-        String[] names = new String[2];
-        names[0] = fileName.replace("%", " ").substring(0, fileName.indexOf(".csv"));
-        names[1] = fileName.substring(0, firmwareIdx);
-        return names;
-    }
-    static String getShortTpmName(String fileName) {
-        return parseTpmName(fileName)[1];
-    }
-    static String getLongTpmName(String fileName) {
-        return parseTpmName(fileName)[0];
+    static String getTpmName(String fileName) {
+        return fileName.substring(0, fileName.indexOf(".csv"));
     }
 
     static void writeTpmList(FileOutputStream file, String[] filesArray) throws IOException {
@@ -341,15 +333,12 @@ public class TpmSupportTable {
 
         for (int i = 0; i < filesArray.length; ++i) {
             String filename = filesArray[i];
-            int firmwareIdx = filename.indexOf("%");
-            String tpmName = filename.substring(0, firmwareIdx);
+            String tpmName = filename.substring(0, filename.indexOf(".csv"));
             // TODO authors
 
-            String firmwareVersion = filename.substring(firmwareIdx + 1, filename.indexOf(".csv"));
             System.out.println(tpmName);
-            System.out.println(firmwareVersion);
 
-            tpmList += "<b>t" + i + "</b>  " + tpmName + ", FW=" + firmwareVersion + ",";
+            tpmList += "<b>t" + i + "</b>  " + tpmName + ",";
             // TODO filesSupport
 
             tpmList += "<br>\n";
@@ -366,7 +355,7 @@ public class TpmSupportTable {
             if (rowIdx == 0)
                 checkboxes += "<div class=\"col-lg-4 .col-sm-4\">\n";
 
-            checkboxes += "\t\t<p style=\"margin:0;\"><input type=\"checkbox\" name=\""+i+"\" /> <b>t"+i+"</b> - "+getLongTpmName(filesArray[i])+"</p>\n";
+            checkboxes += "\t\t<p style=\"margin:0;\"><input type=\"checkbox\" name=\""+i+"\" /> <b>t"+i+"</b> - "+getTpmName(filesArray[i])+"</p>\n";
 
             if (rowIdx == filesArray.length / 3)
                 checkboxes += "\t</div>\n";
@@ -413,11 +402,11 @@ public class TpmSupportTable {
         String html = "<tr>\n" + "<td class='dark'>" + classInfo[0] + "</td>\n";
         if (classInfo[0].equals("Basic info")) {
             for (int i = 0; i < supportInfo.length; ++i) {
-                html += "  <th class='dark_index "+i+"' title = '" + getLongTpmName(filesArray[i]) + "'>t"+i+"</th>\n";
+                html += "  <th class='dark_index "+i+"' title = '" + getTpmName(filesArray[i]) + "'>t"+i+"</th>\n";
             }
         } else {
             for (int i = 0; i < supportInfo.length; ++i) {
-                html += "  <td class='dark_index' title = '" + getLongTpmName(filesArray[i]) + "'>t"+i+"</td>\n";
+                html += "  <td class='dark_index' title = '" + getTpmName(filesArray[i]) + "'>t"+i+"</td>\n";
             }
         }
         html += "</tr>\n";
@@ -435,7 +424,7 @@ public class TpmSupportTable {
                     continue;
                 }
                 String value = propertiesMap.get(property);
-                String title = "title='" + getShortTpmName(filesArray[fileIndex]) + " : " + property + " : " + value + "'";
+                String title = "title='" + getTpmName(filesArray[fileIndex]) + " : " + property + " : " + value + "'";
                 html += "<td class='light_info' " + title + ">" + value + "</td>\n";
             }
             html += "</tr>\n";
@@ -446,7 +435,7 @@ public class TpmSupportTable {
     static void formatTableAlgorithm(String[] filesArray, String className, HashMap<Integer, String> featureMap, TpmSupportInfo[] supportInfo, FileOutputStream file) throws IOException {
         String html = "<tr>\n" + "<td class='dark'>" + className + "</td>\n";
         for (int i = 0; i < supportInfo.length; ++i) {
-            html += "  <td class='dark_index' title = '" + getLongTpmName(filesArray[i]) + "'>t"+i+"</td>\n";
+            html += "  <td class='dark_index' title = '" + getTpmName(filesArray[i]) + "'>t"+i+"</td>\n";
         }
         html += "</tr>\n";
 
@@ -476,7 +465,7 @@ public class TpmSupportTable {
                     td_class = "light_no";
                     value = "no";
                 }
-                String title = "title='" + getShortTpmName(filesArray[fileIndex]) + " : " + featureName + " : " + value + "'";
+                String title = "title='" + getTpmName(filesArray[fileIndex]) + " : " + featureName + " : " + value + "'";
                 html += "<td class='"+td_class+"' " + title + ">"+value+"</td>\n";
             }
             html += "</tr>\n";

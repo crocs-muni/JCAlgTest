@@ -47,6 +47,7 @@ public class AlgTestProcess {
     public static final String GENERATE_JCCONSTANTS = "JCCONSTS";
 
     public static final String GENERATE_JCINFO = "JCINFO";              //TABLE WITH PERF RESULTS
+    public static final String GENERATE_TPMINFO = "TPMINFO";              //TABLE WITH PERF RESULTS
     public static final String GENERATE_SORTABLE = "SORTABLE";          //SORTABLE TABLE
     public static final String GENERATE_GRAPHS = "GRAPHS";              //GENERATE SINGLE GRAPHS PAGE FOR JCINFO
     public static final String GENERATE_GRAPHS_ONEPAGE = "SCALABILITY";  //PAGE WITH VARIABLE PERFTEST GRAPHS
@@ -83,7 +84,7 @@ public class AlgTestProcess {
                     }
                     else if (args[1].equals(GENERATE_TPM_HTML)) {
                         System.out.println("Generating HTML table for TPMs.");
-                        TpmSupportTable.generateHTMLTable(args[0]);
+                        TPMSupportTable.generateHTMLTable(args[0]);
                     }
                     else if (args[1].equals(COMPARE_CARDS)){
                         System.out.println("Comparing cards.");
@@ -129,6 +130,16 @@ public class AlgTestProcess {
                              RunTime.runRunTime(args[0]);
                         else if (file.exists() && file.isFile() && (args[0].contains("csv")))
                             RunTime.generateRunTimeFile(args[0]);
+                        else
+                            System.out.println("ERR: Wrong path to the source file / folder.");
+                    }
+                    else if (args[1].equals(GENERATE_TPMINFO)) {
+                        System.out.println("Generating TPM performance testing to HTML from input file / folder.");
+                        File file = new File(args[0]);
+                        if (file.exists() && file.isDirectory())
+                            TPMRunTime.runRunTime(args[0]);
+                        else if (file.exists() && file.isFile() && (args[0].endsWith(".csv")))
+                            TPMRunTime.generateRunTimeFile(args[0]);
                         else
                             System.out.println("ERR: Wrong path to the source file / folder.");
                     }
