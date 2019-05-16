@@ -6,11 +6,12 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import static java.lang.System.out;
+import java.util.TreeMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.HashSet;
 import java.util.Arrays;
-
+import java.util.Collections;
 
 public class TPMSupportTable {
     enum ParsePhase { PROPERTIES, ALGORITHMS, COMMANDS, ECC_CURVES }
@@ -26,6 +27,7 @@ public class TPMSupportTable {
                 + "<body style=\"margin-top:50px; padding:20px\">\n\n";
 
     static final String BASIC_INFO[] = {"Basic info", "Image tag"};
+    static final String BASIC_INFO_TITLES[] = { "", "Version of tpm2-algtest" };
 
     static final String QUICKTEST_PROPERTIES_FIXED_STR[] = {
         "Quicktest_properties-fixed",
@@ -73,13 +75,104 @@ public class TPMSupportTable {
         "TPM_PT_LIBRARY_COMMANDS",
         "TPM_PT_VENDOR_COMMANDS",
         "TPM_PT_NV_BUFFER_MAX",
+        "TPM_PT_MODES",
+        "TPM_PT_MAX_CAP_BUFFER",
     };
 
+    static final String QUICKTEST_PROPERTIES_FIXED_TITLES[] = {
+        "",
+        "a 4-octet character string containing the TPM Family value (TPM_SPEC_FAMILY)",
+        "the level of the specification",
+        "the specification Revision times 100",
+        "the specification day of year using TCG calendar",
+        "the specification year using the CE",
+        "the vendor ID unique to each TPM manufacturer",
+        "the first four characters of the vendor ID string",
+        "the second four characters of the vendor ID string",
+        "the third four characters of the vendor ID string",
+        "the fourth four characters of the vendor ID string",
+        "vendor-defined value indicating the TPM model",
+        "the most-significant 32 bits of a TPM vendor-specific value indicating the version number of the firmware",
+        "the least-significant 32 bits of a TPM vendor-specific value indicating the version number of the firmware",
+        "the maximum size of a parameter (typically, a TPM2B_MAX_BUFFER)",
+        "the minimum number of transient objects that can be held in TPM RAM",
+        "the minimum number of persistent objects that can be held in TPM NV memory",
+        "the minimum number of authorization sessions that can be held in TPM RAM",
+        "the number of authorization sessions that may be active at a time. A session is active when it has a context associated with its handle. The context may either be in TPM RAM or be context saved.",
+        "the number of PCR implemented",
+        "the minimum number of octets in a TPMS_PCR_SELECT.sizeOfSelect",
+        "the maximum allowed difference (unsigned) between the contextID values of two saved session contexts",
+        "the maximum number of NV Indexes that are allowed to have the TPM_NT_COUNTER attribute",
+        "the maximum size of an NV Index data area",
+        "a TPMA_MEMORY indicating the memory management method for the TPM",
+        "interval, in milliseconds, between updates to the copy of TPMS_CLOCK_INFO.clock in NV",
+        "the algorithm used for the integrity HMAC on saved contexts and for hashing the fuData of TPM2_FirmwareRead()",
+        "TPM_ALG_ID, the algorithm used for encryption of saved contexts",
+        "TPM_KEY_BITS, the size of the key used for encryption of saved contexts",
+        "the modulus - 1 of the count for NV update of an orderly counter",
+        "the maximum value for commandSize in a command",
+        "the maximum value for responseSize in a response",
+        "the maximum size of a digest that can be produced by the TPM",
+        "the maximum size of an object context that will be returned by TPM2_ContextSave",
+        "the maximum size of a session context that will be returned by TPM2_ContextSave",
+        "platform-specific family (a TPM_PS value)",
+        "the level of the platform-specific specification",
+        "the specification Revision times 100 for the platform-specific specification",
+        "the platform-specific specification day of year using TCG calendar",
+        "the platform-specific specification year using the CE",
+        "the number of split signing operations supported by the TPM",
+        "total number of commands implemented in the TPM",
+        "number of commands from the TPM library that are implemented",
+        "number of vendor commands that are implemented",
+        "the maximum data size in one NV write, NV read, or NV certify command",
+        "a TPMA_MODES value, indicating that the TPM is designed for these modes.",
+        "the maximum size of a TPMS_CAPABILITY_DATA structure returned in TPM2_GetCapability().",
+    };
 
-
-    static final HashMap<Integer, String> TPM2_ALG_ID_STR;
+    static final HashSet<String> HEX_TO_INT_PROPERTY;
     static {
-        TPM2_ALG_ID_STR = new HashMap<>();
+        HEX_TO_INT_PROPERTY = new HashSet<>();
+        HEX_TO_INT_PROPERTY.add("TPM_PT_DAY_OF_YEAR");
+        HEX_TO_INT_PROPERTY.add("TPM_PT_YEAR");
+        HEX_TO_INT_PROPERTY.add("TPM_PT_VENDOR_TPM_TYPE");
+        HEX_TO_INT_PROPERTY.add("TPM_PT_INPUT_BUFFER");
+        HEX_TO_INT_PROPERTY.add("TPM_PT_TPM2_HR_TRANSIENT_MIN");
+        HEX_TO_INT_PROPERTY.add("TPM_PT_TPM2_HR_PERSISTENT_MIN");
+        HEX_TO_INT_PROPERTY.add("TPM_PT_HR_LOADED_MIN");
+        HEX_TO_INT_PROPERTY.add("TPM_PT_ACTIVE_SESSIONS_MAX");
+        HEX_TO_INT_PROPERTY.add("TPM_PT_PCR_COUNT");
+        HEX_TO_INT_PROPERTY.add("TPM_PT_PCR_SELECT_MIN");
+        HEX_TO_INT_PROPERTY.add("TPM_PT_CONTEXT_GAP_MAX");
+        HEX_TO_INT_PROPERTY.add("TPM_PT_NV_COUNTERS_MAX");
+        HEX_TO_INT_PROPERTY.add("TPM_PT_NV_INDEX_MAX");
+        HEX_TO_INT_PROPERTY.add("TPM_PT_MEMORY");
+        HEX_TO_INT_PROPERTY.add("TPM_PT_CLOCK_UPDATE");
+        HEX_TO_INT_PROPERTY.add("TPM_PT_CONTEXT_HASH");
+        HEX_TO_INT_PROPERTY.add("TPM_PT_CONTEXT_SYM");
+        HEX_TO_INT_PROPERTY.add("TPM_PT_CONTEXT_SYM_SIZE");
+        HEX_TO_INT_PROPERTY.add("TPM_PT_ORDERLY_COUNT");
+        HEX_TO_INT_PROPERTY.add("TPM_PT_MAX_COMMAND_SIZE");
+        HEX_TO_INT_PROPERTY.add("TPM_PT_MAX_RESPONSE_SIZE");
+        HEX_TO_INT_PROPERTY.add("TPM_PT_MAX_DIGEST");
+        HEX_TO_INT_PROPERTY.add("TPM_PT_MAX_OBJECT_CONTEXT");
+        HEX_TO_INT_PROPERTY.add("TPM_PT_MAX_SESSION_CONTEXT");
+        HEX_TO_INT_PROPERTY.add("TPM_PT_PS_FAMILY_INDICATOR");
+        HEX_TO_INT_PROPERTY.add("TPM_PT_PS_LEVEL");
+        HEX_TO_INT_PROPERTY.add("TPM_PT_PS_REVISION");
+        HEX_TO_INT_PROPERTY.add("TPM_PT_PS_DAY_OF_YEAR");
+        HEX_TO_INT_PROPERTY.add("TPM_PT_PS_YEAR");
+        HEX_TO_INT_PROPERTY.add("TPM_PT_SPLIT_MAX");
+        HEX_TO_INT_PROPERTY.add("TPM_PT_TOTAL_COMMANDS");
+        HEX_TO_INT_PROPERTY.add("TPM_PT_LIBRARY_COMMANDS");
+        HEX_TO_INT_PROPERTY.add("TPM_PT_VENDOR_COMMANDS");
+        HEX_TO_INT_PROPERTY.add("TPM_PT_NV_BUFFER_MAX");
+        HEX_TO_INT_PROPERTY.add("TPM_PT_MODES");
+        HEX_TO_INT_PROPERTY.add("TPM_PT_MAX_CAP_BUFFER");
+    }
+
+    static final TreeMap<Integer, String> TPM2_ALG_ID_STR;
+    static {
+        TPM2_ALG_ID_STR = new TreeMap<>();
         TPM2_ALG_ID_STR.put(0x0001, "TPM2_ALG_RSA");
         TPM2_ALG_ID_STR.put(0x0004, "TPM2_ALG_SHA");
         TPM2_ALG_ID_STR.put(0x0004, "TPM2_ALG_SHA1");
@@ -120,9 +213,9 @@ public class TPMSupportTable {
         TPM2_ALG_ID_STR.put(0x0044, "TPM2_ALG_ECB");
     }
 
-    static final HashMap<Integer, String> TPM2_CC_STR;
+    static final TreeMap<Integer, String> TPM2_CC_STR;
     static {
-        TPM2_CC_STR = new HashMap<>();
+        TPM2_CC_STR = new TreeMap<>();
         TPM2_CC_STR.put(0x0000011f, "TPM2_CC_NV_UndefineSpaceSpecial");
         TPM2_CC_STR.put(0x00000120, "TPM2_CC_EvictControl");
         TPM2_CC_STR.put(0x00000121, "TPM2_CC_HierarchyControl");
@@ -240,9 +333,9 @@ public class TPMSupportTable {
         TPM2_CC_STR.put(0x00000196, "TPM2_CC_Policy_AC_SendSelect");
     }
 
-    public static final HashMap<Integer, String> TPM2_ECC_CURVE_STR;
+    public static final TreeMap<Integer, String> TPM2_ECC_CURVE_STR;
     static {
-        TPM2_ECC_CURVE_STR = new HashMap<>();
+        TPM2_ECC_CURVE_STR = new TreeMap<>();
         TPM2_ECC_CURVE_STR.put(0x0001, "TPM2_ECC_NIST_P192");
         TPM2_ECC_CURVE_STR.put(0x0002, "TPM2_ECC_NIST_P224");
         TPM2_ECC_CURVE_STR.put(0x0003, "TPM2_ECC_NIST_P256");
@@ -264,6 +357,7 @@ public class TPMSupportTable {
         String filesPath = basePath + "results" + File.separator;
         File dir = new File(filesPath);
         String[] filesArray = Arrays.stream(dir.list()).filter(s -> s.endsWith(".csv")).toArray(String[]::new);
+        Arrays.sort(filesArray);
 
         if (filesArray == null || !dir.isDirectory()) {
             System.out.println("directory '" + filesPath + "' is empty");
@@ -368,22 +462,22 @@ public class TPMSupportTable {
     }
 
     static void writeSupportTable(FileOutputStream file, String[] filesArray, TpmSupportInfo[] supportInfo) throws IOException {
-        String table = "<table id=\"tab\" width=\"600px\" border=\"0\" cellspacing=\"2\" cellpadding=\"4\">\r\n";
+        String table = "<table id=\"tab\" style=\"white-space:nowrap\" width=\"600px\" border=\"0\" cellspacing=\"2\" cellpadding=\"4\">\r\n";
 
         // Insert helper column identification for mouseover row & column jquery highlight
         table += "<colgroup>";
-        for (int i = 0; i < filesArray.length + 1; i++) { table += "<col />"; } // + 1 because of column with algorithm name
+        for (int i = 0; i < filesArray.length + 2; i++) { table += "<col />"; } // + 2 because of algorithm and hex columns
         table += "</colgroup>\r\n";
         file.write(table.getBytes());
 
         // table head
         file.write("<thead>".getBytes());
-        formatTableProperty(filesArray, BASIC_INFO, supportInfo, file);
+        formatTableProperty(filesArray, BASIC_INFO, BASIC_INFO_TITLES, supportInfo, file);
         file.write("</thead>".getBytes());
 
         // table body
         file.write("<tbody>".getBytes());
-        formatTableProperty(filesArray, QUICKTEST_PROPERTIES_FIXED_STR, supportInfo, file);
+        formatTableProperty(filesArray, QUICKTEST_PROPERTIES_FIXED_STR, QUICKTEST_PROPERTIES_FIXED_TITLES, supportInfo, file);
         formatTableAlgorithm(filesArray, "Quicktest_algorithms", TPM2_ALG_ID_STR, supportInfo, file);
         formatTableAlgorithm(filesArray, "Quicktest_commands", TPM2_CC_STR, supportInfo, file);
         formatTableAlgorithm(filesArray, "Quicktest_ecc-curves", TPM2_ECC_CURVE_STR, supportInfo, file);
@@ -398,8 +492,27 @@ public class TPMSupportTable {
         file.flush();
     }
 
-    static void formatTableProperty(String[] filesArray, String[] classInfo, TpmSupportInfo[] supportInfo, FileOutputStream file) throws IOException {
-        String html = "<tr>\n" + "<td class='dark'>" + classInfo[0] + "</td>\n";
+    private static String hexToAscii(String hexStr) {
+        if (hexStr.startsWith("0x"))
+            hexStr = hexStr.substring(2);
+        StringBuilder output = new StringBuilder("");
+        for (int i = 0; i < hexStr.length(); i += 2) {
+            String str = hexStr.substring(i, i + 2);
+            output.append((char) Integer.parseInt(str, 16));
+        }
+        return output.toString();
+    }
+
+    private static String hexToFirmwareVersion(String hexStr) {
+        if (hexStr.startsWith("0x"))
+            hexStr = hexStr.substring(2);
+        int first = Integer.parseInt(hexStr.substring(0, 4), 16);
+        int second = Integer.parseInt(hexStr.substring(4, 8), 16);
+        return String.format("%d.%d", first, second);
+    }
+
+    static void formatTableProperty(String[] filesArray, String[] classInfo, String[] titles, TpmSupportInfo[] supportInfo, FileOutputStream file) throws IOException {
+        String html = "<tr>\n" + "<td class='dark'>" + classInfo[0] + "</td><td class='dark'></td>\n";
         if (classInfo[0].equals("Basic info")) {
             for (int i = 0; i < supportInfo.length; ++i) {
                 html += "  <th class='dark_index "+i+"' title = '" + getTpmName(filesArray[i]) + "'>t"+i+"</th>\n";
@@ -414,7 +527,7 @@ public class TPMSupportTable {
         for (int i = 1; i < classInfo.length; ++i) { // skip class name
             html += "<tr>\n";
             String property = classInfo[i];
-            html += "  <td class='light'>" + property + "</td>\n";
+            html += "  <td class='light' title='"+titles[i]+"'>" + property + "</td><td class='light'></td>\n";
 
             for (int fileIndex = 0; fileIndex < supportInfo.length; ++fileIndex) {
                 html += "  ";
@@ -425,15 +538,26 @@ public class TPMSupportTable {
                 }
                 String value = propertiesMap.get(property);
                 String title = "title='" + getTpmName(filesArray[fileIndex]) + " : " + property + " : " + value + "'";
-                html += "<td class='light_info' " + title + ">" + value + "</td>\n";
+                html += "<td class='light_info' " + title + ">";
+
+                if (HEX_TO_INT_PROPERTY.contains(property)) {
+                    value = String.valueOf(Integer.decode(value));
+                } else if (property == "TPM_PT_MANUFACTURER") {
+                    value = value.substring(2);
+                    value = hexToAscii(value);
+                } else if (property.startsWith("TPM_PT_FIRMWARE_VERSION")) {
+                    value = hexToFirmwareVersion(value);
+                }
+                html += value + "</td>\n";
             }
             html += "</tr>\n";
         }
         file.write(html.getBytes());
     }
 
-    static void formatTableAlgorithm(String[] filesArray, String className, HashMap<Integer, String> featureMap, TpmSupportInfo[] supportInfo, FileOutputStream file) throws IOException {
+    static void formatTableAlgorithm(String[] filesArray, String className, TreeMap<Integer, String> featureMap, TpmSupportInfo[] supportInfo, FileOutputStream file) throws IOException {
         String html = "<tr>\n" + "<td class='dark'>" + className + "</td>\n";
+        html += "  <td class='dark'>Hex code</td>\n";
         for (int i = 0; i < supportInfo.length; ++i) {
             html += "  <td class='dark_index' title = '" + getTpmName(filesArray[i]) + "'>t"+i+"</td>\n";
         }
@@ -442,7 +566,9 @@ public class TPMSupportTable {
         for (Map.Entry<Integer, String> feature : featureMap.entrySet()) {
             html += "<tr>\n";
             String featureName = feature.getValue();
+            String featureCode = String.format("0x%04X", feature.getKey());
             html += "  <td class='light'>" + featureName + "</td>\n";
+            html += "  <td class='light_info'>" + featureCode + "</td>\n";
             for (int fileIndex = 0; fileIndex < supportInfo.length; ++fileIndex) {
                 html += "  ";
                 HashSet<Integer> featureSet = new HashSet();

@@ -15,15 +15,6 @@ import java.io.FileReader;
 import java.io.BufferedReader;
 
 public class TPMRunTime {
-    static final HashSet<String> CATEGORIES = new HashSet<String>();
-    static {
-        CATEGORIES.add("TPM2_Create");
-        CATEGORIES.add("TPM2_Sign");
-        CATEGORIES.add("TPM2_VerifySignature");
-        CATEGORIES.add("TPM2_RSA_Encrypt");
-        CATEGORIES.add("TPM2_RSA_Decrypt");
-    }
-
     static final String TABLE_HEAD = "<table cellspacing='0'> <!-- cellspacing='0' is important, must stay -->\n\t<tr><th style=\"width: 330px;\">Key parameters</th><th><b>Operation average (ms/op)</b></th><th>Operation minimum (ms/op)</th><th>Operation maximum (ms/op)</th><th></th><th class=\"minor\">Iterations</th><th class=\"minor\">Successful</th><th class=\"minor\">Failed</th></tr><!-- Table Header -->\n";
 
     public static void beginRunTimeHTML(FileOutputStream file, String title) throws IOException {
@@ -79,12 +70,12 @@ public class TPMRunTime {
         String[] fields;
         boolean inTable = false;
         while ((line = reader.readLine()) != null) {
-            if (CATEGORIES.contains(line)) {
+            if (line.startsWith("TPM2_")) { // new command
                 if (inTable) {
                     html += "</table>\n</br>\n";
                 }
                 inTable = true;
-                html += "<h3 id=\"" + line + "\">" + line + "</h3>\n";     //test category name
+                html += "<h3 id=\"" + line + "\">" + line + "</h3>\n";
                 html += TABLE_HEAD;
             } else if (line.startsWith("key params:")) {
                 fields = line.trim().split(";");
