@@ -55,8 +55,9 @@ public class JCAlgTestApplet extends javacard.framework.Applet
 {
     // NOTE: when incrementing version, don't forget to update ALGTEST_JAVACARD_VERSION_CURRENT value
     /**
-     * Version 1.7.8 (09.05.2019) 
+     * Version 1.7.8 (18.05.2019) 
      * + added caching of already generated RSA keys to speedup perf test preparation
+     * - fixed bug preventing preparation of performance measurement for RSA_CRT (introduced in version 1.7.0)
      */
     final static byte ALGTEST_JAVACARD_VERSION_1_7_8[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x37, (byte) 0x2e, (byte) 0x38};
     /**

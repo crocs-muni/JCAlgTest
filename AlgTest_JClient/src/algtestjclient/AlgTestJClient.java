@@ -14,7 +14,7 @@
           in the documentation and/or other associated materials;
 
        3. the copyright holder's name is not used to endorse products
-          built using this software without specific written permission.hi
+          built using this software without specific written permission.
 
      ALTERNATIVELY, provided that this notice is retained in full, this product
      may be distributed under the terms of the GNU General Public License (GPL),
@@ -56,10 +56,15 @@ public class AlgTestJClient {
     public static final String ALGTEST_USE_SIMULATOR = "JCARDSIM";          // use simulator instead of real card
     
     /**
+     * Version 1.7.8 (18.05.2019) 
+     * - no changes, updating version with card applet
+     */
+    public final static String ALGTEST_JCLIENT_VERSION_1_7_8 = "1.7.8";
+    /**
      * Version 1.7.7 (17.04.2019) 
      * - removed testing for high-power mode for SIM cards as some cards stop responding till reset 
      */
-    public final static String ALGTEST_JCLIENT_VERSION_1_7_7 = "1.7.7";
+    //public final static String ALGTEST_JCLIENT_VERSION_1_7_7 = "1.7.7";
     /**
      * Version 1.7.6 (7.12.2018) 
      * + Added support for jCardSim
@@ -68,7 +73,7 @@ public class AlgTestJClient {
      * - remove testing RSA arbitrary exponent (problem with J3H081 card)
      * - fixed bugs
      */
-    public final static String ALGTEST_JCLIENT_VERSION_1_7_6 = "1.7.6";
+    //public final static String ALGTEST_JCLIENT_VERSION_1_7_6 = "1.7.6";
 
     /**
      * Version 1.7.5 (17.09.2018) 
@@ -144,7 +149,7 @@ public class AlgTestJClient {
     /**
      * Current version
      */
-    public final static String ALGTEST_JCLIENT_VERSION = ALGTEST_JCLIENT_VERSION_1_7_7;
+    public final static String ALGTEST_JCLIENT_VERSION = ALGTEST_JCLIENT_VERSION_1_7_8;
     
     public final static int STAT_OK = 0;    
     
@@ -174,7 +179,14 @@ public class AlgTestJClient {
                 }
             }
         }
-                    
+/*                    
+        CardTerminal selectedTerminalDebug = null;
+        PerformanceTesting testingPerformanceDebug = new PerformanceTesting(m_SystemOutLogger);
+        selectedTerminalDebug = selectTargetReader();
+        if (selectedTerminalDebug != null) {
+            testingPerformanceDebug.testDebug(args,  selectedTerminalDebug);
+        }        
+/**/        
 /* fix arguments processing       
         // If arguments are present. 
         if(args.length > 0){
