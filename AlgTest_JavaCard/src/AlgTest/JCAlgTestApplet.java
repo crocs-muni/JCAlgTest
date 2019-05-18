@@ -55,15 +55,21 @@ public class JCAlgTestApplet extends javacard.framework.Applet
 {
     // NOTE: when incrementing version, don't forget to update ALGTEST_JAVACARD_VERSION_CURRENT value
     /**
+     * Version 1.7.8 (18.05.2019) 
+     * + added caching of already generated RSA keys to speedup perf test preparation
+     * - fixed bug preventing preparation of performance measurement for RSA_CRT (introduced in version 1.7.0)
+     */
+    final static byte ALGTEST_JAVACARD_VERSION_1_7_8[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x37, (byte) 0x2e, (byte) 0x38};
+    /**
      * Version 1.7.7 (17.04.2019) 
      * - fixed problem with incorrect reporting for KeyAgreement object
      */
-    final static byte ALGTEST_JAVACARD_VERSION_1_7_7[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x37, (byte) 0x2e, (byte) 0x37};
+    //final static byte ALGTEST_JAVACARD_VERSION_1_7_7[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x37, (byte) 0x2e, (byte) 0x37};
     /**
      * Version 1.7.6 (12.12.2018) 
      * + added free RAM measurement before all objects allocation
      */
-    final static byte ALGTEST_JAVACARD_VERSION_1_7_6[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x37, (byte) 0x2e, (byte) 0x36};
+    //final static byte ALGTEST_JAVACARD_VERSION_1_7_6[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x37, (byte) 0x2e, (byte) 0x36};
     /**
      * Version 1.7.5 (20.04.2018) + fixed occasional freeze on some cards when
      * testing MessageDigest performance
@@ -163,7 +169,7 @@ public class JCAlgTestApplet extends javacard.framework.Applet
      */
     //final static byte ALGTEST_JAVACARD_VERSION_1_0[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x30};
 
-    byte ALGTEST_JAVACARD_VERSION_CURRENT[] = ALGTEST_JAVACARD_VERSION_1_7_7;
+    byte ALGTEST_JAVACARD_VERSION_CURRENT[] = ALGTEST_JAVACARD_VERSION_1_7_8;
     
     // lower byte of exception is value as defined in JCSDK/api_classic/constant-values.htm
     final static short SW_Exception = (short) 0xff01;

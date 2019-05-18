@@ -256,7 +256,7 @@ public class SupportTable {
                     + "  <td class='light_info_left'>This particular algorithm was tested and is NOT supported by given card.</td>\r\n"
                     + "</tr>\r\n"
                     + "<tr>\r\n"
-                    + "  <td class='light_suspicious'>suspicious yes</td>\r\n"
+                    + "  <td class='light_suspicious'>possibly yes</td>\r\n"
                     + "  <td class='light_info_left'>This particular algorithm was tested and is REPORTED as supported by given card. However, given algorithm was introduced in later version of JavaCard specification than version declared by the card as supported one. Mostly, algorithm is really supported. But it might be possible, that given algorithm is NOT actually supported by card as some cards may create object for requested algorithm and fail only later when object is actually used. Future version of the JCAlgTest will make more thorough tests regarding this behaviour.</td>\r\n"
                     + "</tr>\r\n"
                     + "<tr>\r\n"
@@ -456,7 +456,7 @@ public class SupportTable {
                                     if (algorithmVersion.compareTo(jcvArray[fileIndex]) == 1){
                                         // given algorithm is not present in JavaCard specification used to convert uploaded JCAlgTest applet
                                         // make warning
-                                        algorithm += "<td class='light_suspicious' " + title + ">suspicious yes</td>\r\n";
+                                        algorithm += "<td class='light_suspicious' " + title + ">possibly yes</td>\r\n";
                                     }
                                     else {
                                         if (jcvArray[fileIndex].compareTo("not supplied") == 0) {
