@@ -690,6 +690,17 @@ public class CardMngr {
                 int ramDeselectSize = (temp[7] << 8) + (temp[8] & 0xff);
                 int maxCommitSize = (temp[9] << 8) + (temp[10] & 0xff);
 
+                int apduInBlockSize = -1;
+                int apduOutBlockSize = -1;
+                int apduProtocol = -1;
+                int apduNAD = -1;
+                if (temp.length > 11) {
+                    apduInBlockSize = (temp[11] << 8) + (temp[12] & 0xff);
+                    apduOutBlockSize = (temp[13] << 8) + (temp[14] & 0xff);
+                    apduProtocol = temp[15];
+                    apduNAD = temp[16];
+                }
+
 
 
                 String message;
@@ -717,8 +728,26 @@ public class CardMngr {
                 pFile.write(message.getBytes());
                 pValue.append(message);
                 
+                // APDU properties    
+                message = String.format("\r\n%s;%dB;", Utils.GetAlgorithmName(SingleModeTest.JCSYSTEM_STR[7]), apduInBlockSize);
+                m_SystemOutLogger.println(message);
+                pFile.write(message.getBytes());
+                pValue.append(message);
+                message = String.format("\r\n%s;%dB;", Utils.GetAlgorithmName(SingleModeTest.JCSYSTEM_STR[8]), apduOutBlockSize);
+                m_SystemOutLogger.println(message);
+                pFile.write(message.getBytes());
+                pValue.append(message);
+                message = String.format("\r\n%s;%dB;", Utils.GetAlgorithmName(SingleModeTest.JCSYSTEM_STR[9]), apduProtocol);
+                m_SystemOutLogger.println(message);
+                pFile.write(message.getBytes());
+                pValue.append(message);
+                message = String.format("\r\n%s;%dB;", Utils.GetAlgorithmName(SingleModeTest.JCSYSTEM_STR[10]), apduNAD);
+                m_SystemOutLogger.println(message);
+                pFile.write(message.getBytes());
+                pValue.append(message);
                 
-                message += "\r\n";
+                
+                message = "\r\n";
 
                 pFile.write(message.getBytes());
                 pValue.append(message);

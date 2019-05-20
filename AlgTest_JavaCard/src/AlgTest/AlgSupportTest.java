@@ -247,6 +247,15 @@ public class AlgSupportTest {
         }
         Util.setShort(apdubuf, offset, JCSystem.getMaxCommitCapacity());
         offset = (short)(offset + 2);
+        // APDU information
+        Util.setShort(apdubuf, offset, APDU.getInBlockSize());
+        offset = (short) (offset + 2);
+        Util.setShort(apdubuf, offset, APDU.getOutBlockSize());
+        offset = (short) (offset + 2);
+        apdubuf[offset] = APDU.getProtocol();
+        offset++;
+        apdubuf[offset] = apdu.getNAD();
+        offset++;
 
         apdu.setOutgoingAndSend((byte) 0, offset);
       }
