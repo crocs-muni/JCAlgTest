@@ -9,6 +9,8 @@ env:
    #   via the "travis encrypt" command using the project repo's public key
    - secure: "e73sqDM9emSib7nkGpAgRh2aJO++TWVHfJYWtmgOXXekg2tU4Z5lbqdviGX/MFQsjd6KTd92qOCcvmExEuPfD6ThuP0WSt3lzGdeBkwLq9fn4xGgEVRp+wrMBSu/jI4qdUNjYVJzvSsog1H0WMqPwG7iRxjSN5ZV2HaDwvV6kMA="
 
+dist: xenial
+
 addons:
   coverity_scan:
     project:
