@@ -7,6 +7,27 @@ JavaCard support version;2.1.2;
 javacardx.apdu.ExtendedLength; 
 Extended APDU;no
 
+CPLC; 9f 7f 2a 40 90 66 56 40 91 32 34 05 01 63 57 27 0b 05 1a 2e ea 40 92 33 12 40 93 33 19 21 34 71 43 44 47 03 43 00 00 00 00 00 00 00 00
+CPLC.ICFabricator;4090;Infineon
+CPLC.ICType;6656
+CPLC.OperatingSystemID;4091
+CPLC.OperatingSystemReleaseDate;3234
+CPLC.OperatingSystemReleaseLevel;0501
+CPLC.ICFabricationDate;6357;(Y DDD) date in that year
+CPLC.ICSerialNumber;270b051a
+CPLC.ICBatchIdentifier;2eea
+CPLC.ICModuleFabricator;4092
+CPLC.ICModulePackagingDate;3312
+CPLC.ICCManufacturer;4093
+CPLC.ICEmbeddingDate;3319
+CPLC.ICPrePersonalizer;2134
+CPLC.ICPrePersonalizationEquipmentDate;7143
+CPLC.ICPrePersonalizationEquipmentID;44470343
+CPLC.ICPersonalizer;0000
+CPLC.ICPersonalizationDate;0000
+CPLC.ICPersonalizationEquipmentID;00000000
+CPLC.ICPersonalizationEquipmentID;00000000
+
 javacardx.crypto.Cipher;
 ALG_DES_CBC_NOPAD;yes;
 ALG_DES_CBC_ISO9797_M1;yes;
