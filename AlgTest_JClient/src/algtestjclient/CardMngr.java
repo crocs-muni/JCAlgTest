@@ -456,10 +456,11 @@ public class CardMngr {
                         }
                     }
 
+                    if (selectedATR != null) { selectedATR.append(getATR()); }
+                    if (selectedReader != null) { selectedReader.append(getTerminalName()); }
+                    if (usedProtocol != null) { usedProtocol.append(getProtocol()); }
+
                     if (cardFound) {
-                        if (selectedATR != null) { selectedATR.append(getATR()); }
-                        if (selectedReader != null) { selectedReader.append(getTerminalName()); }
-                        if (usedProtocol != null) { usedProtocol.append(getProtocol()); }
                         return true;
                     }
                 }
