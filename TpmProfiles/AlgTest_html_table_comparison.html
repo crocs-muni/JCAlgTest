@@ -1,0 +1,2577 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head><meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+<link type="text/css" href="style.css" rel="stylesheet">
+<script class="jsbin" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<title>TPM 2.0 support test</title>
+<script>$(function(){ $("#tab td").hover(function(){$("#tab col").eq($(this).index()).css({"border":" 2px solid #74828F"});$(this).closest("tr").css({"border":" 2px solid #74828F"});},function(){$("#tab col").eq($(this).index()).css({"border":" 0px"}); $(this).closest("tr").css({"border":" 0px"});});});</script>
+</head>
+
+<body style="margin-top:50px; padding:20px">
+
+<div class="container-fluid">
+<h3 id="LIST">Tested TPM abbreviations</h3>
+<b>t0</b>  INTC_Intel, FW=000b0008_00320d47,<br>
+<b>t1</b>  INTC_Intel, FW=000a0000_00240406,<br>
+<b>t2</b>  INTC_Intel, FW=000b0000_000004b2,<br>
+<b>t3</b>  STM _, FW=00490004_44a01164,<br>
+<b>t4</b>  NTC_NPCT75x6rls, FW=00070002_00000001,<br>
+<b>t5</b>  INTC_Intel, FW=000b0008_00320d61,<br>
+<b>t6</b>  INTC_Intel, FW=000b0006_00000466,<br>
+<b>t7</b>  NTC_rlsNPCT  , FW=00010003_00010000,<br>
+<b>t8</b>  INTC_Intel, FW=012e000c_00000000,<br>
+<br>
+<h4>Click on each checkbox to show/hide corresponding column (TPM chip)</h4>
+	<div class="row" id="grpChkBox">
+<div class="col-lg-4 .col-sm-4">
+		<p style="margin:0;"><input type="checkbox" name="0" /> <b>t0</b> - INTC_Intel 000b0008_00320d47</p>
+		<p style="margin:0;"><input type="checkbox" name="1" /> <b>t1</b> - INTC_Intel 000a0000_00240406</p>
+		<p style="margin:0;"><input type="checkbox" name="2" /> <b>t2</b> - INTC_Intel 000b0000_000004b2</p>
+		<p style="margin:0;"><input type="checkbox" name="3" /> <b>t3</b> - STM _ 00490004_44a01164</p>
+	</div>
+<div class="col-lg-4 .col-sm-4">
+		<p style="margin:0;"><input type="checkbox" name="4" /> <b>t4</b> - NTC_NPCT75x6rls 00070002_00000001</p>
+		<p style="margin:0;"><input type="checkbox" name="5" /> <b>t5</b> - INTC_Intel 000b0008_00320d61</p>
+		<p style="margin:0;"><input type="checkbox" name="6" /> <b>t6</b> - INTC_Intel 000b0006_00000466</p>
+		<p style="margin:0;"><input type="checkbox" name="7" /> <b>t7</b> - NTC_rlsNPCT   00010003_00010000</p>
+	</div>
+<div class="col-lg-4 .col-sm-4">
+		<p style="margin:0;"><input type="checkbox" name="8" /> <b>t8</b> - INTC_Intel 012e000c_00000000</p>
+	<br>
+	</div>
+</div>
+<input type="button" class="btn btn-default" id="checkAll" onclick="checkAll('grpChkBox')" value="Select all">
+<input type="button" class="btn btn-default" id="uncheckAll" onclick="uncheckAll('grpChkBox')" value="Deselect all">
+
+</br></br>
+
+<table id="tab" width="600px" border="0" cellspacing="2" cellpadding="4">
+<colgroup><col /><col /><col /><col /><col /><col /><col /><col /><col /><col /></colgroup>
+<tr style='outline: solid'>
+<td class='dark'>Basic info</td>
+  <th class='dark_index 0' title = 'INTC_Intel 000b0008_00320d47'>t0</th>
+  <th class='dark_index 1' title = 'INTC_Intel 000a0000_00240406'>t1</th>
+  <th class='dark_index 2' title = 'INTC_Intel 000b0000_000004b2'>t2</th>
+  <th class='dark_index 3' title = 'STM _ 00490004_44a01164'>t3</th>
+  <th class='dark_index 4' title = 'NTC_NPCT75x6rls 00070002_00000001'>t4</th>
+  <th class='dark_index 5' title = 'INTC_Intel 000b0008_00320d61'>t5</th>
+  <th class='dark_index 6' title = 'INTC_Intel 000b0006_00000466'>t6</th>
+  <th class='dark_index 7' title = 'NTC_rlsNPCT   00010003_00010000'>t7</th>
+  <th class='dark_index 8' title = 'INTC_Intel 012e000c_00000000'>t8</th>
+</tr>
+<tr>
+  <td class='light'>Image version</td>
+  <td class='light_info' title='INTC_Intel : Image version : 0.3'>0.3</td>
+  <td class='light_info' title='INTC_Intel : Image version : 0.4'>0.4</td>
+  <td class='light_info' title='INTC_Intel : Image version : 0.4'>0.4</td>
+  <td class='light_info' title='STM _ : Image version : 0.6'>0.6</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : Image version : 0.4'>0.4</td>
+  <td class='light_info' title='INTC_Intel : Image version : 0.4'>0.4</td>
+  <td class='light_info' title='INTC_Intel : Image version : 0.4'>0.4</td>
+  <td class='light_info' title='NTC_rlsNPCT   : Image version : 0.4'>0.4</td>
+  <td class='light_info' title='INTC_Intel : Image version : 0.4'>0.4</td>
+</tr>
+<tr style='outline: solid'>
+<td class='dark'>Quicktest_properties-fixed</td>
+  <td class='dark_index' title = 'INTC_Intel 000b0008_00320d47'>t0</td>
+  <td class='dark_index' title = 'INTC_Intel 000a0000_00240406'>t1</td>
+  <td class='dark_index' title = 'INTC_Intel 000b0000_000004b2'>t2</td>
+  <td class='dark_index' title = 'STM _ 00490004_44a01164'>t3</td>
+  <td class='dark_index' title = 'NTC_NPCT75x6rls 00070002_00000001'>t4</td>
+  <td class='dark_index' title = 'INTC_Intel 000b0008_00320d61'>t5</td>
+  <td class='dark_index' title = 'INTC_Intel 000b0006_00000466'>t6</td>
+  <td class='dark_index' title = 'NTC_rlsNPCT   00010003_00010000'>t7</td>
+  <td class='dark_index' title = 'INTC_Intel 012e000c_00000000'>t8</td>
+</tr>
+<tr>
+  <td class='light'>TPM_PT_FAMILY_INDICATOR</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_FAMILY_INDICATOR : "2.0"'>"2.0"</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_FAMILY_INDICATOR : "2.0"'>"2.0"</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_FAMILY_INDICATOR : "2.0"'>"2.0"</td>
+  <td class='light_info' title='STM _ : TPM_PT_FAMILY_INDICATOR : "2.0"'>"2.0"</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_FAMILY_INDICATOR : "2.0"'>"2.0"</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_FAMILY_INDICATOR : "2.0"'>"2.0"</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_FAMILY_INDICATOR : "2.0"'>"2.0"</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_FAMILY_INDICATOR : "2.0"'>"2.0"</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_FAMILY_INDICATOR : "2.0"'>"2.0"</td>
+</tr>
+<tr>
+  <td class='light'>TPM_PT_LEVEL</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_LEVEL : 0'>0</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_LEVEL : 0'>0</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_LEVEL : 0'>0</td>
+  <td class='light_info' title='STM _ : TPM_PT_LEVEL : 0'>0</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_LEVEL : 0'>0</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_LEVEL : 0'>0</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_LEVEL : 0'>0</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_LEVEL : 0'>0</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_LEVEL : 0'>0</td>
+</tr>
+<tr style='outline: solid'>
+  <td class='light'>TPM_PT_REVISION</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_REVISION : 1.16'>1.16</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_REVISION : 1.03'>1.03</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_REVISION : 1.16'>1.16</td>
+  <td class='light_info' title='STM _ : TPM_PT_REVISION : 1.16'>1.16</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_REVISION : 1.16'>1.16</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_REVISION : 1.16'>1.16</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_REVISION : 1.16'>1.16</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_REVISION : 1.16'>1.16</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_REVISION : 1.16'>1.16</td>
+</tr>
+<tr style='outline: solid'>
+  <td class='light'>TPM_PT_DAY_OF_YEAR</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_DAY_OF_YEAR : 0x00000109'>0x00000109</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_DAY_OF_YEAR : 0x0000013e'>0x0000013e</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_DAY_OF_YEAR : 0x0000012f'>0x0000012f</td>
+  <td class='light_info' title='STM _ : TPM_PT_DAY_OF_YEAR : 0x00000109'>0x00000109</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_DAY_OF_YEAR : 0x00000109'>0x00000109</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_DAY_OF_YEAR : 0x00000109'>0x00000109</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_DAY_OF_YEAR : 0x0000000f'>0x0000000f</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_DAY_OF_YEAR : 0x000000a7'>0x000000a7</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_DAY_OF_YEAR : 0x00000109'>0x00000109</td>
+</tr>
+<tr style='outline: solid'>
+  <td class='light'>TPM_PT_YEAR</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_YEAR : 0x000007e0'>0x000007e0</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_YEAR : 0x000007dd'>0x000007dd</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_YEAR : 0x000007de'>0x000007de</td>
+  <td class='light_info' title='STM _ : TPM_PT_YEAR : 0x000007e0'>0x000007e0</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_YEAR : 0x000007e0'>0x000007e0</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_YEAR : 0x000007e0'>0x000007e0</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_YEAR : 0x000007e0'>0x000007e0</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_YEAR : 0x000007df'>0x000007df</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_YEAR : 0x000007e0'>0x000007e0</td>
+</tr>
+<tr>
+  <td class='light'>TPM_PT_MANUFACTURER</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MANUFACTURER : 0x494e5443'>0x494e5443</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MANUFACTURER : 0x494e5443'>0x494e5443</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MANUFACTURER : 0x494e5443'>0x494e5443</td>
+  <td class='light_info' title='STM _ : TPM_PT_MANUFACTURER : 0x53544d20'>0x53544d20</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_MANUFACTURER : 0x4e544300'>0x4e544300</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MANUFACTURER : 0x494e5443'>0x494e5443</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MANUFACTURER : 0x494e5443'>0x494e5443</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_MANUFACTURER : 0x4e544300'>0x4e544300</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MANUFACTURER : 0x494e5443'>0x494e5443</td>
+</tr>
+<tr>
+  <td class='light'>TPM_PT_VENDOR_STRING_1</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_VENDOR_STRING_1 : "Inte"'>"Inte"</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_VENDOR_STRING_1 : "Inte"'>"Inte"</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_VENDOR_STRING_1 : "Inte"'>"Inte"</td>
+  <td class='light_info' title='STM _ : TPM_PT_VENDOR_STRING_1 : ""'>""</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_VENDOR_STRING_1 : "NPCT"'>"NPCT"</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_VENDOR_STRING_1 : "Inte"'>"Inte"</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_VENDOR_STRING_1 : "Inte"'>"Inte"</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_VENDOR_STRING_1 : "rls"'>"rls"</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_VENDOR_STRING_1 : "Inte"'>"Inte"</td>
+</tr>
+<tr>
+  <td class='light'>TPM_PT_VENDOR_STRING_2</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_VENDOR_STRING_2 : "l"'>"l"</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_VENDOR_STRING_2 : "l"'>"l"</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_VENDOR_STRING_2 : "l"'>"l"</td>
+  <td class='light_info' title='STM _ : TPM_PT_VENDOR_STRING_2 : ""'>""</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_VENDOR_STRING_2 : "75x"'>"75x"</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_VENDOR_STRING_2 : "l"'>"l"</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_VENDOR_STRING_2 : "l"'>"l"</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_VENDOR_STRING_2 : "NPCT"'>"NPCT"</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_VENDOR_STRING_2 : "l"'>"l"</td>
+</tr>
+<tr>
+  <td class='light'>TPM_PT_VENDOR_STRING_3</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_VENDOR_STRING_3 : ""'>""</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_VENDOR_STRING_3 : ""'>""</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_VENDOR_STRING_3 : ""'>""</td>
+  <td class='light_info' title='STM _ : TPM_PT_VENDOR_STRING_3 : ""'>""</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_VENDOR_STRING_3 : ""'>""</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_VENDOR_STRING_3 : ""'>""</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_VENDOR_STRING_3 : ""'>""</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_VENDOR_STRING_3 : " "'>" "</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_VENDOR_STRING_3 : ""'>""</td>
+</tr>
+<tr>
+  <td class='light'>TPM_PT_VENDOR_STRING_4</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_VENDOR_STRING_4 : ""'>""</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_VENDOR_STRING_4 : ""'>""</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_VENDOR_STRING_4 : ""'>""</td>
+  <td class='light_info' title='STM _ : TPM_PT_VENDOR_STRING_4 : ""'>""</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_VENDOR_STRING_4 : "rls"'>"rls"</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_VENDOR_STRING_4 : ""'>""</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_VENDOR_STRING_4 : ""'>""</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_VENDOR_STRING_4 : " "'>" "</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_VENDOR_STRING_4 : ""'>""</td>
+</tr>
+<tr style='outline: solid'>
+  <td class='light'>TPM_PT_VENDOR_TPM_TYPE</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_VENDOR_TPM_TYPE : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_VENDOR_TPM_TYPE : 0x00000002'>0x00000002</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_VENDOR_TPM_TYPE : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='STM _ : TPM_PT_VENDOR_TPM_TYPE : 0x00000001'>0x00000001</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_VENDOR_TPM_TYPE : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_VENDOR_TPM_TYPE : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_VENDOR_TPM_TYPE : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_VENDOR_TPM_TYPE : 0x00000001'>0x00000001</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_VENDOR_TPM_TYPE : 0x00000000'>0x00000000</td>
+</tr>
+<tr style='outline: solid'>
+  <td class='light'>TPM_PT_FIRMWARE_VERSION_1</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_FIRMWARE_VERSION_1 : 0x000b0008'>0x000b0008</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_FIRMWARE_VERSION_1 : 0x000a0000'>0x000a0000</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_FIRMWARE_VERSION_1 : 0x000b0000'>0x000b0000</td>
+  <td class='light_info' title='STM _ : TPM_PT_FIRMWARE_VERSION_1 : 0x00490004'>0x00490004</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_FIRMWARE_VERSION_1 : 0x00070002'>0x00070002</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_FIRMWARE_VERSION_1 : 0x000b0008'>0x000b0008</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_FIRMWARE_VERSION_1 : 0x000b0006'>0x000b0006</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_FIRMWARE_VERSION_1 : 0x00010003'>0x00010003</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_FIRMWARE_VERSION_1 : 0x012e000c'>0x012e000c</td>
+</tr>
+<tr style='outline: solid'>
+  <td class='light'>TPM_PT_FIRMWARE_VERSION_2</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_FIRMWARE_VERSION_2 : 0x00320d47'>0x00320d47</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_FIRMWARE_VERSION_2 : 0x00240406'>0x00240406</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_FIRMWARE_VERSION_2 : 0x000004b2'>0x000004b2</td>
+  <td class='light_info' title='STM _ : TPM_PT_FIRMWARE_VERSION_2 : 0x44a01164'>0x44a01164</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_FIRMWARE_VERSION_2 : 0x00000001'>0x00000001</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_FIRMWARE_VERSION_2 : 0x00320d61'>0x00320d61</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_FIRMWARE_VERSION_2 : 0x00000466'>0x00000466</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_FIRMWARE_VERSION_2 : 0x00010000'>0x00010000</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_FIRMWARE_VERSION_2 : 0x00000000'>0x00000000</td>
+</tr>
+<tr>
+  <td class='light'>TPM_PT_INPUT_BUFFER</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_INPUT_BUFFER : 0x00000400'>0x00000400</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_INPUT_BUFFER : 0x00000400'>0x00000400</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_INPUT_BUFFER : 0x00000400'>0x00000400</td>
+  <td class='light_info' title='STM _ : TPM_PT_INPUT_BUFFER : 0x00000400'>0x00000400</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_INPUT_BUFFER : 0x00000400'>0x00000400</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_INPUT_BUFFER : 0x00000400'>0x00000400</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_INPUT_BUFFER : 0x00000400'>0x00000400</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_INPUT_BUFFER : 0x00000400'>0x00000400</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_INPUT_BUFFER : 0x00000400'>0x00000400</td>
+</tr>
+<tr>
+  <td class='light'>TPM_PT_TPM2_HR_TRANSIENT_MIN</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_TPM2_HR_TRANSIENT_MIN : 0x00000003'>0x00000003</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_TPM2_HR_TRANSIENT_MIN : 0x00000003'>0x00000003</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_TPM2_HR_TRANSIENT_MIN : 0x00000003'>0x00000003</td>
+  <td class='light_info' title='STM _ : TPM_PT_TPM2_HR_TRANSIENT_MIN : 0x00000004'>0x00000004</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_TPM2_HR_TRANSIENT_MIN : 0x00000003'>0x00000003</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_TPM2_HR_TRANSIENT_MIN : 0x00000003'>0x00000003</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_TPM2_HR_TRANSIENT_MIN : 0x00000003'>0x00000003</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_TPM2_HR_TRANSIENT_MIN : 0x00000003'>0x00000003</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_TPM2_HR_TRANSIENT_MIN : 0x00000003'>0x00000003</td>
+</tr>
+<tr style='outline: solid'>
+  <td class='light'>TPM_PT_TPM2_HR_PERSISTENT_MIN</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_TPM2_HR_PERSISTENT_MIN : 0x00000007'>0x00000007</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_TPM2_HR_PERSISTENT_MIN : 0x00000002'>0x00000002</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_TPM2_HR_PERSISTENT_MIN : 0x00000007'>0x00000007</td>
+  <td class='light_info' title='STM _ : TPM_PT_TPM2_HR_PERSISTENT_MIN : 0x00000007'>0x00000007</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_TPM2_HR_PERSISTENT_MIN : 0x00000007'>0x00000007</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_TPM2_HR_PERSISTENT_MIN : 0x00000007'>0x00000007</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_TPM2_HR_PERSISTENT_MIN : 0x00000007'>0x00000007</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_TPM2_HR_PERSISTENT_MIN : 0x00000007'>0x00000007</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_TPM2_HR_PERSISTENT_MIN : 0x00000007'>0x00000007</td>
+</tr>
+<tr>
+  <td class='light'>TPM_PT_HR_LOADED_MIN</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_HR_LOADED_MIN : 0x00000003'>0x00000003</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_HR_LOADED_MIN : 0x00000003'>0x00000003</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_HR_LOADED_MIN : 0x00000003'>0x00000003</td>
+  <td class='light_info' title='STM _ : TPM_PT_HR_LOADED_MIN : 0x00000004'>0x00000004</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_HR_LOADED_MIN : 0x00000003'>0x00000003</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_HR_LOADED_MIN : 0x00000003'>0x00000003</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_HR_LOADED_MIN : 0x00000003'>0x00000003</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_HR_LOADED_MIN : 0x00000003'>0x00000003</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_HR_LOADED_MIN : 0x00000003'>0x00000003</td>
+</tr>
+<tr>
+  <td class='light'>TPM_PT_ACTIVE_SESSIONS_MAX</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_ACTIVE_SESSIONS_MAX : 0x00000040'>0x00000040</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_ACTIVE_SESSIONS_MAX : 0x00000040'>0x00000040</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_ACTIVE_SESSIONS_MAX : 0x00000040'>0x00000040</td>
+  <td class='light_info' title='STM _ : TPM_PT_ACTIVE_SESSIONS_MAX : 0x00000040'>0x00000040</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_ACTIVE_SESSIONS_MAX : 0x00000040'>0x00000040</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_ACTIVE_SESSIONS_MAX : 0x00000040'>0x00000040</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_ACTIVE_SESSIONS_MAX : 0x00000040'>0x00000040</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_ACTIVE_SESSIONS_MAX : 0x00000040'>0x00000040</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_ACTIVE_SESSIONS_MAX : 0x00000040'>0x00000040</td>
+</tr>
+<tr>
+  <td class='light'>TPM_PT_PCR_COUNT</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PCR_COUNT : 0x00000018'>0x00000018</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PCR_COUNT : 0x00000018'>0x00000018</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PCR_COUNT : 0x00000018'>0x00000018</td>
+  <td class='light_info' title='STM _ : TPM_PT_PCR_COUNT : 0x00000018'>0x00000018</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_PCR_COUNT : 0x00000018'>0x00000018</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PCR_COUNT : 0x00000018'>0x00000018</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PCR_COUNT : 0x00000018'>0x00000018</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_PCR_COUNT : 0x00000018'>0x00000018</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PCR_COUNT : 0x00000018'>0x00000018</td>
+</tr>
+<tr>
+  <td class='light'>TPM_PT_PCR_SELECT_MIN</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PCR_SELECT_MIN : 0x00000003'>0x00000003</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PCR_SELECT_MIN : 0x00000003'>0x00000003</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PCR_SELECT_MIN : 0x00000003'>0x00000003</td>
+  <td class='light_info' title='STM _ : TPM_PT_PCR_SELECT_MIN : 0x00000003'>0x00000003</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_PCR_SELECT_MIN : 0x00000003'>0x00000003</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PCR_SELECT_MIN : 0x00000003'>0x00000003</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PCR_SELECT_MIN : 0x00000003'>0x00000003</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_PCR_SELECT_MIN : 0x00000003'>0x00000003</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PCR_SELECT_MIN : 0x00000003'>0x00000003</td>
+</tr>
+<tr>
+  <td class='light'>TPM_PT_CONTEXT_GAP_MAX</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_CONTEXT_GAP_MAX : 0x0000ffff'>0x0000ffff</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_CONTEXT_GAP_MAX : 0x0000ffff'>0x0000ffff</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_CONTEXT_GAP_MAX : 0x0000ffff'>0x0000ffff</td>
+  <td class='light_info' title='STM _ : TPM_PT_CONTEXT_GAP_MAX : 0x0000ffff'>0x0000ffff</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_CONTEXT_GAP_MAX : 0x0000ffff'>0x0000ffff</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_CONTEXT_GAP_MAX : 0x0000ffff'>0x0000ffff</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_CONTEXT_GAP_MAX : 0x0000ffff'>0x0000ffff</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_CONTEXT_GAP_MAX : 0x0000ffff'>0x0000ffff</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_CONTEXT_GAP_MAX : 0x0000ffff'>0x0000ffff</td>
+</tr>
+<tr>
+  <td class='light'>TPM_PT_NV_COUNTERS_MAX</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_NV_COUNTERS_MAX : 0x00000010'>0x00000010</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_NV_COUNTERS_MAX : 0x00000010'>0x00000010</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_NV_COUNTERS_MAX : 0x00000010'>0x00000010</td>
+  <td class='light_info' title='STM _ : TPM_PT_NV_COUNTERS_MAX : 0x00000008'>0x00000008</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_NV_COUNTERS_MAX : 0x00000010'>0x00000010</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_NV_COUNTERS_MAX : 0x00000010'>0x00000010</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_NV_COUNTERS_MAX : 0x00000010'>0x00000010</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_NV_COUNTERS_MAX : 0x00000010'>0x00000010</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_NV_COUNTERS_MAX : 0x00000010'>0x00000010</td>
+</tr>
+<tr>
+  <td class='light'>TPM_PT_NV_INDEX_MAX</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_NV_INDEX_MAX : 0x00000800'>0x00000800</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_NV_INDEX_MAX : 0x00000800'>0x00000800</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_NV_INDEX_MAX : 0x00000800'>0x00000800</td>
+  <td class='light_info' title='STM _ : TPM_PT_NV_INDEX_MAX : 0x00008000'>0x00008000</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_NV_INDEX_MAX : 0x00000800'>0x00000800</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_NV_INDEX_MAX : 0x00000800'>0x00000800</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_NV_INDEX_MAX : 0x00000800'>0x00000800</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_NV_INDEX_MAX : 0x00000800'>0x00000800</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_NV_INDEX_MAX : 0x00000800'>0x00000800</td>
+</tr>
+<tr>
+  <td class='light'>TPM_PT_MEMORY</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MEMORY : 0x00000006'>0x00000006</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MEMORY : 0x00000006'>0x00000006</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MEMORY : 0x00000006'>0x00000006</td>
+  <td class='light_info' title='STM _ : TPM_PT_MEMORY : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_MEMORY : 0x00000006'>0x00000006</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MEMORY : 0x00000006'>0x00000006</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MEMORY : 0x00000006'>0x00000006</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_MEMORY : 0x00000006'>0x00000006</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MEMORY : 0x00000006'>0x00000006</td>
+</tr>
+<tr>
+  <td class='light'>TPM_PT_CLOCK_UPDATE</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_CLOCK_UPDATE : 0x003e8000'>0x003e8000</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_CLOCK_UPDATE : 0x00001000'>0x00001000</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_CLOCK_UPDATE : 0x00001000'>0x00001000</td>
+  <td class='light_info' title='STM _ : TPM_PT_CLOCK_UPDATE : 0x00002710'>0x00002710</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_CLOCK_UPDATE : 0x00400000'>0x00400000</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_CLOCK_UPDATE : 0x003e8000'>0x003e8000</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_CLOCK_UPDATE : 0x00001000'>0x00001000</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_CLOCK_UPDATE : 0x00400000'>0x00400000</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_CLOCK_UPDATE : 0x003e8000'>0x003e8000</td>
+</tr>
+<tr>
+  <td class='light'>TPM_PT_CONTEXT_HASH</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_CONTEXT_HASH : 0x0000000b'>0x0000000b</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_CONTEXT_HASH : 0x0000000b'>0x0000000b</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_CONTEXT_HASH : 0x0000000b'>0x0000000b</td>
+  <td class='light_info' title='STM _ : TPM_PT_CONTEXT_HASH : 0x0000000b'>0x0000000b</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_CONTEXT_HASH : 0x0000000c'>0x0000000c</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_CONTEXT_HASH : 0x0000000b'>0x0000000b</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_CONTEXT_HASH : 0x0000000b'>0x0000000b</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_CONTEXT_HASH : 0x0000000b'>0x0000000b</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_CONTEXT_HASH : 0x0000000b'>0x0000000b</td>
+</tr>
+<tr>
+  <td class='light'>TPM_PT_CONTEXT_SYM</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_CONTEXT_SYM : 0x00000006'>0x00000006</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_CONTEXT_SYM : 0x00000006'>0x00000006</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_CONTEXT_SYM : 0x00000006'>0x00000006</td>
+  <td class='light_info' title='STM _ : TPM_PT_CONTEXT_SYM : 0x00000006'>0x00000006</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_CONTEXT_SYM : 0x00000006'>0x00000006</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_CONTEXT_SYM : 0x00000006'>0x00000006</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_CONTEXT_SYM : 0x00000006'>0x00000006</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_CONTEXT_SYM : 0x00000006'>0x00000006</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_CONTEXT_SYM : 0x00000006'>0x00000006</td>
+</tr>
+<tr>
+  <td class='light'>TPM_PT_CONTEXT_SYM_SIZE</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_CONTEXT_SYM_SIZE : 0x00000080'>0x00000080</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_CONTEXT_SYM_SIZE : 0x00000080'>0x00000080</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_CONTEXT_SYM_SIZE : 0x00000080'>0x00000080</td>
+  <td class='light_info' title='STM _ : TPM_PT_CONTEXT_SYM_SIZE : 0x00000100'>0x00000100</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_CONTEXT_SYM_SIZE : 0x00000100'>0x00000100</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_CONTEXT_SYM_SIZE : 0x00000080'>0x00000080</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_CONTEXT_SYM_SIZE : 0x00000080'>0x00000080</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_CONTEXT_SYM_SIZE : 0x00000080'>0x00000080</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_CONTEXT_SYM_SIZE : 0x00000080'>0x00000080</td>
+</tr>
+<tr>
+  <td class='light'>TPM_PT_ORDERLY_COUNT</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_ORDERLY_COUNT : 0x000000ff'>0x000000ff</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_ORDERLY_COUNT : 0x000000ff'>0x000000ff</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_ORDERLY_COUNT : 0x000000ff'>0x000000ff</td>
+  <td class='light_info' title='STM _ : TPM_PT_ORDERLY_COUNT : 0x000000ff'>0x000000ff</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_ORDERLY_COUNT : 0x000000ff'>0x000000ff</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_ORDERLY_COUNT : 0x000000ff'>0x000000ff</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_ORDERLY_COUNT : 0x000000ff'>0x000000ff</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_ORDERLY_COUNT : 0x000000ff'>0x000000ff</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_ORDERLY_COUNT : 0x000000ff'>0x000000ff</td>
+</tr>
+<tr>
+  <td class='light'>TPM_PT_MAX_COMMAND_SIZE</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MAX_COMMAND_SIZE : 0x00000f80'>0x00000f80</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MAX_COMMAND_SIZE : 0x00000f80'>0x00000f80</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MAX_COMMAND_SIZE : 0x00000f80'>0x00000f80</td>
+  <td class='light_info' title='STM _ : TPM_PT_MAX_COMMAND_SIZE : 0x00000500'>0x00000500</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_MAX_COMMAND_SIZE : 0x00000800'>0x00000800</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MAX_COMMAND_SIZE : 0x00000f80'>0x00000f80</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MAX_COMMAND_SIZE : 0x00000f80'>0x00000f80</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_MAX_COMMAND_SIZE : 0x00000800'>0x00000800</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MAX_COMMAND_SIZE : 0x00000f80'>0x00000f80</td>
+</tr>
+<tr>
+  <td class='light'>TPM_PT_MAX_RESPONSE_SIZE</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MAX_RESPONSE_SIZE : 0x00000f80'>0x00000f80</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MAX_RESPONSE_SIZE : 0x00000f80'>0x00000f80</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MAX_RESPONSE_SIZE : 0x00000f80'>0x00000f80</td>
+  <td class='light_info' title='STM _ : TPM_PT_MAX_RESPONSE_SIZE : 0x00000500'>0x00000500</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_MAX_RESPONSE_SIZE : 0x00000800'>0x00000800</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MAX_RESPONSE_SIZE : 0x00000f80'>0x00000f80</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MAX_RESPONSE_SIZE : 0x00000f80'>0x00000f80</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_MAX_RESPONSE_SIZE : 0x00000800'>0x00000800</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MAX_RESPONSE_SIZE : 0x00000f80'>0x00000f80</td>
+</tr>
+<tr>
+  <td class='light'>TPM_PT_MAX_DIGEST</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MAX_DIGEST : 0x00000020'>0x00000020</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MAX_DIGEST : 0x00000020'>0x00000020</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MAX_DIGEST : 0x00000020'>0x00000020</td>
+  <td class='light_info' title='STM _ : TPM_PT_MAX_DIGEST : 0x00000020'>0x00000020</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_MAX_DIGEST : 0x00000030'>0x00000030</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MAX_DIGEST : 0x00000020'>0x00000020</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MAX_DIGEST : 0x00000020'>0x00000020</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_MAX_DIGEST : 0x00000020'>0x00000020</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MAX_DIGEST : 0x00000020'>0x00000020</td>
+</tr>
+<tr style='outline: solid'>
+  <td class='light'>TPM_PT_MAX_OBJECT_CONTEXT</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MAX_OBJECT_CONTEXT : 0x000003a0'>0x000003a0</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MAX_OBJECT_CONTEXT : 0x0000039c'>0x0000039c</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MAX_OBJECT_CONTEXT : 0x000003a0'>0x000003a0</td>
+  <td class='light_info' title='STM _ : TPM_PT_MAX_OBJECT_CONTEXT : 0x00000218'>0x00000218</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_MAX_OBJECT_CONTEXT : 0x000003f2'>0x000003f2</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MAX_OBJECT_CONTEXT : 0x000003a0'>0x000003a0</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MAX_OBJECT_CONTEXT : 0x000003a0'>0x000003a0</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_MAX_OBJECT_CONTEXT : 0x00000392'>0x00000392</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MAX_OBJECT_CONTEXT : 0x000003a0'>0x000003a0</td>
+</tr>
+<tr>
+  <td class='light'>TPM_PT_MAX_SESSION_CONTEXT</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MAX_SESSION_CONTEXT : 0x000000f0'>0x000000f0</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MAX_SESSION_CONTEXT : 0x000000f0'>0x000000f0</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MAX_SESSION_CONTEXT : 0x000000f0'>0x000000f0</td>
+  <td class='light_info' title='STM _ : TPM_PT_MAX_SESSION_CONTEXT : 0x000000ee'>0x000000ee</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_MAX_SESSION_CONTEXT : 0x00000139'>0x00000139</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MAX_SESSION_CONTEXT : 0x000000f0'>0x000000f0</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MAX_SESSION_CONTEXT : 0x000000f0'>0x000000f0</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_MAX_SESSION_CONTEXT : 0x000000e9'>0x000000e9</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_MAX_SESSION_CONTEXT : 0x000000f0'>0x000000f0</td>
+</tr>
+<tr style='outline: solid'>
+  <td class='light'>TPM_PT_PS_FAMILY_INDICATOR</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PS_FAMILY_INDICATOR : 0x00000001'>0x00000001</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PS_FAMILY_INDICATOR : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PS_FAMILY_INDICATOR : 0x00000001'>0x00000001</td>
+  <td class='light_info' title='STM _ : TPM_PT_PS_FAMILY_INDICATOR : 0x00000001'>0x00000001</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_PS_FAMILY_INDICATOR : 0x00000001'>0x00000001</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PS_FAMILY_INDICATOR : 0x00000001'>0x00000001</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PS_FAMILY_INDICATOR : 0x00000001'>0x00000001</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_PS_FAMILY_INDICATOR : 0x00000001'>0x00000001</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PS_FAMILY_INDICATOR : 0x00000001'>0x00000001</td>
+</tr>
+<tr>
+  <td class='light'>TPM_PT_PS_LEVEL</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PS_LEVEL : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PS_LEVEL : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PS_LEVEL : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='STM _ : TPM_PT_PS_LEVEL : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_PS_LEVEL : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PS_LEVEL : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PS_LEVEL : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_PS_LEVEL : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PS_LEVEL : 0x00000000'>0x00000000</td>
+</tr>
+<tr style='outline: solid'>
+  <td class='light'>TPM_PT_PS_REVISION</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PS_REVISION : 0x00000100'>0x00000100</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PS_REVISION : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PS_REVISION : 0x00000100'>0x00000100</td>
+  <td class='light_info' title='STM _ : TPM_PT_PS_REVISION : 0x00000100'>0x00000100</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_PS_REVISION : 0x00000100'>0x00000100</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PS_REVISION : 0x00000100'>0x00000100</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PS_REVISION : 0x00000100'>0x00000100</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_PS_REVISION : 0x00000100'>0x00000100</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PS_REVISION : 0x00000100'>0x00000100</td>
+</tr>
+<tr>
+  <td class='light'>TPM_PT_PS_DAY_OF_YEAR</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PS_DAY_OF_YEAR : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PS_DAY_OF_YEAR : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PS_DAY_OF_YEAR : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='STM _ : TPM_PT_PS_DAY_OF_YEAR : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_PS_DAY_OF_YEAR : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PS_DAY_OF_YEAR : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PS_DAY_OF_YEAR : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_PS_DAY_OF_YEAR : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PS_DAY_OF_YEAR : 0x00000000'>0x00000000</td>
+</tr>
+<tr>
+  <td class='light'>TPM_PT_PS_YEAR</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PS_YEAR : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PS_YEAR : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PS_YEAR : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='STM _ : TPM_PT_PS_YEAR : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_PS_YEAR : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PS_YEAR : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PS_YEAR : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_PS_YEAR : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_PS_YEAR : 0x00000000'>0x00000000</td>
+</tr>
+<tr>
+  <td class='light'>TPM_PT_SPLIT_MAX</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_SPLIT_MAX : 0x00000080'>0x00000080</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_SPLIT_MAX : 0x00000080'>0x00000080</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_SPLIT_MAX : 0x00000080'>0x00000080</td>
+  <td class='light_info' title='STM _ : TPM_PT_SPLIT_MAX : 0x00000080'>0x00000080</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_SPLIT_MAX : 0x00000080'>0x00000080</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_SPLIT_MAX : 0x00000080'>0x00000080</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_SPLIT_MAX : 0x00000080'>0x00000080</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_SPLIT_MAX : 0x00000080'>0x00000080</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_SPLIT_MAX : 0x00000080'>0x00000080</td>
+</tr>
+<tr style='outline: solid'>
+  <td class='light'>TPM_PT_TOTAL_COMMANDS</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_TOTAL_COMMANDS : 0x0000005f'>0x0000005f</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_TOTAL_COMMANDS : 0x0000005e'>0x0000005e</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_TOTAL_COMMANDS : 0x0000005f'>0x0000005f</td>
+  <td class='light_info' title='STM _ : TPM_PT_TOTAL_COMMANDS : 0x0000006b'>0x0000006b</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_TOTAL_COMMANDS : 0x0000006d'>0x0000006d</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_TOTAL_COMMANDS : 0x0000005f'>0x0000005f</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_TOTAL_COMMANDS : 0x0000005f'>0x0000005f</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_TOTAL_COMMANDS : 0x0000006b'>0x0000006b</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_TOTAL_COMMANDS : 0x00000060'>0x00000060</td>
+</tr>
+<tr style='outline: solid'>
+  <td class='light'>TPM_PT_LIBRARY_COMMANDS</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_LIBRARY_COMMANDS : 0x0000005f'>0x0000005f</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_LIBRARY_COMMANDS : 0x0000005e'>0x0000005e</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_LIBRARY_COMMANDS : 0x0000005f'>0x0000005f</td>
+  <td class='light_info' title='STM _ : TPM_PT_LIBRARY_COMMANDS : 0x00000067'>0x00000067</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_LIBRARY_COMMANDS : 0x00000065'>0x00000065</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_LIBRARY_COMMANDS : 0x0000005f'>0x0000005f</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_LIBRARY_COMMANDS : 0x0000005f'>0x0000005f</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_LIBRARY_COMMANDS : 0x00000065'>0x00000065</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_LIBRARY_COMMANDS : 0x00000060'>0x00000060</td>
+</tr>
+<tr>
+  <td class='light'>TPM_PT_VENDOR_COMMANDS</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_VENDOR_COMMANDS : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_VENDOR_COMMANDS : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_VENDOR_COMMANDS : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='STM _ : TPM_PT_VENDOR_COMMANDS : 0x00000004'>0x00000004</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_VENDOR_COMMANDS : 0x00000008'>0x00000008</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_VENDOR_COMMANDS : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_VENDOR_COMMANDS : 0x00000000'>0x00000000</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_VENDOR_COMMANDS : 0x00000006'>0x00000006</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_VENDOR_COMMANDS : 0x00000000'>0x00000000</td>
+</tr>
+<tr style='outline: solid'>
+  <td class='light'>TPM_PT_NV_BUFFER_MAX</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_NV_BUFFER_MAX : 0x00000800'>0x00000800</td>
+  <td class='light_maybe'>-</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_NV_BUFFER_MAX : 0x00000800'>0x00000800</td>
+  <td class='light_info' title='STM _ : TPM_PT_NV_BUFFER_MAX : 0x00000400'>0x00000400</td>
+  <td class='light_info' title='NTC_NPCT75x6rls : TPM_PT_NV_BUFFER_MAX : 0x00000400'>0x00000400</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_NV_BUFFER_MAX : 0x00000800'>0x00000800</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_NV_BUFFER_MAX : 0x00000800'>0x00000800</td>
+  <td class='light_info' title='NTC_rlsNPCT   : TPM_PT_NV_BUFFER_MAX : 0x00000400'>0x00000400</td>
+  <td class='light_info' title='INTC_Intel : TPM_PT_NV_BUFFER_MAX : 0x00000800'>0x00000800</td>
+</tr>
+<tr style='outline: solid'>
+<td class='dark'>Quicktest_algorithms</td>
+  <td class='dark_index' title = 'INTC_Intel 000b0008_00320d47'>t0</td>
+  <td class='dark_index' title = 'INTC_Intel 000a0000_00240406'>t1</td>
+  <td class='dark_index' title = 'INTC_Intel 000b0000_000004b2'>t2</td>
+  <td class='dark_index' title = 'STM _ 00490004_44a01164'>t3</td>
+  <td class='dark_index' title = 'NTC_NPCT75x6rls 00070002_00000001'>t4</td>
+  <td class='dark_index' title = 'INTC_Intel 000b0008_00320d61'>t5</td>
+  <td class='dark_index' title = 'INTC_Intel 000b0006_00000466'>t6</td>
+  <td class='dark_index' title = 'NTC_rlsNPCT   00010003_00010000'>t7</td>
+  <td class='dark_index' title = 'INTC_Intel 012e000c_00000000'>t8</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ALG_CTR</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_CTR : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_CTR : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_CTR : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_ALG_CTR : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_ALG_CTR : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_CTR : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_CTR : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_ALG_CTR : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_CTR : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ALG_RSA</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_RSA : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_RSA : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_RSA : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_ALG_RSA : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_ALG_RSA : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_RSA : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_RSA : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_ALG_RSA : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_RSA : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ALG_OFB</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_OFB : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_OFB : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_OFB : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_ALG_OFB : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_ALG_OFB : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_OFB : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_OFB : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_ALG_OFB : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_OFB : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ALG_CBC</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_CBC : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_CBC : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_CBC : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_ALG_CBC : yes'>yes</td>
+  <td class='light_no' title='NTC_NPCT75x6rls : TPM2_ALG_CBC : no'>no</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_CBC : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_CBC : yes'>yes</td>
+  <td class='light_no' title='NTC_rlsNPCT   : TPM2_ALG_CBC : no'>no</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_CBC : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ALG_CFB</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_CFB : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_CFB : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_CFB : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_ALG_CFB : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_ALG_CFB : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_CFB : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_CFB : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_ALG_CFB : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_CFB : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ALG_SHA1</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_SHA1 : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_SHA1 : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_SHA1 : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_ALG_SHA1 : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_ALG_SHA1 : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_SHA1 : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_SHA1 : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_ALG_SHA1 : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_SHA1 : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ALG_ECB</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_ECB : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_ECB : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_ECB : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_ALG_ECB : yes'>yes</td>
+  <td class='light_no' title='NTC_NPCT75x6rls : TPM2_ALG_ECB : no'>no</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_ECB : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_ECB : yes'>yes</td>
+  <td class='light_no' title='NTC_rlsNPCT   : TPM2_ALG_ECB : no'>no</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_ECB : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ALG_HMAC</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_HMAC : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_HMAC : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_HMAC : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_ALG_HMAC : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_ALG_HMAC : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_HMAC : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_HMAC : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_ALG_HMAC : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_HMAC : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ALG_AES</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_AES : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_AES : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_AES : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_ALG_AES : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_ALG_AES : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_AES : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_AES : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_ALG_AES : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_AES : yes'>yes</td>
+</tr>
+<tr style='outline: solid'>
+  <td class='light'>TPM2_ALG_MGF1</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_MGF1 : yes'>yes</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_MGF1 : no'>no</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_MGF1 : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_ALG_MGF1 : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_ALG_MGF1 : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_MGF1 : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_MGF1 : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_ALG_MGF1 : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_MGF1 : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ALG_KEYEDHASH</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_KEYEDHASH : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_KEYEDHASH : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_KEYEDHASH : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_ALG_KEYEDHASH : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_ALG_KEYEDHASH : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_KEYEDHASH : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_KEYEDHASH : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_ALG_KEYEDHASH : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_KEYEDHASH : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ALG_XOR</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_XOR : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_XOR : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_XOR : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_ALG_XOR : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_ALG_XOR : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_XOR : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_XOR : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_ALG_XOR : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_XOR : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ALG_SHA256</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_SHA256 : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_SHA256 : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_SHA256 : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_ALG_SHA256 : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_ALG_SHA256 : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_SHA256 : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_SHA256 : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_ALG_SHA256 : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_SHA256 : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ALG_SHA384</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SHA384 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SHA384 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SHA384 : no'>no</td>
+  <td class='light_no' title='STM _ : TPM2_ALG_SHA384 : no'>no</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_ALG_SHA384 : yes'>yes</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SHA384 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SHA384 : no'>no</td>
+  <td class='light_no' title='NTC_rlsNPCT   : TPM2_ALG_SHA384 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SHA384 : no'>no</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ALG_SHA512</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SHA512 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SHA512 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SHA512 : no'>no</td>
+  <td class='light_no' title='STM _ : TPM2_ALG_SHA512 : no'>no</td>
+  <td class='light_no' title='NTC_NPCT75x6rls : TPM2_ALG_SHA512 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SHA512 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SHA512 : no'>no</td>
+  <td class='light_no' title='NTC_rlsNPCT   : TPM2_ALG_SHA512 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SHA512 : no'>no</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ALG_NULL</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_NULL : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_NULL : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_NULL : no'>no</td>
+  <td class='light_no' title='STM _ : TPM2_ALG_NULL : no'>no</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_ALG_NULL : yes'>yes</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_NULL : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_NULL : no'>no</td>
+  <td class='light_no' title='NTC_rlsNPCT   : TPM2_ALG_NULL : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_NULL : no'>no</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ALG_SM3_256</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SM3_256 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SM3_256 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SM3_256 : no'>no</td>
+  <td class='light_no' title='STM _ : TPM2_ALG_SM3_256 : no'>no</td>
+  <td class='light_no' title='NTC_NPCT75x6rls : TPM2_ALG_SM3_256 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SM3_256 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SM3_256 : no'>no</td>
+  <td class='light_no' title='NTC_rlsNPCT   : TPM2_ALG_SM3_256 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SM3_256 : no'>no</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ALG_SM4</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SM4 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SM4 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SM4 : no'>no</td>
+  <td class='light_no' title='STM _ : TPM2_ALG_SM4 : no'>no</td>
+  <td class='light_no' title='NTC_NPCT75x6rls : TPM2_ALG_SM4 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SM4 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SM4 : no'>no</td>
+  <td class='light_no' title='NTC_rlsNPCT   : TPM2_ALG_SM4 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SM4 : no'>no</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ALG_RSASSA</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_RSASSA : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_RSASSA : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_RSASSA : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_ALG_RSASSA : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_ALG_RSASSA : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_RSASSA : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_RSASSA : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_ALG_RSASSA : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_RSASSA : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ALG_RSAES</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_RSAES : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_RSAES : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_RSAES : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_ALG_RSAES : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_ALG_RSAES : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_RSAES : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_RSAES : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_ALG_RSAES : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_RSAES : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ALG_RSAPSS</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_RSAPSS : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_RSAPSS : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_RSAPSS : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_ALG_RSAPSS : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_ALG_RSAPSS : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_RSAPSS : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_RSAPSS : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_ALG_RSAPSS : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_RSAPSS : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ALG_OAEP</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_OAEP : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_OAEP : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_OAEP : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_ALG_OAEP : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_ALG_OAEP : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_OAEP : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_OAEP : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_ALG_OAEP : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_OAEP : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ALG_ECDSA</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_ECDSA : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_ECDSA : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_ECDSA : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_ALG_ECDSA : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_ALG_ECDSA : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_ECDSA : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_ECDSA : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_ALG_ECDSA : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_ECDSA : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ALG_ECDH</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_ECDH : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_ECDH : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_ECDH : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_ALG_ECDH : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_ALG_ECDH : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_ECDH : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_ECDH : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_ALG_ECDH : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_ECDH : yes'>yes</td>
+</tr>
+<tr style='outline: solid'>
+  <td class='light'>TPM2_ALG_ECDAA</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_ECDAA : yes'>yes</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_ECDAA : no'>no</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_ECDAA : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_ALG_ECDAA : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_ALG_ECDAA : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_ECDAA : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_ECDAA : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_ALG_ECDAA : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_ECDAA : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ALG_SM2</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SM2 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SM2 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SM2 : no'>no</td>
+  <td class='light_no' title='STM _ : TPM2_ALG_SM2 : no'>no</td>
+  <td class='light_no' title='NTC_NPCT75x6rls : TPM2_ALG_SM2 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SM2 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SM2 : no'>no</td>
+  <td class='light_no' title='NTC_rlsNPCT   : TPM2_ALG_SM2 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SM2 : no'>no</td>
+</tr>
+<tr style='outline: solid'>
+  <td class='light'>TPM2_ALG_ECSCHNORR</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_ECSCHNORR : yes'>yes</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_ECSCHNORR : no'>no</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_ECSCHNORR : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_ALG_ECSCHNORR : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_ALG_ECSCHNORR : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_ECSCHNORR : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_ECSCHNORR : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_ALG_ECSCHNORR : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_ECSCHNORR : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ALG_ECMQV</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_ECMQV : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_ECMQV : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_ECMQV : no'>no</td>
+  <td class='light_no' title='STM _ : TPM2_ALG_ECMQV : no'>no</td>
+  <td class='light_no' title='NTC_NPCT75x6rls : TPM2_ALG_ECMQV : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_ECMQV : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_ECMQV : no'>no</td>
+  <td class='light_no' title='NTC_rlsNPCT   : TPM2_ALG_ECMQV : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_ECMQV : no'>no</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ALG_KDF1_SP800_56A</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_KDF1_SP800_56A : yes'>yes</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_KDF1_SP800_56A : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_KDF1_SP800_56A : no'>no</td>
+  <td class='light_yes' title='STM _ : TPM2_ALG_KDF1_SP800_56A : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_ALG_KDF1_SP800_56A : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_KDF1_SP800_56A : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_KDF1_SP800_56A : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_ALG_KDF1_SP800_56A : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_KDF1_SP800_56A : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ALG_KDF2</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_KDF2 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_KDF2 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_KDF2 : no'>no</td>
+  <td class='light_no' title='STM _ : TPM2_ALG_KDF2 : no'>no</td>
+  <td class='light_no' title='NTC_NPCT75x6rls : TPM2_ALG_KDF2 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_KDF2 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_KDF2 : no'>no</td>
+  <td class='light_no' title='NTC_rlsNPCT   : TPM2_ALG_KDF2 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_KDF2 : no'>no</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ALG_KDF1_SP800_108</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_KDF1_SP800_108 : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_KDF1_SP800_108 : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_KDF1_SP800_108 : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_ALG_KDF1_SP800_108 : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_ALG_KDF1_SP800_108 : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_KDF1_SP800_108 : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_KDF1_SP800_108 : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_ALG_KDF1_SP800_108 : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_KDF1_SP800_108 : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ALG_ECC</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_ECC : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_ECC : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_ECC : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_ALG_ECC : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_ALG_ECC : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_ECC : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_ECC : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_ALG_ECC : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_ECC : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ALG_SYMCIPHER</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_SYMCIPHER : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_SYMCIPHER : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_SYMCIPHER : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_ALG_SYMCIPHER : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_ALG_SYMCIPHER : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_SYMCIPHER : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_SYMCIPHER : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_ALG_SYMCIPHER : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ALG_SYMCIPHER : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ALG_CAMELLIA</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_CAMELLIA : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_CAMELLIA : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_CAMELLIA : no'>no</td>
+  <td class='light_no' title='STM _ : TPM2_ALG_CAMELLIA : no'>no</td>
+  <td class='light_no' title='NTC_NPCT75x6rls : TPM2_ALG_CAMELLIA : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_CAMELLIA : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_CAMELLIA : no'>no</td>
+  <td class='light_no' title='NTC_rlsNPCT   : TPM2_ALG_CAMELLIA : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_CAMELLIA : no'>no</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ALG_SHA3_256</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SHA3_256 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SHA3_256 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SHA3_256 : no'>no</td>
+  <td class='light_no' title='STM _ : TPM2_ALG_SHA3_256 : no'>no</td>
+  <td class='light_no' title='NTC_NPCT75x6rls : TPM2_ALG_SHA3_256 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SHA3_256 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SHA3_256 : no'>no</td>
+  <td class='light_no' title='NTC_rlsNPCT   : TPM2_ALG_SHA3_256 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SHA3_256 : no'>no</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ALG_SHA3_384</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SHA3_384 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SHA3_384 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SHA3_384 : no'>no</td>
+  <td class='light_no' title='STM _ : TPM2_ALG_SHA3_384 : no'>no</td>
+  <td class='light_no' title='NTC_NPCT75x6rls : TPM2_ALG_SHA3_384 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SHA3_384 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SHA3_384 : no'>no</td>
+  <td class='light_no' title='NTC_rlsNPCT   : TPM2_ALG_SHA3_384 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SHA3_384 : no'>no</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ALG_SHA3_512</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SHA3_512 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SHA3_512 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SHA3_512 : no'>no</td>
+  <td class='light_no' title='STM _ : TPM2_ALG_SHA3_512 : no'>no</td>
+  <td class='light_no' title='NTC_NPCT75x6rls : TPM2_ALG_SHA3_512 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SHA3_512 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SHA3_512 : no'>no</td>
+  <td class='light_no' title='NTC_rlsNPCT   : TPM2_ALG_SHA3_512 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ALG_SHA3_512 : no'>no</td>
+</tr>
+<tr style='outline: solid'>
+<td class='dark'>Quicktest_commands</td>
+  <td class='dark_index' title = 'INTC_Intel 000b0008_00320d47'>t0</td>
+  <td class='dark_index' title = 'INTC_Intel 000a0000_00240406'>t1</td>
+  <td class='dark_index' title = 'INTC_Intel 000b0000_000004b2'>t2</td>
+  <td class='dark_index' title = 'STM _ 00490004_44a01164'>t3</td>
+  <td class='dark_index' title = 'NTC_NPCT75x6rls 00070002_00000001'>t4</td>
+  <td class='dark_index' title = 'INTC_Intel 000b0008_00320d61'>t5</td>
+  <td class='dark_index' title = 'INTC_Intel 000b0006_00000466'>t6</td>
+  <td class='dark_index' title = 'NTC_rlsNPCT   00010003_00010000'>t7</td>
+  <td class='dark_index' title = 'INTC_Intel 012e000c_00000000'>t8</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_NV_UndefineSpaceSpecial</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_UndefineSpaceSpecial : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_UndefineSpaceSpecial : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_UndefineSpaceSpecial : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_NV_UndefineSpaceSpecial : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_NV_UndefineSpaceSpecial : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_UndefineSpaceSpecial : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_UndefineSpaceSpecial : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_NV_UndefineSpaceSpecial : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_UndefineSpaceSpecial : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_EvictControl</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_EvictControl : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_EvictControl : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_EvictControl : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_EvictControl : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_EvictControl : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_EvictControl : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_EvictControl : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_EvictControl : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_EvictControl : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_HierarchyControl</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_HierarchyControl : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_HierarchyControl : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_HierarchyControl : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_HierarchyControl : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_HierarchyControl : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_HierarchyControl : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_HierarchyControl : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_HierarchyControl : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_HierarchyControl : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_NV_UndefineSpace</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_UndefineSpace : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_UndefineSpace : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_UndefineSpace : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_NV_UndefineSpace : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_NV_UndefineSpace : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_UndefineSpace : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_UndefineSpace : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_NV_UndefineSpace : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_UndefineSpace : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_ChangeEPS</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ChangeEPS : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ChangeEPS : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ChangeEPS : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_ChangeEPS : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_ChangeEPS : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ChangeEPS : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ChangeEPS : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_ChangeEPS : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ChangeEPS : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_ChangePPS</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_ChangePPS : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_ChangePPS : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_ChangePPS : no'>no</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_ChangePPS : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_ChangePPS : yes'>yes</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_ChangePPS : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_ChangePPS : no'>no</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_ChangePPS : yes'>yes</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_ChangePPS : no'>no</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_Clear</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Clear : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Clear : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Clear : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_Clear : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_Clear : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Clear : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Clear : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_Clear : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Clear : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_ClearControl</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ClearControl : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ClearControl : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ClearControl : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_ClearControl : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_ClearControl : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ClearControl : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ClearControl : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_ClearControl : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ClearControl : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_ClockSet</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ClockSet : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ClockSet : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ClockSet : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_ClockSet : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_ClockSet : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ClockSet : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ClockSet : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_ClockSet : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ClockSet : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_HierarchyChangeAuth</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_HierarchyChangeAuth : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_HierarchyChangeAuth : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_HierarchyChangeAuth : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_HierarchyChangeAuth : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_HierarchyChangeAuth : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_HierarchyChangeAuth : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_HierarchyChangeAuth : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_HierarchyChangeAuth : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_HierarchyChangeAuth : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_NV_DefineSpace</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_DefineSpace : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_DefineSpace : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_DefineSpace : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_NV_DefineSpace : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_NV_DefineSpace : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_DefineSpace : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_DefineSpace : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_NV_DefineSpace : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_DefineSpace : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_PCR_Allocate</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PCR_Allocate : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PCR_Allocate : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PCR_Allocate : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_PCR_Allocate : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_PCR_Allocate : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PCR_Allocate : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PCR_Allocate : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_PCR_Allocate : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PCR_Allocate : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_PCR_SetAuthPolicy</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_PCR_SetAuthPolicy : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_PCR_SetAuthPolicy : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_PCR_SetAuthPolicy : no'>no</td>
+  <td class='light_no' title='STM _ : TPM2_CC_PCR_SetAuthPolicy : no'>no</td>
+  <td class='light_no' title='NTC_NPCT75x6rls : TPM2_CC_PCR_SetAuthPolicy : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_PCR_SetAuthPolicy : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_PCR_SetAuthPolicy : no'>no</td>
+  <td class='light_no' title='NTC_rlsNPCT   : TPM2_CC_PCR_SetAuthPolicy : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_PCR_SetAuthPolicy : no'>no</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_PP_Commands</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_PP_Commands : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_PP_Commands : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_PP_Commands : no'>no</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_PP_Commands : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_PP_Commands : yes'>yes</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_PP_Commands : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_PP_Commands : no'>no</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_PP_Commands : yes'>yes</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_PP_Commands : no'>no</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_SetPrimaryPolicy</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_SetPrimaryPolicy : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_SetPrimaryPolicy : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_SetPrimaryPolicy : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_SetPrimaryPolicy : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_SetPrimaryPolicy : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_SetPrimaryPolicy : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_SetPrimaryPolicy : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_SetPrimaryPolicy : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_SetPrimaryPolicy : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_FieldUpgradeStart</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_FieldUpgradeStart : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_FieldUpgradeStart : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_FieldUpgradeStart : no'>no</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_FieldUpgradeStart : yes'>yes</td>
+  <td class='light_no' title='NTC_NPCT75x6rls : TPM2_CC_FieldUpgradeStart : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_FieldUpgradeStart : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_FieldUpgradeStart : no'>no</td>
+  <td class='light_no' title='NTC_rlsNPCT   : TPM2_CC_FieldUpgradeStart : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_FieldUpgradeStart : no'>no</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_ClockRateAdjust</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ClockRateAdjust : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ClockRateAdjust : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ClockRateAdjust : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_ClockRateAdjust : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_ClockRateAdjust : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ClockRateAdjust : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ClockRateAdjust : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_ClockRateAdjust : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ClockRateAdjust : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_CreatePrimary</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_CreatePrimary : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_CreatePrimary : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_CreatePrimary : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_CreatePrimary : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_CreatePrimary : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_CreatePrimary : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_CreatePrimary : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_CreatePrimary : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_CreatePrimary : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_NV_GlobalWriteLock</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_GlobalWriteLock : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_GlobalWriteLock : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_GlobalWriteLock : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_NV_GlobalWriteLock : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_NV_GlobalWriteLock : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_GlobalWriteLock : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_GlobalWriteLock : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_NV_GlobalWriteLock : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_GlobalWriteLock : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_GetCommandAuditDigest</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_GetCommandAuditDigest : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_GetCommandAuditDigest : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_GetCommandAuditDigest : no'>no</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_GetCommandAuditDigest : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_GetCommandAuditDigest : yes'>yes</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_GetCommandAuditDigest : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_GetCommandAuditDigest : no'>no</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_GetCommandAuditDigest : yes'>yes</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_GetCommandAuditDigest : no'>no</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_NV_Increment</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_Increment : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_Increment : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_Increment : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_NV_Increment : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_NV_Increment : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_Increment : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_Increment : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_NV_Increment : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_Increment : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_NV_SetBits</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_SetBits : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_SetBits : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_SetBits : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_NV_SetBits : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_NV_SetBits : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_SetBits : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_SetBits : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_NV_SetBits : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_SetBits : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_NV_Extend</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_Extend : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_Extend : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_Extend : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_NV_Extend : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_NV_Extend : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_Extend : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_Extend : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_NV_Extend : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_Extend : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_NV_Write</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_Write : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_Write : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_Write : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_NV_Write : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_NV_Write : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_Write : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_Write : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_NV_Write : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_Write : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_NV_WriteLock</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_WriteLock : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_WriteLock : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_WriteLock : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_NV_WriteLock : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_NV_WriteLock : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_WriteLock : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_WriteLock : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_NV_WriteLock : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_WriteLock : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_DictionaryAttackLockReset</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_DictionaryAttackLockReset : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_DictionaryAttackLockReset : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_DictionaryAttackLockReset : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_DictionaryAttackLockReset : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_DictionaryAttackLockReset : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_DictionaryAttackLockReset : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_DictionaryAttackLockReset : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_DictionaryAttackLockReset : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_DictionaryAttackLockReset : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_DictionaryAttackParameters</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_DictionaryAttackParameters : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_DictionaryAttackParameters : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_DictionaryAttackParameters : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_DictionaryAttackParameters : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_DictionaryAttackParameters : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_DictionaryAttackParameters : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_DictionaryAttackParameters : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_DictionaryAttackParameters : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_DictionaryAttackParameters : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_NV_ChangeAuth</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_ChangeAuth : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_ChangeAuth : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_ChangeAuth : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_NV_ChangeAuth : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_NV_ChangeAuth : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_ChangeAuth : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_ChangeAuth : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_NV_ChangeAuth : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_ChangeAuth : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_PCR_Event</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PCR_Event : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PCR_Event : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PCR_Event : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_PCR_Event : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_PCR_Event : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PCR_Event : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PCR_Event : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_PCR_Event : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PCR_Event : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_PCR_Reset</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PCR_Reset : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PCR_Reset : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PCR_Reset : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_PCR_Reset : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_PCR_Reset : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PCR_Reset : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PCR_Reset : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_PCR_Reset : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PCR_Reset : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_SequenceComplete</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_SequenceComplete : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_SequenceComplete : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_SequenceComplete : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_SequenceComplete : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_SequenceComplete : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_SequenceComplete : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_SequenceComplete : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_SequenceComplete : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_SequenceComplete : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_SetAlgorithmSet</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_SetAlgorithmSet : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_SetAlgorithmSet : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_SetAlgorithmSet : no'>no</td>
+  <td class='light_no' title='STM _ : TPM2_CC_SetAlgorithmSet : no'>no</td>
+  <td class='light_no' title='NTC_NPCT75x6rls : TPM2_CC_SetAlgorithmSet : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_SetAlgorithmSet : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_SetAlgorithmSet : no'>no</td>
+  <td class='light_no' title='NTC_rlsNPCT   : TPM2_CC_SetAlgorithmSet : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_SetAlgorithmSet : no'>no</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_SetCommandCodeAuditStatus</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_SetCommandCodeAuditStatus : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_SetCommandCodeAuditStatus : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_SetCommandCodeAuditStatus : no'>no</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_SetCommandCodeAuditStatus : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_SetCommandCodeAuditStatus : yes'>yes</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_SetCommandCodeAuditStatus : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_SetCommandCodeAuditStatus : no'>no</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_SetCommandCodeAuditStatus : yes'>yes</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_SetCommandCodeAuditStatus : no'>no</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_FieldUpgradeData</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_FieldUpgradeData : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_FieldUpgradeData : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_FieldUpgradeData : no'>no</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_FieldUpgradeData : yes'>yes</td>
+  <td class='light_no' title='NTC_NPCT75x6rls : TPM2_CC_FieldUpgradeData : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_FieldUpgradeData : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_FieldUpgradeData : no'>no</td>
+  <td class='light_no' title='NTC_rlsNPCT   : TPM2_CC_FieldUpgradeData : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_FieldUpgradeData : no'>no</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_IncrementalSelfTest</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_IncrementalSelfTest : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_IncrementalSelfTest : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_IncrementalSelfTest : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_IncrementalSelfTest : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_IncrementalSelfTest : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_IncrementalSelfTest : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_IncrementalSelfTest : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_IncrementalSelfTest : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_IncrementalSelfTest : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_SelfTest</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_SelfTest : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_SelfTest : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_SelfTest : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_SelfTest : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_SelfTest : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_SelfTest : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_SelfTest : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_SelfTest : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_SelfTest : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_Startup</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Startup : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Startup : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Startup : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_Startup : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_Startup : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Startup : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Startup : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_Startup : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Startup : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_Shutdown</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Shutdown : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Shutdown : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Shutdown : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_Shutdown : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_Shutdown : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Shutdown : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Shutdown : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_Shutdown : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Shutdown : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_StirRandom</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_StirRandom : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_StirRandom : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_StirRandom : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_StirRandom : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_StirRandom : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_StirRandom : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_StirRandom : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_StirRandom : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_StirRandom : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_ActivateCredential</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ActivateCredential : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ActivateCredential : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ActivateCredential : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_ActivateCredential : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_ActivateCredential : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ActivateCredential : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ActivateCredential : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_ActivateCredential : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ActivateCredential : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_Certify</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Certify : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Certify : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Certify : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_Certify : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_Certify : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Certify : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Certify : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_Certify : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Certify : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_PolicyNV</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyNV : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyNV : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyNV : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_PolicyNV : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_PolicyNV : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyNV : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyNV : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_PolicyNV : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyNV : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_CertifyCreation</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_CertifyCreation : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_CertifyCreation : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_CertifyCreation : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_CertifyCreation : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_CertifyCreation : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_CertifyCreation : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_CertifyCreation : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_CertifyCreation : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_CertifyCreation : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_Duplicate</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Duplicate : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Duplicate : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Duplicate : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_Duplicate : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_Duplicate : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Duplicate : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Duplicate : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_Duplicate : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Duplicate : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_GetTime</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_GetTime : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_GetTime : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_GetTime : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_GetTime : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_GetTime : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_GetTime : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_GetTime : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_GetTime : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_GetTime : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_GetSessionAuditDigest</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_GetSessionAuditDigest : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_GetSessionAuditDigest : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_GetSessionAuditDigest : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_GetSessionAuditDigest : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_GetSessionAuditDigest : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_GetSessionAuditDigest : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_GetSessionAuditDigest : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_GetSessionAuditDigest : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_GetSessionAuditDigest : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_NV_Read</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_Read : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_Read : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_Read : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_NV_Read : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_NV_Read : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_Read : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_Read : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_NV_Read : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_Read : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_NV_ReadLock</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_ReadLock : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_ReadLock : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_ReadLock : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_NV_ReadLock : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_NV_ReadLock : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_ReadLock : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_ReadLock : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_NV_ReadLock : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_ReadLock : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_ObjectChangeAuth</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ObjectChangeAuth : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ObjectChangeAuth : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ObjectChangeAuth : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_ObjectChangeAuth : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_ObjectChangeAuth : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ObjectChangeAuth : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ObjectChangeAuth : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_ObjectChangeAuth : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ObjectChangeAuth : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_PolicySecret</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicySecret : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicySecret : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicySecret : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_PolicySecret : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_PolicySecret : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicySecret : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicySecret : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_PolicySecret : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicySecret : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_Rewrap</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_Rewrap : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_Rewrap : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_Rewrap : no'>no</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_Rewrap : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_Rewrap : yes'>yes</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_Rewrap : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_Rewrap : no'>no</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_Rewrap : yes'>yes</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_Rewrap : no'>no</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_Create</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Create : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Create : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Create : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_Create : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_Create : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Create : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Create : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_Create : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Create : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_ECDH_ZGen</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ECDH_ZGen : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ECDH_ZGen : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ECDH_ZGen : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_ECDH_ZGen : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_ECDH_ZGen : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ECDH_ZGen : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ECDH_ZGen : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_ECDH_ZGen : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ECDH_ZGen : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_HMAC</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_HMAC : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_HMAC : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_HMAC : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_HMAC : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_HMAC : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_HMAC : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_HMAC : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_HMAC : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_HMAC : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_Import</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Import : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Import : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Import : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_Import : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_Import : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Import : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Import : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_Import : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Import : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_Load</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Load : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Load : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Load : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_Load : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_Load : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Load : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Load : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_Load : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Load : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_Quote</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Quote : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Quote : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Quote : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_Quote : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_Quote : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Quote : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Quote : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_Quote : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Quote : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_RSA_Decrypt</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_RSA_Decrypt : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_RSA_Decrypt : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_RSA_Decrypt : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_RSA_Decrypt : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_RSA_Decrypt : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_RSA_Decrypt : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_RSA_Decrypt : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_RSA_Decrypt : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_RSA_Decrypt : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_HMAC_Start</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_HMAC_Start : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_HMAC_Start : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_HMAC_Start : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_HMAC_Start : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_HMAC_Start : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_HMAC_Start : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_HMAC_Start : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_HMAC_Start : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_HMAC_Start : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_SequenceUpdate</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_SequenceUpdate : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_SequenceUpdate : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_SequenceUpdate : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_SequenceUpdate : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_SequenceUpdate : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_SequenceUpdate : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_SequenceUpdate : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_SequenceUpdate : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_SequenceUpdate : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_Sign</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Sign : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Sign : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Sign : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_Sign : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_Sign : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Sign : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Sign : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_Sign : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Sign : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_Unseal</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Unseal : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Unseal : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Unseal : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_Unseal : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_Unseal : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Unseal : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Unseal : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_Unseal : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Unseal : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_PolicySigned</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicySigned : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicySigned : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicySigned : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_PolicySigned : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_PolicySigned : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicySigned : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicySigned : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_PolicySigned : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicySigned : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_ContextLoad</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ContextLoad : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ContextLoad : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ContextLoad : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_ContextLoad : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_ContextLoad : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ContextLoad : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ContextLoad : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_ContextLoad : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ContextLoad : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_ContextSave</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ContextSave : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ContextSave : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ContextSave : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_ContextSave : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_ContextSave : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ContextSave : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ContextSave : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_ContextSave : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ContextSave : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_ECDH_KeyGen</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ECDH_KeyGen : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ECDH_KeyGen : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ECDH_KeyGen : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_ECDH_KeyGen : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_ECDH_KeyGen : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ECDH_KeyGen : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ECDH_KeyGen : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_ECDH_KeyGen : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ECDH_KeyGen : yes'>yes</td>
+</tr>
+<tr style='outline: solid'>
+  <td class='light'>TPM2_CC_EncryptDecrypt</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_EncryptDecrypt : yes'>yes</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_EncryptDecrypt : no'>no</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_EncryptDecrypt : yes'>yes</td>
+  <td class='light_no' title='STM _ : TPM2_CC_EncryptDecrypt : no'>no</td>
+  <td class='light_no' title='NTC_NPCT75x6rls : TPM2_CC_EncryptDecrypt : no'>no</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_EncryptDecrypt : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_EncryptDecrypt : yes'>yes</td>
+  <td class='light_no' title='NTC_rlsNPCT   : TPM2_CC_EncryptDecrypt : no'>no</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_EncryptDecrypt : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_FlushContext</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_FlushContext : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_FlushContext : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_FlushContext : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_FlushContext : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_FlushContext : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_FlushContext : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_FlushContext : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_FlushContext : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_FlushContext : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_LoadExternal</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_LoadExternal : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_LoadExternal : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_LoadExternal : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_LoadExternal : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_LoadExternal : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_LoadExternal : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_LoadExternal : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_LoadExternal : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_LoadExternal : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_MakeCredential</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_MakeCredential : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_MakeCredential : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_MakeCredential : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_MakeCredential : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_MakeCredential : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_MakeCredential : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_MakeCredential : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_MakeCredential : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_MakeCredential : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_NV_ReadPublic</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_ReadPublic : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_ReadPublic : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_ReadPublic : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_NV_ReadPublic : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_NV_ReadPublic : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_ReadPublic : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_ReadPublic : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_NV_ReadPublic : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_ReadPublic : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_PolicyAuthorize</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyAuthorize : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyAuthorize : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyAuthorize : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_PolicyAuthorize : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_PolicyAuthorize : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyAuthorize : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyAuthorize : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_PolicyAuthorize : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyAuthorize : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_PolicyAuthValue</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyAuthValue : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyAuthValue : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyAuthValue : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_PolicyAuthValue : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_PolicyAuthValue : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyAuthValue : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyAuthValue : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_PolicyAuthValue : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyAuthValue : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_PolicyCommandCode</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyCommandCode : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyCommandCode : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyCommandCode : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_PolicyCommandCode : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_PolicyCommandCode : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyCommandCode : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyCommandCode : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_PolicyCommandCode : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyCommandCode : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_PolicyCounterTimer</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyCounterTimer : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyCounterTimer : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyCounterTimer : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_PolicyCounterTimer : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_PolicyCounterTimer : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyCounterTimer : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyCounterTimer : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_PolicyCounterTimer : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyCounterTimer : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_PolicyCpHash</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyCpHash : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyCpHash : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyCpHash : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_PolicyCpHash : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_PolicyCpHash : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyCpHash : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyCpHash : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_PolicyCpHash : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyCpHash : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_PolicyLocality</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyLocality : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyLocality : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyLocality : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_PolicyLocality : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_PolicyLocality : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyLocality : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyLocality : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_PolicyLocality : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyLocality : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_PolicyNameHash</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyNameHash : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyNameHash : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyNameHash : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_PolicyNameHash : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_PolicyNameHash : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyNameHash : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyNameHash : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_PolicyNameHash : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyNameHash : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_PolicyOR</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyOR : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyOR : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyOR : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_PolicyOR : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_PolicyOR : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyOR : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyOR : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_PolicyOR : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyOR : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_PolicyTicket</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyTicket : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyTicket : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyTicket : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_PolicyTicket : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_PolicyTicket : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyTicket : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyTicket : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_PolicyTicket : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyTicket : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_ReadPublic</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ReadPublic : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ReadPublic : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ReadPublic : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_ReadPublic : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_ReadPublic : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ReadPublic : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ReadPublic : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_ReadPublic : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ReadPublic : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_RSA_Encrypt</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_RSA_Encrypt : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_RSA_Encrypt : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_RSA_Encrypt : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_RSA_Encrypt : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_RSA_Encrypt : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_RSA_Encrypt : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_RSA_Encrypt : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_RSA_Encrypt : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_RSA_Encrypt : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_StartAuthSession</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_StartAuthSession : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_StartAuthSession : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_StartAuthSession : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_StartAuthSession : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_StartAuthSession : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_StartAuthSession : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_StartAuthSession : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_StartAuthSession : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_StartAuthSession : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_VerifySignature</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_VerifySignature : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_VerifySignature : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_VerifySignature : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_VerifySignature : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_VerifySignature : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_VerifySignature : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_VerifySignature : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_VerifySignature : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_VerifySignature : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_ECC_Parameters</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ECC_Parameters : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ECC_Parameters : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ECC_Parameters : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_ECC_Parameters : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_ECC_Parameters : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ECC_Parameters : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ECC_Parameters : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_ECC_Parameters : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ECC_Parameters : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_FirmwareRead</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_FirmwareRead : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_FirmwareRead : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_FirmwareRead : no'>no</td>
+  <td class='light_no' title='STM _ : TPM2_CC_FirmwareRead : no'>no</td>
+  <td class='light_no' title='NTC_NPCT75x6rls : TPM2_CC_FirmwareRead : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_FirmwareRead : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_FirmwareRead : no'>no</td>
+  <td class='light_no' title='NTC_rlsNPCT   : TPM2_CC_FirmwareRead : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_FirmwareRead : no'>no</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_GetCapability</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_GetCapability : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_GetCapability : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_GetCapability : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_GetCapability : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_GetCapability : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_GetCapability : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_GetCapability : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_GetCapability : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_GetCapability : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_GetRandom</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_GetRandom : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_GetRandom : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_GetRandom : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_GetRandom : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_GetRandom : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_GetRandom : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_GetRandom : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_GetRandom : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_GetRandom : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_GetTestResult</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_GetTestResult : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_GetTestResult : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_GetTestResult : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_GetTestResult : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_GetTestResult : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_GetTestResult : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_GetTestResult : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_GetTestResult : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_GetTestResult : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_Hash</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Hash : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Hash : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Hash : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_Hash : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_Hash : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Hash : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Hash : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_Hash : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Hash : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_PCR_Read</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PCR_Read : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PCR_Read : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PCR_Read : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_PCR_Read : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_PCR_Read : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PCR_Read : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PCR_Read : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_PCR_Read : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PCR_Read : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_PolicyPCR</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyPCR : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyPCR : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyPCR : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_PolicyPCR : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_PolicyPCR : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyPCR : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyPCR : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_PolicyPCR : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyPCR : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_PolicyRestart</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyRestart : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyRestart : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyRestart : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_PolicyRestart : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_PolicyRestart : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyRestart : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyRestart : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_PolicyRestart : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyRestart : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_ReadClock</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ReadClock : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ReadClock : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ReadClock : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_ReadClock : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_ReadClock : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ReadClock : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ReadClock : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_ReadClock : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ReadClock : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_PCR_Extend</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PCR_Extend : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PCR_Extend : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PCR_Extend : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_PCR_Extend : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_PCR_Extend : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PCR_Extend : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PCR_Extend : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_PCR_Extend : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PCR_Extend : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_PCR_SetAuthValue</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_PCR_SetAuthValue : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_PCR_SetAuthValue : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_PCR_SetAuthValue : no'>no</td>
+  <td class='light_no' title='STM _ : TPM2_CC_PCR_SetAuthValue : no'>no</td>
+  <td class='light_no' title='NTC_NPCT75x6rls : TPM2_CC_PCR_SetAuthValue : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_PCR_SetAuthValue : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_PCR_SetAuthValue : no'>no</td>
+  <td class='light_no' title='NTC_rlsNPCT   : TPM2_CC_PCR_SetAuthValue : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_PCR_SetAuthValue : no'>no</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_NV_Certify</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_NV_Certify : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_NV_Certify : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_NV_Certify : no'>no</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_NV_Certify : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_NV_Certify : yes'>yes</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_NV_Certify : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_NV_Certify : no'>no</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_NV_Certify : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_NV_Certify : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_EventSequenceComplete</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_EventSequenceComplete : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_EventSequenceComplete : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_EventSequenceComplete : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_EventSequenceComplete : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_EventSequenceComplete : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_EventSequenceComplete : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_EventSequenceComplete : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_EventSequenceComplete : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_EventSequenceComplete : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_HashSequenceStart</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_HashSequenceStart : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_HashSequenceStart : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_HashSequenceStart : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_HashSequenceStart : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_HashSequenceStart : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_HashSequenceStart : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_HashSequenceStart : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_HashSequenceStart : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_HashSequenceStart : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_PolicyPhysicalPresence</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_PolicyPhysicalPresence : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_PolicyPhysicalPresence : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_PolicyPhysicalPresence : no'>no</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_PolicyPhysicalPresence : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_PolicyPhysicalPresence : yes'>yes</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_PolicyPhysicalPresence : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_PolicyPhysicalPresence : no'>no</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_PolicyPhysicalPresence : yes'>yes</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_PolicyPhysicalPresence : no'>no</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_PolicyDuplicationSelect</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyDuplicationSelect : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyDuplicationSelect : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyDuplicationSelect : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_PolicyDuplicationSelect : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_PolicyDuplicationSelect : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyDuplicationSelect : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyDuplicationSelect : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_PolicyDuplicationSelect : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyDuplicationSelect : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_PolicyGetDigest</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyGetDigest : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyGetDigest : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyGetDigest : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_PolicyGetDigest : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_PolicyGetDigest : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyGetDigest : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyGetDigest : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_PolicyGetDigest : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyGetDigest : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_TestParms</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_TestParms : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_TestParms : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_TestParms : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_TestParms : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_TestParms : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_TestParms : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_TestParms : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_TestParms : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_TestParms : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_Commit</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Commit : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Commit : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Commit : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_Commit : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_Commit : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Commit : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Commit : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_Commit : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_Commit : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_PolicyPassword</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyPassword : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyPassword : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyPassword : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_PolicyPassword : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_PolicyPassword : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyPassword : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyPassword : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_PolicyPassword : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyPassword : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_ZGen_2Phase</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ZGen_2Phase : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ZGen_2Phase : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ZGen_2Phase : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_ZGen_2Phase : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_ZGen_2Phase : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ZGen_2Phase : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ZGen_2Phase : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_ZGen_2Phase : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_ZGen_2Phase : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_EC_Ephemeral</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_EC_Ephemeral : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_EC_Ephemeral : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_EC_Ephemeral : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_EC_Ephemeral : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_EC_Ephemeral : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_EC_Ephemeral : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_EC_Ephemeral : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_EC_Ephemeral : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_EC_Ephemeral : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_PolicyNvWritten</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyNvWritten : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyNvWritten : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyNvWritten : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_CC_PolicyNvWritten : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_CC_PolicyNvWritten : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyNvWritten : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyNvWritten : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_CC_PolicyNvWritten : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_CC_PolicyNvWritten : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_PolicyTemplate</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_PolicyTemplate : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_PolicyTemplate : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_PolicyTemplate : no'>no</td>
+  <td class='light_no' title='STM _ : TPM2_CC_PolicyTemplate : no'>no</td>
+  <td class='light_no' title='NTC_NPCT75x6rls : TPM2_CC_PolicyTemplate : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_PolicyTemplate : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_PolicyTemplate : no'>no</td>
+  <td class='light_no' title='NTC_rlsNPCT   : TPM2_CC_PolicyTemplate : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_PolicyTemplate : no'>no</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_CreateLoaded</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_CreateLoaded : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_CreateLoaded : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_CreateLoaded : no'>no</td>
+  <td class='light_no' title='STM _ : TPM2_CC_CreateLoaded : no'>no</td>
+  <td class='light_no' title='NTC_NPCT75x6rls : TPM2_CC_CreateLoaded : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_CreateLoaded : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_CreateLoaded : no'>no</td>
+  <td class='light_no' title='NTC_rlsNPCT   : TPM2_CC_CreateLoaded : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_CreateLoaded : no'>no</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_PolicyAuthorizeNV</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_PolicyAuthorizeNV : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_PolicyAuthorizeNV : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_PolicyAuthorizeNV : no'>no</td>
+  <td class='light_no' title='STM _ : TPM2_CC_PolicyAuthorizeNV : no'>no</td>
+  <td class='light_no' title='NTC_NPCT75x6rls : TPM2_CC_PolicyAuthorizeNV : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_PolicyAuthorizeNV : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_PolicyAuthorizeNV : no'>no</td>
+  <td class='light_no' title='NTC_rlsNPCT   : TPM2_CC_PolicyAuthorizeNV : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_PolicyAuthorizeNV : no'>no</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_EncryptDecrypt2</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_EncryptDecrypt2 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_EncryptDecrypt2 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_EncryptDecrypt2 : no'>no</td>
+  <td class='light_no' title='STM _ : TPM2_CC_EncryptDecrypt2 : no'>no</td>
+  <td class='light_no' title='NTC_NPCT75x6rls : TPM2_CC_EncryptDecrypt2 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_EncryptDecrypt2 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_EncryptDecrypt2 : no'>no</td>
+  <td class='light_no' title='NTC_rlsNPCT   : TPM2_CC_EncryptDecrypt2 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_EncryptDecrypt2 : no'>no</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_AC_GetCapability</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_AC_GetCapability : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_AC_GetCapability : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_AC_GetCapability : no'>no</td>
+  <td class='light_no' title='STM _ : TPM2_CC_AC_GetCapability : no'>no</td>
+  <td class='light_no' title='NTC_NPCT75x6rls : TPM2_CC_AC_GetCapability : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_AC_GetCapability : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_AC_GetCapability : no'>no</td>
+  <td class='light_no' title='NTC_rlsNPCT   : TPM2_CC_AC_GetCapability : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_AC_GetCapability : no'>no</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_AC_Send</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_AC_Send : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_AC_Send : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_AC_Send : no'>no</td>
+  <td class='light_no' title='STM _ : TPM2_CC_AC_Send : no'>no</td>
+  <td class='light_no' title='NTC_NPCT75x6rls : TPM2_CC_AC_Send : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_AC_Send : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_AC_Send : no'>no</td>
+  <td class='light_no' title='NTC_rlsNPCT   : TPM2_CC_AC_Send : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_AC_Send : no'>no</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_CC_Policy_AC_SendSelect</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_Policy_AC_SendSelect : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_Policy_AC_SendSelect : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_Policy_AC_SendSelect : no'>no</td>
+  <td class='light_no' title='STM _ : TPM2_CC_Policy_AC_SendSelect : no'>no</td>
+  <td class='light_no' title='NTC_NPCT75x6rls : TPM2_CC_Policy_AC_SendSelect : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_Policy_AC_SendSelect : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_Policy_AC_SendSelect : no'>no</td>
+  <td class='light_no' title='NTC_rlsNPCT   : TPM2_CC_Policy_AC_SendSelect : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_CC_Policy_AC_SendSelect : no'>no</td>
+</tr>
+<tr style='outline: solid'>
+<td class='dark'>Quicktest_ecc-curves</td>
+  <td class='dark_index' title = 'INTC_Intel 000b0008_00320d47'>t0</td>
+  <td class='dark_index' title = 'INTC_Intel 000a0000_00240406'>t1</td>
+  <td class='dark_index' title = 'INTC_Intel 000b0000_000004b2'>t2</td>
+  <td class='dark_index' title = 'STM _ 00490004_44a01164'>t3</td>
+  <td class='dark_index' title = 'NTC_NPCT75x6rls 00070002_00000001'>t4</td>
+  <td class='dark_index' title = 'INTC_Intel 000b0008_00320d61'>t5</td>
+  <td class='dark_index' title = 'INTC_Intel 000b0006_00000466'>t6</td>
+  <td class='dark_index' title = 'NTC_rlsNPCT   00010003_00010000'>t7</td>
+  <td class='dark_index' title = 'INTC_Intel 012e000c_00000000'>t8</td>
+</tr>
+<tr style='outline: solid'>
+  <td class='light'>TPM2_ECC_BN_P256</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ECC_BN_P256 : yes'>yes</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_BN_P256 : no'>no</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ECC_BN_P256 : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_ECC_BN_P256 : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_ECC_BN_P256 : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ECC_BN_P256 : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ECC_BN_P256 : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_ECC_BN_P256 : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ECC_BN_P256 : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ECC_SM2_P256</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_SM2_P256 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_SM2_P256 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_SM2_P256 : no'>no</td>
+  <td class='light_no' title='STM _ : TPM2_ECC_SM2_P256 : no'>no</td>
+  <td class='light_no' title='NTC_NPCT75x6rls : TPM2_ECC_SM2_P256 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_SM2_P256 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_SM2_P256 : no'>no</td>
+  <td class='light_no' title='NTC_rlsNPCT   : TPM2_ECC_SM2_P256 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_SM2_P256 : no'>no</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ECC_NIST_P192</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_NIST_P192 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_NIST_P192 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_NIST_P192 : no'>no</td>
+  <td class='light_no' title='STM _ : TPM2_ECC_NIST_P192 : no'>no</td>
+  <td class='light_no' title='NTC_NPCT75x6rls : TPM2_ECC_NIST_P192 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_NIST_P192 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_NIST_P192 : no'>no</td>
+  <td class='light_no' title='NTC_rlsNPCT   : TPM2_ECC_NIST_P192 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_NIST_P192 : no'>no</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ECC_BN_P638</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_BN_P638 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_BN_P638 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_BN_P638 : no'>no</td>
+  <td class='light_no' title='STM _ : TPM2_ECC_BN_P638 : no'>no</td>
+  <td class='light_no' title='NTC_NPCT75x6rls : TPM2_ECC_BN_P638 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_BN_P638 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_BN_P638 : no'>no</td>
+  <td class='light_no' title='NTC_rlsNPCT   : TPM2_ECC_BN_P638 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_BN_P638 : no'>no</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ECC_NIST_P224</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_NIST_P224 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_NIST_P224 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_NIST_P224 : no'>no</td>
+  <td class='light_yes' title='STM _ : TPM2_ECC_NIST_P224 : yes'>yes</td>
+  <td class='light_no' title='NTC_NPCT75x6rls : TPM2_ECC_NIST_P224 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_NIST_P224 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_NIST_P224 : no'>no</td>
+  <td class='light_no' title='NTC_rlsNPCT   : TPM2_ECC_NIST_P224 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_NIST_P224 : no'>no</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ECC_NIST_P256</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ECC_NIST_P256 : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ECC_NIST_P256 : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ECC_NIST_P256 : yes'>yes</td>
+  <td class='light_yes' title='STM _ : TPM2_ECC_NIST_P256 : yes'>yes</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_ECC_NIST_P256 : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ECC_NIST_P256 : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ECC_NIST_P256 : yes'>yes</td>
+  <td class='light_yes' title='NTC_rlsNPCT   : TPM2_ECC_NIST_P256 : yes'>yes</td>
+  <td class='light_yes' title='INTC_Intel : TPM2_ECC_NIST_P256 : yes'>yes</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ECC_NIST_P384</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_NIST_P384 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_NIST_P384 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_NIST_P384 : no'>no</td>
+  <td class='light_no' title='STM _ : TPM2_ECC_NIST_P384 : no'>no</td>
+  <td class='light_yes' title='NTC_NPCT75x6rls : TPM2_ECC_NIST_P384 : yes'>yes</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_NIST_P384 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_NIST_P384 : no'>no</td>
+  <td class='light_no' title='NTC_rlsNPCT   : TPM2_ECC_NIST_P384 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_NIST_P384 : no'>no</td>
+</tr>
+<tr>
+  <td class='light'>TPM2_ECC_NIST_P521</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_NIST_P521 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_NIST_P521 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_NIST_P521 : no'>no</td>
+  <td class='light_no' title='STM _ : TPM2_ECC_NIST_P521 : no'>no</td>
+  <td class='light_no' title='NTC_NPCT75x6rls : TPM2_ECC_NIST_P521 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_NIST_P521 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_NIST_P521 : no'>no</td>
+  <td class='light_no' title='NTC_rlsNPCT   : TPM2_ECC_NIST_P521 : no'>no</td>
+  <td class='light_no' title='INTC_Intel : TPM2_ECC_NIST_P521 : no'>no</td>
+</tr>
+</tbody></table>
+</div>
+
+<script type="text/javascript" src="footer.js"></script>
+<a href="#" class="back-to-top"></a>
+
+</body>
+</html>
