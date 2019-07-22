@@ -18,6 +18,28 @@ JCSystem.MEMORY_TYPE_TRANSIENT_RESET;1236B;
 JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT;9984B;
 JCSystem.getMaxCommitCapacity();9984B;
 
+
+CPLC; 9f 7f 2a 53 54 00 33 25 c3 d3 51 20 04 00 00 88 99 27 9c 00 00 00 00 d3 51 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+CPLC.ICFabricator;5354;unknown
+CPLC.ICType;0033
+CPLC.OperatingSystemID;25c3
+CPLC.OperatingSystemReleaseDate;d351
+CPLC.OperatingSystemReleaseLevel;2004
+CPLC.ICFabricationDate;0000;(Y DDD) date in that year
+CPLC.ICSerialNumber;8899279c
+CPLC.ICBatchIdentifier;0000
+CPLC.ICModuleFabricator;0000
+CPLC.ICModulePackagingDate;d351
+CPLC.ICCManufacturer;0000
+CPLC.ICEmbeddingDate;0000
+CPLC.ICPrePersonalizer;0000
+CPLC.ICPrePersonalizationEquipmentDate;0000
+CPLC.ICPrePersonalizationEquipmentID;00000000
+CPLC.ICPersonalizer;0000
+CPLC.ICPersonalizationDate;0000
+CPLC.ICPersonalizationEquipmentID;00000000
+CPLC.ICPersonalizationEquipmentID;00000000
+
 javacardx.crypto.Cipher
 ALG_DES_CBC_NOPAD;yes;0.874000
 ALG_DES_CBC_ISO9797_M1;yes;0.827000

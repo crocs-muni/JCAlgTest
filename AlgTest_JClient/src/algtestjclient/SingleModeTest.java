@@ -231,7 +231,8 @@ public class SingleModeTest {
     
     public static final String JCSYSTEM_STR[] = {"javacard.framework.JCSystem", "JCSystem.getVersion()[Major.Minor]#&le;2.1", 
         "JCSystem.isObjectDeletionSupported#2.2.0", "JCSystem.MEMORY_TYPE_PERSISTENT#2.2.1", "JCSystem.MEMORY_TYPE_TRANSIENT_RESET#2.2.1", 
-        "JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT#2.2.1", "JCSystem.getMaxCommitCapacity()#2.1"}; 
+        "JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT#2.2.1", "JCSystem.getMaxCommitCapacity()#2.1", 
+        "APDU.getInBlockSize()#2.1", "APDU.getOutBlockSize()#2.1", "APDU.getProtocol()#2.1", "APDU.getNAD()#2.1"}; 
 
     public static final String RAWRSA_1024_STR[] = {"Variable RSA 1024 - support for variable public exponent. If supported, user-defined fast modular exponentiation can be executed on the smart card via cryptographic coprocessor. This is very specific feature and you will probably not need it", 
         "Allocate RSA 1024 objects", "Set random modulus", "Set random public exponent", "Initialize cipher with public key with random exponent", "Use random public exponent"}; 
@@ -268,6 +269,7 @@ public class SingleModeTest {
         "000108A000000062020804#3.0.4",  // javacardx.framework.string
         "000107A0000000620209#2.2.2",  // javacardx.apdu
         "000108A000000062020901#3.0.5"  // javacardx.apdu.util
+        // org.
     };
 
     public static final Map<String, String> PACKAGE_AID_NAMES_STR;

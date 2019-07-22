@@ -54,12 +54,18 @@ import javacard.security.CryptoException;
 public class JCAlgTestApplet extends javacard.framework.Applet 
 {
     // NOTE: when incrementing version, don't forget to update ALGTEST_JAVACARD_VERSION_CURRENT value
+     /**
+     * Version 1.7.9 (22.07.2019)
+     * + added collection of APDU informations
+     * + improved ECC testing for cards failing at new KeyPair()
+     */
+    final static byte ALGTEST_JAVACARD_VERSION_1_7_9[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x37, (byte) 0x2e, (byte) 0x39};
     /**
-     * Version 1.7.8 (18.05.2019) 
+     * Version 1.7.8 (18.05.2019)
      * + added caching of already generated RSA keys to speedup perf test preparation
      * - fixed bug preventing preparation of performance measurement for RSA_CRT (introduced in version 1.7.0)
      */
-    final static byte ALGTEST_JAVACARD_VERSION_1_7_8[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x37, (byte) 0x2e, (byte) 0x38};
+    //final static byte ALGTEST_JAVACARD_VERSION_1_7_8[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x37, (byte) 0x2e, (byte) 0x38};
     /**
      * Version 1.7.7 (17.04.2019) 
      * - fixed problem with incorrect reporting for KeyAgreement object
@@ -169,7 +175,7 @@ public class JCAlgTestApplet extends javacard.framework.Applet
      */
     //final static byte ALGTEST_JAVACARD_VERSION_1_0[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x30};
 
-    byte ALGTEST_JAVACARD_VERSION_CURRENT[] = ALGTEST_JAVACARD_VERSION_1_7_8;
+    byte ALGTEST_JAVACARD_VERSION_CURRENT[] = ALGTEST_JAVACARD_VERSION_1_7_9;
     
     // lower byte of exception is value as defined in JCSDK/api_classic/constant-values.htm
     final static short SW_Exception = (short) 0xff01;
