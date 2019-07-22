@@ -173,15 +173,39 @@ public class AlgSupportTest {
            case (byte) 0x19: // no break
            case (byte) 0x1C: { // no break - TODO remove this constant, unused
              try {
-               offset++; m_keyPair1 = new KeyPair(algorithmClass, algorithmParam1);
-               
-               if ((algorithmClass == KeyPair.ALG_EC_FP) || (algorithmClass == KeyPair.ALG_EC_F2M)) {
-                   // Key pair for ECC need to be initialized by proper curve for some cards in some cases
-                   EC_Consts.ensureInitializedECCurve(algorithmClass, algorithmParam1, m_keyPair1, m_ramArray);
-               }
-               
-               m_keyPair1.genKeyPair();
-               apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
+                 offset++;
+                 m_keyPair1 = null;
+                 if ((algorithmClass == KeyPair.ALG_EC_FP) || (algorithmClass == KeyPair.ALG_EC_F2M)) {
+                     // Try two alternatives for EC key construction - new KeyPair() emit exception on some cards
+                     try {
+                         // Make KeyPair object first, then initialize curve
+                         m_keyPair1 = new KeyPair(algorithmClass, algorithmParam1);
+                         EC_Consts.ensureInitializedECCurve(algorithmClass, algorithmParam1, m_keyPair1, m_ramArray);
+                     } catch (Exception e) {
+                         // Make public and private keys first, then iniatlize curve and finally create KeyPair
+                         ECPrivateKey ecPrivKey = null;
+                         ECPublicKey ecPubKey = null;
+                         if (algorithmClass == KeyPair.ALG_EC_FP) {
+                             ecPrivKey = (ECPrivateKey) KeyBuilder.buildKey(KeyBuilder.TYPE_EC_FP_PRIVATE, algorithmParam1, false);
+                             ecPubKey = (ECPublicKey) KeyBuilder.buildKey(KeyBuilder.TYPE_EC_FP_PUBLIC, algorithmParam1, false);
+                         }
+                         if (algorithmClass == KeyPair.ALG_EC_F2M) {
+                             ecPrivKey = (ECPrivateKey) KeyBuilder.buildKey(KeyBuilder.TYPE_EC_F2M_PRIVATE, algorithmParam1, false);
+                             ecPubKey = (ECPublicKey) KeyBuilder.buildKey(KeyBuilder.TYPE_EC_F2M_PUBLIC, algorithmParam1, false);
+                         }
+                         if ((ecPrivKey != null) && (ecPubKey != null)) {
+                             EC_Consts.setECKeyParams(ecPubKey, ecPrivKey, algorithmClass, algorithmParam1, m_ramArray);
+                             m_keyPair1 = new KeyPair(ecPubKey, ecPrivKey);
+                         }
+                     }
+                 }
+                 else{
+                     // Other non-ECC keypairs
+                     m_keyPair1 = new KeyPair(algorithmClass, algorithmParam1);
+                 }
+
+                 m_keyPair1.genKeyPair();
+                 apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;
              }
              catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
              break;
@@ -202,12 +226,13 @@ public class AlgSupportTest {
                catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET);}
                break;
            }
+
            case Consts.CLASS_AEADCIPHER: {
                try { offset++; m_object = javacardx.crypto.AEADCipher.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;} 
                catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET);}
                break;
            }
-*/           
+/**/
         }
        // ENDING 0xFF
        offset++;

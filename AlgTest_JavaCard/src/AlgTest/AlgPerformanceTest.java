@@ -570,6 +570,33 @@ import javacardx.crypto.*;
         return tmp;
     }
 
+    KeyPair getECCKeyPairObject(byte typeECC, short keyLength) {
+        KeyPair keyPair = null;
+        // Try two alternatives for EC key construction - new KeyPair() emit exception on some cards
+        try {
+            // Make KeyPair object first, then initialize curve
+            keyPair = new KeyPair(typeECC, keyLength);
+            EC_Consts.ensureInitializedECCurve(typeECC, keyLength, keyPair, m_ram1);
+        } catch (Exception e) {
+            // Make public and private keys first, then initialize curve and finally create KeyPair
+            ECPrivateKey ecPrivKey;
+            ECPublicKey ecPubKey;
+            if (typeECC == KeyPair.ALG_EC_FP) {
+                ecPrivKey = (ECPrivateKey) KeyBuilder.buildKey(KeyBuilder.TYPE_EC_FP_PRIVATE, keyLength, false);
+                ecPubKey = (ECPublicKey) KeyBuilder.buildKey(KeyBuilder.TYPE_EC_FP_PUBLIC, keyLength, false);
+            }
+            else if (typeECC == KeyPair.ALG_EC_F2M) {
+                ecPrivKey = (ECPrivateKey) KeyBuilder.buildKey(KeyBuilder.TYPE_EC_F2M_PRIVATE, keyLength, false);
+                ecPubKey = (ECPublicKey) KeyBuilder.buildKey(KeyBuilder.TYPE_EC_F2M_PUBLIC, keyLength, false);
+            } else {
+                return null;
+            }
+            EC_Consts.setECKeyParams(ecPubKey, ecPrivKey, typeECC, keyLength, m_ram1);
+            keyPair = new KeyPair(ecPubKey, ecPrivKey);
+        }
+        return keyPair;
+    }
+
     void prepare_class_Key(APDU apdu) {
         byte[] apdubuf = apdu.getBuffer();
         m_testSettings.parse(apdu);  
@@ -686,7 +713,7 @@ import javacardx.crypto.*;
                     if (bSetKeyValue == Consts.TRUE){
                         m_keyPair1 = getKeyPairObject((byte) m_testSettings.keyClass, (short) 1, m_testSettings.keyLength);
                         //m_keyPair1 = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
-                        //m_keyPair1.genKeyPair(); 
+                        //m_keyPair1.genKeyPair();
                         m_key1 = m_keyPair1.getPublic();        
                         m_rsapublic_key = (RSAPublicKey) m_keyPair1.getPublic();
                         m_keyPair2 = getKeyPairObject((byte) m_testSettings.keyClass, (short) 2, m_testSettings.keyLength);
@@ -711,16 +738,18 @@ import javacardx.crypto.*;
                 case JCConsts.KeyBuilder_TYPE_EC_F2M_PRIVATE: // no break
                 case JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE:
                     if (bSetKeyValue == Consts.TRUE) {
-                        m_keyPair1 = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
-                        EC_Consts.ensureInitializedECCurve((byte) m_testSettings.keyClass, m_testSettings.keyLength, m_keyPair1, m_ram1);
+                        m_keyPair1 = getECCKeyPairObject((byte) m_testSettings.keyClass, m_testSettings.keyLength);
+                        //m_keyPair1 = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
+                        //EC_Consts.ensureInitializedECCurve((byte) m_testSettings.keyClass, m_testSettings.keyLength, m_keyPair1, m_ram1);
                         m_keyPair1.genKeyPair(); // TODO: use fixed key value to shorten time required for key generation?
                         m_key1 = m_keyPair1.getPrivate();                
                         m_ecprivate_key = (ECPrivateKey) m_keyPair1.getPrivate();
                         m_ecpublic_key = (ECPublicKey) m_keyPair1.getPublic();
                         m_keyInv1 = m_ecpublic_key;
-                        
-                        m_keyPair2 = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
-                        EC_Consts.ensureInitializedECCurve((byte) m_testSettings.keyClass, m_testSettings.keyLength, m_keyPair2, m_ram1);
+
+                        m_keyPair2 = getECCKeyPairObject((byte) m_testSettings.keyClass, m_testSettings.keyLength);
+                        //m_keyPair2 = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
+                        //EC_Consts.ensureInitializedECCurve((byte) m_testSettings.keyClass, m_testSettings.keyLength, m_keyPair2, m_ram1);
                         m_keyPair2.genKeyPair(); // TODO: use fixed key value to shorten time required for key generation?
                         m_key2 = m_keyPair2.getPrivate();                
                         m_ecprivate_key2 = (ECPrivateKey) m_keyPair2.getPrivate();                        
@@ -763,15 +792,17 @@ import javacardx.crypto.*;
                 case JCConsts.KeyBuilder_TYPE_EC_F2M_PUBLIC: // no break
                 case JCConsts.KeyBuilder_TYPE_EC_FP_PUBLIC:
                     if (bSetKeyValue == Consts.TRUE){
-                        m_keyPair1 = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
-                        EC_Consts.ensureInitializedECCurve((byte) m_testSettings.keyClass, m_testSettings.keyLength, m_keyPair1, m_ram1);
+                        m_keyPair1 = getECCKeyPairObject((byte) m_testSettings.keyClass, m_testSettings.keyLength);
+                        //m_keyPair1 = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
+                        //EC_Consts.ensureInitializedECCurve((byte) m_testSettings.keyClass, m_testSettings.keyLength, m_keyPair1, m_ram1);
                         m_keyPair1.genKeyPair();
                         m_key1 = m_keyPair1.getPublic();
                         m_ecpublic_key = (ECPublicKey) m_keyPair1.getPublic();
                         m_ecprivate_key = (ECPrivateKey) m_keyPair1.getPrivate();
                         m_keyInv1 = m_ecprivate_key;
-                        m_keyPair2 = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
-                        EC_Consts.ensureInitializedECCurve((byte) m_testSettings.keyClass, m_testSettings.keyLength, m_keyPair2, m_ram1);
+                        m_keyPair2 = getECCKeyPairObject((byte) m_testSettings.keyClass, m_testSettings.keyLength);
+                        //m_keyPair2 = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
+                        //EC_Consts.ensureInitializedECCurve((byte) m_testSettings.keyClass, m_testSettings.keyLength, m_keyPair2, m_ram1);
                         m_keyPair2.genKeyPair();
                         m_key2 = m_keyPair2.getPublic();
                         m_ecpublic_key2 = (ECPublicKey) m_keyPair2.getPublic();
@@ -1468,8 +1499,14 @@ import javacardx.crypto.*;
         m_testSettings.parse(apdu);  
         
         try {
-            m_keyPair1 = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
-            // Make sure that for EC, we will have initailized curve
+            if (((byte) m_testSettings.keyClass == KeyPair.ALG_EC_FP) || ((byte) m_testSettings.keyClass == KeyPair.ALG_EC_F2M)) {
+                m_keyPair1 = getECCKeyPairObject((byte) m_testSettings.keyClass, m_testSettings.keyLength);
+            }
+            else {
+                m_keyPair1 = new KeyPair((byte) m_testSettings.keyClass, m_testSettings.keyLength);
+            }
+            /*
+            // Make sure that for EC, we will have initialized curve
             switch (m_testSettings.keyClass) {
                 case JCConsts.KeyPair_ALG_EC_F2M: // no break
                 case JCConsts.KeyPair_ALG_EC_FP:
@@ -1478,6 +1515,7 @@ import javacardx.crypto.*;
                 default: 
                     // do nothing
             }
+            */
             apdubuf[(short) (ISO7816.OFFSET_CDATA)] = SUCCESS;
             apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (byte)1);
         }
