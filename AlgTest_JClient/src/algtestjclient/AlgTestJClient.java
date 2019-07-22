@@ -53,13 +53,19 @@ public class AlgTestJClient {
     /* Arguments for choosing which AlgTest version to run. */
     public static final String ALGTEST_SINGLEPERAPDU = "AT_SINGLEPERAPDU";      // for 'New' AlgTest
     public static final String ALGTEST_PERFORMANCE = "AT_PERFORMANCE";          // for performance testing
-    public static final String ALGTEST_USE_SIMULATOR = "JCARDSIM";          // use simulator instead of real card
-    
+    public static final String ALGTEST_USE_SIMULATOR = "JCARDSIM";              // use simulator instead of real card
+    public static final String ALGTEST_USE_CUSTOM_AID = "AID=";                 // use custom AID for applet (if default one is changed for some reason)
+
     /**
-     * Version 1.7.8 (18.05.2019) 
+     * Version 1.7.9 (22.07.2019)
      * - no changes, updating version with card applet
      */
-    public final static String ALGTEST_JCLIENT_VERSION_1_7_8 = "1.7.8";
+    public final static String ALGTEST_JCLIENT_VERSION_1_7_9 = "1.7.9";
+    /**
+     * Version 1.7.8 (18.05.2019)
+     * - no changes, updating version with card applet
+     */
+    //public final static String ALGTEST_JCLIENT_VERSION_1_7_8 = "1.7.8";
     /**
      * Version 1.7.7 (17.04.2019) 
      * - removed testing for high-power mode for SIM cards as some cards stop responding till reset 
@@ -149,12 +155,13 @@ public class AlgTestJClient {
     /**
      * Current version
      */
-    public final static String ALGTEST_JCLIENT_VERSION = ALGTEST_JCLIENT_VERSION_1_7_8;
+    public final static String ALGTEST_JCLIENT_VERSION = ALGTEST_JCLIENT_VERSION_1_7_9;
     
     public final static int STAT_OK = 0;    
     
     // If required to be run with simulator, run as: >java -cp "AlgTestJClient.jar;jcardsim-3.0.5-SNAPSHOT.jar" -noverify algtestjclient.AlgTestJClient JCARDSIM
     static boolean USE_JCARDSIM = false;
+    
     /**
      * @param args the command line arguments
      */
