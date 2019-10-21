@@ -128,15 +128,24 @@ public class SupportTable {
     public static void generateHTMLTable(String basePath) throws IOException {
         String filesPath = basePath + "results" + File.separator;
         File dir = new File(filesPath);
-        String[] filesArray = dir.list();
+        String[] allFilesArray = dir.list();
+        ArrayList<String> filesArray = new ArrayList<>();
+        
+        for (int i = 0; i < allFilesArray.length; i++) {
+            File testDir = new File(basePath + "results" + File.separator + allFilesArray[i] + File.separator);
+            if (!testDir.isDirectory()) {
+                filesArray.add(allFilesArray[i]);
+            }
+        }
+
         
         if ((filesArray != null) && (dir.isDirectory() == true)) {    
             
-            HashMap filesSupport[] = new HashMap[filesArray.length]; 
+            HashMap filesSupport[] = new HashMap[filesArray.size()]; 
             
-            for (int i = 0; i < filesArray.length; i++) {
+            for (int i = 0; i < filesArray.size(); i++) {
                 filesSupport[i] = new HashMap();
-                parseSupportFile(filesPath + filesArray[i], filesSupport[i]);
+                parseSupportFile(filesPath + filesArray.get(i), filesSupport[i]);
             }            
         
             //
@@ -156,9 +165,9 @@ public class SupportTable {
             String cardList = "<div class=\"container-fluid\">\n<h3 id=\"LIST\">Tested cards abbreviations</h3>\r\n";
             
             HashMap<String, Integer> authors = new HashMap<>();
-            String shortNamesList[] = new String[filesArray.length];            
-            for (int i = 0; i < filesArray.length; i++) {
-                String cardIdentification = filesArray[i];
+            String shortNamesList[] = new String[filesArray.size()];            
+            for (int i = 0; i < filesArray.size(); i++) {
+                String cardIdentification = filesArray.get(i);
                 cardIdentification = cardIdentification.replace('_', ' ');
                 cardIdentification = cardIdentification.replace(".csv", "");
                 cardIdentification = cardIdentification.replace("3B", ", ATR=3B");
@@ -193,7 +202,7 @@ public class SupportTable {
                 }
                 
                 String cardRestName = cardIdentification.substring(cardIdentification.indexOf("ATR"));
-                cardList += "<b>c" + i + "</b>	" + "<a href=\"https://github.com/crocs-muni/JCAlgTest/tree/master/Profiles/results/" + filesArray[i] + "\">" + cardShortName + "</a> , " + cardRestName + ",";
+                cardList += "<b>c" + i + "</b>	" + "<a href=\"https://github.com/crocs-muni/JCAlgTest/tree/master/Profiles/results/" + filesArray.get(i) + "\">" + cardShortName + "</a> , " + cardRestName + ",";
 
                 String cardName = "";
                 if (filesSupport[i].containsKey("Performance")) { 
@@ -224,7 +233,7 @@ public class SupportTable {
                     justName = justName.trim();
                 }
                 System.out.println("mkdir \"" + justName + "\"");
-                System.out.println("copy ..\\results\\\"" + filesArray[i] + "\" \"" + justName + "\"");
+                System.out.println("copy ..\\results\\\"" + filesArray.get(i) + "\" \"" + justName + "\"");
             }            
             System.out.println();
             
@@ -278,8 +287,8 @@ public class SupportTable {
             
             //Checkboxes to show/hide columns in table, JavaScript required 
             String checkboxes = "<h4>Click on each checkbox to show/hide corresponding column (card)</h4>\n\t<div class=\"row\" id=\"grpChkBox\">\n";
-            for(int i=0; i<filesArray.length; i++){
-                String cardIdentification = filesArray[i];
+            for(int i=0; i<filesArray.size(); i++){
+                String cardIdentification = filesArray.get(i);
                 cardIdentification = cardIdentification.replace('_', ' ');
                 cardIdentification = cardIdentification.replace(".csv", "");
                 cardIdentification = cardIdentification.replace("3B", ", ATR=3B");
@@ -287,13 +296,13 @@ public class SupportTable {
                 cardIdentification = cardIdentification.replace("ALGSUPPORT", "");                
                 String cardShortName = cardIdentification.substring(0, cardIdentification.indexOf(",")-1);
                 
-                if(i%(filesArray.length/3 + 1) == 0)
+                if(i%(filesArray.size() / 3 + 1) == 0)
                     checkboxes += "<div class=\"col-lg-4 .col-sm-4\">\n";
                 
                 checkboxes += "\t\t<p style=\"margin:0;\"><input type=\"checkbox\" name=\""+i+"\" /> <b>c"+i+"</b> - "+cardShortName+"</p>\n";
                 
-                getShortCardName(filesArray[i]);
-                if(i%(filesArray.length/3 + 1) == filesArray.length/3)
+                getShortCardName(filesArray.get(i));
+                if(i%(filesArray.size()/3 + 1) == filesArray.size()/3)
                     checkboxes += "\t</div>\n";
             }
             checkboxes += "\t<br>\n\t</div>\n</div>\n";
@@ -306,7 +315,7 @@ public class SupportTable {
             String table = "<table id=\"tab\" width=\"600px\" border=\"0\" cellspacing=\"2\" cellpadding=\"4\">\r\n";
             // Insert helper column identification for mouseover row & column jquery highlight
             table += "<colgroup>";        
-            for (int i = 0; i < filesArray.length + 2; i++) { table += "<col />"; } // + 2 because of column with algorithm name and introducing version
+            for (int i = 0; i < filesArray.size() + 2; i++) { table += "<col />"; } // + 2 because of column with algorithm name and introducing version
             table += "</colgroup>\r\n";
             
             file.write(table.getBytes());                 
@@ -315,7 +324,7 @@ public class SupportTable {
             // HTML TABLE HEAD
             //
             file.write("<thead>".getBytes());
-            formatTableAlgorithm_HTML(filesArray, SingleModeTest.ALL_CLASSES_STR[0], filesSupport, file);
+            formatTableAlgorithm_HTML((String[]) filesArray.toArray(), SingleModeTest.ALL_CLASSES_STR[0], filesSupport, file);
             file.write("</thead>".getBytes());
             
             //
@@ -323,7 +332,7 @@ public class SupportTable {
             //
             file.write("<tbody>".getBytes());
             for(int i=1; i<SingleModeTest.ALL_CLASSES_STR.length; i++)    
-                formatTableAlgorithm_HTML(filesArray, SingleModeTest.ALL_CLASSES_STR[i], filesSupport, file);
+                formatTableAlgorithm_HTML((String[]) filesArray.toArray(), SingleModeTest.ALL_CLASSES_STR[i], filesSupport, file);
             
             file.write("</tbody>".getBytes());
             
