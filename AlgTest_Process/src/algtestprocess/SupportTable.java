@@ -250,7 +250,7 @@ public class SupportTable {
 */
             }
             
-            
+            System.out.print("\n");
             String explain = "<table id=\"explanation\" min-width=\"1000\" border=\"0\" cellspacing=\"2\" cellpadding=\"4\" >\r\n" 
                     + "<tr>\r\n"
                     + "  <td class='dark_index' style=\"min-width:100px\">Symbol</td>\r\n"
@@ -324,7 +324,7 @@ public class SupportTable {
             // HTML TABLE HEAD
             //
             file.write("<thead>".getBytes());
-            formatTableAlgorithm_HTML((String[]) filesArray.toArray(), SingleModeTest.ALL_CLASSES_STR[0], filesSupport, file);
+            formatTableAlgorithm_HTML(filesArray, SingleModeTest.ALL_CLASSES_STR[0], filesSupport, file);
             file.write("</thead>".getBytes());
             
             //
@@ -332,7 +332,7 @@ public class SupportTable {
             //
             file.write("<tbody>".getBytes());
             for(int i=1; i<SingleModeTest.ALL_CLASSES_STR.length; i++)    
-                formatTableAlgorithm_HTML((String[]) filesArray.toArray(), SingleModeTest.ALL_CLASSES_STR[i], filesSupport, file);
+                formatTableAlgorithm_HTML(filesArray, SingleModeTest.ALL_CLASSES_STR[i], filesSupport, file);
             
             file.write("</tbody>".getBytes());
             
@@ -397,18 +397,18 @@ public class SupportTable {
         String[] names = parseCardName(fileName);
         return names[0];
     }    
-    static void formatTableAlgorithm_HTML(String[] filesArray, String[] classInfo, HashMap[] filesSupport, FileOutputStream file) throws IOException {
+    static void formatTableAlgorithm_HTML(ArrayList<String> filesArray, String[] classInfo, HashMap[] filesSupport, FileOutputStream file) throws IOException {
         // class (e.g., javacardx.crypto.Cipher)
         String algorithm = "<tr>\r\n" + "<td class='dark'>" + classInfo[0] + "</td>\r\n";
         algorithm += "  <td class='dark'>introduced in JC ver.</td>\r\n"; 
         boolean bPackageAIDSupport = false; // detect specific subsection with AID support
         if (classInfo[0].equalsIgnoreCase("Basic info")) {
-            for (int i = 0; i < filesSupport.length; i++) { algorithm += "  <th class='dark_index "+i+"' title = '" + getLongCardName(filesArray[i]) + "'>c" + i + "</th>\r\n"; }
+            for (int i = 0; i < filesSupport.length; i++) { algorithm += "  <th class='dark_index "+i+"' title = '" + getLongCardName(filesArray.get(i)) + "'>c" + i + "</th>\r\n"; }
         } else {
             if (classInfo[0].contains("Package AID support test")) {
                 bPackageAIDSupport = true;
             }
-            for (int i = 0; i < filesSupport.length; i++) { algorithm += "  <td class='dark_index' title = '" + getLongCardName(filesArray[i]) + "'>c" + i + "</td>\r\n"; }
+            for (int i = 0; i < filesSupport.length; i++) { algorithm += "  <td class='dark_index' title = '" + getLongCardName(filesArray.get(i)) + "'>c" + i + "</td>\r\n"; }
         }
         
         String[] jcvArray = java_card_version_array.toArray(new String[java_card_version_array.size()]);
@@ -457,7 +457,7 @@ public class SupportTable {
                     HashMap fileSuppMap = filesSupport[fileIndex];
                     if (fileSuppMap.containsKey(algorithmName)) {
                         String secondToken = (String) fileSuppMap.get(algorithmName);
-                        String title = "title='" + getShortCardName(filesArray[fileIndex]) + " : " + fullAlgorithmName + " : " + secondToken + "'";
+                        String title = "title='" + getShortCardName(filesArray.get(fileIndex)) + " : " + fullAlgorithmName + " : " + secondToken + "'";
                         switch (secondToken) {
                             case "no": algorithm += "<td class='light_no' " + title + ">no</td>\r\n"; break;
                             case "yes":
