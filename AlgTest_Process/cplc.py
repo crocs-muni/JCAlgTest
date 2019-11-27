@@ -47,24 +47,22 @@ Returns human-readable name of card vendor based on provided card name
 @returns human-readable vendor string
 '''
 def get_vendor_name(cardname):
-    if cardname.find('Feitian') != -1: return 'Feitian'
-    if cardname.find('G+D') != -1: return 'G&D'
-    if cardname.find('Oberthur') != -1: return 'Oberthur/Idemia'
-    if cardname.find('COSMO') != -1: return 'Oberthur/Idemia'
-    #if cardname.find('Gemalto') != -1: return 'Gemalto'
-    #if cardname.find('Gemplus') != -1: return 'Gemplus'
-    if cardname.find('Gemalto') != -1: return 'Gemplus/Gemalto'
-    if cardname.find('Gemplus') != -1: return 'Gemplus/Gemalto'
-    if cardname.find('Athena') != -1: return 'Athena'
-    if cardname.find('Axalto') != -1: return 'Schlumberger/Axalto'
-    if cardname.find('Cyberflex') != -1: return 'Schlumberger/Axalto'
-    if cardname.find('Taisys') != -1: return 'Taisys'
-    if cardname.find('Athena') != -1: return 'Athena'
-    if cardname.find('Fidesmo') != -1: return 'Fidesmo'
-    if cardname.find('Infineon') != -1: return 'Infineon'
-    if cardname.find('NXP') != -1: return 'NXP'
+    if cardname.find('Feitian') != -1: return 'Feitian', None
+    if cardname.find('G+D') != -1: return 'G&D', None
+    if cardname.find('Oberthur') != -1: return 'Oberthur', 'Idemia'
+    if cardname.find('Idemia') != -1: return 'Idemia', None
+    if cardname.find('Gemalto') != -1: return 'Gemalto', None
+    if cardname.find('Gemplus') != -1: return 'Gemplus', 'Gemalto'
+    if cardname.find('Athena') != -1: return 'Athena', 'NXP'
+    if cardname.find('Axalto') != -1: return 'Axalto', 'Gemalto'
+    if cardname.find('Cyberflex') != -1: return 'Schlumberger', 'Gemalto'
+    if cardname.find('Taisys') != -1: return 'Taisys', None
+    if cardname.find('Athena') != -1: return 'Athena', 'NXP'
+    if cardname.find('Fidesmo') != -1: return 'Fidesmo', None
+    if cardname.find('Infineon') != -1: return 'Infineon', None
+    if cardname.find('NXP') != -1: return 'NXP', None
 
-    return 'unknown vendor'
+    return 'unknown vendor', None
 
 '''
 Returns human-readable name of operating system based on provided OperatingSystemID 
@@ -87,7 +85,7 @@ def get_os_name(os_id):
     if os_id.find('4051') != -1: return 'IBM JCOP2'
     if os_id.find('4070') != -1: return 'JCOP ?'
     if os_id.find('4091') != -1: return 'Trusted Logic jTOP'
-    if os_id.find('4700') != -1: return 'NXP JCOP4'
+    if os_id.find('4700') != -1: return 'NXP JCOP3&4'
     if os_id.find('4791') != -1: return 'NXP JCOP2'
     if os_id.find('4A5A') != -1: return 'JCOP ?'
     if os_id.find('544c') != -1: return 'Trusted Logic jTOP'
@@ -114,8 +112,8 @@ def get_osiddate_name(os_id, os_date):
         if os_date.find('6345') != -1:return 'JCOP 2.3.1 (2006)'
         if os_date.find('7095') != -1:return 'JCOP 2.3.1R? (2007)'
     if os_id.find('4700') != -1:
-        if os_date.find('0000') != -1:return 'JCOP4 (??)'
-        if os_date.find('e4d8') != -1:return 'JCOP3/4? (??)'
+        if os_date.find('0000') != -1:return 'JCOP4 (2018)'
+        if os_date.find('e4d8') != -1:return 'JCOP3 (2015)'
     if os_id.find('4791') != -1: 
         if os_date.find('7351') != -1:return 'JCOP 2.3.2 (2007)'
         if os_date.find('8102') != -1:return 'JCOP 2.?.? (2008)'
@@ -264,7 +262,7 @@ Visualize CPLC information from the list of cards
 """ 
 def generate_graph(cplc_list, vendor_name_filter):
     dot2 = Digraph(comment='Vendor={}, CPLC from JCAlgTest.org'.format(vendor_name_filter))
-    dot2.attr('graph', label='Vendor={}, CPLC visualization (JCAlgTest database)\nICFabricator -> ICFab_ICType -> OperatingSystemID -> OperatingSystemID_OperatingSystemReleaseDate -> OperatingSystemReleaseLevel -> CardName -> Vendor'.format(vendor_name_filter), labelloc='t', fontsize='30')
+    dot2.attr('graph', label='Vendor={}, CPLC visualization (JCAlgTest database)\nICFabricator -> ICFab_ICType -> OperatingSystemID -> OperatingSystemID_OperatingSystemReleaseDate -> OperatingSystemReleaseLevel -> CardName -> Vendor -> Current vendor'.format(vendor_name_filter), labelloc='t', fontsize='30')
     dot2.attr(rankdir='LR', size='8,5')
 
     ic_fabs_types = []  # information in CSV format
@@ -300,8 +298,18 @@ def generate_graph(cplc_list, vendor_name_filter):
                     dot2.attr('node', style='filled')
                     dot2.attr('node', fontsize='20')
                     dot2.node(get_fab_name(fab))
-                    vendor_name = 'Vendor=' + get_vendor_name(cardname)
+                    vendor, vendor_current = get_vendor_name(cardname)
+                    if vendor_current is not None:
+                        vendor_name_curr = '\'' + vendor_current + '\''
+                        vendor_name = 'v=' + vendor
+                    else:
+                        vendor_name = 'v=' + vendor
+                        vendor_name_curr = '\'' + vendor + '\''
+
                     dot2.node(vendor_name)
+                    dot2.attr('node', fontsize='30')
+                    dot2.node(vendor_name_curr)
+                    dot2.attr('node', fontsize='20')
                     dot2.node(dotosid, dotosid + '\n' + get_os_name(os_id))
                     dot2.attr('node', color='lightgray')
                     dot2.attr('node', style='solid')
@@ -322,6 +330,8 @@ def generate_graph(cplc_list, vendor_name_filter):
                     dot2.edge(dotosdatelevel, cardname, color=rndcolor, style=rndedgestyle)
                     #dot2.edge(dotosid+dotosdate, cardname, color=rndcolor, style=rndedgestyle)
                     dot2.edge(cardname, vendor_name, color=rndcolor, style=rndedgestyle)
+                    if vendor_name != vendor_name_curr:
+                        dot2.edge(vendor_name, vendor_name_curr, color=rndcolor, style=rndedgestyle)
 
     # Generate dot graph using GraphViz into pdf 
     vendor_name_filter = vendor_name_filter.replace('/', '_')
