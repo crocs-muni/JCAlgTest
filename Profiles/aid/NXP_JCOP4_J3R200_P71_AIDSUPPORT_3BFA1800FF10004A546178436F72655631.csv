@@ -1,55 +1,25 @@
-jcAIDScan version; 0.1.2
+jcAIDScan version; 0.1.3
 Card ATR; 3BFA1800FF10004A546178436F72655631
 Card name; NXP JCOP4 J3R200 P71
 CPLC;;
-tformPro 18.09.14-0-gb439b52
-Running on Windows 10 10.0 amd64, Java 12.0.2 by Oracle Corporation
-Reader; Alcor Micro USB Smart Card Reader 0
-ATR; 3BFA1800FF10004A546178436F72655631
-More information about your card;
-    http;//smartcard-atr.appspot.com/parse?ATR=3BFA1800FF10004A546178436F72655631
-
-CPLC; ICFabricator=4790
-      ICType=D321
-      OperatingSystemID=4700
-      OperatingSystemReleaseDate=0000 (2010-01-01)
-      OperatingSystemReleaseLevel=0000
-      ICFabricationDate=8353 (2018-12-19)
-      ICSerialNumber=01561499
-      ICBatchIdentifier=1838
-      ICModuleFabricator=0000
-      ICModulePackagingDate=0000 (2010-01-01)
-      ICCManufacturer=0000
-      ICEmbeddingDate=0000 (2010-01-01)
-      ICPrePersonalizer=011A
-      ICPrePersonalizationEquipmentDate=7C31 (invalid date format)
-      ICPrePersonalizationEquipmentID=35363134
-      ICPersonalizer=0000
-      ICPersonalizationDate=0000 (2010-01-01)
-      ICPersonalizationEquipmentID=00000000
-
-Card Data; 
-Tag 6; 1.2.840.114283.1
--> Global Platform card
-Tag 60; 1.2.840.114283.2.2.3
--> GP Version; 2.3
-Tag 63; 1.2.840.114283.3
-Tag 64; 1.2.840.114283.4.2.85
--> GP SCP02 i=55
-Tag 65; 1.2.840.114283.5.7.2.0.0
-Tag 66; 1.3.6.1.4.1.42.2.110.1.3
--> JavaCard v3
-Card Capabilities; 
-Supports; SCP02 i=15 i=35 i=55 i=75
-Supported DOM privileges; SecurityDomain, DelegatedManagement, CardReset, MandatedDAPVerification, TrustedPath, TokenVerification, GlobalDelete, GlobalLock, GlobalRegistry, FinalApplication, ReceiptGeneration, CipheredLoadFileDataBlock
-Supported APP privileges; CardLock, CardTerminate, CardReset, CVMManagement, FinalApplication, GlobalService
-Supported LFDB hash; 02
-Supported Token Verification ciphers; 7B
-Supported Receipt Generation ciphers; 0C
-Supported DAP Verification ciphers; 7B
-Version;   1 (0x01) ID;   1 (0x01) type; DES3 length;  16 
-Version;   1 (0x01) ID;   2 (0x02) type; DES3 length;  16 
-Version;   1 (0x01) ID;   3 (0x03) type; DES3 length;  16
+ ICFabricator=4790
+ICType=D321
+OperatingSystemID=4700
+OperatingSystemReleaseDate=0000 (2010-01-01)
+OperatingSystemReleaseLevel=0000
+ICFabricationDate=8353 (2018-12-19)
+ICSerialNumber=01576899
+ICBatchIdentifier=1838
+ICModuleFabricator=0000
+ICModulePackagingDate=0000 (2010-01-01)
+ICCManufacturer=0000
+ICEmbeddingDate=0000 (2010-01-01)
+ICPrePersonalizer=011A
+ICPrePersonalizationEquipmentDate=7D31 (invalid date format)
+ICPrePersonalizationEquipmentID=35373638
+ICPersonalizer=0000
+ICPersonalizationDate=0000 (2010-01-01)
+ICPersonalizationEquipmentID=00000000
 
 PACKAGE AID; MAJOR VERSION; MINOR VERSION; PACKAGE NAME; INTRODUCING JC API VERSION;
 a00000015100; 1; 0; org.globalplatform; GP 2.1.1
@@ -99,6 +69,22 @@ FULL PACKAGE AID; IS SUPPORTED?; PACKAGE NAME WITH VERSION;
 050106A00000015100; 	yes; 	org.globalplatform v1.5 a00000015100;
 060106A00000015100; 	yes; 	org.globalplatform v1.6 a00000015100;
 070106A00000015100; 	no; 	org.globalplatform v1.7 a00000015100;
+000106A00000015102; 	no; 	org.globalplatform.contactless v1.0 a00000015102;
+010106A00000015102; 	no; 	org.globalplatform.contactless v1.1 a00000015102;
+020106A00000015102; 	no; 	org.globalplatform.contactless v1.2 a00000015102;
+030106A00000015102; 	no; 	org.globalplatform.contactless v1.3 a00000015102;
+040106A00000015102; 	no; 	org.globalplatform.contactless v1.4 a00000015102;
+050106A00000015102; 	no; 	org.globalplatform.contactless v1.5 a00000015102;
+000106A00000015103; 	no; 	org.globalplatform.securechannel v1.0 a00000015103;
+010106A00000015103; 	no; 	org.globalplatform.securechannel v1.1 a00000015103;
+020106A00000015103; 	no; 	org.globalplatform.securechannel v1.2 a00000015103;
+000106A00000015104; 	no; 	org.globalplatform.securechannel.provider v1.0 a00000015104;
+010106A00000015104; 	no; 	org.globalplatform.securechannel.provider v1.1 a00000015104;
+020106A00000015104; 	no; 	org.globalplatform.securechannel.provider v1.2 a00000015104;
+000106A00000015105; 	no; 	org.globalplatform.privacy v1.0 a00000015105;
+010106A00000015105; 	no; 	org.globalplatform.privacy v1.1 a00000015105;
+000106A00000015106; 	no; 	org.globalplatform.filesystem v1.0 a00000015106;
+010106A00000015106; 	no; 	org.globalplatform.filesystem v1.1 a00000015106;
 000107A0000000030000; 	no; 	visa.openplatform v1.0 a0000000030000;
 010107A0000000030000; 	no; 	visa.openplatform v1.1 a0000000030000;
 020107A0000000030000; 	no; 	visa.openplatform v1.2 a0000000030000;

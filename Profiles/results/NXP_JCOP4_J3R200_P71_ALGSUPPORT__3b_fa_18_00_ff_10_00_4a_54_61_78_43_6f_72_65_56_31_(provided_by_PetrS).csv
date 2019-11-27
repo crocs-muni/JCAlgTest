@@ -9,6 +9,7 @@ Card name; NXP JCOP4 J3R200 P71
 Card provider; please insert link/description of shop where card was bought
 Used protocol; T=0
 High-power mode supported (relevant only to SIM cards according to ETSI 102 221); no
+Package_AID_test; NXP_JCOP4_J3R200_P71_AIDSUPPORT_3BFA1800FF10004A546178436F72655631.csv
 
 JCSystem.getVersion()[Major.Minor];3.0;
 JCSystem.isObjectDeletionSupported;yes;
