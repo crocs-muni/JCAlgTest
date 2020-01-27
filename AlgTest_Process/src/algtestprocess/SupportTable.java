@@ -45,10 +45,13 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.TreeSet;
 
 
 /**
@@ -129,15 +132,30 @@ public class SupportTable {
         String filesPath = basePath + "results" + File.separator;
         File dir = new File(filesPath);
         String[] allFilesArray = dir.list();
-        ArrayList<String> filesArray = new ArrayList<>();
+        ArrayList<String> filesArrayUnsorted = new ArrayList<>();
         
         for (int i = 0; i < allFilesArray.length; i++) {
             File testDir = new File(basePath + "results" + File.separator + allFilesArray[i] + File.separator);
             if (!testDir.isDirectory()) {
-                filesArray.add(allFilesArray[i]);
+                filesArrayUnsorted.add(allFilesArray[i]);
             }
         }
 
+        // Sort files by name
+        ArrayList<String> filesArray = new ArrayList<>();
+        java.util.Collections.sort(filesArrayUnsorted, String.CASE_INSENSITIVE_ORDER);
+        // Insert all  but undisclosed
+        for (int i = 0; i < filesArrayUnsorted.size(); i++) {
+            if (!filesArrayUnsorted.get(i).startsWith("[undisclosed")) {
+                filesArray.add(filesArrayUnsorted.get(i));
+            }
+        }
+        // Move [undisclosed... towards end
+        for (int i = 0; i < filesArrayUnsorted.size(); i++) {
+            if (filesArrayUnsorted.get(i).startsWith("[undisclosed")) {
+                filesArray.add(filesArrayUnsorted.get(i));
+            }
+        }
         
         if ((filesArray != null) && (dir.isDirectory() == true)) {    
             
