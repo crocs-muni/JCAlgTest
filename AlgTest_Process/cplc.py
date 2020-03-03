@@ -262,7 +262,10 @@ Visualize CPLC information from the list of cards
 """ 
 def generate_graph(cplc_list, vendor_name_filter):
     dot2 = Digraph(comment='Vendor={}, CPLC from JCAlgTest.org'.format(vendor_name_filter))
-    dot2.attr('graph', label='Vendor={}, CPLC visualization (JCAlgTest database)\nICFabricator -> ICFab_ICType -> OperatingSystemID -> OperatingSystemID_OperatingSystemReleaseDate -> OperatingSystemReleaseLevel -> CardName -> Vendor -> Current vendor'.format(vendor_name_filter), labelloc='t', fontsize='30')
+    graph_label = ''
+    #graph_label = 'Vendor={}, CPLC visualization (JCAlgTest.org database)\n'.format(vendor_name_filter)
+    graph_label += 'ICFabricator → ICFab_ICType → OperatingSystemID → OperatingSystemID_OSReleaseDate → OSReleaseLevel → CardName → Original vendor → Current vendor\n.'
+    dot2.attr('graph', label=graph_label, labelloc='t', fontsize='33')
     dot2.attr(rankdir='LR', size='8,5')
 
     ic_fabs_types = []  # information in CSV format
@@ -291,8 +294,12 @@ def generate_graph(cplc_list, vendor_name_filter):
                 dotosdate = ' OSDate_' + os_date
                 dotosdatelevel = dotosdate + ' OSLevel_' + os_level
 
-               
-                if vendor_name_filter == '' or get_vendor_name(cardname) == vendor_name_filter:
+                if get_vendor_name(cardname)[1] == None:
+                    vendor_name_temp = get_vendor_name(cardname)[0]
+                else:
+                    vendor_name_temp = get_vendor_name(cardname)[1]
+
+                if vendor_name_filter == '' or vendor_name_filter == vendor_name_temp:
                     #ICFab_ICType -> OSID_OSDate -> CardName -> Vendor
                     dot2.attr('node', color='lightgray')
                     dot2.attr('node', style='filled')
@@ -350,13 +357,16 @@ def render_all_vendors():
     walk_dir = '..\\Profiles\\results\\'
     process_jcalgtest_files(walk_dir, files_with_cplc, files_without_cplc)
     
-    print('Cards with CPLS: {}'.format(len(files_with_cplc)))
-    print('Cards without CPLS: {}'.format(len(files_without_cplc)))
 
-    #vendors = ['', 'NXP', 'Infineon', 'Gemplus/Gemalto', 'Feitian', 'G&D', 'Oberthur/Idemia']
-    vendors = ['']
+    vendors = ['', 'NXP', 'Infineon', 'Gemalto', 'Feitian', 'G&D', 'Idemia']
+    #vendors = ['']
+    #vendors = ['G&D']
     for vendor in vendors:
         generate_graph(files_with_cplc, vendor)
+
+
+    print('Cards with CPLC: {}'.format(len(files_with_cplc)))
+    print('Cards without CPLC: {}'.format(len(files_without_cplc)))
 
 def main():
     render_all_vendors()

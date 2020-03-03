@@ -7,6 +7,8 @@ Used reader;
 Card ATR; 3B DB 18 00 80 B1 FE 45 1F 83 00 31 C0 64 C7 FC 10 00 01 90 00 FA
 Used protocol; T=1
 
+JavaCard support version;2.2.2;
+
 JCSystem.getVersion()[Major.Minor];2.2;
 JCSystem.isObjectDeletionSupported;yes;
 JCSystem.MEMORY_TYPE_PERSISTENT;>32767B;
