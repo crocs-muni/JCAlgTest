@@ -10,6 +10,8 @@ Card provider; http://www.javacardsdk.com/product/j2d081sim2/
 Used protocol; T=1
 High-power mode supported (relevant only to SIM cards according to ETSI 102 221); no
 
+JavaCard support version;3.0.1;
+
 JCSystem.getVersion()[Major.Minor];3.0;
 JCSystem.isObjectDeletionSupported;yes;
 JCSystem.MEMORY_TYPE_PERSISTENT;>32767B;

@@ -11,6 +11,8 @@ Used protocol; T=0
 High-power mode supported (relevant only to SIM cards according to ETSI 102 221); yes
 Package_AID_test; Taisys_SIMoME_VAULT_AIDSUPPORT_3B9F95803FC7A08031E073FA21106300000083F09000BB.csv
 
+JavaCard support version;3.0.4;
+
 JCSystem.getVersion()[Major.Minor];3.0;
 JCSystem.isObjectDeletionSupported;yes;
 JCSystem.MEMORY_TYPE_PERSISTENT;>32767B;

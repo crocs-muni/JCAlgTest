@@ -9,6 +9,8 @@ Card name; NXP JCOP41 v2.3.1
 Card provider; please insert link/description of shop where card was bought
 Used protocol; T=1
 
+JavaCard support version;2.2.2;
+
 JCSystem.getVersion()[Major.Minor];2.2;
 JCSystem.isObjectDeletionSupported;yes;
 JCSystem.MEMORY_TYPE_PERSISTENT;>32767B;

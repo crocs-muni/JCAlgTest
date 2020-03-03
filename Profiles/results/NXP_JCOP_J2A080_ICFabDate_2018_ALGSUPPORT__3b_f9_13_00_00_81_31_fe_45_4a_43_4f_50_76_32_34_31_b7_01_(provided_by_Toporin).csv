@@ -10,6 +10,8 @@ Card provider;  https://secure.smartcardsource.com/J2A080M-java-smart-card.html?
 Used protocol; T=1
 High-power mode supported (relevant only to SIM cards according to ETSI 102 221); no
 
+JavaCard support version;2.2.2;
+
 JCSystem.getVersion()[Major.Minor];2.2;
 JCSystem.isObjectDeletionSupported;yes;
 JCSystem.MEMORY_TYPE_PERSISTENT;>32767B;

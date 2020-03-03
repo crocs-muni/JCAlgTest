@@ -11,6 +11,8 @@ Used protocol; T=1
 High-power mode supported (relevant only to SIM cards according to ETSI 102 221); no
 Package_AID_test; NXP_J3E145_AIDSUPPORT_3BF91800008131FE4550565F4A3345303832B5.csv
 
+JavaCard support version;3.0.4;
+
 JCSystem.getVersion()[Major.Minor];3.0;
 JCSystem.isObjectDeletionSupported;yes;
 JCSystem.MEMORY_TYPE_PERSISTENT;>32767B;

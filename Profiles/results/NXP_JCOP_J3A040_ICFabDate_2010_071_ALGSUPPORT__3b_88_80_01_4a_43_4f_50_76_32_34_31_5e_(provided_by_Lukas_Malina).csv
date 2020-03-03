@@ -8,6 +8,8 @@ Card ATR; 3b 88 80 01 4a 43 4f 50 76 32 34 31 5e
 Card name; JCOP J3A040
 Used protocol; T=1
 
+JavaCard support version;2.2.2;
+
 JCSystem.getVersion()[Major.Minor];2.2;
 JCSystem.isObjectDeletionSupported;yes;
 JCSystem.MEMORY_TYPE_PERSISTENT;4064B;

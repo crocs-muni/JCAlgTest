@@ -8,6 +8,8 @@ Card ATR; 3b 69 00 02 41 43 4f 53 4a 76 31 30 31
 Card name; ACS ACOSJ (Combi)
 Used protocol; T=0
 
+JavaCard support version;3.0.4;
+
 JCSystem.getVersion()[Major.Minor];3.0;
 JCSystem.isObjectDeletionSupported;yes;
 JCSystem.MEMORY_TYPE_PERSISTENT;20340B;
