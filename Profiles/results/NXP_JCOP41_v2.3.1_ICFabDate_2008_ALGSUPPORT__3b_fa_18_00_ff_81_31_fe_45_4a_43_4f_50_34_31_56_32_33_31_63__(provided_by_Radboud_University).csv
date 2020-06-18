@@ -9,6 +9,8 @@ Card name; NXP JCOP41 v2.3.1
 Card provider; please insert link/description of shop where card was bought
 Used protocol; T=1
 
+JavaCard support version;2.2.2;
+
 JCSystem.getVersion()[Major.Minor];2.2;
 JCSystem.isObjectDeletionSupported;yes;
 JCSystem.MEMORY_TYPE_PERSISTENT;>32767B;
@@ -221,13 +223,13 @@ TYPE_HMAC LENGTH_HMAC_SHA_384_BLOCK_64;no;
 TYPE_HMAC LENGTH_HMAC_SHA_512_BLOCK_64;no;
 
 javacard.security.KeyAgreement
-ALG_EC_SVDP_DH/ALG_EC_SVDP_DH_KDF;yes;0.139000
-ALG_EC_SVDP_DHC/ALG_EC_SVDP_DHC_KDF;yes;0.142000
-ALG_EC_SVDP_DH_PLAIN;yes;0.142000
-ALG_EC_SVDP_DHC_PLAIN;yes;0.142000
-ALG_EC_PACE_GM;yes;0.142000
-ALG_EC_SVDP_DH_PLAIN_XY;yes;0.142000
-ALG_DH_PLAIN;yes;0.142000
+ALG_EC_SVDP_DH/ALG_EC_SVDP_DH_KDF;no;
+ALG_EC_SVDP_DHC/ALG_EC_SVDP_DHC_KDF;no;
+ALG_EC_SVDP_DH_PLAIN;no;
+ALG_EC_SVDP_DHC_PLAIN;no;
+ALG_EC_PACE_GM;no;
+ALG_EC_SVDP_DH_PLAIN_XY;no;
+ALG_DH_PLAIN;no;
 
 javacard.security.Checksum
 ALG_ISO3309_CRC16;yes;0.092000

@@ -8,6 +8,8 @@ Card ATR; 3b 8b 80 01 00 31 c0 64 08 44 03 04 00 90 00 44
 Card name; COSMO FLY v5.8
 Used protocol; T=1
 
+JavaCard support version;2.2.2;
+
 JCSystem.getVersion()[Major.Minor];2.2;
 JCSystem.isObjectDeletionSupported;yes;
 JCSystem.MEMORY_TYPE_PERSISTENT;10336B;

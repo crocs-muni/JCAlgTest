@@ -19,6 +19,27 @@ JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT;1975B;
 javacardx.apdu.ExtendedLength; 
 Extended APDU;no
 
+CPLC; 9f 7f 2a 47 90 50 17 40 51 61 38 27 00 81 29 00 01 52 91 36 54 00 00 00 00 00 00 00 00 03 28 04 30 30 31 35 32 00 00 00 00 00 00 00 00
+CPLC.ICFabricator;4790;NXP
+CPLC.ICType;5017
+CPLC.OperatingSystemID;4051
+CPLC.OperatingSystemReleaseDate;6138
+CPLC.OperatingSystemReleaseLevel;2700
+CPLC.ICFabricationDate;8129;(Y DDD) date in that year
+CPLC.ICSerialNumber;00015291
+CPLC.ICBatchIdentifier;3654
+CPLC.ICModuleFabricator;0000
+CPLC.ICModulePackagingDate;0000
+CPLC.ICCManufacturer;0000
+CPLC.ICEmbeddingDate;0000
+CPLC.ICPrePersonalizer;0328
+CPLC.ICPrePersonalizationEquipmentDate;0430
+CPLC.ICPrePersonalizationEquipmentID;30313532
+CPLC.ICPersonalizer;0000
+CPLC.ICPersonalizationDate;0000
+CPLC.ICPersonalizationEquipmentID;00000000
+CPLC.ICPersonalizationEquipmentID;00000000
+
 javacardx.crypto.Cipher;
 ALG_DES_CBC_NOPAD;yes;
 ALG_DES_CBC_ISO9797_M1;yes;
@@ -196,8 +217,13 @@ ALG_EC_FP LENGTH_EC_FP_160;no;
 ALG_EC_FP LENGTH_EC_FP_192;no;
 
 javacard\.security\.KeyAgreement
-ALG_EC_SVDP_DH/ALG_EC_SVDP_DH_KDF;yes;
-ALG_EC_SVDP_DHC/ALG_EC_SVDP_DHC_KDF;yes;
+ALG_EC_SVDP_DH/ALG_EC_SVDP_DH_KDF;no;
+ALG_EC_SVDP_DHC/ALG_EC_SVDP_DHC_KDF;no;
+ALG_EC_SVDP_DH_PLAIN;no;
+ALG_EC_SVDP_DHC_PLAIN;no;
+ALG_EC_PACE_GM;no;
+ALG_EC_SVDP_DH_PLAIN_XY;no;
+ALG_DH_PLAIN;no;
 
 javacard.security.Checksum;
 ALG_ISO3309_CRC16;yes;

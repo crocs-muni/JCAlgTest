@@ -427,6 +427,7 @@ public class CardMngr {
                         ATR atr = m_card.getATR();
                         m_SystemOutLogger.println(bytesToHex(atr.getBytes()));
 
+                        /* Supressed as some cards stops responding till reset after this command   
                         // Attempt to allow for high-power mode by selecting specific applet called 
                         try {
                             ResponseAPDU resp2 = sendAPDU(selectADFusim);
@@ -437,6 +438,7 @@ public class CardMngr {
                         catch (Exception e) {
                             m_SystemOutLogger.print("Exception when testing high-power mode");
                         }
+                        */
 
                         // SELECT APPLET
                         cardFound = false;
@@ -454,10 +456,11 @@ public class CardMngr {
                         }
                     }
 
+                    if (selectedATR != null) { selectedATR.append(getATR()); }
+                    if (selectedReader != null) { selectedReader.append(getTerminalName()); }
+                    if (usedProtocol != null) { usedProtocol.append(getProtocol()); }
+
                     if (cardFound) {
-                        if (selectedATR != null) { selectedATR.append(getATR()); }
-                        if (selectedReader != null) { selectedReader.append(getTerminalName()); }
-                        if (usedProtocol != null) { usedProtocol.append(getProtocol()); }
                         return true;
                     }
                 }
@@ -548,10 +551,11 @@ public class CardMngr {
         m_SystemOutLogger.println(commandAPDU.toString());
 
         m_SystemOutLogger.println(bytesToHex(commandAPDU.getBytes()));
-        
+        long elapsedCard = -System.currentTimeMillis();
         responseAPDU = m_channel.transmit(commandAPDU);
-
-        m_SystemOutLogger.println(responseAPDU.toString());
+        elapsedCard += System.currentTimeMillis();
+        
+        m_SystemOutLogger.println(String.format("%s, elapsed=%d ms", responseAPDU.toString(), elapsedCard));
         m_SystemOutLogger.println(bytesToHex(responseAPDU.getBytes()));
 
         if (responseAPDU.getSW1() == (byte) 0x61) {
@@ -687,6 +691,17 @@ public class CardMngr {
                 int ramDeselectSize = (temp[7] << 8) + (temp[8] & 0xff);
                 int maxCommitSize = (temp[9] << 8) + (temp[10] & 0xff);
 
+                int apduInBlockSize = -1;
+                int apduOutBlockSize = -1;
+                int apduProtocol = -1;
+                int apduNAD = -1;
+                if (temp.length > 11) {
+                    apduInBlockSize = (temp[11] << 8) + (temp[12] & 0xff);
+                    apduOutBlockSize = (temp[13] << 8) + (temp[14] & 0xff);
+                    apduProtocol = temp[15];
+                    apduNAD = temp[16];
+                }
+
 
 
                 String message;
@@ -714,8 +729,26 @@ public class CardMngr {
                 pFile.write(message.getBytes());
                 pValue.append(message);
                 
+                // APDU properties    
+                message = String.format("\r\n%s;%dB;", Utils.GetAlgorithmName(SingleModeTest.JCSYSTEM_STR[7]), apduInBlockSize);
+                m_SystemOutLogger.println(message);
+                pFile.write(message.getBytes());
+                pValue.append(message);
+                message = String.format("\r\n%s;%dB;", Utils.GetAlgorithmName(SingleModeTest.JCSYSTEM_STR[8]), apduOutBlockSize);
+                m_SystemOutLogger.println(message);
+                pFile.write(message.getBytes());
+                pValue.append(message);
+                message = String.format("\r\n%s;%dB;", Utils.GetAlgorithmName(SingleModeTest.JCSYSTEM_STR[9]), apduProtocol);
+                m_SystemOutLogger.println(message);
+                pFile.write(message.getBytes());
+                pValue.append(message);
+                message = String.format("\r\n%s;%dB;", Utils.GetAlgorithmName(SingleModeTest.JCSYSTEM_STR[10]), apduNAD);
+                m_SystemOutLogger.println(message);
+                pFile.write(message.getBytes());
+                pValue.append(message);
                 
-                message += "\r\n";
+                
+                message = "\r\n";
 
                 pFile.write(message.getBytes());
                 pValue.append(message);
@@ -740,7 +773,7 @@ public class CardMngr {
     // Functions for CPLC taken and modified from https://github.com/martinpaljak/GlobalPlatformPro 
     private static final byte CLA_GP = (byte) 0x80;     
     private static final byte ISO7816_INS_GET_DATA = (byte) 0xCA;   
-    private static final byte[] SELECT_CM = {(byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00};
+    private static final byte[] SELECT_CM = {(byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00, (byte) 0x00};
     private static final byte[] FETCH_GP_CPLC_APDU = {CLA_GP, ISO7816_INS_GET_DATA, (byte) 0x9F, (byte) 0x7F, (byte) 0x00};
     private static final byte[] FETCH_ISO_CPLC_APDU = {ISO7816.CLA_ISO7816, ISO7816_INS_GET_DATA, (byte) 0x9F, (byte) 0x7F, (byte) 0x00};
     private static final byte[] FETCH_GP_CARDDATA_APDU = {CLA_GP, ISO7816_INS_GET_DATA, (byte) 0x00, (byte) 0x66, (byte) 0x00};

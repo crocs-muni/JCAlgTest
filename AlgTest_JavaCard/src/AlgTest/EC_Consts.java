@@ -603,7 +603,7 @@ public class EC_Consts {
     public static final short EC163_F2M_K = 2;
 */    
     
-    private static void setECKeyParams(ECPublicKey ecPubKey, ECPrivateKey ecPrivKey, byte ecClass, short ecLength, byte[] auxBuffer) {
+    static void setECKeyParams(ECPublicKey ecPubKey, ECPrivateKey ecPrivKey, byte ecClass, short ecLength, byte[] auxBuffer) {
         if (ecClass == KeyPair.ALG_EC_FP) {
             // Select proper courve parameters
             boolean bParamReady = false;

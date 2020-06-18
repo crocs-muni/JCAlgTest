@@ -231,7 +231,8 @@ public class SingleModeTest {
     
     public static final String JCSYSTEM_STR[] = {"javacard.framework.JCSystem", "JCSystem.getVersion()[Major.Minor]#&le;2.1", 
         "JCSystem.isObjectDeletionSupported#2.2.0", "JCSystem.MEMORY_TYPE_PERSISTENT#2.2.1", "JCSystem.MEMORY_TYPE_TRANSIENT_RESET#2.2.1", 
-        "JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT#2.2.1", "JCSystem.getMaxCommitCapacity()#2.1"}; 
+        "JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT#2.2.1", "JCSystem.getMaxCommitCapacity()#2.1", 
+        "APDU.getInBlockSize()#2.1", "APDU.getOutBlockSize()#2.1", "APDU.getProtocol()#2.1", "APDU.getNAD()#2.1"}; 
 
     public static final String RAWRSA_1024_STR[] = {"Variable RSA 1024 - support for variable public exponent. If supported, user-defined fast modular exponentiation can be executed on the smart card via cryptographic coprocessor. This is very specific feature and you will probably not need it", 
         "Allocate RSA 1024 objects", "Set random modulus", "Set random public exponent", "Initialize cipher with public key with random exponent", "Use random public exponent"}; 
@@ -267,7 +268,27 @@ public class SingleModeTest {
         "000108A000000062020803#2.2.2",  // javacardx.framework.tlv
         "000108A000000062020804#3.0.4",  // javacardx.framework.string
         "000107A0000000620209#2.2.2",  // javacardx.apdu
-        "000108A000000062020901#3.0.5"  // javacardx.apdu.util
+        "000108A000000062020901#3.0.5",  // javacardx.apdu.util
+        // org.globalplatform
+        "000106A00000015100#GP2.1.1", "010106A00000015100#GP2.2", "020106A00000015100#GP2.2",
+        "030106A00000015100#GP2.2", "040106A00000015100#GP2.2", "050106A00000015100#GP2.2.1",
+        "060106A00000015100#GP2.2.1",
+        // org.globalplatform.contactless
+        "000106A00000015102#GP 2.2.1", "010106A00000015102#GP 2.2.1", "020106A00000015102#GP 2.2.1",
+        "030106A00000015102#GP 2.3", "040106A00000015102#GP 2.3", "050106A00000015102#GP 2.3",
+        "060106A00000015102#GP 2.3",
+        // org.globalplatform.securechannel
+        "000106A00000015103#GP 2.2.1", "010106A00000015103#GP 2.2.1", "020106A00000015103#GP 2.2.1",
+        "030106A00000015103#GP 2.3", "040106A00000015103#GP 2.3",
+        // org.globalplatform.securechannel.provider
+        "000106A00000015104#GP 2.2.1", "010106A00000015104#GP 2.2.1", "020106A00000015104#GP 2.2.1",
+        // org.globalplatform.privacy
+        "000106A00000015105#GP 2.2.1", "010106A00000015105#GP 2.2.1", "020106A00000015105#GP 2.2.1",
+        // org.globalplatform.filesystem
+        "000106A00000015106#GP 2.2.1", "010106A00000015106#GP 2.2.1", "020106A00000015106#GP 2.2.1",
+        // visa.openplatform
+        "000107A0000000030000#OP 2.0"
+        
     };
 
     public static final Map<String, String> PACKAGE_AID_NAMES_STR;
@@ -320,6 +341,40 @@ public class SingleModeTest {
         PACKAGE_AID_NAMES_STR.put("000108A000000062020804", "javacardx.framework.string v1.0"); 
         PACKAGE_AID_NAMES_STR.put("000107A0000000620209", "javacardx.apdu v1.0");
         PACKAGE_AID_NAMES_STR.put("000108A000000062020901", "javacardx.apdu.util v1.0");
+        // org.globalplatform
+        PACKAGE_AID_NAMES_STR.put("000106A00000015100", "org.globalplatform v1.0");
+        PACKAGE_AID_NAMES_STR.put("010106A00000015100", "org.globalplatform v1.1");
+        PACKAGE_AID_NAMES_STR.put("020106A00000015100", "org.globalplatform v1.2");
+        PACKAGE_AID_NAMES_STR.put("030106A00000015100", "org.globalplatform v1.3");
+        PACKAGE_AID_NAMES_STR.put("040106A00000015100", "org.globalplatform v1.4");
+        PACKAGE_AID_NAMES_STR.put("050106A00000015100", "org.globalplatform v1.5");
+        PACKAGE_AID_NAMES_STR.put("060106A00000015100", "org.globalplatform v1.6");
+        // org.globalplatform.contactless
+        PACKAGE_AID_NAMES_STR.put("000106A00000015102", "org.globalplatform.contactless v1.0");
+        PACKAGE_AID_NAMES_STR.put("010106A00000015102", "org.globalplatform.contactless v1.1");
+        PACKAGE_AID_NAMES_STR.put("020106A00000015102", "org.globalplatform.contactless v1.2");
+        PACKAGE_AID_NAMES_STR.put("030106A00000015102", "org.globalplatform.contactless v1.3");
+        PACKAGE_AID_NAMES_STR.put("040106A00000015102", "org.globalplatform.contactless v1.4");
+        // org.globalplatform.securechannel
+        PACKAGE_AID_NAMES_STR.put("000106A00000015103", "org.globalplatform.securechannel v1.0");
+        PACKAGE_AID_NAMES_STR.put("010106A00000015103", "org.globalplatform.securechannel v1.1");
+        PACKAGE_AID_NAMES_STR.put("020106A00000015103", "org.globalplatform.securechannel v1.2");
+        // org.globalplatform.securechannel.provider
+        PACKAGE_AID_NAMES_STR.put("000106A00000015104", "org.globalplatform.securechannel.provider v1.0");
+        PACKAGE_AID_NAMES_STR.put("010106A00000015104", "org.globalplatform.securechannel.provider v1.1");
+        PACKAGE_AID_NAMES_STR.put("020106A00000015104", "org.globalplatform.securechannel.provider v1.2");
+        // org.globalplatform.privacy
+        PACKAGE_AID_NAMES_STR.put("000106A00000015105", "org.globalplatform.privacy v1.0");
+        PACKAGE_AID_NAMES_STR.put("010106A00000015105", "org.globalplatform.privacy v1.1");
+        PACKAGE_AID_NAMES_STR.put("020106A00000015105", "org.globalplatform.privacy v1.2");
+        // org.globalplatform.filesystem
+        PACKAGE_AID_NAMES_STR.put("000106A00000015106", "org.globalplatform.filesystem v1.0");
+        PACKAGE_AID_NAMES_STR.put("010106A00000015106", "org.globalplatform.filesystem v1.1");
+        PACKAGE_AID_NAMES_STR.put("020106A00000015106", "org.globalplatform.filesystem v1.2");
+        // visa.openplatform
+        PACKAGE_AID_NAMES_STR.put("000107A0000000030000", "visa.openplatform v1.0");
+        PACKAGE_AID_NAMES_STR.put("010107A0000000030000", "visa.openplatform v1.1");
+        
     }
     
     public static final String EXTENDEDAPDU_STR[] = {"javacardx.apdu.ExtendedLength", "Extended APDU#2.2.2"}; 

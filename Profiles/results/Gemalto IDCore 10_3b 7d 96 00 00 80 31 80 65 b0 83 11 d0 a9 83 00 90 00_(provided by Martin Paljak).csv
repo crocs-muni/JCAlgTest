@@ -9,13 +9,32 @@ Used protocol; T=0
 
 JavaCard support version;2.2.1;
 
-
 JCSystem.getVersion()[Major.Minor];2.2;
 JCSystem.isObjectDeletionSupported;yes;
 JCSystem.MEMORY_TYPE_PERSISTENT;>32767B;
 JCSystem.MEMORY_TYPE_TRANSIENT_RESET;5098B;
 JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT;5098B;
 
+CPLC; 9f 7f 2a 47 90 50 81 12 91 11 02 02 01 33 47 00 00 8f 90 74 ca 40 82 40 76 12 93 40 76 20 04 40 76 00 00 00 14 00 00 00 00 00 00 00 00
+CPLC.ICFabricator;4790;NXP
+CPLC.ICType;5081
+CPLC.OperatingSystemID;1291
+CPLC.OperatingSystemReleaseDate;1102
+CPLC.OperatingSystemReleaseLevel;0201
+CPLC.ICFabricationDate;3347;(Y DDD) date in that year
+CPLC.ICSerialNumber;00008f90
+CPLC.ICBatchIdentifier;74ca
+CPLC.ICModuleFabricator;4082
+CPLC.ICModulePackagingDate;4076
+CPLC.ICCManufacturer;1293
+CPLC.ICEmbeddingDate;4076
+CPLC.ICPrePersonalizer;2004
+CPLC.ICPrePersonalizationEquipmentDate;4076
+CPLC.ICPrePersonalizationEquipmentID;00000014
+CPLC.ICPersonalizer;0000
+CPLC.ICPersonalizationDate;0000
+CPLC.ICPersonalizationEquipmentID;00000000
+CPLC.ICPersonalizationEquipmentID;00000000
 
 javacardx.crypto.Cipher;
 ALG_DES_CBC_NOPAD;yes;

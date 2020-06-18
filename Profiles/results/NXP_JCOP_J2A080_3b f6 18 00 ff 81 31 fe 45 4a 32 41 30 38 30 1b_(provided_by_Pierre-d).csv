@@ -9,6 +9,8 @@ Card name; NXP J2A080 80K
 Performance; yes
 Used protocol; T=1
 
+JavaCard support version;2.2.2;
+
 JCSystem.getVersion()[Major.Minor];2.2;
 JCSystem.isObjectDeletionSupported;yes;
 JCSystem.MEMORY_TYPE_PERSISTENT;>32767B;

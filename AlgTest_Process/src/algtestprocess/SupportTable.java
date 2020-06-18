@@ -45,10 +45,13 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.TreeSet;
 
 
 /**
@@ -128,17 +131,40 @@ public class SupportTable {
     public static void generateHTMLTable(String basePath) throws IOException {
         String filesPath = basePath + "results" + File.separator;
         File dir = new File(filesPath);
-        String[] filesArray = dir.list();
-
-        if ((filesArray != null) && (dir.isDirectory() == true)) {
-
-            HashMap filesSupport[] = new HashMap[filesArray.length];
-
-            for (int i = 0; i < filesArray.length; i++) {
-                filesSupport[i] = new HashMap();
-                parseSupportFile(filesPath + filesArray[i], filesSupport[i]);
+        String[] allFilesArray = dir.list();
+        ArrayList<String> filesArrayUnsorted = new ArrayList<>();
+        
+        for (int i = 0; i < allFilesArray.length; i++) {
+            File testDir = new File(basePath + "results" + File.separator + allFilesArray[i] + File.separator);
+            if (!testDir.isDirectory()) {
+                filesArrayUnsorted.add(allFilesArray[i]);
             }
+        }
 
+        // Sort files by name
+        ArrayList<String> filesArray = new ArrayList<>();
+        java.util.Collections.sort(filesArrayUnsorted, String.CASE_INSENSITIVE_ORDER);
+        // Insert all  but undisclosed
+        for (int i = 0; i < filesArrayUnsorted.size(); i++) {
+            if (!filesArrayUnsorted.get(i).startsWith("[undisclosed")) {
+                filesArray.add(filesArrayUnsorted.get(i));
+            }
+        }
+        // Move [undisclosed... towards end
+        for (int i = 0; i < filesArrayUnsorted.size(); i++) {
+            if (filesArrayUnsorted.get(i).startsWith("[undisclosed")) {
+                filesArray.add(filesArrayUnsorted.get(i));
+            }
+        }
+        
+        if ((filesArray != null) && (dir.isDirectory() == true)) {    
+            
+            HashMap filesSupport[] = new HashMap[filesArray.size()]; 
+            
+            for (int i = 0; i < filesArray.size(); i++) {
+                filesSupport[i] = new HashMap();
+                parseSupportFile(filesPath + filesArray.get(i), filesSupport[i]);
+            }            
             //
             // HTML HEADER
             //
@@ -156,9 +182,9 @@ public class SupportTable {
             String cardList = "<div class=\"container-fluid\">\n<h3 id=\"LIST\">Tested cards abbreviations</h3>\r\n";
 
             HashMap<String, Integer> authors = new HashMap<>();
-            String shortNamesList[] = new String[filesArray.length];
-            for (int i = 0; i < filesArray.length; i++) {
-                String cardIdentification = filesArray[i];
+            String shortNamesList[] = new String[filesArray.size()];            
+            for (int i = 0; i < filesArray.size(); i++) {
+                String cardIdentification = filesArray.get(i);
                 cardIdentification = cardIdentification.replace('_', ' ');
                 cardIdentification = cardIdentification.replace(".csv", "");
                 cardIdentification = cardIdentification.replace("3B", ", ATR=3B");
@@ -193,7 +219,7 @@ public class SupportTable {
                 }
 
                 String cardRestName = cardIdentification.substring(cardIdentification.indexOf("ATR"));
-                cardList += "<b>c" + i + "</b>	" + "<a href=\"https://github.com/crocs-muni/JCAlgTest/tree/master/Profiles/results/" + filesArray[i] + "\">" + cardShortName + "</a> , " + cardRestName + ",";
+                cardList += "<b>c" + i + "</b>	" + "<a href=\"https://github.com/crocs-muni/JCAlgTest/tree/master/Profiles/results/" + filesArray.get(i) + "\">" + cardShortName + "</a> , " + cardRestName + ",";
 
                 String cardName = "";
                 if (filesSupport[i].containsKey("Performance")) {
@@ -224,8 +250,8 @@ public class SupportTable {
                     justName = justName.trim();
                 }
                 System.out.println("mkdir \"" + justName + "\"");
-                System.out.println("copy ..\\results\\\"" + filesArray[i] + "\" \"" + justName + "\"");
-            }
+                System.out.println("copy ..\\results\\\"" + filesArray.get(i) + "\" \"" + justName + "\"");
+            }            
             System.out.println();
 
             // Print all providing people names found
@@ -240,9 +266,8 @@ public class SupportTable {
                 }
 */
             }
-
-
-            String explain = "<table id=\"explanation\" min-width=\"1000\" border=\"0\" cellspacing=\"2\" cellpadding=\"4\" >\r\n"
+            System.out.print("\n");
+            String explain = "<table id=\"explanation\" min-width=\"1000\" border=\"0\" cellspacing=\"2\" cellpadding=\"4\" >\r\n" 
                     + "<tr>\r\n"
                     + "  <td class='dark_index' style=\"min-width:100px\">Symbol</td>\r\n"
                     + "  <td class='dark_index'>Meaning</td>\r\n"
@@ -256,7 +281,7 @@ public class SupportTable {
                     + "  <td class='light_info_left'>This particular algorithm was tested and is NOT supported by given card.</td>\r\n"
                     + "</tr>\r\n"
                     + "<tr>\r\n"
-                    + "  <td class='light_suspicious'>suspicious yes</td>\r\n"
+                    + "  <td class='light_suspicious'>possibly yes</td>\r\n"
                     + "  <td class='light_info_left'>This particular algorithm was tested and is REPORTED as supported by given card. However, given algorithm was introduced in later version of JavaCard specification than version declared by the card as supported one. Mostly, algorithm is really supported. But it might be possible, that given algorithm is NOT actually supported by card as some cards may create object for requested algorithm and fail only later when object is actually used. Future version of the JCAlgTest will make more thorough tests regarding this behaviour.</td>\r\n"
                     + "</tr>\r\n"
                     + "<tr>\r\n"
@@ -278,22 +303,20 @@ public class SupportTable {
 
             //Checkboxes to show/hide columns in table, JavaScript required
             String checkboxes = "<h4>Click on each checkbox to show/hide corresponding column (card)</h4>\n\t<div class=\"row\" id=\"grpChkBox\">\n";
-            for(int i=0; i<filesArray.length; i++){
-                String cardIdentification = filesArray[i];
+            for(int i=0; i<filesArray.size(); i++){
+                String cardIdentification = filesArray.get(i);
                 cardIdentification = cardIdentification.replace('_', ' ');
                 cardIdentification = cardIdentification.replace(".csv", "");
                 cardIdentification = cardIdentification.replace("3B", ", ATR=3B");
                 cardIdentification = cardIdentification.replace("3b", ", ATR=3b");
                 cardIdentification = cardIdentification.replace("ALGSUPPORT", "");
                 String cardShortName = cardIdentification.substring(0, cardIdentification.indexOf(",")-1);
-
-                if(i%(filesArray.length/3 + 1) == 0)
+                if(i%(filesArray.size() / 3 + 1) == 0)
                     checkboxes += "<div class=\"col-lg-4 .col-sm-4\">\n";
 
                 checkboxes += "\t\t<p style=\"margin:0;\"><input type=\"checkbox\" name=\""+i+"\" /> <b>c"+i+"</b> - "+cardShortName+"</p>\n";
-
-                getShortCardName(filesArray[i]);
-                if(i%(filesArray.length/3 + 1) == filesArray.length/3)
+                getShortCardName(filesArray.get(i));
+                if(i%(filesArray.size()/3 + 1) == filesArray.size()/3)
                     checkboxes += "\t</div>\n";
             }
             checkboxes += "\t<br>\n\t</div>\n</div>\n";
@@ -305,8 +328,8 @@ public class SupportTable {
 
             String table = "<table id=\"tab\" width=\"600px\" border=\"0\" cellspacing=\"2\" cellpadding=\"4\">\r\n";
             // Insert helper column identification for mouseover row & column jquery highlight
-            table += "<colgroup>";
-            for (int i = 0; i < filesArray.length + 2; i++) { table += "<col />"; } // + 2 because of column with algorithm name and introducing version
+            table += "<colgroup>";        
+            for (int i = 0; i < filesArray.size() + 2; i++) { table += "<col />"; } // + 2 because of column with algorithm name and introducing version
             table += "</colgroup>\r\n";
 
             file.write(table.getBytes());
@@ -387,19 +410,19 @@ public class SupportTable {
     static String getLongCardName(String fileName) {
         String[] names = parseCardName(fileName);
         return names[0];
-    }
-    static void formatTableAlgorithm_HTML(String[] filesArray, String[] classInfo, HashMap[] filesSupport, FileOutputStream file) throws IOException {
+    }    
+    static void formatTableAlgorithm_HTML(ArrayList<String> filesArray, String[] classInfo, HashMap[] filesSupport, FileOutputStream file) throws IOException {
         // class (e.g., javacardx.crypto.Cipher)
         String algorithm = "<tr>\r\n" + "<td class='dark'>" + classInfo[0] + "</td>\r\n";
         algorithm += "  <td class='dark'>introduced in JC ver.</td>\r\n";
         boolean bPackageAIDSupport = false; // detect specific subsection with AID support
         if (classInfo[0].equalsIgnoreCase("Basic info")) {
-            for (int i = 0; i < filesSupport.length; i++) { algorithm += "  <th class='dark_index "+i+"' title = '" + getLongCardName(filesArray[i]) + "'>c" + i + "</th>\r\n"; }
+            for (int i = 0; i < filesSupport.length; i++) { algorithm += "  <th class='dark_index "+i+"' title = '" + getLongCardName(filesArray.get(i)) + "'>c" + i + "</th>\r\n"; }
         } else {
             if (classInfo[0].contains("Package AID support test")) {
                 bPackageAIDSupport = true;
             }
-            for (int i = 0; i < filesSupport.length; i++) { algorithm += "  <td class='dark_index' title = '" + getLongCardName(filesArray[i]) + "'>c" + i + "</td>\r\n"; }
+            for (int i = 0; i < filesSupport.length; i++) { algorithm += "  <td class='dark_index' title = '" + getLongCardName(filesArray.get(i)) + "'>c" + i + "</td>\r\n"; }
         }
 
         String[] jcvArray = java_card_version_array.toArray(new String[java_card_version_array.size()]);
@@ -448,7 +471,7 @@ public class SupportTable {
                     HashMap fileSuppMap = filesSupport[fileIndex];
                     if (fileSuppMap.containsKey(algorithmName)) {
                         String secondToken = (String) fileSuppMap.get(algorithmName);
-                        String title = "title='" + getShortCardName(filesArray[fileIndex]) + " : " + fullAlgorithmName + " : " + secondToken + "'";
+                        String title = "title='" + getShortCardName(filesArray.get(fileIndex)) + " : " + fullAlgorithmName + " : " + secondToken + "'";
                         switch (secondToken) {
                             case "no": algorithm += "<td class='light_no' " + title + ">no</td>\r\n"; break;
                             case "yes":
@@ -456,7 +479,7 @@ public class SupportTable {
                                     if (algorithmVersion.compareTo(jcvArray[fileIndex]) == 1){
                                         // given algorithm is not present in JavaCard specification used to convert uploaded JCAlgTest applet
                                         // make warning
-                                        algorithm += "<td class='light_suspicious' " + title + ">suspicious yes</td>\r\n";
+                                        algorithm += "<td class='light_suspicious' " + title + ">possibly yes</td>\r\n";
                                     }
                                     else {
                                         if (jcvArray[fileIndex].compareTo("not supplied") == 0) {

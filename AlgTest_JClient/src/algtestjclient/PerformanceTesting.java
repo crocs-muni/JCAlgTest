@@ -292,6 +292,68 @@ public class PerformanceTesting {
     }    
     
     /**
+     * Calls methods testing card performance limited to fingerprinting
+     * functions.
+     *
+     * @param args
+     * @param selectedTerminal
+     * @throws IOException
+     * @throws Exception
+     */
+    public void testDebug(String[] args, CardTerminal selectedTerminal) throws IOException, Exception {
+        Scanner sc = new Scanner(System.in);
+
+        // Fingeprint wants to test only main operation speed => variable data option with 256B only
+        m_bTestVariableData = true;
+        m_testDataLengths.clear();
+        m_testDataLengths.add(256);
+
+        m_bTestSymmetricAlgs = true;
+        m_bTestAsymmetricAlgs = true;
+
+        m_cardName = "debugcard";
+
+        // Try to open and load list of already measured algorithms (if provided)
+        // NOTE: measure always full: LoadAlreadyMeasuredAlgs(m_cardName);
+        String testInfo = m_cardName + "___";
+        testInfo += "_DEBUG_";
+        testInfo += System.currentTimeMillis() + "_";   // add unique time counter 
+
+        m_elapsedTimeWholeTest = -System.currentTimeMillis();
+        // Connect to card
+        this.m_perfResultsFile = m_cardManager.establishConnection(m_cardName, testInfo, selectedTerminal);
+        m_cardATR = m_cardManager.getATR();
+
+        short numRepeatWholeMeasurement = (short) 1;
+        short numRepeatWholeOperation = (short) 1;
+
+        // Debug exception ff01 during preparation - FIXED
+        //testCipherWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_512, JCConsts.Cipher_ALG_RSA_ISO14888, "TYPE_RSA_CRT_PUBLIC LENGTH_RSA_512 ALG_RSA_ISO14888", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        //testCipherWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_512, JCConsts.Cipher_ALG_RSA_PKCS1, "TYPE_RSA_CRT_PUBLIC LENGTH_RSA_512 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+
+/*        
+        // Debug problem on Taysis card 
+        // 1024b OK
+        testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1024, JCConsts.Cipher_ALG_RSA_NOPAD, "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1024 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        // 1984b fails during use UNKONWN_ERROR-card_has_return_value_6f00
+        testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_1984, JCConsts.Cipher_ALG_RSA_NOPAD, "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_1984 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        // 2048b and longer fails with preparation 01 90 00<< ILLEGAL_VALUE
+        testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048, JCConsts.Cipher_ALG_RSA_NOPAD, "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_2048 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        //testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_2048, JCConsts.Cipher_ALG_RSA_NOPAD, "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_2048 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        //testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096, JCConsts.Cipher_ALG_RSA_NOPAD, "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_4096 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        //testCipher(JCConsts.KeyBuilder_TYPE_RSA_CRT_PRIVATE, JCConsts.KeyBuilder_LENGTH_RSA_4096, JCConsts.Cipher_ALG_RSA_NOPAD, "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_4096 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_DECRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+*/
+
+        // Debug 0xff01 error when switching from 1.6.0 to 1.7.0
+        testCipherWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1024, JCConsts.Cipher_ALG_RSA_NOPAD, "TYPE_RSA_CRT_PUBLIC LENGTH_RSA_1024 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+        //testCipherWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1024, JCConsts.Cipher_ALG_RSA_PKCS1, "TYPE_RSA_CRT_PUBLIC LENGTH_RSA_1024 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
+
+        finalizeMeasurement();
+    }    
+    
+    
+    
+    /**
      * Calls methods testing card performance on ECC operations.
      *
      * @param args
@@ -385,7 +447,7 @@ public class PerformanceTesting {
     }
     
     void LoadAlreadyMeasuredAlgs(String cardName, String testType) {
-        String filePath = cardName + testType + "_already_measured.list";
+        String filePath = testType + "_already_measured.list";
         String filePathOld = filePath + ".old";
         File f = new File(filePath);
         File fOld = new File(filePathOld);
