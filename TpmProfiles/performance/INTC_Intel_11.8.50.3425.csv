@@ -1,0 +1,25 @@
+Tested and provided by;
+Execution date/time; 2019/05/20 02:45:13
+Manufacturer; INTC
+Vendor string; Intel
+Firmware version; 11.8.50.3425
+Image tag; v1.0
+
+TPM2_Create
+
+Key parameters:;ECC 0x0003
+operation stats (ms/op):;avg op:;56.12;min op:;53.31;max op:;77.46
+operation info:;total iterations:;1000;successful:;1000;failed:;0;error:;None
+
+Key parameters:;ECC 0x0010
+operation stats (ms/op):;avg op:;101.82;min op:;98.69;max op:;119.71
+operation info:;total iterations:;1000;successful:;1000;failed:;0;error:;None
+
+Key parameters:;RSA 1024
+operation stats (ms/op):;avg op:;988.11;min op:;191.31;max op:;3550.18
+operation info:;total iterations:;1000;successful:;1000;failed:;0;error:;None
+
+Key parameters:;RSA 2048
+operation stats (ms/op):;avg op:;5359.36;min op:;23.97;max op:;24324.26
+operation info:;total iterations:;995;successful:;995;failed:;0;error:;None
+
