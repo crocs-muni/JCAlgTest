@@ -239,7 +239,7 @@ public class SupportTable {
             String note = "Note: Some cards in the table come without full identification and ATR (\'undisclosed\') as submitters prefered not to disclose it at the momment. I'm publishing it anyway as the information that some card supporting particular algorithm exists is still interesting. Full identification might be added in future.<br><br>\r\n\r\n";
             file.write(note.getBytes());
 
-            note = "Note: If you have card of unknown type, try to obtain ATR and take a look at smartcard list available here: <a href=\"http://smartcard-atr.appspot.com/\"> http://smartcard-atr.appspot.com/</a><br><br>\r\n\r\n";
+            note = "Note: If you have card of unknown type, try to obtain ATR and take a look at smartcard list available here: <a href=\"https://smartcard-atr.apdu.fr/\"> https://smartcard-atr.apdu.fr/</a><br><br>\r\n\r\n";
             file.write(note.getBytes());
 
             // Create bat script to copy files with results to corresponding folders for the same card type
