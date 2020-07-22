@@ -237,7 +237,7 @@ public class SingleModeTest {
     public static final String RAWRSA_1024_STR[] = {"Variable RSA 1024 - support for variable public exponent. If supported, user-defined fast modular exponentiation can be executed on the smart card via cryptographic coprocessor. This is very specific feature and you will probably not need it", 
         "Allocate RSA 1024 objects", "Set random modulus", "Set random public exponent", "Initialize cipher with public key with random exponent", "Use random public exponent"}; 
 
-    public static final String PACKAGE_AID_STR[] = {"<a name=\"package_support\"></a>Package AID support test - a direct testing of supported packages from the standard JavaCard API including version. Not all constants from supported package are necessarily supported.",
+    public static final String PACKAGE_AID_STR[] = {"<a name=\"package_support\"></a>Package AID support test - a direct testing of supported packages from the standard JavaCard API including its version. Important: Not all constants/classes listed in supported package are necessarily supported by the specific card.",
         "000107A0000000620001#2.1", // java.lang
         "000107A0000000620002#2.2.0",  // java.io
         "000107A0000000620003#2.2.0", // java.rmi
