@@ -6,6 +6,4 @@
 	     <!-- Copy newly build jar into test directory for simulator of smart cards-->
              <copy file="${basedir}/dist/AlgTestJClient.jar" tofile="${basedir}/test/AlgTestJClient.jar"/>
           </target>
-          
-      
 </project>
