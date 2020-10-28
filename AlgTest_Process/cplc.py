@@ -26,6 +26,7 @@ Returns human-readable name of fabricator based on provided ICFabricator id
 def get_fab_name(icfab):
     if icfab.find('0003') != -1: return 'Renesas' # https://www.cryptsoft.com/fips140/vendors/140sp485.pdf
     if icfab.find('0005') != -1: return 'Infineon' # https://csrc.nist.gov/csrc/media/projects/cryptographic-module-validation-program/documents/security-policies/140sp2327.pdf
+    if icfab.find('008c') != -1: return 'Tongxin' # https://csrc.nist.gov/csrc/media/projects/cryptographic-module-validation-program/documents/security-policies/140sp2327.pdf
     if icfab.find('2050') != -1: return 'Philips' # https://www.commoncriteriaportal.org/files/epfiles/ANSSI-CC-2007-02-M02fr.pdf, pp. 2
     if icfab.find('3060') != -1: return 'Renesas'
     if icfab.find('4070') != -1: return 'NXP' # https://csrc.nist.rip/groups/STM/cmvp/documents/140-1/140sp/140sp963.pdf, pp. 4
@@ -176,8 +177,10 @@ def get_ictype_name(icfab, ictype):
         if ictype.find('0015') != -1: return 'Philips P8WE5032'  # Philips P8WE5032, https://www.commoncriteriaportal.org/files/epfiles/2000_06.pdf
     if icfab.find('0005') != -1:
         if ictype.find('0045') != -1: return 'Infineon M7892 B11'   # https://csrc.nist.gov/csrc/media/projects/cryptographic-module-validation-program/documents/security-policies/140sp2327.pdf
-    if icfab.find('2050') != -1:
-        if ictype.find('5000') != -1: return 'Philips P5CD072VOP'   # ID-One Cosmo 64 RSA v5.4.1, https://www.commoncriteriaportal.org/files/epfiles/ANSSI-CC-2007-02-M02fr.pdf, pp. 2
+    if icfab.find('0005') != -1:
+        if ictype.find('0045') != -1: return 'Infineon M7892 B11'   # https://csrc.nist.gov/csrc/media/projects/cryptographic-module-validation-program/documents/security-policies/140sp2327.pdf
+    if icfab.find('008c') != -1:
+        if ictype.find('0089') != -1: return 'Tongxin THD89'   # https://www.commoncriteriaportal.org/files/epfiles/2017-28%20INF-2492.pdf
     if icfab.find('4070') != -1:
         if ictype.find('5072') != -1: return 'NXP P5CD144'   # https://csrc.nist.gov/csrc/media/projects/cryptographic-module-validation-program/documents/security-policies/140sp2774.pdf
     if icfab.find('5354') != -1:
