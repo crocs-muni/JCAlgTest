@@ -55,11 +55,16 @@ public class JCAlgTestApplet extends javacard.framework.Applet
 {
     // NOTE: when incrementing version, don't forget to update ALGTEST_JAVACARD_VERSION_CURRENT value
      /**
+     * Version 1.7.10 (05.08.2020)
+     * + added option for delayed allocation of resources as some cards cannot handle too many allocations in constructor 
+     */
+    final static byte ALGTEST_JAVACARD_VERSION_1_7_10[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x37, (byte) 0x2e, (byte) 0x31, (byte) 0x30};
+     /**
      * Version 1.7.9 (22.07.2019)
      * + added collection of APDU informations
      * + improved ECC testing for cards failing at new KeyPair()
      */
-    final static byte ALGTEST_JAVACARD_VERSION_1_7_9[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x37, (byte) 0x2e, (byte) 0x39};
+    //final static byte ALGTEST_JAVACARD_VERSION_1_7_9[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x37, (byte) 0x2e, (byte) 0x39};
     /**
      * Version 1.7.8 (18.05.2019)
      * + added caching of already generated RSA keys to speedup perf test preparation
@@ -175,7 +180,7 @@ public class JCAlgTestApplet extends javacard.framework.Applet
      */
     //final static byte ALGTEST_JAVACARD_VERSION_1_0[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x30};
 
-    byte ALGTEST_JAVACARD_VERSION_CURRENT[] = ALGTEST_JAVACARD_VERSION_1_7_9;
+    byte ALGTEST_JAVACARD_VERSION_CURRENT[] = ALGTEST_JAVACARD_VERSION_1_7_10;
     
     // lower byte of exception is value as defined in JCSDK/api_classic/constant-values.htm
     final static short SW_Exception = (short) 0xff01;
@@ -203,11 +208,14 @@ public class JCAlgTestApplet extends javacard.framework.Applet
     byte[] m_ramArray = null;  // auxalarity array used for various purposes. Length of this array is added to value returned as amount of available RAM memory
     byte[] m_ramArray2 = null;  // auxalarity array used for various purposes. Length of this array is added to value returned as amount of available RAM memory
     
+    boolean m_allocationsPerformed = false;
+    
     protected JCAlgTestApplet(byte[] buffer, short offset, byte length) {
         // data offset is used for application specific parameter.
         // initialization with default offset (AID offset).
         short dataOffset = offset;
         boolean isOP2 = false;
+        boolean bPerformAllocationsNow = true;
 
         if(length > 9) {
             // Install parameter detail. Compliant with OP 2.0.1.
@@ -218,6 +226,15 @@ public class JCAlgTestApplet extends javacard.framework.Applet
 
             // go to proprietary data
             dataOffset++;
+            
+            // Note: NXP JCOP4 J3R180 card fails with TransactionException.BUFFER_FULL exception
+            // if some transaction is executed in constructor or too many allocations are performed.
+            if (buffer[dataOffset] == Consts.TAG_DELAYED_ALLOCATION) {
+                // Do not allocate now, delay for the first run
+                bPerformAllocationsNow = false;
+            }
+
+                
             // update flag
             isOP2 = true;
        } else {}
@@ -226,14 +243,9 @@ public class JCAlgTestApplet extends javacard.framework.Applet
         m_freeRAMReset = JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_RESET);
         m_freeRAMDeselect = JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT);
         
-        // Allocate all engines
-        m_ramArray = JCSystem.makeTransientByteArray(RAM1_ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);
-        m_ramArray2 = JCSystem.makeTransientByteArray(RAM2_ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);
-
-        m_keyHarvest = new AlgKeyHarvest();
-        m_supportTest = new AlgSupportTest(m_ramArray, m_ramArray2, m_freeRAMReset, m_freeRAMDeselect);
-        m_perfTest = new AlgPerformanceTest(m_ramArray, m_ramArray2);
-        m_storageTest = new AlgStorageTest();
+        if (bPerformAllocationsNow) {
+            allocateResources();
+        }
         
         if (isOP2) { register(buffer, (short)(offset + 1), buffer[offset]); }
         else { register(); }
@@ -249,6 +261,25 @@ public class JCAlgTestApplet extends javacard.framework.Applet
 
     public void deselect() {
     }
+    
+    void allocateResources() {
+        // Allocate all engines
+        m_ramArray = JCSystem.makeTransientByteArray(RAM1_ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);
+        m_ramArray2 = JCSystem.makeTransientByteArray(RAM2_ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);
+
+        m_keyHarvest = new AlgKeyHarvest();
+        m_supportTest = new AlgSupportTest(m_ramArray, m_ramArray2, m_freeRAMReset, m_freeRAMDeselect);
+        m_perfTest = new AlgPerformanceTest(m_ramArray, m_ramArray2);
+        m_storageTest = new AlgStorageTest();
+
+        m_allocationsPerformed = true;
+    }
+    
+    void performDelayedAllocations() {
+        if (!m_allocationsPerformed) {
+            allocateResources();
+        }
+    }
 
     public void process(APDU apdu) throws ISOException {
         // get the APDU buffer
@@ -256,6 +287,8 @@ public class JCAlgTestApplet extends javacard.framework.Applet
 
         // ignore the applet select command dispached to the process
         if (selectingApplet()) { return; }
+        
+        performDelayedAllocations();
         
         byte bProcessed = (byte) 0;
         

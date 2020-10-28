@@ -113,4 +113,6 @@ public class Consts {
     public static final short NUM_REPEAT_WHOLE_OPERATION_VARIABLE_DATA = (short) 5;
     public static final short NUM_REPEAT_WHOLE_MEASUREMENT      = (short) 5;
     public static final short NUM_REPEAT_WHOLE_MEASUREMENT_KEYPAIRGEN      = (short) 10;
+    
+    public static final byte TAG_DELAYED_ALLOCATION      = (byte) 0x77;
 }
