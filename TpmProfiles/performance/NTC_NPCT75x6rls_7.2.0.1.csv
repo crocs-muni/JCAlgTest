@@ -1,0 +1,235 @@
+Tested and provided by;
+Execution date/time; 2019/05/17 09:02:32
+Manufacturer; NTC
+Vendor string; NPCT75x6rls
+Firmware version; 7.2.0.1
+Image tag; v1.0
+
+TPM2_Create
+
+Key parameters:;ECC 0x0003
+operation stats (ms/op):;avg op:;33.98;min op:;28.81;max op:;34.58
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+Key parameters:;ECC 0x0004
+operation stats (ms/op):;avg op:;45.27;min op:;44.17;max op:;49.53
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+Key parameters:;ECC 0x0010
+operation stats (ms/op):;avg op:;31.01;min op:;28.45;max op:;34.15
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+Key parameters:;HMAC
+operation stats (ms/op):;avg op:;17.70;min op:;17.25;max op:;17.97
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+Key parameters:;RSA 1024
+operation stats (ms/op):;avg op:;721.02;min op:;301.22;max op:;1463.10
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+Key parameters:;RSA 2048
+operation stats (ms/op):;avg op:;4235.28;min op:;800.53;max op:;24750.06
+operation info:;total iterations:;95;successful:;95;failed:;0;error:;None
+
+TPM2_EncryptDecrypt
+
+Algorithm:;0x0006;Key length:;128;Mode:;0x0040;Encrypt/decrypt?:;decrypt;Data length (bytes):;256
+operation stats (ms/op):;avg op:;0.00;min op:;0.00;max op:;0.00
+operation info:;total iterations:;100;successful:;0;failed:;100;error:;0143
+
+Algorithm:;0x0006;Key length:;128;Mode:;0x0040;Encrypt/decrypt?:;encrypt;Data length (bytes):;256
+operation stats (ms/op):;avg op:;0.00;min op:;0.00;max op:;0.00
+operation info:;total iterations:;100;successful:;0;failed:;100;error:;0143
+
+Algorithm:;0x0006;Key length:;128;Mode:;0x0041;Encrypt/decrypt?:;decrypt;Data length (bytes):;256
+operation stats (ms/op):;avg op:;0.00;min op:;0.00;max op:;0.00
+operation info:;total iterations:;100;successful:;0;failed:;100;error:;0143
+
+Algorithm:;0x0006;Key length:;128;Mode:;0x0041;Encrypt/decrypt?:;encrypt;Data length (bytes):;256
+operation stats (ms/op):;avg op:;0.00;min op:;0.00;max op:;0.00
+operation info:;total iterations:;100;successful:;0;failed:;100;error:;0143
+
+Algorithm:;0x0006;Key length:;128;Mode:;0x0043;Encrypt/decrypt?:;decrypt;Data length (bytes):;256
+operation stats (ms/op):;avg op:;0.00;min op:;0.00;max op:;0.00
+operation info:;total iterations:;100;successful:;0;failed:;100;error:;0143
+
+Algorithm:;0x0006;Key length:;128;Mode:;0x0043;Encrypt/decrypt?:;encrypt;Data length (bytes):;256
+operation stats (ms/op):;avg op:;0.00;min op:;0.00;max op:;0.00
+operation info:;total iterations:;100;successful:;0;failed:;100;error:;0143
+
+Algorithm:;0x0006;Key length:;256;Mode:;0x0040;Encrypt/decrypt?:;decrypt;Data length (bytes):;256
+operation stats (ms/op):;avg op:;0.00;min op:;0.00;max op:;0.00
+operation info:;total iterations:;100;successful:;0;failed:;100;error:;0143
+
+Algorithm:;0x0006;Key length:;256;Mode:;0x0040;Encrypt/decrypt?:;encrypt;Data length (bytes):;256
+operation stats (ms/op):;avg op:;0.00;min op:;0.00;max op:;0.00
+operation info:;total iterations:;100;successful:;0;failed:;100;error:;0143
+
+TPM2_GetRandom
+
+Data length (bytes):;32
+operation stats (ms/op):;avg op:;11.01;min op:;10.70;max op:;11.23
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+TPM2_Hash
+
+Hash algorithm:;0x0004;Data length (bytes):;256
+operation stats (ms/op):;avg op:;11.32;min op:;10.96;max op:;11.54
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+Hash algorithm:;0x000b;Data length (bytes):;256
+operation stats (ms/op):;avg op:;11.37;min op:;10.99;max op:;11.62
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+Hash algorithm:;0x000c;Data length (bytes):;256
+operation stats (ms/op):;avg op:;11.40;min op:;11.15;max op:;11.60
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+TPM2_RSA_Decrypt
+
+Key parameters:;RSA 1024;Scheme:;0x0010
+operation stats (ms/op):;avg op:;27.61;min op:;27.07;max op:;27.94
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+Key parameters:;RSA 1024;Scheme:;0x0015
+operation stats (ms/op):;avg op:;27.47;min op:;27.04;max op:;27.71
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+Key parameters:;RSA 1024;Scheme:;0x0017
+operation stats (ms/op):;avg op:;27.48;min op:;27.09;max op:;28.09
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+Key parameters:;RSA 2048;Scheme:;0x0010
+operation stats (ms/op):;avg op:;74.80;min op:;71.63;max op:;77.41
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+Key parameters:;RSA 2048;Scheme:;0x0015
+operation stats (ms/op):;avg op:;76.56;min op:;75.52;max op:;77.11
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+Key parameters:;RSA 2048;Scheme:;0x0017
+operation stats (ms/op):;avg op:;79.68;min op:;76.53;max op:;82.23
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+TPM2_RSA_Encrypt
+
+Key parameters:;RSA 1024;Scheme:;0x0010
+operation stats (ms/op):;avg op:;11.32;min op:;10.99;max op:;11.58
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+Key parameters:;RSA 1024;Scheme:;0x0015
+operation stats (ms/op):;avg op:;11.38;min op:;11.12;max op:;16.77
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+Key parameters:;RSA 1024;Scheme:;0x0017
+operation stats (ms/op):;avg op:;11.36;min op:;11.18;max op:;11.56
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+Key parameters:;RSA 2048;Scheme:;0x0010
+operation stats (ms/op):;avg op:;11.63;min op:;11.31;max op:;11.86
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+Key parameters:;RSA 2048;Scheme:;0x0015
+operation stats (ms/op):;avg op:;17.02;min op:;16.71;max op:;17.39
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+Key parameters:;RSA 2048;Scheme:;0x0017
+operation stats (ms/op):;avg op:;17.02;min op:;16.66;max op:;17.36
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+TPM2_Sign
+
+Key parameters:;ECC 0x0003;Scheme:;0x0018
+operation stats (ms/op):;avg op:;27.39;min op:;26.86;max op:;27.65
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+Key parameters:;ECC 0x0003;Scheme:;0x001b
+operation stats (ms/op):;avg op:;0.00;min op:;0.00;max op:;0.00
+operation info:;total iterations:;100;successful:;0;failed:;100;error:;02d2
+
+Key parameters:;ECC 0x0003;Scheme:;0x001c
+operation stats (ms/op):;avg op:;27.39;min op:;27.04;max op:;27.78
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+Key parameters:;ECC 0x0004;Scheme:;0x0018
+operation stats (ms/op):;avg op:;43.74;min op:;43.20;max op:;44.26
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+Key parameters:;ECC 0x0004;Scheme:;0x001b
+operation stats (ms/op):;avg op:;0.00;min op:;0.00;max op:;0.00
+operation info:;total iterations:;100;successful:;0;failed:;100;error:;02d2
+
+Key parameters:;ECC 0x0004;Scheme:;0x001c
+operation stats (ms/op):;avg op:;38.55;min op:;37.78;max op:;43.41
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+Key parameters:;ECC 0x0010;Scheme:;0x0018
+operation stats (ms/op):;avg op:;27.37;min op:;26.99;max op:;27.80
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+Key parameters:;ECC 0x0010;Scheme:;0x001b
+operation stats (ms/op):;avg op:;0.00;min op:;0.00;max op:;0.00
+operation info:;total iterations:;100;successful:;0;failed:;100;error:;02d2
+
+Key parameters:;ECC 0x0010;Scheme:;0x001c
+operation stats (ms/op):;avg op:;25.91;min op:;21.83;max op:;27.58
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+Key parameters:;RSA 1024;Scheme:;0x0014
+operation stats (ms/op):;avg op:;27.53;min op:;27.12;max op:;27.76
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+Key parameters:;RSA 1024;Scheme:;0x0016
+operation stats (ms/op):;avg op:;27.54;min op:;27.13;max op:;27.85
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+Key parameters:;RSA 2048;Scheme:;0x0014
+operation stats (ms/op):;avg op:;76.79;min op:;75.58;max op:;77.94
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+Key parameters:;RSA 2048;Scheme:;0x0016
+operation stats (ms/op):;avg op:;78.51;min op:;76.45;max op:;82.09
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+TPM2_VerifySignature
+
+Key parameters:;ECC 0x0003;Scheme:;0x0018
+operation stats (ms/op):;avg op:;0.00;min op:;0.00;max op:;0.00
+operation info:;total iterations:;100;successful:;0;failed:;100;error:;02db
+
+Key parameters:;ECC 0x0003;Scheme:;0x001c
+operation stats (ms/op):;avg op:;43.76;min op:;42.95;max op:;49.18
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+Key parameters:;ECC 0x0004;Scheme:;0x0018
+operation stats (ms/op):;avg op:;0.00;min op:;0.00;max op:;0.00
+operation info:;total iterations:;100;successful:;0;failed:;100;error:;02db
+
+Key parameters:;ECC 0x0004;Scheme:;0x001c
+operation stats (ms/op):;avg op:;72.94;min op:;70.61;max op:;76.33
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+Key parameters:;ECC 0x0010;Scheme:;0x0018
+operation stats (ms/op):;avg op:;0.00;min op:;0.00;max op:;0.00
+operation info:;total iterations:;100;successful:;0;failed:;100;error:;02db
+
+Key parameters:;ECC 0x0010;Scheme:;0x001c
+operation stats (ms/op):;avg op:;43.56;min op:;43.09;max op:;44.20
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+Key parameters:;RSA 1024;Scheme:;0x0014
+operation stats (ms/op):;avg op:;11.17;min op:;10.86;max op:;11.44
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+Key parameters:;RSA 1024;Scheme:;0x0016
+operation stats (ms/op):;avg op:;11.17;min op:;10.93;max op:;11.40
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+Key parameters:;RSA 2048;Scheme:;0x0014
+operation stats (ms/op):;avg op:;11.31;min op:;11.01;max op:;11.56
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+
+Key parameters:;RSA 2048;Scheme:;0x0016
+operation stats (ms/op):;avg op:;16.70;min op:;16.35;max op:;17.08
+operation info:;total iterations:;100;successful:;100;failed:;0;error:;None
+

@@ -1,4 +1,4 @@
-/*  
+/*
     Copyright (c) 2008-2016 Petr Svenda <petr@svenda.com>
 
      LICENSE TERMS
@@ -37,15 +37,17 @@ import java.util.Scanner;
 
 /**
  *
- * @author petr 
+ * @author petr
  */
 public class AlgTestProcess {
     /* Arguments for AlgTestProcess. */
     public static final String GENERATE_HTML = "HTML";
+    public static final String GENERATE_TPM_HTML = "TPM_HTML";
     public static final String COMPARE_CARDS = "COMPARE";
     public static final String GENERATE_JCCONSTANTS = "JCCONSTS";
-    
+
     public static final String GENERATE_JCINFO = "JCINFO";              //TABLE WITH PERF RESULTS
+    public static final String GENERATE_TPMINFO = "TPMINFO";              //TABLE WITH PERF RESULTS
     public static final String GENERATE_SORTABLE = "SORTABLE";          //SORTABLE TABLE
     public static final String GENERATE_GRAPHS = "GRAPHS";              //GENERATE SINGLE GRAPHS PAGE FOR JCINFO
     public static final String GENERATE_GRAPHS_ONEPAGE = "SCALABILITY"; //PAGE WITH VARIABLE PERFTEST GRAPHS
@@ -81,6 +83,10 @@ public class AlgTestProcess {
                         System.out.println("Generating HTML table.");
                         SupportTable.generateHTMLTable(args[0]);
                     }
+                    else if (args[1].equals(GENERATE_TPM_HTML)) {
+                        System.out.println("Generating HTML table for TPMs.");
+                        TPMSupportTable.generateHTMLTable(args[0]);
+                    }
                     else if (args[1].equals(COMPARE_CARDS)){
                         System.out.println("Comparing cards.");
                         SupportTable.compareSupportedAlgs(args[0]);}
@@ -112,7 +118,7 @@ public class AlgTestProcess {
                     }
                     else if (args[1].equals(GENERATE_GRAPHS_ONEPAGE)){
                         System.out.println("Generating graphs page from input file / folder.");
-                        File file = new File(args[0]);                        
+                        File file = new File(args[0]);
                         if (file.exists() && file.isDirectory())
                             if((args.length>2) && (args[2].toLowerCase().equals("toponly")))
                                 ScalabilityGraph.runScalability(args[0], true);
@@ -120,25 +126,35 @@ public class AlgTestProcess {
                                 ScalabilityGraph.runScalability(args[0], false);
                         else if (file.exists() && file.isFile())
                             if((args.length>2) && (args[2].toLowerCase().equals("toponly")))
-                                ScalabilityGraph.generateScalabilityFile(args[0], true); 
+                                ScalabilityGraph.generateScalabilityFile(args[0], true);
                             else
-                                ScalabilityGraph.generateScalabilityFile(args[0], false);                         
+                                ScalabilityGraph.generateScalabilityFile(args[0], false);
                         else
-                            System.out.println("ERR: Wrong path to the source file / folder.");                        
+                            System.out.println("ERR: Wrong path to the source file / folder.");
                     }
                     else if (args[1].equals(GENERATE_JCINFO)){
                         System.out.println("Generating JC performance testing to HTML from input file / folder.");
                         File file = new File(args[0]);
                         if (file.exists() && file.isDirectory())
-                             RunTime.runRunTime(args[0]); 
+                             RunTime.runRunTime(args[0]);
                         else if (file.exists() && file.isFile() && (args[0].contains("csv")))
                             RunTime.generateRunTimeFile(args[0]);
                         else
                             System.out.println("ERR: Wrong path to the source file / folder.");
                     }
+                    else if (args[1].equals(GENERATE_TPMINFO)) {
+                        System.out.println("Generating TPM performance testing to HTML from input file / folder.");
+                        File file = new File(args[0]);
+                        if (file.exists() && file.isDirectory())
+                            TPMRunTime.runRunTime(args[0]);
+                        else if (file.exists() && file.isFile() && (args[0].endsWith(".csv")))
+                            TPMRunTime.generateRunTimeFile(args[0]);
+                        else
+                            System.out.println("ERR: Wrong path to the source file / folder.");
+                    }
                     else {System.err.println("Incorrect arguments!");}
                 }
-                else{                
+                else{
                     System.out.println("Do you want to generate HTML table or compare supported algs in existing table?");
                     System.out.println("1 = Generate new HTML; 0 = Compare algs in existing HTML");
                     Scanner sc = new Scanner(System.in);
@@ -153,9 +169,9 @@ public class AlgTestProcess {
                     }
                 }
             }
-            
+
         //generateGPShellScripts();
-        } 
+        }
         catch (IOException ex) {
             System.out.println("IOException : " + ex);
         }
@@ -163,15 +179,15 @@ public class AlgTestProcess {
             System.out.println("Exception : " + ex);
         }
     }
-        
+
     private static void printHelp() {
-        System.out.println("Usage: java AlgTestProcess.jar base_path\n" 
+        System.out.println("Usage: java AlgTestProcess.jar base_path\n"
                 + "  base_path/results/directory should contain *.csv files with results \n"
                 + "  html table will be generated into base_path/AlgTest_html_table.html \n\n" 
                 + "  AlgTestProcess.jar base_path_folder [JCINFO, RADAR, SIMILARITY, GRAPHSPAGE, SORTABLE, (UNKNOWN unknown_csv_path)]"        
         );
     }
-        
-        
+
+
 }
 
