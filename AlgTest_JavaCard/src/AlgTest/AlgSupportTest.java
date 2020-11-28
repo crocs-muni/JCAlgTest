@@ -55,13 +55,17 @@ public class AlgSupportTest {
     private   RandomData       m_trng = null; 
     private   Key              m_key1 = null;
     
-  
-  
+    
     private byte[] m_ramArray = null;
     private byte[] m_ramArray2 = null;
 
+    private short[] memPersistent = null;
+    private short[] memDeselect = null;
+    private short[] memReset = null;
+
     private RSAPublicKey       m_rsaPublicKey = null;
     private RSAPrivateCrtKey   m_rsaPrivateKey = null;
+    
     
     short m_freeRAMReset = 0;
     short m_freeRAMDeselect = 0;
@@ -105,6 +109,10 @@ public class AlgSupportTest {
         m_ramArray2 = auxRAMArray2;
         m_freeRAMReset = installFreeRAMReset;
         m_freeRAMDeselect = installFreeRAMDeselect;
+        
+        memPersistent = JCSystem.makeTransientShortArray((short) 2, JCSystem.CLEAR_ON_RESET);
+        memDeselect = JCSystem.makeTransientShortArray((short) 2, JCSystem.CLEAR_ON_RESET);
+        memReset = JCSystem.makeTransientShortArray((short) 2, JCSystem.CLEAR_ON_RESET);
     }
 
     public byte process(APDU apdu) throws ISOException {
@@ -142,6 +150,14 @@ public class AlgSupportTest {
        Util.arrayFillNonAtomic(apdubuf, ISO7816.OFFSET_CDATA, (short) 240, SUPP_ALG_UNTOUCHED);
        offset++;
        apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = apdubuf[ISO7816.OFFSET_P1];
+
+       short persistentMemStart = JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_PERSISTENT);
+       short deselectMemStart = JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT);
+       short resetMemStart = JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_RESET);
+       
+       JCSystem.getAvailableMemory(memPersistent, (short) 0, JCSystem.MEMORY_TYPE_PERSISTENT); //jc304
+       JCSystem.getAvailableMemory(memDeselect, (short) 0, JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT); //jc304
+       JCSystem.getAvailableMemory(memReset, (short) 0, JCSystem.MEMORY_TYPE_TRANSIENT_RESET); //jc304
 
        switch (apdubuf[ISO7816.OFFSET_P1]) {
            case (byte) 0x11: {
@@ -220,24 +236,66 @@ public class AlgSupportTest {
              catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
              break;
            }
-/*           
-           case Consts.CLASS_BIOBUILDER: {
-               try { offset++; m_object = javacardx.biometry.BioBuilder.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;} 
-               catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET);}
-               break;
-           }
-
-           case Consts.CLASS_AEADCIPHER: {
-               try { offset++; m_object = javacardx.crypto.AEADCipher.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;} 
-               catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET);}
-               break;
-           }
-/**/
+           //case Consts.CLASS_BIOBUILDER: { //jc305
+           //  try { offset++; m_object = javacardx.biometry.BioBuilder.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}  //jc305
+           //  catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET);} //jc305
+           //  break; //jc305
+           //} //jc305
+           case Consts.CLASS_AEADCIPHER: { //jc305
+               try { offset++; m_object = javacardx.crypto.AEADCipher.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}  //jc305
+               catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET);} //jc305
+               break; //jc305
+           } //jc305
         }
+       
+       short persistentMemEnd = JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_PERSISTENT);
+       short deselectMemEnd = JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT);
+       short resetMemEnd = JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_RESET);
+
        // ENDING 0xFF
        offset++;
        apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) 0xFF;
        offset++;
+       
+       boolean bReadExtMemory = false; 
+       bReadExtMemory = true; //jc304
+       if (bReadExtMemory) { 
+           // If JCSystem.getAvailableMemory from jc304 is available, then use it for extended resolution
+           Util.setShort(apdubuf, (short) (ISO7816.OFFSET_CDATA + offset), memPersistent[0]); offset += 2; 
+           Util.setShort(apdubuf, (short) (ISO7816.OFFSET_CDATA + offset), memPersistent[1]); offset += 2; 
+           JCSystem.getAvailableMemory(memPersistent, (short) 0, JCSystem.MEMORY_TYPE_PERSISTENT); //jc304
+           Util.setShort(apdubuf, (short) (ISO7816.OFFSET_CDATA + offset), memPersistent[0]); offset += 2; 
+           Util.setShort(apdubuf, (short) (ISO7816.OFFSET_CDATA + offset), memPersistent[1]); offset += 2; 
+
+           Util.setShort(apdubuf, (short) (ISO7816.OFFSET_CDATA + offset), memDeselect[0]); offset += 2; 
+           Util.setShort(apdubuf, (short) (ISO7816.OFFSET_CDATA + offset), memDeselect[1]); offset += 2; 
+           JCSystem.getAvailableMemory(memDeselect, (short) 0, JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT); //jc304
+           Util.setShort(apdubuf, (short) (ISO7816.OFFSET_CDATA + offset), memDeselect[0]); offset += 2; 
+           Util.setShort(apdubuf, (short) (ISO7816.OFFSET_CDATA + offset), memDeselect[1]); offset += 2; 
+
+           Util.setShort(apdubuf, (short) (ISO7816.OFFSET_CDATA + offset), memReset[0]); offset += 2; 
+           Util.setShort(apdubuf, (short) (ISO7816.OFFSET_CDATA + offset), memReset[1]); offset += 2; 
+           JCSystem.getAvailableMemory(memReset, (short) 0, JCSystem.MEMORY_TYPE_TRANSIENT_RESET); //jc304
+           Util.setShort(apdubuf, (short) (ISO7816.OFFSET_CDATA + offset), memReset[0]); offset += 2; 
+           Util.setShort(apdubuf, (short) (ISO7816.OFFSET_CDATA + offset), memReset[1]); offset += 2; 
+       }
+       else {
+           // Setting single short as byte - write only lower two bytes, fill with zeroes
+           Util.arrayFillNonAtomic(apdubuf, offset, (short) (6 * 4), (byte) 0);
+           offset += 2; // Shift to lower two bytes of first entry
+           Util.setShort(apdubuf, (short) (ISO7816.OFFSET_CDATA + offset), persistentMemStart);
+           offset += 4;
+           Util.setShort(apdubuf, (short) (ISO7816.OFFSET_CDATA + offset), persistentMemEnd);
+           offset += 4;
+           Util.setShort(apdubuf, (short) (ISO7816.OFFSET_CDATA + offset), deselectMemStart);
+           offset += 4;
+           Util.setShort(apdubuf, (short) (ISO7816.OFFSET_CDATA + offset), deselectMemEnd);
+           offset += 4;
+           Util.setShort(apdubuf, (short) (ISO7816.OFFSET_CDATA + offset), resetMemStart);
+           offset += 4;
+           Util.setShort(apdubuf, (short) (ISO7816.OFFSET_CDATA + offset), resetMemEnd);
+           offset += 2; // last is not skipping whole byte
+       }
        
        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, offset);
     }

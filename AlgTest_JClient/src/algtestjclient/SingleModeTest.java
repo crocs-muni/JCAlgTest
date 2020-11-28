@@ -35,6 +35,7 @@ package algtestjclient;
 import algtest.Consts;
 import algtest.JCAlgTestApplet;
 import algtest.JCConsts;
+import cardTools.Util;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -777,50 +778,78 @@ public class SingleModeTest {
         }        
         
         if (swStatus == 0x9000) {
+            String supportedString = "unknown failure";
+            elTimeStr = "0";
             switch (response){
                 case SUPP_ALG_SUPPORTED:
                     // in case negative value is returned as timestamp
-                    if (elapsedCard < 0){
+                    if (elapsedCard < 0) {
                         elTimeStr = "Not executed!";
-                        message += name + ";" + "no;" + elTimeStr + "\r\n";
+                        supportedString = "no";
+                        //message += name + ";" + "no;" + elTimeStr + "\r\n";
                     }
-                    else{
+                    else {
+                        supportedString = "yes";
                         elTimeStr = String.format("%1f", (double) elapsedCard / (float) CLOCKS_PER_SEC);
-                        message += name + ";" + "yes;" + elTimeStr + "\r\n";
+                        //message += name + ";" + "yes;" + elTimeStr + "\r\n";
                     }
                     break;
 
                 case NO_SUCH_ALGORITHM:
-                    message += name + ";" + "no;" + "\r\n";
+                    supportedString = "no";
+                    //message += name + ";" + "no;" + "\r\n";
                     break;
 
                 case ILLEGAL_USE:
-                    message += name + ";" + "error(ILLEGAL_USE);" + "\r\n";
+                    supportedString = "error(ILLEGAL_USE)";
+                    //message += name + ";" + "error(ILLEGAL_USE);" + "\r\n";
                     break;
 
                 case ILLEGAL_VALUE:
-                    message += name + ";" + "error(ILLEGAL_VALUE);" + "\r\n";
+                    supportedString = "error(ILLEGAL_VALUE)";
+                    //message += name + ";" + "error(ILLEGAL_VALUE);" + "\r\n";
                     break;
 
                 case INVALID_INIT:
-                    message += name + ";" + "error(INVALID_INIT);" + "\r\n";
+                    supportedString = "error(INVALID_INIT)";
+                    //message += name + ";" + "error(INVALID_INIT);" + "\r\n";
                 break;
 
                 case UNINITIALIZED_KEY:
-                    message += name + ";" + "error(UNINITIALIZED_KEY);" + "\r\n";
+                    supportedString = "error(UNINITIALIZED_KEY)";
+                    //message += name + ";" + "error(UNINITIALIZED_KEY);" + "\r\n";
                 break;
+                
                 case UNKNOWN_ERROR: 
-                    message += name + ";" + "error(UNKNOWN_ERROR);" + "\r\n";
+                    supportedString = "error(UNKNOWN_ERROR)";
+                    //message += name + ";" + "error(UNKNOWN_ERROR);" + "\r\n";
                     break;
+                    
                 case 0x6f:
-                    message += name + ";" + "maybe;" + "\r\n";
+                    supportedString = "maybe";
+                    //message += name + ";" + "maybe;" + "\r\n";
                 break;
 
                 default:
                     // OTHER VALUE, IGNORE 
-                m_SystemOutLogger.println("Unknown value detected in AlgTest applet (0x" + Integer.toHexString(response & 0xff) + "). Possibly, old version of AlTestJClient is used (try update)");
-                break;        
+                    m_SystemOutLogger.println("Unknown value detected in AlgTest applet (0x" + Integer.toHexString(response & 0xff) + "). Possibly, old version of AlTestJClient is used (try update)");
+                    break;   
             }
+            
+            int persistentMem = 0;
+            int deselectMem = 0;
+            int resetMem = 0;
+            if (responseBuffer.length > 3) { 
+                // We have memory report also available
+                int offset = 3;
+                persistentMem = Util.getInt(responseBuffer, offset); offset += 4;
+                persistentMem -= Util.getInt(responseBuffer, offset); offset += 4;
+                deselectMem = Util.getInt(responseBuffer, offset); offset += 4;
+                deselectMem -= Util.getInt(responseBuffer, offset); offset += 4;
+                resetMem = Util.getInt(responseBuffer, offset); offset += 4;
+                resetMem -= Util.getInt(responseBuffer, offset); offset += 4;
+            }
+            message += String.format("%s;%s;%s;%d;%d;%d\r\n", name, supportedString, elTimeStr, persistentMem, deselectMem, resetMem);
         }
         else {
             message += name + ";" + ErrorToString(swStatus) + ";" + "\r\n";
