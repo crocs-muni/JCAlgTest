@@ -57,10 +57,16 @@ public class AlgTestJClient {
     public static final String ALGTEST_USE_CUSTOM_AID = "AID=";                 // use custom AID for applet (if default one is changed for some reason)
 
     /**
+     * Version 1.7.10 (29.11.2020)
+     * + parsing memory overhead for object allocation
+     * + added request for sending data to public database
+     */
+    public final static String ALGTEST_JCLIENT_VERSION_1_7_10 = "1.7.10";
+    /**
      * Version 1.7.9 (22.07.2019)
      * - no changes, updating version with card applet
      */
-    public final static String ALGTEST_JCLIENT_VERSION_1_7_9 = "1.7.9";
+    //public final static String ALGTEST_JCLIENT_VERSION_1_7_9 = "1.7.9";
     /**
      * Version 1.7.8 (18.05.2019)
      * - no changes, updating version with card applet
@@ -155,7 +161,7 @@ public class AlgTestJClient {
     /**
      * Current version
      */
-    public final static String ALGTEST_JCLIENT_VERSION = ALGTEST_JCLIENT_VERSION_1_7_9;
+    public final static String ALGTEST_JCLIENT_VERSION = ALGTEST_JCLIENT_VERSION_1_7_10;
     
     public final static int STAT_OK = 0;    
     
@@ -174,7 +180,7 @@ public class AlgTestJClient {
         
         m_SystemOutLogger.println("\n-----------------------------------------------------------------------   ");
         m_SystemOutLogger.println("JCAlgTest " + ALGTEST_JCLIENT_VERSION + " - comprehensive tool for JavaCard smart card testing.");
-        m_SystemOutLogger.println("Visit jcalgtest.org for results from 60+ cards. CRoCS lab 2007-2017.");
+        m_SystemOutLogger.println("Visit jcalgtest.org for results from 100+ cards. CRoCS lab 2007-2021.");
         m_SystemOutLogger.println("Please check if you use the latest version at\n  https://github.com/crocs-muni/JCAlgTest/releases/latest.");
         
         m_SystemOutLogger.println("-----------------------------------------------------------------------\n");
@@ -229,7 +235,7 @@ public class AlgTestJClient {
             Scanner sc = new Scanner(System.in);
             int answ = sc.nextInt();
             m_SystemOutLogger.println(String.format("%d", answ));
-            switch (answ){
+            switch (answ) {
                 // In this case, SinglePerApdu version of AlgTest is used.
                 case 1:
                     selectedTerminal = selectTargetReader();
@@ -274,6 +280,17 @@ public class AlgTestJClient {
 /* fix arguments processing       
         }
 */
+        printSendRequest();
+    }
+    
+    static void printSendRequest() {
+        System.out.println("\n-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
+        System.out.println("KIND REQUEST: Please consider sending us your results to extend info openly");
+        System.out.println("available to all JavaCard enthusiasts at http://jcalgtest.org.");
+        System.out.println("The results are important even if a card of same type is already in database.");
+        System.out.println("Send *.log and *.csv files from the current directory to <petr@svenda.com>.");
+        System.out.println("Thank you very much!");
+        System.out.println("-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
     }
     
     static void performKeyHarvest() throws CardException {

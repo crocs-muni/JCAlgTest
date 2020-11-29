@@ -69,6 +69,7 @@ public class AlgSupportTest {
     
     short m_freeRAMReset = 0;
     short m_freeRAMDeselect = 0;
+    short[] m_freeEEPROM = null;
 
     
     // for class 'javacard.security.KeyAgreement'
@@ -82,7 +83,7 @@ public class AlgSupportTest {
     final static byte SUPP_ALG_SUPPORTED = (byte) 0x00;
     final static byte SUPP_ALG_EXCEPTION_CODE_OFFSET = (byte) 0;
     
-    public final static byte RETURN_INSTALL_TIME_RAM_SIZE = (byte) 1;
+    public final static byte RETURN_INSTALL_TIME_MEMORY_SIZE = (byte) 1;
     
     
     
@@ -104,11 +105,12 @@ public class AlgSupportTest {
     public static final byte CLASS_KEYPAIR         = 0x19;
     public static final byte CLASS_KEYBUILDER      = 0x20;
 
-    AlgSupportTest(byte[] auxRAMArray, byte[] auxRAMArray2, short installFreeRAMReset, short installFreeRAMDeselect) { 
+    AlgSupportTest(byte[] auxRAMArray, byte[] auxRAMArray2, short installFreeRAMReset, short installFreeRAMDeselect, short[] installFreeEEPROM) { 
         m_ramArray = auxRAMArray;
         m_ramArray2 = auxRAMArray2;
         m_freeRAMReset = installFreeRAMReset;
         m_freeRAMDeselect = installFreeRAMDeselect;
+        m_freeEEPROM = installFreeEEPROM;
         
         memPersistent = JCSystem.makeTransientShortArray((short) 2, JCSystem.CLEAR_ON_RESET);
         memDeselect = JCSystem.makeTransientShortArray((short) 2, JCSystem.CLEAR_ON_RESET);
@@ -281,7 +283,7 @@ public class AlgSupportTest {
        }
        else {
            // Setting single short as byte - write only lower two bytes, fill with zeroes
-           Util.arrayFillNonAtomic(apdubuf, offset, (short) (6 * 4), (byte) 0);
+           Util.arrayFillNonAtomic(apdubuf, offset, (short) (7 * 4), (byte) 0);
            offset += 2; // Shift to lower two bytes of first entry
            Util.setShort(apdubuf, (short) (ISO7816.OFFSET_CDATA + offset), persistentMemStart);
            offset += 4;
@@ -313,7 +315,7 @@ public class AlgSupportTest {
         Util.setShort(apdubuf, offset, JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_PERSISTENT));
         offset = (short)(offset + 2);
         
-        if (apdubuf[ISO7816.OFFSET_P1] == RETURN_INSTALL_TIME_RAM_SIZE) {
+        if (apdubuf[ISO7816.OFFSET_P1] == RETURN_INSTALL_TIME_MEMORY_SIZE) {
             Util.setShort(apdubuf, offset, m_freeRAMReset);
             offset = (short) (offset + 2);
             Util.setShort(apdubuf, offset, m_freeRAMDeselect);
@@ -339,6 +341,22 @@ public class AlgSupportTest {
         offset++;
         apdubuf[offset] = apdu.getNAD();
         offset++;
+        // Extended memory information
+        if (apdubuf[ISO7816.OFFSET_P1] == RETURN_INSTALL_TIME_MEMORY_SIZE) { //jc304
+            Util.setShort(apdubuf, offset, m_freeEEPROM[0]); offset += 2; //jc304
+            Util.setShort(apdubuf, offset, m_freeEEPROM[1]); offset += 2; //jc304
+        } //jc304
+        else { //jc304
+            JCSystem.getAvailableMemory(memPersistent, (short) 0, JCSystem.MEMORY_TYPE_PERSISTENT); //jc304
+            Util.setShort(apdubuf, offset, memPersistent[0]); offset += 2; //jc304
+            Util.setShort(apdubuf, offset, memPersistent[1]); offset += 2; //jc304
+        } //jc304
+        JCSystem.getAvailableMemory(memDeselect, (short) 0, JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT); //jc304
+        Util.setShort(apdubuf, offset, memDeselect[0]); offset += 2; //jc304
+        Util.setShort(apdubuf, offset, memDeselect[1]); offset += 2; //jc304
+        JCSystem.getAvailableMemory(memReset, (short) 0, JCSystem.MEMORY_TYPE_TRANSIENT_RESET); //jc304
+        Util.setShort(apdubuf, offset, memReset[0]); offset += 2; //jc304
+        Util.setShort(apdubuf, offset, memReset[1]); offset += 2; //jc304      
 
         apdu.setOutgoingAndSend((byte) 0, offset);
       }

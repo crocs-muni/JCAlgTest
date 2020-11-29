@@ -48,6 +48,7 @@ import algtest.JCConsts;
 import algtest.TestSettings;
 import cardTools.SimulatedCardChannelLocal;
 import cardTools.SimulatedCardTerminal;
+import cardTools.Util;
 import com.licel.jcardsim.io.CAD;
 import com.licel.jcardsim.io.JavaxSmartCardInterface;
 
@@ -663,7 +664,7 @@ public class CardMngr {
         apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;
         apdu[OFFSET_INS] = Consts.INS_CARD_JCSYSTEM_INFO;
         //apdu[OFFSET_P1] = 0x00;
-        apdu[OFFSET_P1] = AlgSupportTest.RETURN_INSTALL_TIME_RAM_SIZE;
+        apdu[OFFSET_P1] = AlgSupportTest.RETURN_INSTALL_TIME_MEMORY_SIZE;
         apdu[OFFSET_P2] = 0x00;
         apdu[OFFSET_LC] = 0x01;
         apdu[OFFSET_DATA] = 0x01;
@@ -695,11 +696,18 @@ public class CardMngr {
                 int apduOutBlockSize = -1;
                 int apduProtocol = -1;
                 int apduNAD = -1;
-                if (temp.length > 11) {
+                if (temp.length > 11) { // info about blocks is available
                     apduInBlockSize = (temp[11] << 8) + (temp[12] & 0xff);
                     apduOutBlockSize = (temp[13] << 8) + (temp[14] & 0xff);
                     apduProtocol = temp[15];
                     apduNAD = temp[16];
+                }
+                if (temp.length > 17) { // more detailed info about memory is available
+                    int offset = 17;
+                    eepromSize = Util.getInt(temp, offset); offset += 4;
+                    // RAM values are unused now, as we already have them and are measured before all allocations
+                    int unused_ramDeselectSize2 = Util.getInt(temp, offset); offset += 4;
+                    int unused_ramResetSize2 = Util.getInt(temp, offset); offset += 4;
                 }
 
 

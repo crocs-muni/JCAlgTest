@@ -602,6 +602,11 @@ public class SingleModeTest {
         }            
         FileOutputStream file = cardManager.establishConnection(cardName, cardName + "_ALGSUPPORT_", selectedReader);
     
+        // Insert header with explanation of test results
+        String message = "\nalgorithm_name; is_supported; time_elapsed; persistent_mem_allocated; ram_deselect_allocated; ram_reset_allocated;\n";
+        m_SystemOutLogger.println(message);
+        file.write(message.getBytes()); 
+        
         // Checking for arguments 
         if (args.length > 1){       // in case there are arguments from command line present
             if (Arrays.asList(args).contains(TEST_ALL_ALGORITHMS)){testAllAtOnce(file);}
@@ -630,7 +635,7 @@ public class SingleModeTest {
             long elapsedTimeWholeTest = -System.currentTimeMillis();
             testAllAtOnce(file);
             elapsedTimeWholeTest += System.currentTimeMillis();
-            String message = "\n\nTotal test time:; " + elapsedTimeWholeTest / 1000 + " seconds."; 
+            message = "\n\nTotal test time:; " + elapsedTimeWholeTest / 1000 + " seconds."; 
             m_SystemOutLogger.println(message);
             file.write(message.getBytes());
 
@@ -849,7 +854,7 @@ public class SingleModeTest {
                 resetMem = Util.getInt(responseBuffer, offset); offset += 4;
                 resetMem -= Util.getInt(responseBuffer, offset); offset += 4;
             }
-            message += String.format("%s;%s;%s;%d;%d;%d\r\n", name, supportedString, elTimeStr, persistentMem, deselectMem, resetMem);
+            message += String.format("%s;%s;\t\t%s;%d;%d;%d\r\n", name, supportedString, elTimeStr, persistentMem, deselectMem, resetMem);
         }
         else {
             message += name + ";" + ErrorToString(swStatus) + ";" + "\r\n";
