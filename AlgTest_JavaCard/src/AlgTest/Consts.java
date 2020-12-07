@@ -87,6 +87,7 @@ public class Consts {
     public static final byte CLASS_UTIL                        = (byte) 0x21;
     public static final byte CLASS_BIOBUILDER                  = (byte) 0x22;
     public static final byte CLASS_AEADCIPHER                  = (byte) 0x23;
+    public static final byte CLASS_OWNERPINBUILDER             = (byte) 0x24;
     
     
     public static final byte UNUSED    = (byte) -1;     

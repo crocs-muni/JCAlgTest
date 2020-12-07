@@ -115,6 +115,12 @@ public class JCConsts {
     public static final byte Cipher_ALG_AES_ECB_ISO9797_M1                          = 25;
     public static final byte Cipher_ALG_AES_ECB_ISO9797_M2                          = 26;
     public static final byte Cipher_ALG_AES_ECB_PKCS5                               = 27;
+    //3.0.5
+    public static final byte Cipher_ALG_AES_CTR                                     = -16;
+
+    //3.0.4
+    // BUGBUG unused now, to be used with getInstance(byte cipherAlgorithm, byte paddingAlgorithm,
+    // CIPHER_*,  PAD_*
     public static final byte Cipher_CIPHER_AES_CBC                                  = 1;
     public static final byte Cipher_CIPHER_AES_ECB                                  = 2;
     public static final byte Cipher_CIPHER_DES_CBC                                  = 3;
@@ -135,7 +141,18 @@ public class JCConsts {
     public static final byte Cipher_PAD_ISO9796                                     = 10;
     public static final byte Cipher_PAD_ISO9796_MR                                  = 11;
     public static final byte Cipher_PAD_RFC2409                                     = 12;
+    //3.0.5
+    public static final byte Cipher_PAD_PKCS1_OAEP_SHA224                           = 13;  
+    public static final byte Cipher_PAD_PKCS1_OAEP_SHA256                           = 14;  
+    public static final byte Cipher_PAD_PKCS1_OAEP_SHA384                           = 15;  
+    public static final byte Cipher_PAD_PKCS1_OAEP_SHA512                           = 16;  
+    public static final byte Cipher_PAD_PKCS1_OAEP_SHA3_224                         = 17;  
+    public static final byte Cipher_PAD_PKCS1_OAEP_SHA3_256                         = 18;  
+    public static final byte Cipher_PAD_PKCS1_OAEP_SHA3_384                         = 19;  
+    public static final byte Cipher_PAD_PKCS1_OAEP_SHA3_512                         = 20;  
+    // end BUGBUG: unused now
 
+    
     public static final byte Cipher_MODE_DECRYPT                                    = 1;
     public static final byte Cipher_MODE_ENCRYPT                                    = 2;
 
@@ -159,7 +176,11 @@ public class JCConsts {
     public static final byte KeyAgreement_ALG_EC_PACE_GM                            = 5;
     public static final byte KeyAgreement_ALG_EC_SVDP_DH_PLAIN_XY                   = 6;
     public static final byte KeyAgreement_ALG_DH_PLAIN                              = 7;
+    //3.1
+    public static final byte KeyAgreement_ALG_XDH                                   = 8;   
+    public static final byte KeyAgreement_ALG_SM2                                   = 9;  
 
+    
     // javacard.security.KeyAgreement Methods:
     public static final short KeyAgreement_getInstance                              = 1;
     public static final short KeyAgreement_init                                     = 2;
@@ -201,7 +222,16 @@ public class JCConsts {
     public static final byte KeyBuilder_TYPE_EC_F2M_PRIVATE_TRANSIENT_DESELECT      = 29;
     public static final byte KeyBuilder_TYPE_EC_FP_PRIVATE_TRANSIENT_RESET          = 30;
     public static final byte KeyBuilder_TYPE_EC_FP_PRIVATE_TRANSIENT_DESELECT       = 31;
-    // JC3.0.4
+    public static final byte KeyBuilder_TYPE_DH_PUBLIC                              = 32;  
+    public static final byte KeyBuilder_TYPE_DH_PUBLIC_TRANSIENT_DESELECT           = 33;  
+    public static final byte KeyBuilder_TYPE_DH_PUBLIC_TRANSIENT_RESET              = 34;  
+    public static final byte KeyBuilder_TYPE_DH_PRIVATE                             = 35;  
+    public static final byte KeyBuilder_TYPE_DH_PRIVATE_TRANSIENT_DESELECT          = 36;  
+    public static final byte KeyBuilder_TYPE_DH_PRIVATE_TRANSIENT_RESET             = 37;  
+    
+    // JC3.0.4 BUGBUG unused now 
+    // different constructor buildKey(byte algorithmicKeyType,byte keyMemoryType,short keyLength,boolean keyEncryption) 
+    // ALG_TYPE_*, JCSystem.MEMORY_TYPE_*, LENGTH_* must be used 
     public static final byte KeyBuilder_ALG_TYPE_DES                                = 1;
     public static final byte KeyBuilder_ALG_TYPE_AES                                = 2;
     public static final byte KeyBuilder_ALG_TYPE_DSA_PUBLIC                         = 3;
@@ -215,7 +245,18 @@ public class JCConsts {
     public static final byte KeyBuilder_ALG_TYPE_RSA_PUBLIC                         = 11;
     public static final byte KeyBuilder_ALG_TYPE_RSA_PRIVATE                        = 12;
     public static final byte KeyBuilder_ALG_TYPE_RSA_CRT_PRIVATE                    = 13;
-
+    public static final byte KeyBuilder_ALG_TYPE_DH_PUBLIC                          = 14;
+    public static final byte KeyBuilder_ALG_TYPE_DH_PRIVATE                         = 15;
+    //3.0.5 
+    public static final byte KeyBuilder_ALG_TYPE_EC_F2M_PARAMETERS                  = 16;
+    public static final byte KeyBuilder_ALG_TYPE_EC_FP_PARAMETERS                   = 17;
+    public static final byte KeyBuilder_ALG_TYPE_DSA_PARAMETERS                     = 18;
+    public static final byte KeyBuilder_ALG_TYPE_DH_PARAMETERS                      = 19;
+    //3.1
+    public static final byte KeyBuilder_ALG_TYPE_GENERIC_SECRET                     = 20;  
+    public static final byte KeyBuilder_ALG_TYPE_SM4                                = 21;  
+    // end unused
+    
     public static final short KeyBuilder_LENGTH_DES                                 = 64;
     public static final short KeyBuilder_LENGTH_DES3_2KEY                           = 128;
     public static final short KeyBuilder_LENGTH_DES3_3KEY                           = 192;
@@ -256,7 +297,15 @@ public class JCConsts {
     public static final short KeyBuilder_LENGTH_HMAC_SHA_256_BLOCK_64               = 64;
     public static final short KeyBuilder_LENGTH_HMAC_SHA_384_BLOCK_128              = 128;
     public static final short KeyBuilder_LENGTH_HMAC_SHA_512_BLOCK_128              = 128;
-
+    //3.0.5 
+    public static final short KeyBuilder_LENGTH_DH_1024                             = 1024;
+    public static final short KeyBuilder_LENGTH_DH_2048                             = 2048;
+    //3.1
+    public static final short KeyBuilder_LENGTH_AES_512                             = 512;
+    // BUGBUG: unused now
+    public static final short KeyBuilder_LENGTH_SM4                                 = 128;  
+    //end unused
+    
     // javacard.security.KeyBuilder Methods:
     public static final short KeyBuilder_buildKey                                   = 1;
     public static final short KeyBuilder_buildKey2                                  = 2;
@@ -277,7 +326,6 @@ public class JCConsts {
 
     // Class javacard.security.MessageDigest
     // javacard.security.MessageDigest Fields:
-    public static final byte MessageDigest_ALG_NULL                                 = 0;
     public static final byte MessageDigest_ALG_SHA                                  = 1;
     public static final byte MessageDigest_ALG_MD5                                  = 2;
     public static final byte MessageDigest_ALG_RIPEMD160                            = 3;
@@ -294,6 +342,8 @@ public class JCConsts {
     public static final byte MessageDigest_LENGTH_SHA_256                           = 32;
     public static final byte MessageDigest_LENGTH_SHA_384                           = 48;
     public static final byte MessageDigest_LENGTH_SHA_512                           = 64;
+    //3.0.4
+    public static final byte MessageDigest_ALG_NULL                                 = 0;
     // JC3.0.5
     public static final byte MessageDigest_ALG_SHA3_224                             = 8;
     public static final byte MessageDigest_ALG_SHA3_256                             = 9;
@@ -364,8 +414,11 @@ public class JCConsts {
 
     // Class javacardx.crypto.AEADCipher
     // javacardx.crypto.AEADCipher Fields:
+    public static final byte AEADCipher_ALG_AES_CCM                                 = (byte) -12;
+    public static final byte AEADCipher_ALG_AES_GCM                                 = (byte) -13;
     public static final byte AEADCipher_CIPHER_AES_CCM                              = (byte) -14;
     public static final byte AEADCipher_CIPHER_AES_GCM                              = (byte) -15;
+    
 
     // Class javacardx.crypto.KeyEncryption
     // javacardx.crypto.KeyEncryption Fields:
@@ -546,6 +599,13 @@ public class JCConsts {
     public static final short SWAlgs_xor                                            = 1;    
     public static final short SWAlgs_AES                                            = 2;    
     
+    // javacard.framework.OwnerPINBuilder
+    public static final byte OwnerPINBuilder_OWNER_PIN                              = 1;
+    public static final byte OwnerPINBuilder_OWNER_PIN_X                            = 2;
+    public static final byte OwnerPINBuilder_OWNER_PIN_X_WITH_PREDECREMENT          = 3;    
+    // javacard.framework.OwnerPINBuilder Methods:
+    public static final short OwnerPINBuilder_buildOwnerPIN                         = 1;
+
     
     // javacard.framework.SystemException
     public final static short SW_SystemException_prefix                 = (short) 0xf200;
