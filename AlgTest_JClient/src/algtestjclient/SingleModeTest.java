@@ -779,96 +779,6 @@ public class SingleModeTest {
         m_SystemOutLogger.println(message);
         file.write(message.getBytes());
     }
-
-    /**
-     * Convert error from card to text string
-     * @param swStatus
-     * @return 
-     */
-    public static String ErrorToString(int swStatus) {
-        // lower byte of exception is value as defined in JCSDK/api_classic/constant-values.htm
-        //https://docs.oracle.com/javacard/3.0.5/api/constant-values.html
-        
-        short sw1 = (short) (swStatus & 0xff00);
-        short sw2 = (short) (swStatus & 0x00ff);
-        switch (sw1) {
-            case JCConsts.SW_Exception_prefix: 
-                switch (sw2) { 
-                    case JCConsts.SW_Exception:
-                        return "Exception";
-                    case JCConsts.SW_ArrayIndexOutOfBoundsException:
-                        return "ArrayIndexOutOfBoundsException";
-                    case JCConsts.SW_ArithmeticException:
-                        return "ArithmeticException"; 
-                    case JCConsts.SW_ArrayStoreException:
-                        return "ArrayStoreException";
-                    case JCConsts.SW_NullPointerException:
-                        return "NullPointerException";
-                    case JCConsts.SW_NegativeArraySizeException:
-                        return "NegativeArraySizeException";
-                }
-            case JCConsts.SW_CryptoException_prefix:
-                switch (sw2) {
-                    case JCConsts.CryptoException_ILLEGAL_VALUE:
-                        return "CryptoException_ILLEGAL_VALUE";
-                    case JCConsts.CryptoException_UNINITIALIZED_KEY:
-                        return "CryptoException_UNINITIALIZED_KEY";
-                    case JCConsts.CryptoException_NO_SUCH_ALGORITHM:
-                        return "CryptoException_NO_SUCH_ALGORITHM";
-                    case JCConsts.CryptoException_INVALID_INIT:
-                        return "CryptoException_INVALID_INIT";
-                    case JCConsts.CryptoException_ILLEGAL_USE:
-                        return "CryptoException_ILLEGAL_USE";
-                    default: return "CryptoException_" + Integer.toHexString(sw2);                
-                }
-            case JCConsts.SW_SystemException_prefix:
-                switch (sw2) {
-                    case JCConsts.SystemException_ILLEGAL_VALUE:
-                        return "SystemException_ILLEGAL_VALUE";
-                    case JCConsts.SystemException_NO_TRANSIENT_SPACE:
-                        return "SystemException_NO_TRANSIENT_SPACE";
-                    case JCConsts.SystemException_ILLEGAL_TRANSIENT:
-                        return "SystemException_ILLEGAL_TRANSIENT";
-                    case JCConsts.SystemException_ILLEGAL_AID:
-                        return "SystemException_ILLEGAL_AID";
-                    case JCConsts.SystemException_NO_RESOURCE:
-                        return "SystemException_NO_RESOURCE";
-                    case JCConsts.SystemException_ILLEGAL_USE:
-                        return "SystemException_ILLEGAL_USE";
-                    default:
-                        return "SystemException_" + Integer.toHexString(sw2);
-                }
-            case JCConsts.SW_PINException_prefix:
-                switch (sw2) {
-                    case JCConsts.PINException_ILLEGAL_VALUE:
-                        return "PINException_ILLEGAL_VALUE";
-                    case JCConsts.PINException_ILLEGAL_STATE:
-                        return "PINException_ILLEGAL_STATE";
-                    default:
-                        return "PINException_" + Integer.toHexString(sw2);
-                }
-            case JCConsts.SW_TransactionException_prefix:
-                switch (sw2) {
-                    case JCConsts.TransactionException_IN_PROGRESS:
-                        return "TransactionException_IN_PROGRESS";
-                    case JCConsts.TransactionException_NOT_IN_PROGRESS:
-                        return "TransactionException_NOT_IN_PROGRESS";
-                    case JCConsts.TransactionException_BUFFER_FULL:
-                        return "TransactionException_BUFFER_FULL";
-                    case JCConsts.TransactionException_INTERNAL_FAILURE:
-                        return "TransactionException_INTERNAL_FAILURE";
-                    case JCConsts.TransactionException_ILLEGAL_USE:
-                        return "TransactionException_ILLEGAL_USE";
-                    default:
-                        return "TransactionException_" + Integer.toHexString(sw2);
-                }
-            case JCConsts.SW_CardRuntimeException_prefix:
-                return "CardRuntimeException_" + Integer.toHexString(sw2);
-                
-            default:
-                return Integer.toHexString(swStatus);
-        }
-    }
     
     /**
      * Checks result of algorithm testing on smart card.
@@ -968,7 +878,7 @@ public class SingleModeTest {
             message += String.format("%s;%s;\t\t%s;%d;%d;%d\r\n", name, supportedString, elTimeStr, persistentMem, deselectMem, resetMem);
         }
         else {
-            message += name + ";" + ErrorToString(swStatus) + ";" + "\r\n";
+            message += name + ";" + Utils.ErrorToString(swStatus) + ";" + "\r\n";
         }
         m_SystemOutLogger.println(message);
         file.write(message.getBytes());                
