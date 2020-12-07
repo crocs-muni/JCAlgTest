@@ -607,6 +607,14 @@ public class JCConsts {
     public static final short OwnerPINBuilder_buildOwnerPIN                         = 1;
 
     
+    // javacard.security.CryptoException
+    public static final short SW_CryptoException_prefix         = (short) 0xf100;
+    public static final short CryptoException_ILLEGAL_VALUE	= 1;
+    public static final short CryptoException_UNINITIALIZED_KEY	= 2;       
+    public static final short CryptoException_NO_SUCH_ALGORITHM = 3;
+    public static final short CryptoException_INVALID_INIT      = 4;
+    public static final short CryptoException_ILLEGAL_USE       = 5;
+    
     // javacard.framework.SystemException
     public final static short SW_SystemException_prefix                 = (short) 0xf200;
     public static final short SystemException_ILLEGAL_VALUE             = 1;
@@ -615,14 +623,6 @@ public class JCConsts {
     public static final short SystemException_ILLEGAL_AID               = 4;
     public static final short SystemException_NO_RESOURCE               = 5;
     public static final short SystemException_ILLEGAL_USE               = 6;
-    
-    // javacard.security.CryptoException
-    public static final short SW_CryptoException_prefix         = (short) 0xf100;
-    public static final short CryptoException_ILLEGAL_VALUE	= 1;
-    public static final short CryptoException_UNINITIALIZED_KEY	= 2;       
-    public static final short CryptoException_NO_SUCH_ALGORITHM = 3;
-    public static final short CryptoException_INVALID_INIT      = 4;
-    public static final short CryptoException_ILLEGAL_USE       = 5;
     
     // javacard.framework.PINException
     public static final short SW_PINException_prefix                   = (short) 0xf300;
