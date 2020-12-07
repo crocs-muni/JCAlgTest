@@ -20,8 +20,6 @@ public class CardCommunicationException extends Exception
     }
     public String toString()
     {
-        return Utils.ErrorToString(reason);
-/*
         switch(reason)
             {
                 case CardMngr.CANT_BE_MEASURED: 
@@ -43,8 +41,7 @@ public class CardCommunicationException extends Exception
                 case AlgPerformanceTest.SW_ALG_INCORECT_REPETITIONS: 
                     return "SW_ALG_INCORECT_REPETITIONS";
                 default:
-                    return "UNKONWN_ERROR-card_has_return_value_" + Integer.toHexString(reason);                    
+                    return Utils.ErrorToString(reason);
             }
-*/
     }
 }
