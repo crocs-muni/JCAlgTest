@@ -179,6 +179,8 @@ public class PerformanceTesting {
 
         String testInfo = getCurrentTestInfoString(true);
         
+        m_elapsedTimeWholeTest = -System.currentTimeMillis();
+        
         // Connect to card
         this.m_perfResultsFile = m_cardManager.establishConnection(m_cardName, testInfo, selectedTerminal);
         m_cardATR = m_cardManager.getATR();
