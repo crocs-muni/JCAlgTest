@@ -1039,9 +1039,12 @@ public class CardMngr {
     }
 
     public boolean resetApplet(byte cla, byte ins) {
+        return resetApplet(cla, ins, (byte) 0); 
+    }
+    public boolean resetApplet(byte cla, byte ins, byte p1) {
         try {
             m_SystemOutLogger.println("\nFree unused card objects...\n");
-            byte apdu[] = {cla,ins,0,0};
+            byte apdu[] = {cla,ins,p1,0};
             ResponseAPDU resp = sendAPDU(apdu);
             if (resp.getSW() != 0x9000) {
                 return false;

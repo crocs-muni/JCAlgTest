@@ -312,6 +312,10 @@ public class JCAlgTestApplet extends javacard.framework.Applet
                 }
                 if (apduBuffer[ISO7816.OFFSET_INS] == Consts.INS_CARD_RESET) {
                     JCSystem.requestObjectDeletion();
+                    if (apduBuffer[ISO7816.OFFSET_P1] == Consts.P1_CARD_RESET_FREE_CACHE) {
+                        // If required, free also RSA objects cache to free some resources
+                        m_perfTest.eraseCachedRSAObjectsExceptSpecifiedTypeLength((byte) -1, (short) -1);                        
+                    }
                     bProcessed = (byte) 1;
                 }
             }

@@ -99,6 +99,7 @@ public class Consts {
     public static final short AES128_KEY_LENGTH  = (short) 16;     
     
     
+    public static final byte P1_CARD_RESET_FREE_CACHE          = (byte) 0x07;
     
     
 	// TODO: refactor - do we need this?
