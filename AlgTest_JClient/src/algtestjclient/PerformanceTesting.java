@@ -455,16 +455,18 @@ public class PerformanceTesting {
         message = "\n\nTotal errors found:; "; 
         m_SystemOutLogger.println(message);
         for (String error : m_errorsObserved.keySet()) {
-            m_SystemOutLogger.println(error + ": " + m_errorsObserved.get(error).size());
-            for (String item : m_errorsObserved.get(error)) {
-                m_SystemOutLogger.println("  " + item);
+            m_SystemOutLogger.println("  " + error + ": " + m_errorsObserved.get(error).size());
+            if (error != "NO_SUCH_ALGORITHM") { // do not print benign NO_SUCH_ALGORITHM
+                for (String item : m_errorsObserved.get(error)) {
+                    m_SystemOutLogger.println("  " + item);
+                }
             }
         }
 
         // Print only aggregated statistics    
         m_SystemOutLogger.println(message);
         for (String error : m_errorsObserved.keySet()) {
-            m_SystemOutLogger.println(error + ": " + m_errorsObserved.get(error).size());
+            m_SystemOutLogger.println("  " + error + ": " + m_errorsObserved.get(error).size());
         }
     }
     
