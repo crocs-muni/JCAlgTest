@@ -56,6 +56,10 @@ public class JCConsts {
     // JC3.0.4
     public static final byte Signature_ALG_DES_MAC4_ISO9797_1_M1_ALG3               = 47;
     public static final byte Signature_ALG_DES_MAC8_ISO9797_1_M1_ALG3               = 48;
+    // JC3.0.5
+    public static final byte Signature_ALG_AES_CMAC_128                             = 49;
+
+
     public static final byte Signature_SIG_CIPHER_DES_MAC4                          = 1;
     public static final byte Signature_SIG_CIPHER_DES_MAC8                          = 2;
     public static final byte Signature_SIG_CIPHER_RSA                               = 3;
@@ -64,8 +68,15 @@ public class JCConsts {
     public static final byte Signature_SIG_CIPHER_AES_MAC128                        = 6;
     public static final byte Signature_SIG_CIPHER_HMAC                              = 7;
     public static final byte Signature_SIG_CIPHER_KOREAN_SEED_MAC                   = 8;
-    // JC3.0.5
-    public static final byte Signature_ALG_AES_CMAC_128                             = 49;
+    //3.0.5
+    public static final byte Signature_SIG_CIPHER_ECDSA_PLAIN                       = 9;  
+    public static final byte Signature_SIG_CIPHER_AES_CMAC128                       = 10;  
+    //3.1
+    public static final byte Signature_SIG_CIPHER_SM2                               = 11;  
+    public static final byte Signature_SIG_CIPHER_SM4_MAC128                        = 12;   
+    public static final byte Signature_SIG_CIPHER_EDDSA                             = 13;  
+    public static final byte Signature_SIG_CIPHER_EDDSAPH                           = 14;  
+
     
     
     public static final byte Signature_MODE_SIGN                                    = 1;
@@ -115,11 +126,13 @@ public class JCConsts {
     public static final byte Cipher_ALG_AES_ECB_ISO9797_M1                          = 25;
     public static final byte Cipher_ALG_AES_ECB_ISO9797_M2                          = 26;
     public static final byte Cipher_ALG_AES_ECB_PKCS5                               = 27;
+    //3.1
+    public static final byte Cipher_ALG_AES_CFB                                     = 28;  
+    public static final byte Cipher_ALG_AES_XTS                                     = 29;  
     //3.0.5
     public static final byte Cipher_ALG_AES_CTR                                     = -16;
 
     //3.0.4
-    // BUGBUG unused now, to be used with getInstance(byte cipherAlgorithm, byte paddingAlgorithm,
     // CIPHER_*,  PAD_*
     public static final byte Cipher_CIPHER_AES_CBC                                  = 1;
     public static final byte Cipher_CIPHER_AES_ECB                                  = 2;
@@ -128,6 +141,15 @@ public class JCConsts {
     public static final byte Cipher_CIPHER_KOREAN_SEED_CBC                          = 5;
     public static final byte Cipher_CIPHER_KOREAN_SEED_ECB                          = 6;
     public static final byte Cipher_CIPHER_RSA                                      = 7;
+    //3.1
+    public static final byte Cipher_CIPHER_AES_CTR                                  = 8;  
+    public static final byte Cipher_CIPHER_AES_CFB                                  = 9; 
+    public static final byte Cipher_CIPHER_AES_XTS                                  = 10;  
+    public static final byte Cipher_CIPHER_SM4_ECB                                  = 11; 
+    public static final byte Cipher_CIPHER_SM4_CBC                                  = 12;  
+    public static final byte Cipher_CIPHER_SM2                                      = 13;  
+
+    //3.0.4
     public static final byte Cipher_PAD_NULL                                        = 0;
     public static final byte Cipher_PAD_NOPAD                                       = 1;
     public static final byte Cipher_PAD_ISO9797_M1                                  = 2;
@@ -150,8 +172,9 @@ public class JCConsts {
     public static final byte Cipher_PAD_PKCS1_OAEP_SHA3_256                         = 18;  
     public static final byte Cipher_PAD_PKCS1_OAEP_SHA3_384                         = 19;  
     public static final byte Cipher_PAD_PKCS1_OAEP_SHA3_512                         = 20;  
-    // end BUGBUG: unused now
-
+    //3.1
+    public static final byte Cipher_PAD_ISO9796_MR_SCHEME_2                         = 21;  
+    public static final byte Cipher_PAD_ISO9796_MR_SCHEME_3                         = 22;  
     
     public static final byte Cipher_MODE_DECRYPT                                    = 1;
     public static final byte Cipher_MODE_ENCRYPT                                    = 2;
@@ -326,6 +349,9 @@ public class JCConsts {
 
     // Class javacard.security.MessageDigest
     // javacard.security.MessageDigest Fields:
+    //3.0.4
+    public static final byte MessageDigest_ALG_NULL                                 = 0;
+    //2.1
     public static final byte MessageDigest_ALG_SHA                                  = 1;
     public static final byte MessageDigest_ALG_MD5                                  = 2;
     public static final byte MessageDigest_ALG_RIPEMD160                            = 3;
@@ -335,6 +361,15 @@ public class JCConsts {
     public static final byte MessageDigest_ALG_SHA_512                              = 6;
     // JC3.0.1
     public static final byte MessageDigest_ALG_SHA_224                              = 7;
+    //3.0.5
+    public static final byte MessageDigest_ALG_SHA3_224                             = 8;
+    public static final byte MessageDigest_ALG_SHA3_256                             = 9;
+    public static final byte MessageDigest_ALG_SHA3_384                             = 10;
+    public static final byte MessageDigest_ALG_SHA3_512                             = 11;
+    //3.1
+    public static final byte MessageDigest_ALG_SM3                                  = 12;  
+    
+    //2.1
     public static final byte MessageDigest_LENGTH_MD5                               = 16;
     public static final byte MessageDigest_LENGTH_RIPEMD160                         = 20;
     public static final byte MessageDigest_LENGTH_SHA                               = 20;
@@ -342,14 +377,10 @@ public class JCConsts {
     public static final byte MessageDigest_LENGTH_SHA_256                           = 32;
     public static final byte MessageDigest_LENGTH_SHA_384                           = 48;
     public static final byte MessageDigest_LENGTH_SHA_512                           = 64;
-    //3.0.4
-    public static final byte MessageDigest_ALG_NULL                                 = 0;
-    // JC3.0.5
-    public static final byte MessageDigest_ALG_SHA3_224                             = 8;
-    public static final byte MessageDigest_ALG_SHA3_256                             = 9;
-    public static final byte MessageDigest_ALG_SHA3_384                             = 10;
-    public static final byte MessageDigest_ALG_SHA3_512                             = 11;
-    
+    //3.1
+    public static final byte MessageDigest_LENGTH_SM3                               = 32;   
+
+
 
     // javacard.security.MessageDigest Methods:
     public static final short MessageDigest_getLength                               = 1;
@@ -606,6 +637,50 @@ public class JCConsts {
     // javacard.framework.OwnerPINBuilder Methods:
     public static final short OwnerPINBuilder_buildOwnerPIN                         = 1;
 
+    
+    //javacard.security.NamedParameterSpec  
+    //BUGBUG: unused
+    public static final short NamedParameterSpec_BRAINPOOLP192R1                    = 8195;  
+    public static final short NamedParameterSpec_BRAINPOOLP192T1                    = 8196;  
+    public static final short NamedParameterSpec_BRAINPOOLP224R1                    = 8197;  
+    public static final short NamedParameterSpec_BRAINPOOLP224T1                    = 8198;  
+    public static final short NamedParameterSpec_BRAINPOOLP256R1                    = 8199;  
+    public static final short NamedParameterSpec_BRAINPOOLP256T1                    = 8200;  
+    public static final short NamedParameterSpec_BRAINPOOLP320R1                    = 8201;  
+    public static final short NamedParameterSpec_BRAINPOOLP320T1                    = 8202;  
+    public static final short NamedParameterSpec_BRAINPOOLP384R1                    = 8203;  
+    public static final short NamedParameterSpec_BRAINPOOLP384T1                    = 8204;  
+    public static final short NamedParameterSpec_BRAINPOOLP512R1                    = 8205;  
+    public static final short NamedParameterSpec_BRAINPOOLP512T1                    = 8206;  
+    public static final short NamedParameterSpec_ED25519                            = 257;  
+    public static final short NamedParameterSpec_ED448                              = 514;  
+    public static final short NamedParameterSpec_FRP256V1                           = 1025;  
+    public static final short NamedParameterSpec_SECP192R1                          = 4097;  
+    public static final short NamedParameterSpec_SECP224R1                          = 4098;  
+    public static final short NamedParameterSpec_SECP256R1                          = 4099;  
+    public static final short NamedParameterSpec_SECP384R1                          = 4100;  
+    public static final short NamedParameterSpec_SECP521R1                          = 4101;  
+    public static final short NamedParameterSpec_SM2                                = 768;  
+    public static final short NamedParameterSpec_X25519                             = 259;  
+    public static final short NamedParameterSpec_X448                               = 516;   
+    
+    // javacard.security.PrimalityTestParamSpec  
+    public static final short PrimalityTestParamSpec_MILLER_RABIN_TEST              = 1;   
+    public static final short PrimalityTestParamSpec_FERMAT_TEST                    = 2;  
+    //end unused
+
+    //javacardx.security.DerivationFunction  
+    //BUGBUG: unused
+    public static final short DerivationFunction_ALG_KDF_COUNTER_MODE                = 1;  
+    public static final short DerivationFunction_ALG_KDF_DPI_MODE                    = 2;  
+    public static final short DerivationFunction_ALG_KDF_FEEDBACK_MODE               = 3;  
+    public static final short DerivationFunction_ALG_PRF_TLS11                       = 4;  
+    public static final short DerivationFunction_ALG_PRF_TLS12                       = 5;   
+    public static final short DerivationFunction_ALG_KDF_IEEE_1363                   = 6;  
+    public static final short DerivationFunction_ALG_KDF_ICAO_MRTD                   = 7;  
+    public static final short DerivationFunction_ALG_KDF_ANSI_X9_63                  = 8;  
+    public static final short DerivationFunction_ALG_KDF_HKDF                        = 9;  
+    //end unused
     
     // javacard.security.CryptoException
     public static final short SW_CryptoException_prefix         = (short) 0xf100;

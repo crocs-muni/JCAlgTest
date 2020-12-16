@@ -146,9 +146,12 @@ public class AlgSupportTest {
        apdu.setIncomingAndReceive();
        short     offset = -1;
        
-       byte      algorithmClass = apdubuf[ISO7816.OFFSET_CDATA];
-       short     algorithmParam1 = Util.makeShort(apdubuf[(short) (ISO7816.OFFSET_CDATA + 1)], apdubuf[(short) (ISO7816.OFFSET_CDATA + 2)]);
-       
+       byte     algorithmClass = apdubuf[ISO7816.OFFSET_CDATA];
+       short    algorithmParam1 = Util.makeShort(apdubuf[(short) (ISO7816.OFFSET_CDATA + 1)], apdubuf[(short) (ISO7816.OFFSET_CDATA + 2)]);
+       byte     modular_param1 = apdubuf[ISO7816.OFFSET_CDATA];
+       byte     modular_param2 = apdubuf[(short) (ISO7816.OFFSET_CDATA + 1)];
+       byte     modular_param3 = apdubuf[(short) (ISO7816.OFFSET_CDATA + 2)];
+
        Util.arrayFillNonAtomic(apdubuf, ISO7816.OFFSET_CDATA, (short) 240, SUPP_ALG_UNTOUCHED);
        offset++;
        apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = apdubuf[ISO7816.OFFSET_P1];
@@ -161,35 +164,56 @@ public class AlgSupportTest {
        JCSystem.getAvailableMemory(memDeselect, (short) 0, JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT); //jc304
        JCSystem.getAvailableMemory(memReset, (short) 0, JCSystem.MEMORY_TYPE_TRANSIENT_RESET); //jc304
 
+       // Place "preventively" NO_SUCH_ALGORITHM as a response - will be replaced by actual result later
+       // The reason is to return NO_SUCH_ALGORITHM for the items like CLASS_AEADCIPHER which are removed 
+       // by postprocessing in some versions of testing applet based on the target JC API version
+       offset++;  
+       apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) CryptoException.NO_SUCH_ALGORITHM; 
+               
        switch (apdubuf[ISO7816.OFFSET_P1]) {
            case Consts.CLASS_CIPHER: {
-             try {offset++;m_encryptCipher = Cipher.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+             try {m_encryptCipher = Cipher.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
              catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
              break;
            }
+           case Consts.CLASS_CIPHER_MODULAR: { 
+             // Uses getInstance(byte cipherAlgorithm, byte paddingAlgorithm, boolean externalAccess) //jc304
+             try {m_encryptCipher = Cipher.getInstance(modular_param1, modular_param2, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;} //jc304
+             catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); } //jc304
+             break; 
+           } 
            case Consts.CLASS_SIGNATURE: {
-             try {offset++;m_sign = Signature.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+             try {m_sign = Signature.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
              catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
              break;
            }
+           case Consts.CLASS_SIGNATURE_MODULAR: { 
+             // Uses getInstance(byte messageDigestAlgorithm,byte cipherAlgorithm,byte paddingAlgorithm,boolean externalAccess) //jc304
+             try {m_sign = Signature.getInstance(modular_param1, modular_param2, modular_param3, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;} //jc304
+             catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); } //jc304
+             break; 
+           } 
            case Consts.CLASS_MESSAGEDIGEST: {
-             try {offset++;m_digest = MessageDigest.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+             try {m_digest = MessageDigest.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
              catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
              break;
            }
            case Consts.CLASS_RANDOMDATA: {
-             try {offset++;m_random = RandomData.getInstance(algorithmClass); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+             try {m_random = RandomData.getInstance(algorithmClass); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
              catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
              break;
            }
            case Consts.CLASS_KEYBUILDER: {
-             try {offset++; m_key1 = KeyBuilder.buildKey(algorithmClass, algorithmParam1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+             try {m_key1 = KeyBuilder.buildKey(algorithmClass, algorithmParam1, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
              catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
              break;
            }
+           // BUGBUG: not implemented yet
+           //case Consts.CLASS_KEYBUILDER_MODULAR: {
+           //    break;
+           //}
            case Consts.CLASS_KEYPAIR: {
              try {
-                 offset++;
                  m_keyPair1 = null;
                  if ((algorithmClass == KeyPair.ALG_EC_FP) || (algorithmClass == KeyPair.ALG_EC_F2M)) {
                      // Try two alternatives for EC key construction - new KeyPair() emit exception on some cards
@@ -227,30 +251,32 @@ public class AlgSupportTest {
              break;
            }
            case Consts.CLASS_KEYAGREEMENT: {
-             try {offset++;m_object = KeyAgreement.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+             try {m_object = KeyAgreement.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
              catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
              break;
            }
            case Consts.CLASS_CHECKSUM: {
-             try {offset++;m_object = Checksum.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
+             try {m_object = Checksum.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
              catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
              break;
            }
-           //case Consts.CLASS_BIOBUILDER: { //jc305
-           //  try { offset++; m_object = javacardx.biometry.BioBuilder.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}  //jc305
+           //case Consts.CLASS_BIOBUILDER: { 
+           //  try { m_object = javacardx.biometry.BioBuilder.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}  //jc305
            //  catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET);} //jc305
-           //  break; //jc305
-           //} //jc305
-           case Consts.CLASS_AEADCIPHER: { //jc305
-               try { offset++; m_object = javacardx.crypto.AEADCipher.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}  //jc305
+           //  break; 
+           //}
+           case Consts.CLASS_AEADCIPHER: {
+               try {m_object = javacardx.crypto.AEADCipher.getInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}  //jc305
                catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET);} //jc305
-               break; //jc305
-           } //jc305
-           case Consts.CLASS_OWNERPINBUILDER: { //jc305
-               try { offset++; m_object = javacard.framework.OwnerPINBuilder.buildOwnerPIN((byte) 3, (byte) 4, algorithmClass); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}  //jc305
+               break;
+           }
+           case Consts.CLASS_OWNERPINBUILDER: { 
+               try {m_object = javacard.framework.OwnerPINBuilder.buildOwnerPIN((byte) 3, (byte) 4, algorithmClass); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}  //jc305
                catch (CryptoException e) { apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET);} //jc305
-               break; //jc305
-           } //jc305
+               break;
+           } 
+           default:
+               ISOException.throwIt(ISO7816.SW_INCORRECT_P1P2);
         }
        
        short persistentMemEnd = JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_PERSISTENT);
@@ -309,6 +335,7 @@ public class AlgSupportTest {
        byte[]    apdubuf = apdu.getBuffer();
        apdu.setIncomingAndReceive();
        short     offset = (short) 0;
+       byte      p1 = apdubuf[ISO7816.OFFSET_P1];   
 
         Util.setShort(apdubuf, offset, JCSystem.getVersion());
         offset = (short)(offset + 2);
@@ -318,7 +345,7 @@ public class AlgSupportTest {
         Util.setShort(apdubuf, offset, JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_PERSISTENT));
         offset = (short)(offset + 2);
         
-        if (apdubuf[ISO7816.OFFSET_P1] == RETURN_INSTALL_TIME_MEMORY_SIZE) {
+        if (p1 == RETURN_INSTALL_TIME_MEMORY_SIZE) {
             Util.setShort(apdubuf, offset, m_freeRAMReset);
             offset = (short) (offset + 2);
             Util.setShort(apdubuf, offset, m_freeRAMDeselect);
@@ -345,7 +372,7 @@ public class AlgSupportTest {
         apdubuf[offset] = apdu.getNAD();
         offset++;
         // Extended memory information
-        if (apdubuf[ISO7816.OFFSET_P1] == RETURN_INSTALL_TIME_MEMORY_SIZE) { //jc304
+        if (p1 == RETURN_INSTALL_TIME_MEMORY_SIZE) { //jc304
             Util.setShort(apdubuf, offset, m_freeEEPROM[0]); offset += 2; //jc304
             Util.setShort(apdubuf, offset, m_freeEEPROM[1]); offset += 2; //jc304
         } //jc304

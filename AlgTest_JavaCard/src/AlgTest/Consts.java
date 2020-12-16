@@ -89,6 +89,11 @@ public class Consts {
     public static final byte CLASS_AEADCIPHER                  = (byte) 0x23;
     public static final byte CLASS_OWNERPINBUILDER             = (byte) 0x24;
     
+    public static final byte CLASS_CIPHER_MODULAR              = (byte) 0x25;      
+    public static final byte CLASS_SIGNATURE_MODULAR           = (byte) 0x26;      
+    public static final byte CLASS_KEYBUILDER_MODULAR          = (byte) 0x27;      
+    
+    
     
     public static final byte UNUSED    = (byte) -1;     
     
