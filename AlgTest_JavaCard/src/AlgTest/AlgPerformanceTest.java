@@ -1427,15 +1427,23 @@ import javacardx.crypto.*;
                     m_signatureSign.init((i % 2 == 0) ? m_key1 : m_key2, Signature.MODE_SIGN); // (i % 2 == 0) ? m_key1 : m_key2 alteration between keys for forcing to init with new key
                 } 
                 break;
-/* JC 3.0.4                        
-            case Consts.Signature_signPreComputedHash: for (short i = 0; i < repeats; i++) { m_signature.signPreComputedHash(m_ram1, (short) 0, chunkDataLen); } break;
-            case Consts.Signature_setInitialDigest: for (short i = 0; i < repeats; i++) { m_signature.setInitialDigest(m_ram1, (short) 0, chunkDataLen); } break;
-*/        
-/* JC 3.0.5                        
-            case JCConsts.Signature_verifyPreComputedHash:   
-                for (short i = 0; i < repeats; i++) { verifyPreComputedHash.verify(m_ram1, (short) 0, chunkDataLen, m_ram2, (short) 0, signLen); } 
-                break;
-*/
+            case JCConsts.Signature_signPreComputedHash: //jc304
+                for (short i = 0; i < repeats; i++) { //jc304
+                    m_signatureSign.signPreComputedHash(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) 0); //jc304
+                } //jc304
+                break; //jc304
+/* BUGBUG: not implemneted yet               
+            case JCConsts.Signature_setInitialDigest: //jc304
+                for (short i = 0; i < repeats; i++) { //jc304
+                    m_signatureSign.setInitialDigest(m_ram1, (short) 0, chunkDataLen, chunkDataLen); //jc304
+                } //jc304
+                break;//jc304
+*/                
+            case JCConsts.Signature_verifyPreComputedHash:  //jc305 
+                for (short i = 0; i < repeats; i++) { //jc305 
+                    m_signatureVerify.verifyPreComputedHash(m_ram1, (short) 0, chunkDataLen, m_ram2, (short) 0, signLen); //jc305  
+                } //jc305 
+                break; //jc305 
             default: ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
         }
 

@@ -94,6 +94,7 @@ public class JCConsts {
     public static final short Signature_signPreComputedHash                         = 9;
     public static final short Signature_sign                                        = 10;
     public static final short Signature_setInitialDigest                            = 11;
+    public static final short Signature_verifyPreComputedHash                       = 12;
 
     // Class javacardx.crypto.Cipher
     // javacardx.crypto.Cipher Fields:
@@ -355,7 +356,7 @@ public class JCConsts {
     public static final byte MessageDigest_ALG_SHA                                  = 1;
     public static final byte MessageDigest_ALG_MD5                                  = 2;
     public static final byte MessageDigest_ALG_RIPEMD160                            = 3;
-      // JC2.2.2
+    // JC2.2.2
     public static final byte MessageDigest_ALG_SHA_256                              = 4;
     public static final byte MessageDigest_ALG_SHA_384                              = 5;
     public static final byte MessageDigest_ALG_SHA_512                              = 6;
