@@ -113,7 +113,7 @@ public class PerformanceTesting {
         }
 
         if (bAppendTime) {
-            testInfo += System.currentTimeMillis() + "_";   // add unique time counter 
+            testInfo += AlgTestJClient.getStartTime() + "_";   // add unique time counter 
         }
         
         return testInfo;

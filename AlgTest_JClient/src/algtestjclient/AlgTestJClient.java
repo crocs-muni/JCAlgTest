@@ -168,13 +168,16 @@ public class AlgTestJClient {
     // If required to be run with simulator, run as: >java -cp "AlgTestJClient.jar;jcardsim-3.0.5-SNAPSHOT.jar" -noverify algtestjclient.AlgTestJClient JCARDSIM
     static boolean USE_JCARDSIM = false;
     
+    // Unique start time in milisconds
+    static long m_appStartTime = 0;
+    
     /**
      * @param args the command line arguments
      */
     
     static DirtyLogger m_SystemOutLogger = null;
     public static void main(String[] args) throws IOException, Exception {
-        String logFileName = String.format("ALGTEST_log_%d.log", System.currentTimeMillis()); 
+        String logFileName = String.format("ALGTEST_log_%s.log", AlgTestJClient.getStartTime()); 
         FileOutputStream    systemOutLogger = new FileOutputStream(logFileName);
         m_SystemOutLogger = new DirtyLogger(systemOutLogger, true);
         
@@ -281,6 +284,13 @@ public class AlgTestJClient {
         }
 */
         printSendRequest();
+    }
+    
+    static long getStartTime() {
+        if (m_appStartTime == 0) {
+            m_appStartTime = System.currentTimeMillis();
+        }
+        return m_appStartTime;
     }
     
     static void printSendRequest() {
