@@ -11,16 +11,38 @@ The processed data are available at http://jcalgtest.org
 
 ## Usage
 
-1. Upload proper cap file (based on the supported JavaCard version) file to your
+### 1. Prepare card with testing applet (AlgTest_*.cap)
+Upload proper cap file (based on the supported JavaCard version) file to your
    smart card using uploader like [GlobalPlatformPro](https://github.com/martinpaljak/GlobalPlatformPro). 
 
 ```
 java -jar gp.jar --install AlgTest_v1.7.10_jc305.cap
 ```
 
-If unsure about the supported version for your card, simply try to upload from the highest version down to the lower one (e.g., start with AlgTest_v1.7.10_jc305.cap, then AlgTest_v1.7.10_jc304.cap, then AlgTest_v1.7.10_jc222.cap). Stop when the upload succeed. 
+If unsure about the supported version for your card, simply try to upload from the highest version down to the lower one (e.g., start with AlgTest_v1.7.10_jc305.cap, then AlgTest_v1.7.10_jc304.cap, then AlgTest_v1.7.10_jc222.cap). Stop when the card upload succeed.
 
-2. Run Java application AlgTestJClient
+Check that the applet was correctly uploaded and installed:
+```
+java -jar gp.jar --list
+```
+
+Expected output:
+```
+ISD: A000000003000000 (OP_READY)
+     Parent:  A000000003000000
+     From:    A0000000620001
+     Privs:   SecurityDomain, CardLock, CardTerminate, CardReset, CVMManagement, TrustedPath, AuthorizedManagement, TokenVerification, GlobalDelete, GlobalLock, GlobalRegistry, FinalApplication, ReceiptGeneration
+
+APP: 4A43416C675465737431 (SELECTABLE)
+     Parent:  A000000003000000
+     From:    4A43416C6754657374
+     Privs:
+
+PKG: 4A43416C6754657374 (LOADED)
+     Applet:  4A43416C675465737431
+```
+
+### 2. Run data collection application (AlgTestJClient)
 
 ```
 java -jar AlgTestJClient.jar
@@ -33,9 +55,10 @@ java -Dsun.security.smartcardio.library=/usr/lib64/libpcsclite.so.1 -jar AlgTest
 
 Choose the target reader for the card with the uploaded AlgTest applet, select the testing mode (e.g., 1 -> SUPPORTED ALGORITHMS) and let it run. CSV file with values separated by the semicolon is created (card_name_ALGSUPPORT__ATR....csv).
 
-3. Please consider to send us (petr@svenda.com) your results in case your card (*.csv and *.log file). The open database benefit both from the cards not yet in an open public database at https://www.fi.muni.cz/~xsvenda/jcalgtest/, but also from the new measurements for the already included ones (set of supported algorithms can expand in later revisions of the same card).
+### 3. Contribute your results, please
 
-## Contribute your results, please
+Please consider to send us (petr@svenda.com) your results in case your card (*.csv and *.log file). The open database benefit both from the cards not yet in an open public database at https://www.fi.muni.cz/~xsvenda/jcalgtest/, but also from the new measurements for the already included ones (set of supported algorithms can expand in later revisions of the same card).
+
 
 Results for (at least) the following smartcards are currently in the database
 (https://www.fi.muni.cz/~xsvenda/jcalgtest/):
