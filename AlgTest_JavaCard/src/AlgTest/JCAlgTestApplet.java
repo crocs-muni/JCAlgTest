@@ -55,7 +55,8 @@ public class JCAlgTestApplet extends javacard.framework.Applet
 {
     // NOTE: when incrementing version, don't forget to update ALGTEST_JAVACARD_VERSION_CURRENT value
      /**
-     * Version 1.7.10 (29.11.2020)
+     * Version 1.7.10 (17.12.2020)
+     * + added testing of modular Cipher and Signature getInstance variants (separate specification of alg, padd, hash)
      * + added option for delayed allocation of resources as some cards cannot handle too many allocations in constructor 
      * + added collection of memory overhead during allocation of cryptographic objects
      * + added support for automatic conversion with different JC versions 
