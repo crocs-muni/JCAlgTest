@@ -57,11 +57,16 @@ public class AlgTestJClient {
     public static final String ALGTEST_USE_CUSTOM_AID = "AID=";                 // use custom AID for applet (if default one is changed for some reason)
 
     /**
+     * Version 1.8.0 (19.12.2020)
+     * + add testing of modular Cipher and Signature .getInstance variants
+     */
+    public final static String ALGTEST_JCLIENT_VERSION_1_8_0 = "1.8.0";
+    /**
      * Version 1.7.10 (29.11.2020)
      * + parsing memory overhead for object allocation
      * + added request for sending data to public database
      */
-    public final static String ALGTEST_JCLIENT_VERSION_1_7_10 = "1.7.10";
+    //public final static String ALGTEST_JCLIENT_VERSION_1_7_10 = "1.7.10";
     /**
      * Version 1.7.9 (22.07.2019)
      * - no changes, updating version with card applet
@@ -161,7 +166,7 @@ public class AlgTestJClient {
     /**
      * Current version
      */
-    public final static String ALGTEST_JCLIENT_VERSION = ALGTEST_JCLIENT_VERSION_1_7_10;
+    public final static String ALGTEST_JCLIENT_VERSION = ALGTEST_JCLIENT_VERSION_1_8_0;
     
     public final static int STAT_OK = 0;    
     
