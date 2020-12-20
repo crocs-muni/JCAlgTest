@@ -176,6 +176,11 @@ public class AlgSupportTest {
              catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
              break;
            }
+           case Consts.CLASS_CIPHER_ONESHOT: {
+             try {Cipher.OneShot object = Cipher.OneShot.open(modular_param1, modular_param2); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED; object.close(); object = null;} //jc305
+             catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); } //jc305
+             break;
+           }
            case Consts.CLASS_CIPHER_MODULAR: { 
              // Uses getInstance(byte cipherAlgorithm, byte paddingAlgorithm, boolean externalAccess) //jc304
              try {m_encryptCipher = Cipher.getInstance(modular_param1, modular_param2, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;} //jc304
@@ -187,6 +192,12 @@ public class AlgSupportTest {
              catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
              break;
            }
+           case Consts.CLASS_SIGNATURE_ONESHOT: { 
+             // Uses getInstance(byte messageDigestAlgorithm,byte cipherAlgorithm,byte paddingAlgorithm,boolean externalAccess) //jc304
+             try {Signature.OneShot object = Signature.OneShot.open(modular_param1, modular_param2, modular_param3); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;  object.close(); object = null;} //jc305
+             catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); } //jc305
+             break; 
+           } 
            case Consts.CLASS_SIGNATURE_MODULAR: { 
              // Uses getInstance(byte messageDigestAlgorithm,byte cipherAlgorithm,byte paddingAlgorithm,boolean externalAccess) //jc304
              try {m_sign = Signature.getInstance(modular_param1, modular_param2, modular_param3, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;} //jc304
@@ -198,9 +209,30 @@ public class AlgSupportTest {
              catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
              break;
            }
+           case Consts.CLASS_MESSAGEDIGEST_ONESHOT: {
+             try {MessageDigest.OneShot object = MessageDigest.OneShot.open(algorithmClass); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED; object.close(); object = null;} //jc305
+             catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); } //jc305
+             break;
+           }
+           case Consts.CLASS_INITIALIZEDMESSAGEDIGEST: {
+             try {m_digest = MessageDigest.getInitializedMessageDigestInstance(algorithmClass, false); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;} 
+             catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); } 
+             break;
+           }
+           case Consts.CLASS_INITIALIZEDMESSAGEDIGEST_ONESHOT: {
+             try {InitializedMessageDigest.OneShot object = InitializedMessageDigest.OneShot.open(algorithmClass); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;  object.close(); object = null;}  //jc305
+             catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }  //jc305
+             break;
+           }
+            	
            case Consts.CLASS_RANDOMDATA: {
              try {m_random = RandomData.getInstance(algorithmClass); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;}
              catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); }
+             break;
+           }
+           case Consts.CLASS_RANDOMDATA_ONESHOT: {
+             try {RandomData.OneShot object = RandomData.OneShot.open(algorithmClass); apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = SUPP_ALG_SUPPORTED;  object.close(); object = null;} //jc305
+             catch (CryptoException e) {apdubuf[(short) (ISO7816.OFFSET_CDATA + offset)] = (byte) (e.getReason() + SUPP_ALG_EXCEPTION_CODE_OFFSET); } //jc305
              break;
            }
            case Consts.CLASS_KEYBUILDER: {

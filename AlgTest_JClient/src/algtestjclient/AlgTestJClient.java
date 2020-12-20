@@ -58,7 +58,9 @@ public class AlgTestJClient {
 
     /**
      * Version 1.8.0 (19.12.2020)
-     * + add testing of modular Cipher and Signature .getInstance variants
+     * + testing of modular Cipher and Signature .getInstance variants
+     * + testing of OneShot variants
+     * + testing of InitializedMessageDigest 
      */
     public final static String ALGTEST_JCLIENT_VERSION_1_8_0 = "1.8.0";
     /**

@@ -1001,16 +1001,22 @@ public class SingleModeTest {
      * @throws Exception
      */
     public static void TestClassCipher(FileOutputStream file) throws Exception{
+        TestClassCipher_helper(file, Consts.CLASS_CIPHER, SingleModeTest.CIPHER_STR[0]);
+    }
+    public static void TestClassCipherOneShot(FileOutputStream file) throws Exception{
+        TestClassCipher_helper(file, Consts.CLASS_CIPHER_ONESHOT, "javacardx.crypto.Cipher.OneShot");
+    }
+    public static void TestClassCipher_helper(FileOutputStream file, byte cipherClass, String packageName) throws Exception{
         long       elapsedCard = 0;
         byte[] apdu = new byte[6];
         apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
         apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
-        apdu[OFFSET_P1] = Consts.CLASS_CIPHER;   // 0x11
+        apdu[OFFSET_P1] = cipherClass;   
         apdu[OFFSET_P2] = (byte)0x00;
         apdu[OFFSET_LC] = (byte)0x01;
 
         /* Creates message with class name and writes it in the output file and on the screen. */
-        String message = "\n" + Utils.GetAlgorithmName(SingleModeTest.CIPHER_STR[0]) + "\r\n";
+        String message = "\n" + packageName + "\r\n";
         m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         
@@ -1089,16 +1095,22 @@ public class SingleModeTest {
      * @throws Exception
      */
     public static void TestClassSignature(FileOutputStream file) throws IOException, Exception{
+        TestClassSignature_helper(file, Consts.CLASS_SIGNATURE, "javacard.crypto.Signature");
+    }
+    public static void TestClassSignatureOneShot(FileOutputStream file) throws IOException, Exception{
+        TestClassSignature_helper(file, Consts.CLASS_SIGNATURE_ONESHOT, "javacard.crypto.Signature.OneShot");
+    }
+    public static void TestClassSignature_helper(FileOutputStream file, byte signatureClass, String packageName) throws IOException, Exception{
         long       elapsedCard = 0;
         byte[] apdu = new byte[6];
         apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
         apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
-        apdu[OFFSET_P1] = Consts.CLASS_SIGNATURE;   // 0x12
+        apdu[OFFSET_P1] = signatureClass;   
         apdu[OFFSET_P2] = (byte)0x00;
         apdu[OFFSET_LC] = (byte)0x01;
         
         /* Creates message with class name and writes it in the output file and on the screen. */
-        String message = "\n" + Utils.GetAlgorithmName(SingleModeTest.SIGNATURE_STR[0]) + "\r\n";
+        String message = "\n" + packageName + "\r\n";
         m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         
@@ -1167,17 +1179,31 @@ public class SingleModeTest {
      * @throws IOException
      * @throws Exception
      */
-    public static void TestClassMessageDigest (FileOutputStream file) throws IOException, Exception{
+    
+    public static void TestClassMessageDigest(FileOutputStream file) throws IOException, Exception{
+        TestClassMessageDigest_helper(file, Consts.CLASS_MESSAGEDIGEST, SingleModeTest.MESSAGEDIGEST_STR[0]);
+    }
+    public static void TestClassMessageDigestOneShot(FileOutputStream file) throws IOException, Exception{
+        TestClassMessageDigest_helper(file, Consts.CLASS_MESSAGEDIGEST_ONESHOT, "javacard.security.MessageDigest.OneShot");
+    }
+    public static void TestClassInitializedMessageDigest(FileOutputStream file) throws IOException, Exception{
+        TestClassMessageDigest_helper(file, Consts.CLASS_INITIALIZEDMESSAGEDIGEST, "javacard.security.InitializedMessageDigest");
+    }
+    public static void TestClassInitializedMessageDigestOneShot(FileOutputStream file) throws IOException, Exception{
+        TestClassMessageDigest_helper(file, Consts.CLASS_INITIALIZEDMESSAGEDIGEST_ONESHOT, "javacard.security.InitializedMessageDigest.OneShot");
+    }
+    
+    public static void TestClassMessageDigest_helper(FileOutputStream file, byte digestClass, String packageName) throws IOException, Exception{
         long       elapsedCard = 0;
         byte[] apdu = new byte[6];
         apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
         apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
-        apdu[OFFSET_P1] = Consts.CLASS_MESSAGEDIGEST;   // 0x15
+        apdu[OFFSET_P1] = digestClass;   
         apdu[OFFSET_P2] = (byte)0x00;
         apdu[OFFSET_LC] = (byte)0x01;
         
         /* Creates message with class name and writes it in the output file and on the screen. */
-        String message = "\n" + Utils.GetAlgorithmName(SingleModeTest.MESSAGEDIGEST_STR[0]) + "\r\n";
+        String message = "\n" + packageName + "\r\n";
         m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         
@@ -1239,16 +1265,22 @@ public class SingleModeTest {
      * @throws Exception
      */
     public static void TestClassRandomData(FileOutputStream file) throws IOException, Exception{
+        TestClassRandomData_helper(file, Consts.CLASS_RANDOMDATA, SingleModeTest.RANDOMDATA_STR[0]);
+    }
+    public static void TestClassRandomDataOneShot(FileOutputStream file) throws IOException, Exception{
+        TestClassRandomData_helper(file, Consts.CLASS_RANDOMDATA_ONESHOT, "javacard.security.RandomData.OneShot");
+    }
+    public static void TestClassRandomData_helper(FileOutputStream file, byte randomClass, String packageName) throws IOException, Exception{
         long       elapsedCard = 0;
         byte[] apdu = new byte[6];
         apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
         apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
-        apdu[OFFSET_P1] = Consts.CLASS_RANDOMDATA;   // 0x16
+        apdu[OFFSET_P1] = randomClass;   
         apdu[OFFSET_P2] = (byte)0x00;
         apdu[OFFSET_LC] = (byte)0x01;
         
         /* Creates message with class name and writes it in the output file and on the screen. */
-        String message = "\r\n" + Utils.GetAlgorithmName(SingleModeTest.RANDOMDATA_STR[0]) + "\r\n";
+        String message = "\r\n" + packageName + "\r\n";
         m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         
@@ -1756,7 +1788,16 @@ public class SingleModeTest {
         TestClassAEADCipher(file);
         //TestClassAEADCipher_viaCipher(file);
         TestClassOwnerPINBuilder(file);
-        
+        TestClassInitializedMessageDigest(file);
+
+        // OneShot versions of objects
+        TestClassCipherOneShot(file);
+        TestClassSignatureOneShot(file);
+        TestClassRandomDataOneShot(file);
+        TestClassMessageDigestOneShot(file);
+        TestClassInitializedMessageDigestOneShot(file);
+
+        // Modular getInstance from separate components
         TestClassCipherModular(file);
         TestClassSignatureModular(file);
 
