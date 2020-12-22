@@ -55,13 +55,26 @@ public class JCAlgTestApplet extends javacard.framework.Applet
 {
     // NOTE: when incrementing version, don't forget to update ALGTEST_JAVACARD_VERSION_CURRENT value
      /**
-     * Version 1.7.10 (05.08.2020)
-     * + added option for delayed allocation of resources as some cards cannot handle too many allocations in constructor 
+     * Version 1.8.0 (19.12.2020)
+     * 
      */
-    final static byte ALGTEST_JAVACARD_VERSION_1_7_10[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x37, (byte) 0x2e, (byte) 0x31, (byte) 0x30};
+    final static byte ALGTEST_JAVACARD_VERSION_1_8_0__JC222[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x38, (byte) 0x2e, (byte) 0x30, (byte) 0x5f, (byte) 0x6a, (byte) 0x63, (byte) 0x32, (byte) 0x32, (byte) 0x32};
+    final static byte ALGTEST_JAVACARD_VERSION_1_8_0__JC304[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x38, (byte) 0x2e, (byte) 0x30, (byte) 0x5f, (byte) 0x6a, (byte) 0x63, (byte) 0x33, (byte) 0x30, (byte) 0x34}; //jc304
+    final static byte ALGTEST_JAVACARD_VERSION_1_8_0__JC305[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x38, (byte) 0x2e, (byte) 0x30, (byte) 0x5f, (byte) 0x6a, (byte) 0x63, (byte) 0x33, (byte) 0x30, (byte) 0x35}; //jc305
+     /**
+     * Version 1.7.10 (17.12.2020)
+     * + added testing of modular Cipher and Signature getInstance variants (separate specification of alg, padd, hash)
+     * + added option for delayed allocation of resources as some cards cannot handle too many allocations in constructor 
+     * + added collection of memory overhead during allocation of cryptographic objects
+     * + added support for automatic conversion with different JC versions 
+     * - optimized usage 
+     */
+    //final static byte ALGTEST_JAVACARD_VERSION_1_7_10__JC222[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x37, (byte) 0x2e, (byte) 0x31, (byte) 0x30, (byte) 0x5f, (byte) 0x6a, (byte) 0x63, (byte) 0x32, (byte) 0x32, (byte) 0x32};
+    //final static byte ALGTEST_JAVACARD_VERSION_1_7_10__JC304[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x37, (byte) 0x2e, (byte) 0x31, (byte) 0x30, (byte) 0x5f, (byte) 0x6a, (byte) 0x63, (byte) 0x33, (byte) 0x30, (byte) 0x34}; //jc304
+    //final static byte ALGTEST_JAVACARD_VERSION_1_7_10__JC305[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x37, (byte) 0x2e, (byte) 0x31, (byte) 0x30, (byte) 0x5f, (byte) 0x6a, (byte) 0x63, (byte) 0x33, (byte) 0x30, (byte) 0x35}; //jc305
      /**
      * Version 1.7.9 (22.07.2019)
-     * + added collection of APDU informations
+     * + added collection of APDU information
      * + improved ECC testing for cards failing at new KeyPair()
      */
     //final static byte ALGTEST_JAVACARD_VERSION_1_7_9[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x37, (byte) 0x2e, (byte) 0x39};
@@ -180,7 +193,7 @@ public class JCAlgTestApplet extends javacard.framework.Applet
      */
     //final static byte ALGTEST_JAVACARD_VERSION_1_0[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x30};
 
-    byte ALGTEST_JAVACARD_VERSION_CURRENT[] = ALGTEST_JAVACARD_VERSION_1_7_10;
+    byte[] ALGTEST_JAVACARD_VERSION_CURRENT = null; // Note: change assignemnt in applet constructor
     
     // lower byte of exception is value as defined in JCSDK/api_classic/constant-values.htm
     final static short SW_Exception = (short) 0xff01;
@@ -202,6 +215,7 @@ public class JCAlgTestApplet extends javacard.framework.Applet
 
     short m_freeRAMReset = 0;
     short m_freeRAMDeselect = 0;
+    short[] m_freeEEPROM = null;
     
     public final static short RAM1_ARRAY_LENGTH = (short) 600;
     public final static short RAM2_ARRAY_LENGTH = (short) 528;
@@ -211,6 +225,10 @@ public class JCAlgTestApplet extends javacard.framework.Applet
     boolean m_allocationsPerformed = false;
     
     protected JCAlgTestApplet(byte[] buffer, short offset, byte length) {
+        ALGTEST_JAVACARD_VERSION_CURRENT = ALGTEST_JAVACARD_VERSION_1_8_0__JC222;
+        ALGTEST_JAVACARD_VERSION_CURRENT = ALGTEST_JAVACARD_VERSION_1_8_0__JC304; //jc304
+        ALGTEST_JAVACARD_VERSION_CURRENT = ALGTEST_JAVACARD_VERSION_1_8_0__JC305; //jc305
+
         // data offset is used for application specific parameter.
         // initialization with default offset (AID offset).
         short dataOffset = offset;
@@ -242,7 +260,9 @@ public class JCAlgTestApplet extends javacard.framework.Applet
         // Save free RAM before allocation of objects
         m_freeRAMReset = JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_RESET);
         m_freeRAMDeselect = JCSystem.getAvailableMemory(JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT);
-        
+        m_freeEEPROM = new short[2];
+        JCSystem.getAvailableMemory(m_freeEEPROM, (short) 0, JCSystem.MEMORY_TYPE_PERSISTENT); //jc304
+
         if (bPerformAllocationsNow) {
             allocateResources();
         }
@@ -266,9 +286,9 @@ public class JCAlgTestApplet extends javacard.framework.Applet
         // Allocate all engines
         m_ramArray = JCSystem.makeTransientByteArray(RAM1_ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);
         m_ramArray2 = JCSystem.makeTransientByteArray(RAM2_ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);
-
+    
+        m_supportTest = new AlgSupportTest(m_ramArray, m_ramArray2, m_freeRAMReset, m_freeRAMDeselect, m_freeEEPROM);
         m_keyHarvest = new AlgKeyHarvest();
-        m_supportTest = new AlgSupportTest(m_ramArray, m_ramArray2, m_freeRAMReset, m_freeRAMDeselect);
         m_perfTest = new AlgPerformanceTest(m_ramArray, m_ramArray2);
         m_storageTest = new AlgStorageTest();
 
@@ -301,6 +321,10 @@ public class JCAlgTestApplet extends javacard.framework.Applet
                 }
                 if (apduBuffer[ISO7816.OFFSET_INS] == Consts.INS_CARD_RESET) {
                     JCSystem.requestObjectDeletion();
+                    if (apduBuffer[ISO7816.OFFSET_P1] == Consts.P1_CARD_RESET_FREE_CACHE) {
+                        // If required, free also RSA objects cache to free some resources
+                        m_perfTest.eraseCachedRSAObjectsExceptSpecifiedTypeLength((byte) -1, (short) -1);                        
+                    }
                     bProcessed = (byte) 1;
                 }
             }

@@ -419,6 +419,99 @@ import javacardx.crypto.*;
      }
 */   
    
+    void eraseCachedRSAObjectsExceptSpecifiedTypeLength(byte typeRSA, short keyLengthToKeep) {
+        if (!((keyLengthToKeep == 512) && (typeRSA == JCConsts.KeyPair_ALG_RSA_CRT))) {
+            m_cached_keyPair_RSA_CRT_512_1 = null;
+            m_cached_keyPair_RSA_CRT_512_2 = null;
+        }
+        if (!((keyLengthToKeep == 512) && (typeRSA == JCConsts.KeyPair_ALG_RSA))) {
+            m_cached_keyPair_RSA_512_1 = null;
+            m_cached_keyPair_RSA_512_2 = null;
+        }
+        if (!((keyLengthToKeep == 736) && (typeRSA == JCConsts.KeyPair_ALG_RSA_CRT))) {
+            m_cached_keyPair_RSA_CRT_736_1 = null;
+            m_cached_keyPair_RSA_CRT_736_2 = null;
+        }
+        if (!((keyLengthToKeep == 736) && (typeRSA == JCConsts.KeyPair_ALG_RSA))) {
+            m_cached_keyPair_RSA_736_1 = null;
+            m_cached_keyPair_RSA_736_2 = null;
+        }
+        if (!((keyLengthToKeep == 768) && (typeRSA == JCConsts.KeyPair_ALG_RSA_CRT))) {
+            m_cached_keyPair_RSA_CRT_768_1 = null;
+            m_cached_keyPair_RSA_CRT_768_2 = null;
+        }
+        if (!((keyLengthToKeep == 768) && (typeRSA == JCConsts.KeyPair_ALG_RSA))) {
+            m_cached_keyPair_RSA_768_1 = null;
+            m_cached_keyPair_RSA_768_2 = null;
+        }
+        if (!((keyLengthToKeep == 896) && (typeRSA == JCConsts.KeyPair_ALG_RSA_CRT))) {
+            m_cached_keyPair_RSA_CRT_896_1 = null;
+            m_cached_keyPair_RSA_CRT_896_2 = null;
+        }
+        if (!((keyLengthToKeep == 896) && (typeRSA == JCConsts.KeyPair_ALG_RSA))) {
+            m_cached_keyPair_RSA_896_1 = null;
+            m_cached_keyPair_RSA_896_2 = null;
+        }
+        if (!((keyLengthToKeep == 1024) && (typeRSA == JCConsts.KeyPair_ALG_RSA_CRT))) {
+            m_cached_keyPair_RSA_CRT_1024_1 = null;
+            m_cached_keyPair_RSA_CRT_1024_2 = null;
+        }
+        if (!((keyLengthToKeep == 1024) && (typeRSA == JCConsts.KeyPair_ALG_RSA))) {
+            m_cached_keyPair_RSA_1024_1 = null;
+            m_cached_keyPair_RSA_1024_2 = null;
+        }
+        if (!((keyLengthToKeep == 1280) && (typeRSA == JCConsts.KeyPair_ALG_RSA_CRT))) {
+            m_cached_keyPair_RSA_CRT_1280_1 = null;
+            m_cached_keyPair_RSA_CRT_1280_2 = null;
+        }
+        if (!((keyLengthToKeep == 1280) && (typeRSA == JCConsts.KeyPair_ALG_RSA))) {
+            m_cached_keyPair_RSA_1280_1 = null;
+            m_cached_keyPair_RSA_1280_2 = null;
+        }
+        if (!((keyLengthToKeep == 1536) && (typeRSA == JCConsts.KeyPair_ALG_RSA_CRT))) {
+            m_cached_keyPair_RSA_CRT_1536_1 = null;
+            m_cached_keyPair_RSA_CRT_1536_2 = null;
+        }
+        if (!((keyLengthToKeep == 1536) && (typeRSA == JCConsts.KeyPair_ALG_RSA))) {
+            m_cached_keyPair_RSA_1536_1 = null;
+            m_cached_keyPair_RSA_1536_2 = null;
+        }
+        if (!((keyLengthToKeep == 1984) && (typeRSA == JCConsts.KeyPair_ALG_RSA_CRT))) {
+            m_cached_keyPair_RSA_CRT_1984_1 = null;
+            m_cached_keyPair_RSA_CRT_1984_2 = null;
+        }
+        if (!((keyLengthToKeep == 1984) && (typeRSA == JCConsts.KeyPair_ALG_RSA))) {
+            m_cached_keyPair_RSA_1984_1 = null;
+            m_cached_keyPair_RSA_1984_2 = null;
+        }
+        if (!((keyLengthToKeep == 2048) && (typeRSA == JCConsts.KeyPair_ALG_RSA_CRT))) {
+            m_cached_keyPair_RSA_CRT_2048_1 = null;
+            m_cached_keyPair_RSA_CRT_2048_2 = null;
+        }
+        if (!((keyLengthToKeep == 2048) && (typeRSA == JCConsts.KeyPair_ALG_RSA))) {
+            m_cached_keyPair_RSA_2048_1 = null;
+            m_cached_keyPair_RSA_2048_2 = null;
+        }
+        if (!((keyLengthToKeep == 3072) && (typeRSA == JCConsts.KeyPair_ALG_RSA_CRT))) {
+            m_cached_keyPair_RSA_CRT_3072_1 = null;
+            m_cached_keyPair_RSA_CRT_3072_2 = null;
+        }
+        if (!((keyLengthToKeep == 3072) && (typeRSA == JCConsts.KeyPair_ALG_RSA))) {
+            m_cached_keyPair_RSA_3072_1 = null;
+            m_cached_keyPair_RSA_3072_2 = null;
+        }
+        if (!((keyLengthToKeep == 4096) && (typeRSA == JCConsts.KeyPair_ALG_RSA_CRT))) {
+            m_cached_keyPair_RSA_CRT_4096_1 = null;
+            m_cached_keyPair_RSA_CRT_4096_2 = null;
+        }
+        if (!((keyLengthToKeep == 4096) && (typeRSA == JCConsts.KeyPair_ALG_RSA))) {
+            m_cached_keyPair_RSA_4096_1 = null;
+            m_cached_keyPair_RSA_4096_2 = null;
+        }
+    
+        JCSystem.requestObjectDeletion();   
+    }
+   
    KeyPair getKeyPairObject(byte typeRSA, short keyPairIndex, short keyLength) {
         KeyPair tmp = null;       
         
@@ -493,8 +586,21 @@ import javacardx.crypto.*;
        
         // If not yet allocated, alocate and generate it
         if (tmp == null) {
-            tmp = new KeyPair(typeRSA, keyLength);
-            tmp.genKeyPair();
+            try {
+                tmp = new KeyPair(typeRSA, keyLength);
+                tmp.genKeyPair();
+            }
+            catch (javacard.framework.SystemException e) {
+                // Likely, we run out of memory on card for allocation of required keypair object
+                // We will now clear all cached objects (except the dual keypair of the required size - keyPairIndex)
+                // then ask card for garbage collection
+                tmp = null;
+                eraseCachedRSAObjectsExceptSpecifiedTypeLength(typeRSA, keyLength);
+                
+                // And repeat allocation and keygen again
+                tmp = new KeyPair(typeRSA, keyLength);
+                tmp.genKeyPair();
+            }
         
             // Cache the keypair if of specific lengths
             switch (keyLength) {
@@ -1321,15 +1427,23 @@ import javacardx.crypto.*;
                     m_signatureSign.init((i % 2 == 0) ? m_key1 : m_key2, Signature.MODE_SIGN); // (i % 2 == 0) ? m_key1 : m_key2 alteration between keys for forcing to init with new key
                 } 
                 break;
-/* JC 3.0.4                        
-            case Consts.Signature_signPreComputedHash: for (short i = 0; i < repeats; i++) { m_signature.signPreComputedHash(m_ram1, (short) 0, chunkDataLen); } break;
-            case Consts.Signature_setInitialDigest: for (short i = 0; i < repeats; i++) { m_signature.setInitialDigest(m_ram1, (short) 0, chunkDataLen); } break;
-*/        
-/* JC 3.0.5                        
-            case JCConsts.Signature_verifyPreComputedHash:   
-                for (short i = 0; i < repeats; i++) { verifyPreComputedHash.verify(m_ram1, (short) 0, chunkDataLen, m_ram2, (short) 0, signLen); } 
-                break;
-*/
+            case JCConsts.Signature_signPreComputedHash: //jc304
+                for (short i = 0; i < repeats; i++) { //jc304
+                    m_signatureSign.signPreComputedHash(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) 0); //jc304
+                } //jc304
+                break; //jc304
+/* BUGBUG: not implemneted yet               
+            case JCConsts.Signature_setInitialDigest: //jc304
+                for (short i = 0; i < repeats; i++) { //jc304
+                    m_signatureSign.setInitialDigest(m_ram1, (short) 0, chunkDataLen, chunkDataLen); //jc304
+                } //jc304
+                break;//jc304
+*/                
+            case JCConsts.Signature_verifyPreComputedHash:  //jc305 
+                for (short i = 0; i < repeats; i++) { //jc305 
+                    m_signatureVerify.verifyPreComputedHash(m_ram1, (short) 0, chunkDataLen, m_ram2, (short) 0, signLen); //jc305  
+                } //jc305 
+                break; //jc305 
             default: ISOException.throwIt(SW_ALG_OPS_NOT_SUPPORTED);
         }
 

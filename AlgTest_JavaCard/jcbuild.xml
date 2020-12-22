@@ -5,6 +5,8 @@
   <property name="JC222" value="ext/java_card_kit-2_2_2"/>
   <property name="JC221" value="ext/java_card_kit-2_2_1"/>
   <property name="JC303" value="ext/java_card_kit-3_0_3"/>
+  <property name="JC304" value="ext/jc304_kit"/>
+  <property name="JC305" value="ext/jc305u3_kit"/>
   <property name="OP20" value="ext/visa_openplatform-2_0"/>
   <property name="GP211" value="ext/globalplatform-2_1_1"/>
   
@@ -14,6 +16,30 @@
   <target name="build" description="Builds the CAP file with JCAlgTest applet">
     <javacard jckit="${JC222}">
       <cap output="!uploader/AlgTest_222.cap" sources="src/algtest/" aid="4a43416c6754657374" >
+        <applet class="algtest.JCAlgTestApplet" aid="4a43416c675465737431"/>
+      </cap>
+    </javacard>
+  </target>
+
+  <target name="build222" description="Builds the CAP file with JCAlgTest applet">
+    <javacard jckit="${JC222}">
+      <cap output="!uploader/AlgTest_222.cap" sources="src222/algtest/" aid="4a43416c6754657374" >
+        <applet class="algtest.JCAlgTestApplet" aid="4a43416c675465737431"/>
+      </cap>
+    </javacard>
+  </target>
+
+  <target name="build304" description="Builds the CAP file with JCAlgTest applet">
+    <javacard jckit="${JC304}">
+      <cap output="!uploader/AlgTest_304.cap" sources="src304/algtest/" aid="4a43416c6754657374" >
+        <applet class="algtest.JCAlgTestApplet" aid="4a43416c675465737431"/>
+      </cap>
+    </javacard>
+  </target>
+
+  <target name="build305" description="Builds the CAP file with JCAlgTest applet">
+    <javacard jckit="${JC305}">
+      <cap output="!uploader/AlgTest_305.cap" sources="src305/algtest/" aid="4a43416c6754657374" >
         <applet class="algtest.JCAlgTestApplet" aid="4a43416c675465737431"/>
       </cap>
     </javacard>

@@ -3,7 +3,9 @@
 /AlgTest_JavaCard/!uploader/*
 /AlgTest_JavaCard/build/*
 /AlgTest_JavaCard/nbproject/project.properties
-
+/AlgTest_JavaCard/src222/*
+/AlgTest_JavaCard/src304/*
+/AlgTest_JavaCard/src305/*
 
 /AlgTest_JClient/nbproject/private/
 /AlgTest_JClient/build/*

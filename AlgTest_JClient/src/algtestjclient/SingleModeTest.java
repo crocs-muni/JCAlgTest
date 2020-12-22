@@ -35,6 +35,7 @@ package algtestjclient;
 import algtest.Consts;
 import algtest.JCAlgTestApplet;
 import algtest.JCConsts;
+import cardTools.Util;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -65,6 +66,7 @@ public class SingleModeTest {
     public static final String TEST_CLASS_SIGNATURE = "CLASS_SIGNATURE";
     public static final String TEST_CLASS_KEYBUILDER = "CLASS_KEYBUILDER";
     public static final String TEST_CLASS_MESSAGEDIGEST = "CLASS_MESSAGEDIGEST";
+    public static final String TEST_CLASS_OWNERPINBUILDER = "CLASS_OWNERPINBUILDER";
     public static final String TEST_CLASS_RANDOMDATA = "CLASS_RANDOMDATA";
     public static final String TEST_CLASS_KEYAGREEMENT = "CLASS_KEYAGREEMENT";
     public static final String TEST_CLASS_KEYPAIR_ALG_RSA = "CLASS_KEYPAIR_ALG_RSA";
@@ -117,6 +119,29 @@ public class SingleModeTest {
     public static final int SIGNATURE_STR_LAST_INDEX = JCConsts.Signature_ALG_AES_CMAC_128;
     
     
+    public static final Map<Integer, String> MODULAR_SIG_CIPHER_STR_MAP; 
+    static {
+        MODULAR_SIG_CIPHER_STR_MAP = new HashMap<>();
+        //3.0.4
+        MODULAR_SIG_CIPHER_STR_MAP.put(Integer.valueOf(JCConsts.Signature_SIG_CIPHER_DES_MAC4), "SIG_CIPHER_DES_MAC4#3.0.4");
+        MODULAR_SIG_CIPHER_STR_MAP.put(Integer.valueOf(JCConsts.Signature_SIG_CIPHER_DES_MAC8), "SIG_CIPHER_DES_MAC8#3.0.4");
+        MODULAR_SIG_CIPHER_STR_MAP.put(Integer.valueOf(JCConsts.Signature_SIG_CIPHER_RSA), "SIG_CIPHER_RSA#3.0.4");
+        MODULAR_SIG_CIPHER_STR_MAP.put(Integer.valueOf(JCConsts.Signature_SIG_CIPHER_DSA), "SIG_CIPHER_DSA#3.0.4");
+        MODULAR_SIG_CIPHER_STR_MAP.put(Integer.valueOf(JCConsts.Signature_SIG_CIPHER_ECDSA), "SIG_CIPHER_ECDSA#3.0.4");
+        MODULAR_SIG_CIPHER_STR_MAP.put(Integer.valueOf(JCConsts.Signature_SIG_CIPHER_AES_MAC128), "SIG_CIPHER_AES_MAC128#3.0.4");
+        MODULAR_SIG_CIPHER_STR_MAP.put(Integer.valueOf(JCConsts.Signature_SIG_CIPHER_HMAC), "SIG_CIPHER_HMAC#3.0.4");
+        MODULAR_SIG_CIPHER_STR_MAP.put(Integer.valueOf(JCConsts.Signature_SIG_CIPHER_KOREAN_SEED_MAC), "SIG_CIPHER_KOREAN_SEED_MAC#3.0.4");
+        //3.0.5
+        MODULAR_SIG_CIPHER_STR_MAP.put(Integer.valueOf(JCConsts.Signature_SIG_CIPHER_ECDSA_PLAIN), "SIG_CIPHER_ECDSA_PLAIN#3.0.5");
+        MODULAR_SIG_CIPHER_STR_MAP.put(Integer.valueOf(JCConsts.Signature_SIG_CIPHER_AES_CMAC128), "SIG_CIPHER_AES_CMAC128#3.0.5");
+        //3.1
+        MODULAR_SIG_CIPHER_STR_MAP.put(Integer.valueOf(JCConsts.Signature_SIG_CIPHER_SM2), "SIG_CIPHER_SM2#3.1");
+        MODULAR_SIG_CIPHER_STR_MAP.put(Integer.valueOf(JCConsts.Signature_SIG_CIPHER_SM4_MAC128), "SIG_CIPHER_SM4_MAC128#3.1");
+        MODULAR_SIG_CIPHER_STR_MAP.put(Integer.valueOf(JCConsts.Signature_SIG_CIPHER_EDDSA), "SIG_CIPHER_EDDSA#3.1");
+        MODULAR_SIG_CIPHER_STR_MAP.put(Integer.valueOf(JCConsts.Signature_SIG_CIPHER_EDDSAPH), "SIG_CIPHER_EDDSAPH#3.1");
+    }
+    
+    
     public static final String CIPHER_STR[] = {"javacardx.crypto.Cipher", 
         "ALG_DES_CBC_NOPAD#&le;2.1", "ALG_DES_CBC_ISO9797_M1#&le;2.1", "ALG_DES_CBC_ISO9797_M2#&le;2.1", "ALG_DES_CBC_PKCS5#&le;2.1", 
         "ALG_DES_ECB_NOPAD#&le;2.1", "ALG_DES_ECB_ISO9797_M1#&le;2.1", "ALG_DES_ECB_ISO9797_M2#&le;2.1", "ALG_DES_ECB_PKCS5#&le;2.1",
@@ -129,11 +154,71 @@ public class SingleModeTest {
         "ALG_KOREAN_SEED_ECB_NOPAD#2.2.2", "ALG_KOREAN_SEED_CBC_NOPAD#2.2.2",
         //3.0.1
         "ALG_AES_BLOCK_192_CBC_NOPAD#3.0.1", "ALG_AES_BLOCK_192_ECB_NOPAD#3.0.1", "ALG_AES_BLOCK_256_CBC_NOPAD#3.0.1", "ALG_AES_BLOCK_256_ECB_NOPAD#3.0.1", 
-        "ALG_AES_CBC_ISO9797_M1#3.0.1", "ALG_AES_CBC_ISO9797_M2#3.0.1", "ALG_AES_CBC_PKCS5#3.0.1", "ALG_AES_ECB_ISO9797_M1#3.0.1", "ALG_AES_ECB_ISO9797_M2#3.0.1", "ALG_AES_ECB_PKCS5#3.0.1"         
+        "ALG_AES_CBC_ISO9797_M1#3.0.1", "ALG_AES_CBC_ISO9797_M2#3.0.1", "ALG_AES_CBC_PKCS5#3.0.1", "ALG_AES_ECB_ISO9797_M1#3.0.1", "ALG_AES_ECB_ISO9797_M2#3.0.1", "ALG_AES_ECB_PKCS5#3.0.1",
+        //3.1
+        "ALG_AES_CFB#3.1", "ALG_AES_XTS#3.1",
     }; 
-    public static final int CIPHER_STR_LAST_INDEX = JCConsts.Cipher_ALG_AES_ECB_PKCS5;
+    public static final int CIPHER_STR_LAST_INDEX = JCConsts.Cipher_ALG_AES_XTS;
     
+    public static final Map<Integer, String> CIPHER_STR_MAP;
+    static {
+        CIPHER_STR_MAP = new HashMap<>();
+        //3.0.5
+        CIPHER_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_ALG_AES_CTR), "ALG_AES_CTR#3.0.5"); 
+    }
 
+    public static final Map<Integer, String> MODULAR_CIPHER_CIPHERALG_STR_MAP; 
+    static {
+        MODULAR_CIPHER_CIPHERALG_STR_MAP = new HashMap<>();
+        //3.0.4
+        MODULAR_CIPHER_CIPHERALG_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_CIPHER_AES_CBC), "CIPHER_AES_CBC#3.0.4");
+        MODULAR_CIPHER_CIPHERALG_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_CIPHER_AES_ECB), "CIPHER_AES_ECB#3.0.4");
+        MODULAR_CIPHER_CIPHERALG_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_CIPHER_DES_CBC), "CIPHER_DES_CBC#3.0.4");
+        MODULAR_CIPHER_CIPHERALG_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_CIPHER_DES_ECB), "CIPHER_DES_ECB#3.0.4");
+        MODULAR_CIPHER_CIPHERALG_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_CIPHER_KOREAN_SEED_CBC), "CIPHER_KOREAN_SEED_CBC#3.0.4");
+        MODULAR_CIPHER_CIPHERALG_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_CIPHER_KOREAN_SEED_ECB), "CIPHER_KOREAN_SEED_ECB#3.0.4");
+        MODULAR_CIPHER_CIPHERALG_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_CIPHER_RSA), "CIPHER_RSA#3.0.4");
+        //3.1
+        MODULAR_CIPHER_CIPHERALG_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_CIPHER_AES_CTR), "CIPHER_AES_CTR#3.1");
+        MODULAR_CIPHER_CIPHERALG_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_CIPHER_AES_CFB), "CIPHER_AES_CFB#3.1");
+        MODULAR_CIPHER_CIPHERALG_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_CIPHER_AES_XTS), "CIPHER_AES_XTS#3.1");
+        MODULAR_CIPHER_CIPHERALG_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_CIPHER_SM4_ECB), "CIPHER_SM4_ECB#3.1");
+        MODULAR_CIPHER_CIPHERALG_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_CIPHER_SM4_CBC), "CIPHER_SM4_CBC#3.1");
+        MODULAR_CIPHER_CIPHERALG_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_CIPHER_SM2), "CIPHER_SM2#3.1");
+    }
+    public static final Map<Integer, String> MODULAR_CIPHER_CIPHERPAD_STR_MAP; 
+    static {
+        MODULAR_CIPHER_CIPHERPAD_STR_MAP = new HashMap<>();
+        //3.0.4
+        MODULAR_CIPHER_CIPHERPAD_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_PAD_NULL), "PAD_NULL#3.0.4");
+        MODULAR_CIPHER_CIPHERPAD_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_PAD_NOPAD), "PAD_NOPAD#3.0.4");
+        MODULAR_CIPHER_CIPHERPAD_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_PAD_ISO9797_M1), "PAD_ISO9797_M1#3.0.4");
+        MODULAR_CIPHER_CIPHERPAD_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_PAD_ISO9797_M2), "PAD_ISO9797_M2#3.0.4");
+        MODULAR_CIPHER_CIPHERPAD_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_PAD_ISO9797_1_M1_ALG3), "PAD_ISO9797_1_M1_ALG3#3.0.4");
+        MODULAR_CIPHER_CIPHERPAD_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_PAD_ISO9797_1_M2_ALG3), "PAD_ISO9797_1_M2_ALG3#3.0.4");
+        MODULAR_CIPHER_CIPHERPAD_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_PAD_PKCS5), "PAD_PKCS5#3.0.4");
+        MODULAR_CIPHER_CIPHERPAD_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_PAD_PKCS1), "PAD_PKCS1#3.0.4");
+        MODULAR_CIPHER_CIPHERPAD_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_PAD_PKCS1_PSS), "PAD_PKCS1_PSS#3.0.4");
+        MODULAR_CIPHER_CIPHERPAD_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_PAD_PKCS1_OAEP), "PAD_PKCS1_OAEP#3.0.4");
+        MODULAR_CIPHER_CIPHERPAD_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_PAD_ISO9796), "PAD_ISO9796#3.0.4");
+        MODULAR_CIPHER_CIPHERPAD_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_PAD_ISO9796_MR), "PAD_ISO9796_MR#3.0.4");
+        MODULAR_CIPHER_CIPHERPAD_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_PAD_RFC2409), "PAD_RFC2409#3.0.4");
+
+        MODULAR_CIPHER_CIPHERPAD_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_PAD_PKCS1_OAEP_SHA224), "PAD_PKCS1_OAEP_SHA224#3.0.5");
+        MODULAR_CIPHER_CIPHERPAD_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_PAD_PKCS1_OAEP_SHA256), "PAD_PKCS1_OAEP_SHA256#3.0.5");
+        MODULAR_CIPHER_CIPHERPAD_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_PAD_PKCS1_OAEP_SHA384), "PAD_PKCS1_OAEP_SHA384#3.0.5");
+        MODULAR_CIPHER_CIPHERPAD_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_PAD_PKCS1_OAEP_SHA512), "PAD_PKCS1_OAEP_SHA512#3.0.5");
+        MODULAR_CIPHER_CIPHERPAD_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_PAD_PKCS1_OAEP_SHA3_224), "PAD_PKCS1_OAEP_SHA3_224#3.0.5");
+        MODULAR_CIPHER_CIPHERPAD_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_PAD_PKCS1_OAEP_SHA3_256), "PAD_PKCS1_OAEP_SHA3_256#3.0.5");
+        MODULAR_CIPHER_CIPHERPAD_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_PAD_PKCS1_OAEP_SHA3_384), "PAD_PKCS1_OAEP_SHA3_384#3.0.5");
+        MODULAR_CIPHER_CIPHERPAD_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_PAD_PKCS1_OAEP_SHA3_512), "PAD_PKCS1_OAEP_SHA3_512#3.0.5");
+
+        MODULAR_CIPHER_CIPHERPAD_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_PAD_ISO9796_MR_SCHEME_2), "PAD_ISO9796_MR_SCHEME_2#3.1");
+        MODULAR_CIPHER_CIPHERPAD_STR_MAP.put(Integer.valueOf(JCConsts.Cipher_PAD_ISO9796_MR_SCHEME_3), "PAD_ISO9796_MR_SCHEME_3#3.1");
+    }
+
+    
+    
     public static final String KEYAGREEMENT_STR[] = {"javacard.security.KeyAgreement", 
         //2.2.1
         "ALG_EC_SVDP_DH/ALG_EC_SVDP_DH_KDF#2.2.1", "ALG_EC_SVDP_DHC/ALG_EC_SVDP_DHC_KDF#2.2.1",
@@ -141,9 +226,11 @@ public class SingleModeTest {
         //was incorrectly like this: "ALG_EC_SVDP_DH_KDF#3.0.1", "ALG_EC_SVDP_DH_PLAIN#3.0.1", "ALG_EC_SVDP_DHC_KDF#3.0.1", "ALG_EC_SVDP_DHC_PLAIN#3.0.1",
         "ALG_EC_SVDP_DH_PLAIN#3.0.1", "ALG_EC_SVDP_DHC_PLAIN#3.0.1", 
         //3.0.5    
-        "ALG_EC_PACE_GM#3.0.5", "ALG_EC_SVDP_DH_PLAIN_XY#3.0.5", "ALG_DH_PLAIN#3.0.5"
+        "ALG_EC_PACE_GM#3.0.5", "ALG_EC_SVDP_DH_PLAIN_XY#3.0.5", "ALG_DH_PLAIN#3.0.5",
+        //3.1    
+        "ALG_XDH#3.1", "ALG_SM2#3.1"
     };
-    public static final int KEYAGREEMENT_STR_LAST_INDEX = JCConsts.KeyAgreement_ALG_DH_PLAIN;
+    public static final int KEYAGREEMENT_STR_LAST_INDEX = JCConsts.KeyAgreement_ALG_SM2;
     
     public static final String BIOBUILDER_STR[] = {"javacardx.biometry.BioBuilder",
         //2.2.2
@@ -179,8 +266,37 @@ public class SingleModeTest {
         "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_113#2.2.0", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_131#2.2.0", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_163#2.2.0", "TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_193#2.2.0", "TYPE_EC_F2M_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_EC_F2M_PRIVATE_TRANSIENT_DESELECT#3.0.1",
         "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_112#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_128#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_160#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_192#2.2.0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_224#3.0.1", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_256#3.0.1", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_320#never#0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_384#3.0.1", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_512#never#0", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_521#3.0.4", "TYPE_EC_FP_PRIVATE_TRANSIENT_RESET#3.0.1", "TYPE_EC_FP_PRIVATE_TRANSIENT_DESELECT#3.0.1",
         "TYPE_KOREAN_SEED_TRANSIENT_RESET#2.2.2", "TYPE_KOREAN_SEED_TRANSIENT_DESELECT#2.2.2", "TYPE_KOREAN_SEED LENGTH_KOREAN_SEED_128#2.2.2", 
-        "TYPE_HMAC_TRANSIENT_RESET#2.2.2", "TYPE_HMAC_TRANSIENT_DESELECT#2.2.2", "TYPE_HMAC LENGTH_HMAC_SHA_1_BLOCK_64#2.2.2", "TYPE_HMAC LENGTH_HMAC_SHA_256_BLOCK_64#2.2.2", "TYPE_HMAC LENGTH_HMAC_SHA_384_BLOCK_64#2.2.2", "TYPE_HMAC LENGTH_HMAC_SHA_512_BLOCK_64#2.2.2",
+        "TYPE_HMAC_TRANSIENT_RESET#2.2.2", "TYPE_HMAC_TRANSIENT_DESELECT#2.2.2", "TYPE_HMAC LENGTH_HMAC_SHA_1_BLOCK_64#2.2.2", "TYPE_HMAC LENGTH_HMAC_SHA_256_BLOCK_64#2.2.2", "TYPE_HMAC LENGTH_HMAC_SHA_384_BLOCK_64#2.2.2", "TYPE_HMAC LENGTH_HMAC_SHA_512_BLOCK_64#2.2.2"
     };
+    
+   public static final Map<Integer, String> MODULAR_KEYBUILDER_ALGTYPE_STR_MAP; // BUGBUG: unused now
+    static {
+        MODULAR_KEYBUILDER_ALGTYPE_STR_MAP = new HashMap<>();
+        //3.0.4
+        MODULAR_KEYBUILDER_ALGTYPE_STR_MAP.put(Integer.valueOf(JCConsts.KeyBuilder_ALG_TYPE_DES), "ALG_TYPE_DES#3.0.4");
+        MODULAR_KEYBUILDER_ALGTYPE_STR_MAP.put(Integer.valueOf(JCConsts.KeyBuilder_ALG_TYPE_AES), "ALG_TYPE_AES#3.0.4");
+        MODULAR_KEYBUILDER_ALGTYPE_STR_MAP.put(Integer.valueOf(JCConsts.KeyBuilder_ALG_TYPE_DSA_PUBLIC), "ALG_TYPE_DSA_PUBLIC#3.0.4");
+        MODULAR_KEYBUILDER_ALGTYPE_STR_MAP.put(Integer.valueOf(JCConsts.KeyBuilder_ALG_TYPE_DSA_PRIVATE), "ALG_TYPE_DSA_PRIVATE#3.0.4");
+        MODULAR_KEYBUILDER_ALGTYPE_STR_MAP.put(Integer.valueOf(JCConsts.KeyBuilder_ALG_TYPE_EC_F2M_PUBLIC), "ALG_TYPE_EC_F2M_PUBLIC#3.0.4");
+        MODULAR_KEYBUILDER_ALGTYPE_STR_MAP.put(Integer.valueOf(JCConsts.KeyBuilder_ALG_TYPE_EC_F2M_PRIVATE), "ALG_TYPE_EC_F2M_PRIVATE#3.0.4");
+        MODULAR_KEYBUILDER_ALGTYPE_STR_MAP.put(Integer.valueOf(JCConsts.KeyBuilder_ALG_TYPE_EC_FP_PUBLIC), "ALG_TYPE_EC_FP_PUBLIC#3.0.4");
+        MODULAR_KEYBUILDER_ALGTYPE_STR_MAP.put(Integer.valueOf(JCConsts.KeyBuilder_ALG_TYPE_EC_FP_PRIVATE), "TYPE_EC_FP_PRIVATE#3.0.4");
+        MODULAR_KEYBUILDER_ALGTYPE_STR_MAP.put(Integer.valueOf(JCConsts.KeyBuilder_ALG_TYPE_HMAC), "ALG_TYPE_HMAC#3.0.4");
+        MODULAR_KEYBUILDER_ALGTYPE_STR_MAP.put(Integer.valueOf(JCConsts.KeyBuilder_ALG_TYPE_KOREAN_SEED), "ALG_TYPE_KOREAN_SEED#3.0.4");
+        MODULAR_KEYBUILDER_ALGTYPE_STR_MAP.put(Integer.valueOf(JCConsts.KeyBuilder_ALG_TYPE_RSA_PUBLIC), "ALG_TYPE_RSA_PUBLIC#3.0.4");
+        MODULAR_KEYBUILDER_ALGTYPE_STR_MAP.put(Integer.valueOf(JCConsts.KeyBuilder_ALG_TYPE_RSA_PRIVATE), "ALG_TYPE_RSA_PRIVATE#3.0.4");
+        MODULAR_KEYBUILDER_ALGTYPE_STR_MAP.put(Integer.valueOf(JCConsts.KeyBuilder_ALG_TYPE_RSA_CRT_PRIVATE), "ALG_TYPE_RSA_CRT_PRIVATE#3.0.4");
+        //3.0.5
+        MODULAR_KEYBUILDER_ALGTYPE_STR_MAP.put(Integer.valueOf(JCConsts.KeyBuilder_ALG_TYPE_DH_PUBLIC), "ALG_TYPE_DH_PUBLIC#3.0.5");
+        MODULAR_KEYBUILDER_ALGTYPE_STR_MAP.put(Integer.valueOf(JCConsts.KeyBuilder_ALG_TYPE_DH_PRIVATE), "ALG_TYPE_DH_PRIVATE#3.0.5");
+        MODULAR_KEYBUILDER_ALGTYPE_STR_MAP.put(Integer.valueOf(JCConsts.KeyBuilder_ALG_TYPE_EC_F2M_PARAMETERS), "ALG_TYPE_EC_F2M_PARAMETERS#3.0.5");
+        MODULAR_KEYBUILDER_ALGTYPE_STR_MAP.put(Integer.valueOf(JCConsts.KeyBuilder_ALG_TYPE_EC_FP_PARAMETERS), "ALG_TYPE_EC_FP_PARAMETERS#3.0.5");
+        MODULAR_KEYBUILDER_ALGTYPE_STR_MAP.put(Integer.valueOf(JCConsts.KeyBuilder_ALG_TYPE_DSA_PARAMETERS), "ALG_TYPE_DSA_PARAMETERS#3.0.5");
+        MODULAR_KEYBUILDER_ALGTYPE_STR_MAP.put(Integer.valueOf(JCConsts.KeyBuilder_ALG_TYPE_DH_PARAMETERS), "ALG_TYPE_DH_PARAMETERS#3.0.5");
+        //3.1
+        MODULAR_KEYBUILDER_ALGTYPE_STR_MAP.put(Integer.valueOf(JCConsts.KeyBuilder_ALG_TYPE_GENERIC_SECRET), "ALG_TYPE_GENERIC_SECRET#3.1");
+        MODULAR_KEYBUILDER_ALGTYPE_STR_MAP.put(Integer.valueOf(JCConsts.KeyBuilder_ALG_TYPE_SM4), "ALG_TYPE_SM4#3.1");
+    }
     
     public static final String KEYPAIR_RSA_STR[] = {"javacard.security.KeyPair ALG_RSA on-card generation", 
         "ALG_RSA LENGTH_RSA_512#2.1.1", "ALG_RSA LENGTH_RSA_736#2.2.0", "ALG_RSA LENGTH_RSA_768#2.1.1", "ALG_RSA LENGTH_RSA_896#2.2.0",
@@ -214,10 +330,50 @@ public class SingleModeTest {
         //3.0.1
         "ALG_SHA_224#3.0.1",
         //3.0.5
-        "ALG_SHA3_224#3.0.5", "ALG_SHA3_256#3.0.5", "ALG_SHA3_384#3.0.5", "ALG_SHA3_512#3.0.5"   
+        "ALG_SHA3_224#3.0.5", "ALG_SHA3_256#3.0.5", "ALG_SHA3_384#3.0.5", "ALG_SHA3_512#3.0.5", 
+        //3.1
+        "ALG_SM3#3.1"    
     }; 
-    public static final int MESSAGEDIGEST_STR_LAST_INDEX = JCConsts.MessageDigest_ALG_SHA3_512;    
+    public static final int MESSAGEDIGEST_STR_LAST_INDEX = JCConsts.MessageDigest_ALG_SM3;    
             
+    public static final Map<Integer, String> MESSAGEDIGEST_STR_MAP;
+    static {
+        MESSAGEDIGEST_STR_MAP = new HashMap<>();
+        //3.0.4
+        MESSAGEDIGEST_STR_MAP.put(Integer.valueOf(JCConsts.MessageDigest_ALG_NULL), "ALG_NULL#3.0.4"); 
+    }
+    
+    public static final Map<Integer, String> MODULAR_MESSAGEDIGEST_ALG_STR_MAP; 
+    static {
+        MODULAR_MESSAGEDIGEST_ALG_STR_MAP = new HashMap<>();
+
+        //3.0.4
+        MODULAR_MESSAGEDIGEST_ALG_STR_MAP.put(Integer.valueOf(JCConsts.MessageDigest_ALG_NULL), "ALG_NULL#3.0.4");
+        // JC2.1
+        MODULAR_MESSAGEDIGEST_ALG_STR_MAP.put(Integer.valueOf(JCConsts.MessageDigest_ALG_SHA), "ALG_SHA#&le;2.1");
+        MODULAR_MESSAGEDIGEST_ALG_STR_MAP.put(Integer.valueOf(JCConsts.MessageDigest_ALG_MD5), "ALG_MD5#&le;2.1");
+        MODULAR_MESSAGEDIGEST_ALG_STR_MAP.put(Integer.valueOf(JCConsts.MessageDigest_ALG_RIPEMD160), "ALG_RIPEMD160#&le;2.1");
+        MODULAR_MESSAGEDIGEST_ALG_STR_MAP.put(Integer.valueOf(JCConsts.MessageDigest_ALG_SHA_256), "ALG_SHA_256#2.2.2");
+        MODULAR_MESSAGEDIGEST_ALG_STR_MAP.put(Integer.valueOf(JCConsts.MessageDigest_ALG_SHA_384), "ALG_SHA_384#2.2.2");
+        MODULAR_MESSAGEDIGEST_ALG_STR_MAP.put(Integer.valueOf(JCConsts.MessageDigest_ALG_SHA_512), "ALG_SHA_512#2.2.2");
+        // JC3.0.1
+        MODULAR_MESSAGEDIGEST_ALG_STR_MAP.put(Integer.valueOf(JCConsts.MessageDigest_ALG_SHA_224), "ALG_SHA_224#3.0.1");
+        // JC3.0.5
+        MODULAR_MESSAGEDIGEST_ALG_STR_MAP.put(Integer.valueOf(JCConsts.MessageDigest_ALG_SHA3_224), "ALG_SHA3_224#3.0.5");
+        MODULAR_MESSAGEDIGEST_ALG_STR_MAP.put(Integer.valueOf(JCConsts.MessageDigest_ALG_SHA3_256), "ALG_SHA3_256#3.0.5");
+        MODULAR_MESSAGEDIGEST_ALG_STR_MAP.put(Integer.valueOf(JCConsts.MessageDigest_ALG_SHA3_384), "ALG_SHA3_384#3.0.5");
+        MODULAR_MESSAGEDIGEST_ALG_STR_MAP.put(Integer.valueOf(JCConsts.MessageDigest_ALG_SHA3_512), "ALG_SHA3_512#3.0.5");
+    }
+    
+    public static final Map<Integer, String> OWNERPINBUILDER_STR_MAP;
+    static {
+        OWNERPINBUILDER_STR_MAP = new HashMap<>();
+        //3.0.5
+        OWNERPINBUILDER_STR_MAP.put(Integer.valueOf(JCConsts.OwnerPINBuilder_OWNER_PIN), "OWNER_PIN#3.0.5"); 
+        OWNERPINBUILDER_STR_MAP.put(Integer.valueOf(JCConsts.OwnerPINBuilder_OWNER_PIN_X), "OWNER_PIN_X#3.0.5"); 
+        OWNERPINBUILDER_STR_MAP.put(Integer.valueOf(JCConsts.OwnerPINBuilder_OWNER_PIN_X_WITH_PREDECREMENT), "OWNER_PIN_X_WITH_PREDECREMENT#3.0.5"); 
+    }
+        
     public static final String RANDOMDATA_STR[] = {"javacard.security.RandomData", 
         "ALG_PSEUDO_RANDOM#&le;2.1", "ALG_SECURE_RANDOM#&le;2.1",
         //3.0.5
@@ -405,9 +561,10 @@ public class SingleModeTest {
         KEYBUILDER_TEST_CFGS.put("TYPE_DES LENGTH_DES3_3KEY#&le;2.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_DES, (short) 192));
         KEYBUILDER_TEST_CFGS.put("TYPE_AES_TRANSIENT_RESET#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_AES_TRANSIENT_RESET, (short) 128));
         KEYBUILDER_TEST_CFGS.put("TYPE_AES_TRANSIENT_DESELECT#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_AES_TRANSIENT_DESELECT, (short) 128));
-        KEYBUILDER_TEST_CFGS.put("TYPE_AES LENGTH_AES_128#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_AES, (short) 128));
-        KEYBUILDER_TEST_CFGS.put("TYPE_AES LENGTH_AES_192#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_AES, (short) 192));
-        KEYBUILDER_TEST_CFGS.put("TYPE_AES LENGTH_AES_256#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_AES, (short) 256));
+        KEYBUILDER_TEST_CFGS.put("TYPE_AES LENGTH_AES_128#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_128));
+        KEYBUILDER_TEST_CFGS.put("TYPE_AES LENGTH_AES_192#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_192));
+        KEYBUILDER_TEST_CFGS.put("TYPE_AES LENGTH_AES_256#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_256));
+        KEYBUILDER_TEST_CFGS.put("TYPE_AES LENGTH_AES_512#3.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_AES, JCConsts.KeyBuilder_LENGTH_AES_512));
         KEYBUILDER_TEST_CFGS.put("TYPE_RSA_PUBLIC LENGTH_RSA_512#&le;2.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, (short) 512));
         KEYBUILDER_TEST_CFGS.put("TYPE_RSA_PUBLIC LENGTH_RSA_736#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, (short) 736));
         KEYBUILDER_TEST_CFGS.put("TYPE_RSA_PUBLIC LENGTH_RSA_768#2.2.0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, (short) 768));
@@ -469,8 +626,8 @@ public class SingleModeTest {
         KEYBUILDER_TEST_CFGS.put("TYPE_EC_FP_PRIVATE LENGTH_EC_FP_384#3.0.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, (short) 384));
         KEYBUILDER_TEST_CFGS.put("TYPE_EC_FP_PRIVATE LENGTH_EC_FP_512#never#0", new KBTestCfg(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, (short) 512));
         KEYBUILDER_TEST_CFGS.put("TYPE_EC_FP_PRIVATE LENGTH_EC_FP_521#3.0.4", new KBTestCfg(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, (short) 521));
-        KEYBUILDER_TEST_CFGS.put("TYPE_EC_FP_PRIVATE_TRANSIENT_RESET#3.0.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE_TRANSIENT_RESET, (short) 128));
-        KEYBUILDER_TEST_CFGS.put("TYPE_EC_FP_PRIVATE_TRANSIENT_DESELECT#3.0.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE_TRANSIENT_DESELECT, (short) 128));
+        KEYBUILDER_TEST_CFGS.put("TYPE_EC_FP_PRIVATE_TRANSIENT_RESET#3.0.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE_TRANSIENT_RESET, (short) 256));
+        KEYBUILDER_TEST_CFGS.put("TYPE_EC_FP_PRIVATE_TRANSIENT_DESELECT#3.0.1", new KBTestCfg(JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE_TRANSIENT_DESELECT, (short) 256));
         KEYBUILDER_TEST_CFGS.put("TYPE_KOREAN_SEED_TRANSIENT_RESET#2.2.2", new KBTestCfg(JCConsts.KeyBuilder_TYPE_KOREAN_SEED_TRANSIENT_RESET, (short) 128));
         KEYBUILDER_TEST_CFGS.put("TYPE_KOREAN_SEED_TRANSIENT_DESELECT#2.2.2", new KBTestCfg(JCConsts.KeyBuilder_TYPE_KOREAN_SEED_TRANSIENT_DESELECT, (short) 128));
         KEYBUILDER_TEST_CFGS.put("TYPE_KOREAN_SEED LENGTH_KOREAN_SEED_128#2.2.2", new KBTestCfg(JCConsts.KeyBuilder_TYPE_KOREAN_SEED, (short) 128));
@@ -480,6 +637,18 @@ public class SingleModeTest {
         KEYBUILDER_TEST_CFGS.put("TYPE_HMAC LENGTH_HMAC_SHA_256_BLOCK_64#2.2.2", new KBTestCfg(JCConsts.KeyBuilder_TYPE_HMAC, (short) 64));
         KEYBUILDER_TEST_CFGS.put("TYPE_HMAC LENGTH_HMAC_SHA_384_BLOCK_64#2.2.2", new KBTestCfg(JCConsts.KeyBuilder_TYPE_HMAC, (short) 128));
         KEYBUILDER_TEST_CFGS.put("TYPE_HMAC LENGTH_HMAC_SHA_512_BLOCK_64#2.2.2", new KBTestCfg(JCConsts.KeyBuilder_TYPE_HMAC, (short) 128));
+        KEYBUILDER_TEST_CFGS.put("TYPE_DH_PUBLIC LENGTH_DH_1024#3.0.5", new KBTestCfg(JCConsts.KeyBuilder_TYPE_DH_PUBLIC, JCConsts.KeyBuilder_LENGTH_DH_1024));
+        KEYBUILDER_TEST_CFGS.put("TYPE_DH_PUBLIC LENGTH_DH_2048#3.0.5", new KBTestCfg(JCConsts.KeyBuilder_TYPE_DH_PUBLIC, JCConsts.KeyBuilder_LENGTH_DH_2048));
+        KEYBUILDER_TEST_CFGS.put("TYPE_DH_PUBLIC_TRANSIENT_DESELECT LENGTH_DH_1024#3.0.5", new KBTestCfg(JCConsts.KeyBuilder_TYPE_DH_PUBLIC_TRANSIENT_DESELECT, JCConsts.KeyBuilder_LENGTH_DH_1024));
+        KEYBUILDER_TEST_CFGS.put("TYPE_DH_PUBLIC_TRANSIENT_DESELECT LENGTH_DH_2048#3.0.5", new KBTestCfg(JCConsts.KeyBuilder_TYPE_DH_PUBLIC_TRANSIENT_DESELECT, JCConsts.KeyBuilder_LENGTH_DH_2048));
+        KEYBUILDER_TEST_CFGS.put("TYPE_DH_PUBLIC_TRANSIENT_RESET LENGTH_DH_1024#3.0.5", new KBTestCfg(JCConsts.KeyBuilder_TYPE_DH_PUBLIC_TRANSIENT_RESET, JCConsts.KeyBuilder_LENGTH_DH_1024));
+        KEYBUILDER_TEST_CFGS.put("TYPE_DH_PUBLIC_TRANSIENT_RESET LENGTH_DH_2048#3.0.5", new KBTestCfg(JCConsts.KeyBuilder_TYPE_DH_PUBLIC_TRANSIENT_RESET, JCConsts.KeyBuilder_LENGTH_DH_2048));
+        KEYBUILDER_TEST_CFGS.put("TYPE_DH_PRIVATE LENGTH_DH_1024#3.0.5", new KBTestCfg(JCConsts.KeyBuilder_TYPE_DH_PRIVATE, JCConsts.KeyBuilder_LENGTH_DH_1024));
+        KEYBUILDER_TEST_CFGS.put("TYPE_DH_PRIVATE LENGTH_DH_2048#3.0.5", new KBTestCfg(JCConsts.KeyBuilder_TYPE_DH_PRIVATE, JCConsts.KeyBuilder_LENGTH_DH_2048));
+        KEYBUILDER_TEST_CFGS.put("TYPE_DH_PRIVATE_TRANSIENT_DESELECT LENGTH_DH_1024#3.0.5", new KBTestCfg(JCConsts.KeyBuilder_TYPE_DH_PRIVATE_TRANSIENT_DESELECT, JCConsts.KeyBuilder_LENGTH_DH_1024));
+        KEYBUILDER_TEST_CFGS.put("TYPE_DH_PRIVATE_TRANSIENT_DESELECT LENGTH_DH_2048#3.0.5", new KBTestCfg(JCConsts.KeyBuilder_TYPE_DH_PRIVATE_TRANSIENT_DESELECT, JCConsts.KeyBuilder_LENGTH_DH_2048));
+        KEYBUILDER_TEST_CFGS.put("TYPE_DH_PRIVATE_TRANSIENT_DESELECT LENGTH_DH_1024#3.0.5", new KBTestCfg(JCConsts.KeyBuilder_TYPE_DH_PRIVATE_TRANSIENT_RESET, JCConsts.KeyBuilder_LENGTH_DH_1024));
+        KEYBUILDER_TEST_CFGS.put("TYPE_DH_PRIVATE_TRANSIENT_DESELECT LENGTH_DH_2048#3.0.5", new KBTestCfg(JCConsts.KeyBuilder_TYPE_DH_PRIVATE_TRANSIENT_RESET, JCConsts.KeyBuilder_LENGTH_DH_2048));
     }
     
     
@@ -601,6 +770,11 @@ public class SingleModeTest {
         }            
         FileOutputStream file = cardManager.establishConnection(cardName, cardName + "_ALGSUPPORT_", selectedReader);
     
+        // Insert header with explanation of test results
+        String message = "\nalgorithm_name; is_supported; time_elapsed; persistent_mem_allocated; ram_deselect_allocated; ram_reset_allocated;\n";
+        m_SystemOutLogger.println(message);
+        file.write(message.getBytes()); 
+        
         // Checking for arguments 
         if (args.length > 1){       // in case there are arguments from command line present
             if (Arrays.asList(args).contains(TEST_ALL_ALGORITHMS)){testAllAtOnce(file);}
@@ -609,6 +783,7 @@ public class SingleModeTest {
             else if (Arrays.asList(args).contains(TEST_CLASS_SIGNATURE)){TestClassSignature(file);}
             else if (Arrays.asList(args).contains(TEST_CLASS_KEYBUILDER)){TestClassKeyBuilder(file);}
             else if (Arrays.asList(args).contains(TEST_CLASS_MESSAGEDIGEST)){TestClassMessageDigest(file);}
+            else if (Arrays.asList(args).contains(TEST_CLASS_OWNERPINBUILDER)){TestClassOwnerPINBuilder(file);}
             else if (Arrays.asList(args).contains(TEST_CLASS_RANDOMDATA)){TestClassRandomData(file);}
             else if (Arrays.asList(args).contains(TEST_CLASS_KEYAGREEMENT)){TestClassKeyAgreement(file);}
             else if (Arrays.asList(args).contains(TEST_CLASS_KEYPAIR_ALG_RSA)){TestClassKeyPair_ALG_RSA(file);}
@@ -629,7 +804,7 @@ public class SingleModeTest {
             long elapsedTimeWholeTest = -System.currentTimeMillis();
             testAllAtOnce(file);
             elapsedTimeWholeTest += System.currentTimeMillis();
-            String message = "\n\nTotal test time:; " + elapsedTimeWholeTest / 1000 + " seconds."; 
+            message = "\n\nTotal test time:; " + elapsedTimeWholeTest / 1000 + " seconds."; 
             m_SystemOutLogger.println(message);
             file.write(message.getBytes());
 
@@ -663,96 +838,6 @@ public class SingleModeTest {
         m_SystemOutLogger.println(message);
         file.write(message.getBytes());
     }
-
-    /**
-     * Convert error from card to text string
-     * @param swStatus
-     * @return 
-     */
-    public static String ErrorToString(int swStatus) {
-        // lower byte of exception is value as defined in JCSDK/api_classic/constant-values.htm
-        //https://docs.oracle.com/javacard/3.0.5/api/constant-values.html
-        
-        short sw1 = (short) (swStatus & 0xff00);
-        short sw2 = (short) (swStatus & 0x00ff);
-        switch (sw1) {
-            case JCConsts.SW_Exception_prefix: 
-                switch (sw2) { 
-                    case JCConsts.SW_Exception:
-                        return "Exception";
-                    case JCConsts.SW_ArrayIndexOutOfBoundsException:
-                        return "ArrayIndexOutOfBoundsException";
-                    case JCConsts.SW_ArithmeticException:
-                        return "ArithmeticException"; 
-                    case JCConsts.SW_ArrayStoreException:
-                        return "ArrayStoreException";
-                    case JCConsts.SW_NullPointerException:
-                        return "NullPointerException";
-                    case JCConsts.SW_NegativeArraySizeException:
-                        return "NegativeArraySizeException";
-                }
-            case JCConsts.SW_CryptoException_prefix:
-                switch (sw2) {
-                    case JCConsts.CryptoException_ILLEGAL_VALUE:
-                        return "CryptoException_ILLEGAL_VALUE";
-                    case JCConsts.CryptoException_UNINITIALIZED_KEY:
-                        return "CryptoException_UNINITIALIZED_KEY";
-                    case JCConsts.CryptoException_NO_SUCH_ALGORITHM:
-                        return "CryptoException_NO_SUCH_ALGORITHM";
-                    case JCConsts.CryptoException_INVALID_INIT:
-                        return "CryptoException_INVALID_INIT";
-                    case JCConsts.CryptoException_ILLEGAL_USE:
-                        return "CryptoException_ILLEGAL_USE";
-                    default: return "CryptoException_" + Integer.toHexString(sw2);                
-                }
-            case JCConsts.SW_SystemException_prefix:
-                switch (sw2) {
-                    case JCConsts.SystemException_ILLEGAL_VALUE:
-                        return "SystemException_ILLEGAL_VALUE";
-                    case JCConsts.SystemException_NO_TRANSIENT_SPACE:
-                        return "SystemException_NO_TRANSIENT_SPACE";
-                    case JCConsts.SystemException_ILLEGAL_TRANSIENT:
-                        return "SystemException_ILLEGAL_TRANSIENT";
-                    case JCConsts.SystemException_ILLEGAL_AID:
-                        return "SystemException_ILLEGAL_AID";
-                    case JCConsts.SystemException_NO_RESOURCE:
-                        return "SystemException_NO_RESOURCE";
-                    case JCConsts.SystemException_ILLEGAL_USE:
-                        return "SystemException_ILLEGAL_USE";
-                    default:
-                        return "SystemException_" + Integer.toHexString(sw2);
-                }
-            case JCConsts.SW_PINException_prefix:
-                switch (sw2) {
-                    case JCConsts.PINException_ILLEGAL_VALUE:
-                        return "PINException_ILLEGAL_VALUE";
-                    case JCConsts.PINException_ILLEGAL_STATE:
-                        return "PINException_ILLEGAL_STATE";
-                    default:
-                        return "PINException_" + Integer.toHexString(sw2);
-                }
-            case JCConsts.SW_TransactionException_prefix:
-                switch (sw2) {
-                    case JCConsts.TransactionException_IN_PROGRESS:
-                        return "TransactionException_IN_PROGRESS";
-                    case JCConsts.TransactionException_NOT_IN_PROGRESS:
-                        return "TransactionException_NOT_IN_PROGRESS";
-                    case JCConsts.TransactionException_BUFFER_FULL:
-                        return "TransactionException_BUFFER_FULL";
-                    case JCConsts.TransactionException_INTERNAL_FAILURE:
-                        return "TransactionException_INTERNAL_FAILURE";
-                    case JCConsts.TransactionException_ILLEGAL_USE:
-                        return "TransactionException_ILLEGAL_USE";
-                    default:
-                        return "TransactionException_" + Integer.toHexString(sw2);
-                }
-            case JCConsts.SW_CardRuntimeException_prefix:
-                return "CardRuntimeException_" + Integer.toHexString(sw2);
-                
-            default:
-                return Integer.toHexString(swStatus);
-        }
-    }
     
     /**
      * Checks result of algorithm testing on smart card.
@@ -777,74 +862,161 @@ public class SingleModeTest {
         }        
         
         if (swStatus == 0x9000) {
+            String supportedString = "unknown failure";
+            elTimeStr = "0";
+            boolean bParseMemory = true;
             switch (response){
                 case SUPP_ALG_SUPPORTED:
                     // in case negative value is returned as timestamp
-                    if (elapsedCard < 0){
+                    if (elapsedCard < 0) {
                         elTimeStr = "Not executed!";
-                        message += name + ";" + "no;" + elTimeStr + "\r\n";
+                        supportedString = "no";
                     }
-                    else{
+                    else {
+                        supportedString = "yes";
                         elTimeStr = String.format("%1f", (double) elapsedCard / (float) CLOCKS_PER_SEC);
-                        message += name + ";" + "yes;" + elTimeStr + "\r\n";
                     }
                     break;
 
                 case NO_SUCH_ALGORITHM:
-                    message += name + ";" + "no;" + "\r\n";
+                    supportedString = "no";
+                    elTimeStr = String.format("%1f", (double) elapsedCard / (float) CLOCKS_PER_SEC);
                     break;
 
                 case ILLEGAL_USE:
-                    message += name + ";" + "error(ILLEGAL_USE);" + "\r\n";
+                    supportedString = "error(ILLEGAL_USE)";
                     break;
 
                 case ILLEGAL_VALUE:
-                    message += name + ";" + "error(ILLEGAL_VALUE);" + "\r\n";
+                    supportedString = "error(ILLEGAL_VALUE)";
                     break;
 
                 case INVALID_INIT:
-                    message += name + ";" + "error(INVALID_INIT);" + "\r\n";
+                    supportedString = "error(INVALID_INIT)";
                 break;
 
                 case UNINITIALIZED_KEY:
-                    message += name + ";" + "error(UNINITIALIZED_KEY);" + "\r\n";
+                    supportedString = "error(UNINITIALIZED_KEY)";
                 break;
+                
                 case UNKNOWN_ERROR: 
-                    message += name + ";" + "error(UNKNOWN_ERROR);" + "\r\n";
+                    supportedString = "error(UNKNOWN_ERROR)";
+                    bParseMemory = false;
                     break;
+                    
                 case 0x6f:
-                    message += name + ";" + "maybe;" + "\r\n";
+                    supportedString = "maybe";
+                    bParseMemory = false;
                 break;
 
                 default:
                     // OTHER VALUE, IGNORE 
-                m_SystemOutLogger.println("Unknown value detected in AlgTest applet (0x" + Integer.toHexString(response & 0xff) + "). Possibly, old version of AlTestJClient is used (try update)");
-                break;        
+                    m_SystemOutLogger.println("Unknown value detected in AlgTest applet (0x" + Integer.toHexString(response & 0xff) + "). Possibly, old version of AlTestJClient is used (try update)");
+                    bParseMemory = false;
+                    break;   
+            }
+            
+            if (bParseMemory) {
+                int persistentMem = 0;
+                int deselectMem = 0;
+                int resetMem = 0;
+                if (responseBuffer.length > 3) { 
+                    // We have memory report also available
+                    int offset = 3;
+                    persistentMem = Util.getInt(responseBuffer, offset); offset += 4;
+                    persistentMem -= Util.getInt(responseBuffer, offset); offset += 4;
+                    deselectMem = Util.getInt(responseBuffer, offset); offset += 4;
+                    deselectMem -= Util.getInt(responseBuffer, offset); offset += 4;
+                    resetMem = Util.getInt(responseBuffer, offset); offset += 4;
+                    resetMem -= Util.getInt(responseBuffer, offset); offset += 4;
+                }
+                message += String.format("%s;%s;\t\t%s;%d;%d;%d\r\n", name, supportedString, elTimeStr, persistentMem, deselectMem, resetMem);
+            }
+            else {
+                message += String.format("%s;%s;\t\t%s;;;\r\n", name, supportedString, elTimeStr);
             }
         }
         else {
-            message += name + ";" + ErrorToString(swStatus) + ";" + "\r\n";
+            message += name + ";" + Utils.ErrorToString(swStatus) + ";" + "\r\n";
         }
         m_SystemOutLogger.println(message);
         file.write(message.getBytes());                
     }
         
     /**
+     * Executes tests for all constants provided in algsToTest using apdu as the template 
+     * @param apdu template apdu, only apdu[OFFSET_DATA] is changed
+     * @param algsToTest list of values to test
+     * @param file FileOutputStream object containing output file. 
+     * @throws Exception 
+     */
+    private static void executeTests(byte[] apdu, ArrayList<Pair<Integer, String>> algsToTest, FileOutputStream file)  throws Exception {
+        for (Pair algToTest : algsToTest) {    
+            // Reset applet before call
+            cardManager.sendAPDU(RESET_APDU);
+            apdu[OFFSET_DATA] = ((Integer) algToTest.getL()).byteValue();
+            // get starting time of communication cycle
+            long elapsedCard = -System.currentTimeMillis();
+            ResponseAPDU response = cardManager.sendAPDU(apdu);
+            // save time of card response
+            elapsedCard += System.currentTimeMillis();
+            byte[] resp = response.getData();
+
+            // Calls method CheckResult - should add to output error messages. 
+            CheckResult(file, Utils.GetAlgorithmName((String) algToTest.getR()), resp, elapsedCard, response.getSW());
+        }    
+    }
+    
+    /**
+     * Executes tests for all constants provided in algsToTest using apdu as the template 
+     * @param apdu template apdu, only apdu[OFFSET_DATA] is changed
+     * @param algsToTest list of values to test
+     * @param file FileOutputStream object containing output file. 
+     * @throws Exception 
+     */
+    private static void executeTestsArray(byte[] apdu, ArrayList<Pair<ArrayList<Byte>, String>> algsToTest, FileOutputStream file)  throws Exception {
+        for (Pair algToTest : algsToTest) {    
+            // Reset applet before call
+            cardManager.sendAPDU(RESET_APDU);
+            // Set parameters to apdu
+            ArrayList<Byte> params = (ArrayList<Byte>) algToTest.getL();
+            for (int i = 0; i < params.size(); i++) {
+                apdu[OFFSET_DATA + i] = params.get(i);
+            }
+            // get starting time of communication cycle
+            long elapsedCard = -System.currentTimeMillis();
+            ResponseAPDU response = cardManager.sendAPDU(apdu);
+            // save time of card response
+            elapsedCard += System.currentTimeMillis();
+            byte[] resp = response.getData();
+
+            // Calls method CheckResult - should add to output error messages. 
+            CheckResult(file, Utils.GetAlgorithmName((String) algToTest.getR()), resp, elapsedCard, response.getSW());
+        }    
+    }    
+    
+    /**
      * Tests all algorithms in class 'javacardx.crypto.Cipher' and results writes into the output file.
      * @param file FileOutputStream object containing output file.
      * @throws Exception
      */
     public static void TestClassCipher(FileOutputStream file) throws Exception{
+        TestClassCipher_helper(file, Consts.CLASS_CIPHER, SingleModeTest.CIPHER_STR[0]);
+    }
+    public static void TestClassCipherOneShot(FileOutputStream file) throws Exception{
+        TestClassCipher_helper(file, Consts.CLASS_CIPHER_ONESHOT, "javacardx.crypto.Cipher.OneShot");
+    }
+    public static void TestClassCipher_helper(FileOutputStream file, byte cipherClass, String packageName) throws Exception{
         long       elapsedCard = 0;
         byte[] apdu = new byte[6];
         apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
         apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
-        apdu[OFFSET_P1] = Consts.CLASS_CIPHER;   // 0x11
+        apdu[OFFSET_P1] = cipherClass;   
         apdu[OFFSET_P2] = (byte)0x00;
         apdu[OFFSET_LC] = (byte)0x01;
 
         /* Creates message with class name and writes it in the output file and on the screen. */
-        String message = "\n" + Utils.GetAlgorithmName(SingleModeTest.CIPHER_STR[0]) + "\r\n";
+        String message = "\n" + packageName + "\r\n";
         m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         
@@ -854,7 +1026,7 @@ public class SingleModeTest {
             cardManager.sendAPDU(RESET_APDU);
 
             // get starting time of communication cycle
-            apdu[OFFSET_DATA] = (byte) i;
+            apdu[OFFSET_DATA] = (byte) i; // i is equal to constants in Cipher
 
             elapsedCard = -System.currentTimeMillis();
             ResponseAPDU response = cardManager.sendAPDU(apdu);
@@ -866,6 +1038,54 @@ public class SingleModeTest {
             // Calls method CheckResult - should add to output error messages.
             CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.CIPHER_STR[i]), resp, elapsedCard, response.getSW());
         }        
+        
+        ArrayList<Pair<Integer, String>> algsToTest = new ArrayList<>();
+        // Test additional Cipher constants (TODO: change to map-based testing completely)
+        for (Integer item : CIPHER_STR_MAP.keySet()) {
+            algsToTest.add(new Pair(item, CIPHER_STR_MAP.get(item)));
+        }
+        
+        // Test also AEAD ciphers via Cipher engine constant
+        algsToTest.add(new Pair(Integer.valueOf(JCConsts.AEADCipher_CIPHER_AES_CCM), AEADCIPHER_STR[1]));
+        algsToTest.add(new Pair(Integer.valueOf(JCConsts.AEADCipher_CIPHER_AES_GCM), AEADCIPHER_STR[2]));
+        executeTests(apdu, algsToTest, file);
+    }
+    
+    
+    /**
+     * Tests all algorithms in class 'javacardx.crypto.Cipher' and results writes into the output file.
+     * @param file FileOutputStream object containing output file.
+     * @throws Exception
+     */
+    public static void TestClassCipherModular(FileOutputStream file) throws Exception{
+        /* Creates message with class name and writes it in the output file and on the screen. */
+        String message = "\n" + Utils.GetAlgorithmName(SingleModeTest.CIPHER_STR[0]) + ".getInstance(byte cipherAlgorithm, byte paddingAlgorithm, boolean externalAccess)\r\n";
+        m_SystemOutLogger.println(message);
+        file.write(message.getBytes());
+
+        //
+        // Test modular getInstance(byte cipherAlgorithm, byte paddingAlgorithm, boolean externalAccess) 
+        // All combinations of cipherAlgorithm (Cipher_CIPHER_*) and paddingAlgorithm (Cipher_PAD_*) are tested
+        byte[] apdu = new byte[7]; // 7 bytes = 5 bytes header + 2 bytes params
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
+        apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
+        apdu[OFFSET_P1] = Consts.CLASS_CIPHER_MODULAR;   
+        apdu[OFFSET_P2] = (byte)0x00;
+        apdu[OFFSET_LC] = (byte)0x02;
+        ArrayList<Pair<ArrayList<Byte>, String>> algsModularToTest = new ArrayList<>();
+        for (Integer cipher : MODULAR_CIPHER_CIPHERALG_STR_MAP.keySet()) {
+            for (Integer padding : MODULAR_CIPHER_CIPHERPAD_STR_MAP.keySet()) {
+                ArrayList<Byte> params = new ArrayList<>();
+                params.add(cipher.byteValue());
+                params.add(padding.byteValue());
+                String name = String.format("%s %s", 
+                        Utils.GetAlgorithmName((String) MODULAR_CIPHER_CIPHERALG_STR_MAP.get(cipher)), 
+                        Utils.GetAlgorithmName((String) MODULAR_CIPHER_CIPHERPAD_STR_MAP.get(padding)));
+                algsModularToTest.add(new Pair(params, name));
+            }
+        }
+        
+        executeTestsArray(apdu, algsModularToTest, file);
     }
     
     /**
@@ -874,17 +1094,23 @@ public class SingleModeTest {
      * @throws IOException
      * @throws Exception
      */
-    public static void TestClassSignature (FileOutputStream file) throws IOException, Exception{
+    public static void TestClassSignature(FileOutputStream file) throws IOException, Exception{
+        TestClassSignature_helper(file, Consts.CLASS_SIGNATURE, "javacard.crypto.Signature");
+    }
+    public static void TestClassSignatureOneShot(FileOutputStream file) throws IOException, Exception{
+        TestClassSignature_helper(file, Consts.CLASS_SIGNATURE_ONESHOT, "javacard.crypto.Signature.OneShot");
+    }
+    public static void TestClassSignature_helper(FileOutputStream file, byte signatureClass, String packageName) throws IOException, Exception{
         long       elapsedCard = 0;
         byte[] apdu = new byte[6];
         apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
         apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
-        apdu[OFFSET_P1] = Consts.CLASS_SIGNATURE;   // 0x12
+        apdu[OFFSET_P1] = signatureClass;   
         apdu[OFFSET_P2] = (byte)0x00;
         apdu[OFFSET_LC] = (byte)0x01;
         
         /* Creates message with class name and writes it in the output file and on the screen. */
-        String message = "\n" + Utils.GetAlgorithmName(SingleModeTest.SIGNATURE_STR[0]) + "\r\n";
+        String message = "\n" + packageName + "\r\n";
         m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         
@@ -907,22 +1133,77 @@ public class SingleModeTest {
     }
     
     /**
+     * Tests all algorithms in class 'javacardx.crypto.Signature' and results writes into the output file.
+     * @param file FileOutputStream object containing output file.
+     * @throws IOException
+     * @throws Exception
+     */
+    public static void TestClassSignatureModular(FileOutputStream file) throws IOException, Exception{
+        /* Creates message with class name and writes it in the output file and on the screen. */
+        String message = "\n" + Utils.GetAlgorithmName(SingleModeTest.SIGNATURE_STR[0]) + ".getInstance(byte messageDigestAlgorithm, byte cipherAlgorithm, byte paddingAlgorithm, boolean externalAccess)\r\n";
+        m_SystemOutLogger.println(message);
+        file.write(message.getBytes());
+
+        //
+        // Test modular getInstance(byte messageDigestAlgorithm,byte cipherAlgorithm,byte paddingAlgorithm,boolean externalAccess) // jc304
+        // All combinations of digestAlgorithm (MessageDigest_ALG_*), cipherAlgorithm (Signature_SIG_CIPHER_*) and paddingAlgorithm (Cipher_PAD_*) are tested
+        byte[] apdu = new byte[8]; // 8 bytes = 5 bytes header + 3 bytes params
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
+        apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
+        apdu[OFFSET_P1] = Consts.CLASS_SIGNATURE_MODULAR;   
+        apdu[OFFSET_P2] = (byte)0x00;
+        apdu[OFFSET_LC] = (byte)0x03;
+        ArrayList<Pair<ArrayList<Byte>, String>> algsModularToTest = new ArrayList<>();
+        for (Integer cipher : MODULAR_SIG_CIPHER_STR_MAP.keySet()) {
+            for (Integer padding : MODULAR_CIPHER_CIPHERPAD_STR_MAP.keySet()) {
+               for (Integer hash : MODULAR_MESSAGEDIGEST_ALG_STR_MAP.keySet()) {
+                    ArrayList<Byte> params = new ArrayList<>();
+                    params.add(hash.byteValue());
+                    params.add(cipher.byteValue());
+                    params.add(padding.byteValue());
+                    String name = String.format("%s %s %s", 
+                            Utils.GetAlgorithmName((String) MODULAR_SIG_CIPHER_STR_MAP.get(cipher)), 
+                            Utils.GetAlgorithmName((String) MODULAR_CIPHER_CIPHERPAD_STR_MAP.get(padding)),
+                            Utils.GetAlgorithmName((String) MODULAR_MESSAGEDIGEST_ALG_STR_MAP.get(hash)));
+                    algsModularToTest.add(new Pair(params, name));
+                }
+            }
+        }
+        
+        executeTestsArray(apdu, algsModularToTest, file);
+    }
+    
+    /**
      * Tests all algorithms in class 'javacardx.crypto.MessageDigest' and results writes into the output file.
      * @param file FileOutputStream object containing output file.
      * @throws IOException
      * @throws Exception
      */
-    public static void TestClassMessageDigest (FileOutputStream file) throws IOException, Exception{
+    
+    public static void TestClassMessageDigest(FileOutputStream file) throws IOException, Exception{
+        TestClassMessageDigest_helper(file, Consts.CLASS_MESSAGEDIGEST, SingleModeTest.MESSAGEDIGEST_STR[0]);
+    }
+    public static void TestClassMessageDigestOneShot(FileOutputStream file) throws IOException, Exception{
+        TestClassMessageDigest_helper(file, Consts.CLASS_MESSAGEDIGEST_ONESHOT, "javacard.security.MessageDigest.OneShot");
+    }
+    public static void TestClassInitializedMessageDigest(FileOutputStream file) throws IOException, Exception{
+        TestClassMessageDigest_helper(file, Consts.CLASS_INITIALIZEDMESSAGEDIGEST, "javacard.security.InitializedMessageDigest");
+    }
+    public static void TestClassInitializedMessageDigestOneShot(FileOutputStream file) throws IOException, Exception{
+        TestClassMessageDigest_helper(file, Consts.CLASS_INITIALIZEDMESSAGEDIGEST_ONESHOT, "javacard.security.InitializedMessageDigest.OneShot");
+    }
+    
+    public static void TestClassMessageDigest_helper(FileOutputStream file, byte digestClass, String packageName) throws IOException, Exception{
         long       elapsedCard = 0;
         byte[] apdu = new byte[6];
         apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
         apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
-        apdu[OFFSET_P1] = Consts.CLASS_MESSAGEDIGEST;   // 0x15
+        apdu[OFFSET_P1] = digestClass;   
         apdu[OFFSET_P2] = (byte)0x00;
         apdu[OFFSET_LC] = (byte)0x01;
         
         /* Creates message with class name and writes it in the output file and on the screen. */
-        String message = "\n" + Utils.GetAlgorithmName(SingleModeTest.MESSAGEDIGEST_STR[0]) + "\r\n";
+        String message = "\n" + packageName + "\r\n";
         m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         
@@ -941,6 +1222,40 @@ public class SingleModeTest {
             // Calls method CheckResult - should add to output error messages. 
             CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.MESSAGEDIGEST_STR[i]), resp, elapsedCard, response.getSW());
         }
+        
+        ArrayList<Pair<Integer, String>> algsToTest = new ArrayList<>();
+        // Test additional MessageDigest constants (TODO: change to map-based testing completely)
+        for (Integer item : MESSAGEDIGEST_STR_MAP.keySet()) {
+            algsToTest.add(new Pair(item, MESSAGEDIGEST_STR_MAP.get(item)));
+        }
+        executeTests(apdu, algsToTest, file);        
+    }
+    
+    
+    /**
+     * Tests all algorithms in class 'javacard.framework.OwnerPINBuilder' and results writes into the output file.
+     * @param file FileOutputStream object containing output file.
+     * @throws IOException
+     * @throws Exception
+     */
+    public static void TestClassOwnerPINBuilder(FileOutputStream file) throws IOException, Exception{
+        byte[]  apdu = new byte[6];
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
+        apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
+        apdu[OFFSET_P1] = Consts.CLASS_OWNERPINBUILDER;   
+        apdu[OFFSET_P2] = (byte)0x00;
+        apdu[OFFSET_LC] = (byte)0x01;
+        
+        /* Creates message with class name and writes it in the output file and on the screen. */
+        String message = "\n" + "javacard.framework.OwnerPINBuilder" + "\r\n";
+        m_SystemOutLogger.println(message);
+        file.write(message.getBytes());
+
+        ArrayList<Pair<Integer, String>> algsToTest = new ArrayList<>();
+        for (Integer item : OWNERPINBUILDER_STR_MAP.keySet()) {
+            algsToTest.add(new Pair(item, OWNERPINBUILDER_STR_MAP.get(item)));
+        }
+        executeTests(apdu, algsToTest, file);        
     }
     
     /**
@@ -950,16 +1265,22 @@ public class SingleModeTest {
      * @throws Exception
      */
     public static void TestClassRandomData(FileOutputStream file) throws IOException, Exception{
+        TestClassRandomData_helper(file, Consts.CLASS_RANDOMDATA, SingleModeTest.RANDOMDATA_STR[0]);
+    }
+    public static void TestClassRandomDataOneShot(FileOutputStream file) throws IOException, Exception{
+        TestClassRandomData_helper(file, Consts.CLASS_RANDOMDATA_ONESHOT, "javacard.security.RandomData.OneShot");
+    }
+    public static void TestClassRandomData_helper(FileOutputStream file, byte randomClass, String packageName) throws IOException, Exception{
         long       elapsedCard = 0;
         byte[] apdu = new byte[6];
         apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
         apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
-        apdu[OFFSET_P1] = Consts.CLASS_RANDOMDATA;   // 0x16
+        apdu[OFFSET_P1] = randomClass;   
         apdu[OFFSET_P2] = (byte)0x00;
         apdu[OFFSET_LC] = (byte)0x01;
         
         /* Creates message with class name and writes it in the output file and on the screen. */
-        String message = "\r\n" + Utils.GetAlgorithmName(SingleModeTest.RANDOMDATA_STR[0]) + "\r\n";
+        String message = "\r\n" + packageName + "\r\n";
         m_SystemOutLogger.println(message);
         file.write(message.getBytes());
         
@@ -993,7 +1314,7 @@ public class SingleModeTest {
         apdu[OFFSET_P1] = Consts.CLASS_KEYBUILDER;   // 0x20
         apdu[OFFSET_P2] = (byte)0x00;
         apdu[OFFSET_LC] = (byte)0x03;
-            
+                
         // Creates message with class name and writes it in the output file and on the screen. 
         String message = "\n" + Utils.GetAlgorithmName(KEYBUILDER_STR[0]) + "\r\n";
         m_SystemOutLogger.println(message);
@@ -1030,6 +1351,47 @@ public class SingleModeTest {
             CheckResult(file, Utils.GetAlgorithmName(keyBuilderStr), resp, elapsedCard, response.getSW());
         }
     }
+    
+    
+    /**
+     * Tests all algorithms in class 'javacardx.crypto.KeyBuilder' and results writes into the output file.
+     * @param file FileOutputStream object containing output file.
+     * @throws IOException
+     * @throws Exception
+     */
+    // BUGBUG: unused now, requires sensible mapping between  algorithmicKeyType and keyLength
+    public static void TestClassKeyBuilderModular(FileOutputStream file) throws IOException, Exception{
+        /* Creates message with class name and writes it in the output file and on the screen. */
+        String message = "\n" + Utils.GetAlgorithmName(SingleModeTest.KEYBUILDER_STR[0]) + ".buildKey(byte algorithmicKeyType,byte keyMemoryType,short keyLength,boolean keyEncryption) \r\n";
+        m_SystemOutLogger.println(message);
+        file.write(message.getBytes());
+
+        //
+        // Test modular buildKey(byte algorithmicKeyType,byte keyMemoryType,short keyLength,boolean keyEncryption)
+        // All combinations of algorithmicKeyType (KeyBuilder_ALG_TYPE_*), keyMemoryType (BUGBUG) and keyLength are tested
+        byte[] apdu = new byte[9];  //5B header, 4B data 
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
+        apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
+        apdu[OFFSET_P1] = Consts.CLASS_KEYBUILDER_MODULAR;
+        apdu[OFFSET_P2] = (byte)0x00;
+        apdu[OFFSET_LC] = (byte)0x04;
+/*  needs to finished, requires sensible mapping between algorithmicKeyType and keyLength to prevent too many combinations       
+        ArrayList<Pair<ArrayList<Byte>, String>> algsModularToTest = new ArrayList<>();
+        for (Integer cipher : MODULAR_KEYBUILDER_ALGTYPE_STR_MAP.keySet()) {
+            for (Integer padding : MODULAR_CIPHER_CIPHERPAD_STR_MAP.keySet()) {
+                ArrayList<Byte> params = new ArrayList<>();
+                params.add(cipher.byteValue());
+                params.add(padding.byteValue());
+                String name = String.format("%s %s", 
+                        Utils.GetAlgorithmName((String) MODULAR_CIPHER_CIPHERALG_STR_MAP.get(cipher)), 
+                        Utils.GetAlgorithmName((String) MODULAR_CIPHER_CIPHERPAD_STR_MAP.get(padding)));
+                algsModularToTest.add(new Pair(params, name));
+            }
+        }
+        
+        executeTestsArray(apdu, algsModularToTest, file);
+*/        
+    }    
     
  
     
@@ -1357,7 +1719,7 @@ public class SingleModeTest {
      * @throws IOException
      * @throws Exception
      */
-    public static void TestClassAEADCipher(FileOutputStream file) throws IOException, Exception {
+    public static void TestClassAEADCipher_viaCipher(FileOutputStream file) throws IOException, Exception {
         long elapsedCard = 0;
         byte[] apdu = new byte[6];
         apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
@@ -1374,22 +1736,35 @@ public class SingleModeTest {
         ArrayList<Pair<Integer, String>> algsToTest = new ArrayList<>();
         algsToTest.add(new Pair(new Integer(JCConsts.AEADCipher_CIPHER_AES_CCM), AEADCIPHER_STR[1]));
         algsToTest.add(new Pair(new Integer(JCConsts.AEADCipher_CIPHER_AES_GCM), AEADCIPHER_STR[2]));
- 
-        for (Pair algToTest : algsToTest) {    
-            // Reset applet before call
-            cardManager.sendAPDU(RESET_APDU);
-            apdu[OFFSET_DATA] = ((Integer) algToTest.getL()).byteValue();
-            // get starting time of communication cycle
-            elapsedCard = -System.currentTimeMillis();
-            ResponseAPDU response = cardManager.sendAPDU(apdu);
-            // save time of card response
-            elapsedCard += System.currentTimeMillis();
-            byte[] resp = response.getData();
-
-            // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, Utils.GetAlgorithmName((String) algToTest.getR()), resp, elapsedCard, response.getSW());
-        }
+        executeTests(apdu, algsToTest, file);
     }    
+    
+    /**
+     * Tests all algorithms in class 'javacardx.crypto.AEADCipher' and results
+     * writes into the output file.
+     *
+     * @param file FileOutputStream object containing output file.
+     * @throws IOException
+     * @throws Exception
+     */
+    public static void TestClassAEADCipher(FileOutputStream file) throws IOException, Exception {
+        byte[] apdu = new byte[6];
+        apdu[OFFSET_CLA] = Consts.CLA_CARD_ALGTEST;  // for AlgTest applet
+        apdu[OFFSET_INS] = Consts.INS_CARD_TESTSUPPORTEDMODES_SINGLE;  // for AlgTest applet switch to 'TestSupportedModeSingle'
+        apdu[OFFSET_P1] = Consts.CLASS_AEADCIPHER;
+        apdu[OFFSET_P2] = (byte) 0x00;
+        apdu[OFFSET_LC] = (byte) 0x01;
+
+        // Creates message with class name and writes it in the output file and on the screen.
+        String message = "\n" + Utils.GetAlgorithmName(SingleModeTest.AEADCIPHER_STR[0]) + "\r\n";
+        m_SystemOutLogger.println(message);
+        file.write(message.getBytes());
+        // Prepare list of indexes for testing together with algorithm name
+        ArrayList<Pair<Integer, String>> algsToTest = new ArrayList<>();
+        algsToTest.add(new Pair(new Integer(JCConsts.AEADCipher_ALG_AES_CCM), AEADCIPHER_STR[1]));
+        algsToTest.add(new Pair(new Integer(JCConsts.AEADCipher_ALG_AES_GCM), AEADCIPHER_STR[2]));
+        executeTests(apdu, algsToTest, file);
+    }        
     
     /**
      * Method that will test all algorithms in SingleModeTest class.
@@ -1411,6 +1786,21 @@ public class SingleModeTest {
         TestClassKeyPair_ALG_EC_FP(file);
         //TestClassBioBuilder(file);
         TestClassAEADCipher(file);
+        //TestClassAEADCipher_viaCipher(file);
+        TestClassOwnerPINBuilder(file);
+        TestClassInitializedMessageDigest(file);
+
+        // OneShot versions of objects
+        TestClassCipherOneShot(file);
+        TestClassSignatureOneShot(file);
+        TestClassRandomDataOneShot(file);
+        TestClassMessageDigestOneShot(file);
+        TestClassInitializedMessageDigestOneShot(file);
+
+        // Modular getInstance from separate components
+        TestClassCipherModular(file);
+        TestClassSignatureModular(file);
+
         /* Disabled for now, at it seems to be causing crash for J3H081 cards
         // test RSA exponent
         StringBuilder value = new StringBuilder();

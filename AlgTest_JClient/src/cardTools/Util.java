@@ -50,6 +50,9 @@ public class Util {
     public static short getShort(byte[] buffer, int offset) {
         return ByteBuffer.wrap(buffer, offset, 2).order(ByteOrder.BIG_ENDIAN).getShort();
     }
+    public static int getInt(byte[] buffer, int offset) {
+        return ByteBuffer.wrap(buffer, offset, 4).order(ByteOrder.BIG_ENDIAN).getInt();
+    }
 
     public static short readShort(byte[] data, int offset) {
         return (short) (((data[offset] << 8)) | ((data[offset + 1] & 0xff)));

@@ -87,6 +87,17 @@ public class Consts {
     public static final byte CLASS_UTIL                        = (byte) 0x21;
     public static final byte CLASS_BIOBUILDER                  = (byte) 0x22;
     public static final byte CLASS_AEADCIPHER                  = (byte) 0x23;
+    public static final byte CLASS_OWNERPINBUILDER             = (byte) 0x24;
+    
+    public static final byte CLASS_CIPHER_MODULAR              = (byte) 0x25;      
+    public static final byte CLASS_SIGNATURE_MODULAR           = (byte) 0x26;      
+    public static final byte CLASS_KEYBUILDER_MODULAR          = (byte) 0x27;      
+    public static final byte CLASS_MESSAGEDIGEST_ONESHOT       = (byte) 0x28;      
+    public static final byte CLASS_CIPHER_ONESHOT              = (byte) 0x29;      
+    public static final byte CLASS_SIGNATURE_ONESHOT           = (byte) 0x2a;      
+    public static final byte CLASS_RANDOMDATA_ONESHOT          = (byte) 0x2b;      
+    public static final byte CLASS_INITIALIZEDMESSAGEDIGEST    = (byte) 0x2c;      
+    public static final byte CLASS_INITIALIZEDMESSAGEDIGEST_ONESHOT    = (byte) 0x2d;      
     
     
     public static final byte UNUSED    = (byte) -1;     
@@ -98,6 +109,7 @@ public class Consts {
     public static final short AES128_KEY_LENGTH  = (short) 16;     
     
     
+    public static final byte P1_CARD_RESET_FREE_CACHE          = (byte) 0x07;
     
     
 	// TODO: refactor - do we need this?
