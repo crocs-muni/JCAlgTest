@@ -5,7 +5,7 @@ AlgTestJClient version; 1.6.0
 AlgTest applet version; 1.6.0
 Used reader; PC/SC terminal OMNIKEY CardMan 5x21-CL 0
 Card ATR; 3b 8a 80 01 53 4c 43 4f 53 20 54 3d 43 4c 0d
-Card name; Softlock_SLCOS_InfineonSLE78
+Card name; Softlock SLCOS InfineonSLE78
 Used protocol; T=1
 
 JCSystem.getVersion()[Major.Minor];3.4;

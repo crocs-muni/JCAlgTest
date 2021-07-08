@@ -5,7 +5,7 @@ AlgTestJClient version; 1.7.9
 AlgTest applet version; 1.7.9
 Used reader; ExcelSecu Contact_Rd 0
 Card ATR; 3b b8 97 00 c0 08 31 fe 45 ff ff 13 58 30 50 23 00 65
-Card name; SECORA ID X
+Card name; Infineon SECORA ID X
 Card provider; please insert link/description of shop where card was bought
 Used protocol; T=1
 High-power mode supported (relevant only to SIM cards according to ETSI 102 221); no
