@@ -4,8 +4,8 @@ Execution date/time; 2019/04/11
 AlgTestJClient version; 1.7.7
 AlgTest applet version; 1.7.7
 Used reader; ACS 
-Card ATR; 3b 
-Card name; NXP_JCOP4_sample
+Card ATR; 3b_ea_00_00_81_31_fe_45_00_31_c1_73_c8_40_00_00_90_00_7a
+Card name; NXP JCOP4 P71 NoECC
 Card provider; please insert link/description of shop where card was bought
 Used protocol; T=1
 High-power mode supported (relevant only to SIM cards according to ETSI 102 221); no
