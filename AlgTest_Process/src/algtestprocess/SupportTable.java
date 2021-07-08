@@ -126,8 +126,33 @@ public class SupportTable {
             output.close();
     }
 
+   public static String getCardIdentificationFromFileName(String fileName) {
+        String cardIdentification = fileName;
+        cardIdentification = cardIdentification.replace('_', ' ');
+        cardIdentification = cardIdentification.replace(".csv", "");
+        cardIdentification = cardIdentification.replace("3B", ", ATR=3B");
+        cardIdentification = cardIdentification.replace("3b", ", ATR=3b");
+        cardIdentification = cardIdentification.replace("ALGSUPPORT", "");
 
-
+        return cardIdentification;
+    }
+   
+    public static String getShortNameFromCardIdentification(String cardIdentification, boolean bJustName) {
+        String cardShortName = cardIdentification.substring(0, cardIdentification.indexOf("ATR"));
+        // Get rid of '   , ' at the end of card name
+        cardShortName = cardShortName.trim();
+        if (cardShortName.charAt(cardShortName.length() - 1) == ',') { cardShortName = cardShortName.substring(0, cardShortName.length() - 1); }
+        cardShortName = cardShortName.trim();
+        
+        if (bJustName) {
+            if (cardShortName.contains("ICFabDate")) {
+                cardShortName = cardShortName.substring(0, cardShortName.indexOf("ICFabDate"));
+                cardShortName = cardShortName.trim();
+            }            
+        }
+        return cardShortName;
+    }
+    
     public static void generateHTMLTable(String basePath) throws IOException {
         String filesPath = basePath + "results" + File.separator;
         File dir = new File(filesPath);
@@ -158,7 +183,6 @@ public class SupportTable {
         }
         
         if ((filesArray != null) && (dir.isDirectory() == true)) {    
-            
             HashMap filesSupport[] = new HashMap[filesArray.size()]; 
             
             for (int i = 0; i < filesArray.size(); i++) {
@@ -182,8 +206,11 @@ public class SupportTable {
             String cardList = "<div class=\"container-fluid\">\n<h3 id=\"LIST\">Tested cards abbreviations</h3>\r\n";
 
             HashMap<String, Integer> authors = new HashMap<>();
-            String shortNamesList[] = new String[filesArray.size()];            
+            //String shortNamesList[] = new String[filesArray.size()];            
             for (int i = 0; i < filesArray.size(); i++) {
+                String cardIdentification = getCardIdentificationFromFileName(filesArray.get(i));
+                String cardShortName = getShortNameFromCardIdentification(cardIdentification, false);
+/*                
                 String cardIdentification = filesArray.get(i);
                 cardIdentification = cardIdentification.replace('_', ' ');
                 cardIdentification = cardIdentification.replace(".csv", "");
@@ -191,6 +218,7 @@ public class SupportTable {
                 cardIdentification = cardIdentification.replace("3b", ", ATR=3b");
                 cardIdentification = cardIdentification.replace("ALGSUPPORT", "");
 
+                String cardShortName = getCardShortName(filesArray.get(i), false);
                 String cardShortName = cardIdentification.substring(0, cardIdentification.indexOf("ATR"));
                 // Get rid of '   , ' at the end of card name
                 cardShortName = cardShortName.trim();
@@ -198,7 +226,7 @@ public class SupportTable {
                 cardShortName = cardShortName.trim();
 
                 shortNamesList[i] = cardShortName;
-
+*/
                 // Extract providing person name
                 String PROVIDED_BY = "provided by ";
                 String AND = " and ";
@@ -243,16 +271,41 @@ public class SupportTable {
             file.write(note.getBytes());
 
             // Create bat script to copy files with results to corresponding folders for the same card type
-            for (int i = 0; i < shortNamesList.length; i++) {
-                String justName = shortNamesList[i];
-                if (justName.indexOf("ICFabDate") != -1) {
-                    justName = justName.substring(0, justName.indexOf("ICFabDate"));
-                    justName = justName.trim();
-                }
+            for (int i = 0; i < filesArray.size(); i++) {
+                String cardIdentification = getCardIdentificationFromFileName(filesArray.get(i));
+                String justName = getShortNameFromCardIdentification(cardIdentification, true);
                 System.out.println("mkdir \"" + justName + "\"");
                 System.out.println("copy ..\\results\\\"" + filesArray.get(i) + "\" \"" + justName + "\"");
             }            
             System.out.println();
+            
+            HashMap<String, String> cardNameATRMap = new HashMap<>(); 
+            for (int i = 0; i < filesArray.size(); i++) {
+                String cardIdentification = getCardIdentificationFromFileName(filesArray.get(i));
+                String justName = getShortNameFromCardIdentification(cardIdentification, true);
+                // Store mapping of card name and ATR
+                String cardATR = (String) filesSupport[i].get("Card ATR");
+                String cardName = (String) filesSupport[i].get("Card name");
+                if ((cardATR == null) || (cardName == null)) {
+                    System.out.println(String.format("Warning: Missing card name or ATR in file %s", filesArray.get(i)));
+                }
+                else {
+                    if (!cardName.equalsIgnoreCase(justName)) {
+                        System.out.println(String.format("Warning: Mismatch card name for file %s, %s vs. %s", filesArray.get(i), cardName, justName));
+                    }
+                    cardNameATRMap.put(cardATR, justName);
+                }
+            }                        
+            
+            // Store ATR to card name mapping
+            String fileNameATRMapping = basePath + "atr_cardname.csv";
+            FileOutputStream fileAtrName = new FileOutputStream(fileNameATRMapping);
+            for (String atr : cardNameATRMap.keySet()) {
+                String atr_name = String.format("%s;%s\n\r", atr, cardNameATRMap.get(atr));
+                fileAtrName.write(atr_name.getBytes());
+            }
+            fileAtrName.close();
+            
 
             // Print all providing people names found
             for (String authorName : authors.keySet()) {
