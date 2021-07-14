@@ -577,7 +577,7 @@ public class SupportTable {
                 if (atLeastOneSupported(filesSupport[i], DH_PLAIN_ALGS)) { plainECDHCards.add(i); }
                 if (atLeastOneSupported(filesSupport[i], ECDSA_SHA256_ALGS)) { ecdsaCards.add(i); }
             }      
-            
+/*            
             String eccDir = filterBasePath + "ecc" + File.separator;
             new File(eccDir + "results").mkdirs(); filteredDirs.put("ecc", eccDir);
             String largeRSADir = filterBasePath + "largeRSA" + File.separator;
@@ -607,7 +607,8 @@ public class SupportTable {
                 copyIfAtLeastOneSupported(filesSupport[i], SHA3_ALGS, sha3Dir + "results", filesPath + filesArray.get(i));
                 copyIfAtLeastOneSupported(filesSupport[i], DH_PLAIN_ALGS, ecdhplainDir + "results", filesPath + filesArray.get(i));
                 copyIfAtLeastOneSupported(filesSupport[i], ECDSA_SHA256_ALGS, ecdsa_sha256Dir + "results", filesPath + filesArray.get(i));
-            }      
+            }    
+*/
         }
         else {
             System.out.println("directory '" + filesPath + "' is empty");
