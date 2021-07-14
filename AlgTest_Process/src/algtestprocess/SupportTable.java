@@ -45,6 +45,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -154,6 +157,9 @@ public class SupportTable {
     }
     
     public static void generateHTMLTable(String basePath) throws IOException {
+        generateHTMLTable(basePath, "", true, null);
+    }
+    public static void generateHTMLTable(String basePath, String html_name_suffix, boolean bGeneratePackagesSupport, HashMap<String, ArrayList<Integer>> filteredCards) throws IOException {
         String filesPath = basePath + "results" + File.separator;
         File dir = new File(filesPath);
         String[] allFilesArray = dir.list();
@@ -187,21 +193,42 @@ public class SupportTable {
             
             for (int i = 0; i < filesArray.size(); i++) {
                 filesSupport[i] = new HashMap();
-                parseSupportFile(filesPath + filesArray.get(i), filesSupport[i]);
+                parseSupportFile(filesPath + filesArray.get(i), filesSupport[i], bGeneratePackagesSupport);
             }            
             //
             // HTML HEADER
             //
-            String fileName = basePath + "AlgTest_html_table.html";
+            String fileName;
+            if (html_name_suffix.isEmpty()) {
+                fileName = basePath + "AlgTest_html_table.html";
+            }
+            else {
+                fileName = basePath + String.format("AlgTest_html_table_%s.html", html_name_suffix);
+            }
             FileOutputStream file = new FileOutputStream(fileName);
             String header = "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\r\n<html>\r\n<head>"
                     + "<meta content=\"text/html; charset=utf-8\" http-equiv=\"Content-Type\">\r\n"
                     + "<link type=\"text/css\" href=\"style.css\" rel=\"stylesheet\">\r\n"
                     + "<script class=\"jsbin\" src=\"http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js\"></script>\r\n"
                     + "<title>JavaCard support test</title>\r\n"
+                    + "    <link href=\"dist/css/bootstrap.min.css\" rel=\"stylesheet\">\n" +
+                    "    <link href=\"dist/css/ie10-viewport-bug-workaround.css\" rel=\"stylesheet\">\n" +
+                    "    <script src=\"assets/js/ie-emulation-modes-warning.js\"></script>\n" +
+                    "	\n" +
+                    "	<link href=\"./dist/supporttable_style.css\" rel=\"stylesheet\">\n" +
+                    "	\n" +
+                    "	<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js\"></script>\n" +
+                    "\n" +
+                    "	<script src=\"assets/js/checkboxes.js\"></script>\n" +
+                    "	\n" +
+                    "	<script>$(function(){ $(\"#tab td\").hover(function(){$(\"#tab col\").eq($(this).index()).css({\"border\":\" 2px solid #74828F\"});$(this).closest(\"tr\").css({\"border\":\" 2px solid #74828F\"});},function(){$(\"#tab col\").eq($(this).index()).css({\"border\":\" 0px\"}); $(this).closest(\"tr\").css({\"border\":\" 0px\"});});});</script>\n"
                     + "<script>$(function(){ $(\"#tab td\").hover(function(){$(\"#tab col\").eq($(this).index()).css({\"border\":\" 2px solid #74828F\"});$(this).closest(\"tr\").css({\"border\":\" 2px solid #74828F\"});},function(){$(\"#tab col\").eq($(this).index()).css({\"border\":\" 0px\"}); $(this).closest(\"tr\").css({\"border\":\" 0px\"});});});</script>\r\n"
                     + "</head>\r\n"
-                    + "<body style=\\\"margin-top:50px; padding:20px\\\">\\n\\n\";\r\n\r\n";
+                    + "<body style=\"margin-top:50px; padding:20px\">\r\n\r\n";
+            if (!html_name_suffix.isEmpty()) {
+                header += "<div class=\"container-fluid\">\n<h2 id=\"LIST\">IMPORTANT: This list is limited only to cards with '" + html_name_suffix + "' support.</h2>\r\n";
+                header += "See a table with all cards here: <a href=\"AlgTest_html_table.html\">AlgTest_html_table.html</a> \r\n";
+            }
 
             String cardList = "<div class=\"container-fluid\">\n<h3 id=\"LIST\">Tested cards abbreviations</h3>\r\n";
 
@@ -355,7 +382,38 @@ public class SupportTable {
 
 
             //Checkboxes to show/hide columns in table, JavaScript required
-            String checkboxes = "<h4>Click on each checkbox to show/hide corresponding column (card)</h4>\n\t<div class=\"row\" id=\"grpChkBox\">\n";
+            String checkboxes = "<h4>Click on each checkbox to show/hide corresponding column (card). "
+                    + "Use buttons to select group of cards.</h4>\n\t<div class=\"row\" id=\"grpChkBox\">\n";
+            
+            checkboxes += "<input type=\"button\" class=\"btn btn-default\" id=\"checkAll\" onclick=\"checkAll('grpChkBox')\" value=\"Select all\">\n";
+            checkboxes += "<input type=\"button\" class=\"btn btn-default\" id=\"uncheckAll\" onclick=\"uncheckAll('grpChkBox')\" value=\"Deselect all\">\n";
+            if (filteredCards != null) {
+                // Insert javascript selection buttons
+                for (String groupName :  filteredCards.keySet()) {
+                    String groupNameNoSpace = groupName.replace(" ", "_");
+                    checkboxes += "<script>function checkAll" + groupNameNoSpace +"(divid) {\n" +
+                                "  uncheckAll(divid);\n";
+                    checkboxes += "  let array = [";
+                    int itemIndex = 1;
+                    for (Integer cardID : filteredCards.get(groupName)) {
+                        checkboxes += "\"card"+cardID+"\"";
+                        if (itemIndex < filteredCards.get(groupName).size()) {
+                            checkboxes += ", ";
+                            itemIndex++;
+                        }
+                    }
+                    checkboxes += "];\n";
+                    checkboxes += "  for (let cardName of array) {\n" +
+                                    "    let obj = document.getElementById(cardName);\n" +
+                                    "    $(obj).prop('checked', true);	\n" +
+                                    "    processToggle($(obj), true);\n" +
+                                    "  }\n" +
+                                    "}</script>\n";
+                    checkboxes += "<input type=\"button\" class=\"btn btn-default\" id=\"checkAll"+groupNameNoSpace+"\" onclick=\"checkAll"+groupNameNoSpace+"('grpChkBox')\" value=\"Select all with "+groupName+"\">\n";
+                }
+            }
+            checkboxes += "\n</br></br>\n\n";
+
             for(int i=0; i<filesArray.size(); i++){
                 String cardIdentification = filesArray.get(i);
                 cardIdentification = cardIdentification.replace('_', ' ');
@@ -367,14 +425,13 @@ public class SupportTable {
                 if(i%(filesArray.size() / 3 + 1) == 0)
                     checkboxes += "<div class=\"col-lg-4 .col-sm-4\">\n";
 
-                checkboxes += "\t\t<p style=\"margin:0;\"><input type=\"checkbox\" name=\""+i+"\" /> <b>c"+i+"</b> - "+cardShortName+"</p>\n";
+                checkboxes += "\t\t<p style=\"margin:0;\"><input type=\"checkbox\" name=\""+i+"\" id=\"card"+i+"\"/> <b>c"+i+"</b> - "+cardShortName+"</p>\n";
                 getShortCardName(filesArray.get(i));
                 if(i%(filesArray.size()/3 + 1) == filesArray.size()/3)
                     checkboxes += "\t</div>\n";
             }
+            
             checkboxes += "\t<br>\n\t</div>\n</div>\n";
-            checkboxes += "<input type=\"button\" class=\"btn btn-default\" id=\"checkAll\" onclick=\"checkAll('grpChkBox')\" value=\"Select all\">\n";
-            checkboxes += "<input type=\"button\" class=\"btn btn-default\" id=\"uncheckAll\" onclick=\"uncheckAll('grpChkBox')\" value=\"Deselect all\">\n";
             checkboxes += "\n</br></br>\n\n";
             file.write(checkboxes.getBytes());
 
@@ -414,6 +471,143 @@ public class SupportTable {
 
             file.flush();
             file.close();
+        }
+        else {
+            System.out.println("directory '" + filesPath + "' is empty");
+        }
+    }
+    
+    private static boolean atLeastOneSupported(HashMap<String, String> filesSupport, String[] algs) {
+        for (String alg : algs) {
+            if (filesSupport.containsKey(alg)) {
+                if (filesSupport.get(alg).equalsIgnoreCase("yes")) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    private static void copyIfAtLeastOneSupported(HashMap<String, String> filesSupport, String[] algs, String targetDir, String fileName) throws IOException {
+        if (atLeastOneSupported(filesSupport, algs)) { 
+            String target = targetDir + File.separator + new File(fileName).getName();
+            Files.copy(new File(fileName).toPath(), new File(target).toPath(), REPLACE_EXISTING);
+            
+            
+        }
+    }    
+    
+    public static void splitBySupport(String basePath, HashMap<String, String> filteredDirs, HashMap<String, ArrayList<Integer>> filteredCards) throws IOException {
+        String filesPath = basePath + "results" + File.separator;
+        File dir = new File(filesPath);
+        String[] allFilesArray = dir.list();
+        ArrayList<String> filesArrayUnsorted = new ArrayList<>();
+        
+        String filterBasePath = basePath + "results_filter" + File.separator;
+        
+        for (int i = 0; i < allFilesArray.length; i++) {
+            File testDir = new File(basePath + "results" + File.separator + allFilesArray[i] + File.separator);
+            if (!testDir.isDirectory()) {
+                filesArrayUnsorted.add(allFilesArray[i]);
+            }
+        }
+
+        // Sort files by name
+        ArrayList<String> filesArray = new ArrayList<>();
+        java.util.Collections.sort(filesArrayUnsorted, String.CASE_INSENSITIVE_ORDER);
+        // Insert all  but undisclosed
+        for (int i = 0; i < filesArrayUnsorted.size(); i++) {
+            if (!filesArrayUnsorted.get(i).startsWith("[undisclosed")) {
+                filesArray.add(filesArrayUnsorted.get(i));
+            }
+        }
+        // Move [undisclosed... towards end
+        for (int i = 0; i < filesArrayUnsorted.size(); i++) {
+            if (filesArrayUnsorted.get(i).startsWith("[undisclosed")) {
+                filesArray.add(filesArrayUnsorted.get(i));
+            }
+        }
+        
+        if ((filesArray != null) && (dir.isDirectory() == true)) {    
+            HashMap filesSupport[] = new HashMap[filesArray.size()]; 
+            
+            for (int i = 0; i < filesArray.size(); i++) {
+                filesSupport[i] = new HashMap();
+                parseSupportFile(filesPath + filesArray.get(i), filesSupport[i]);
+            }     
+            
+            // Copy card profiles based on the required supported info
+            String[] ECC_ALGS = {"TYPE_EC_FP_PRIVATE LENGTH_EC_FP_112", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_128", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_160", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_192", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_224", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_256", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_384", "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_521"};
+            String[] RSA2048BIGGER_ALGS = {"TYPE_RSA_PUBLIC LENGTH_RSA_3072", "TYPE_RSA_PRIVATE LENGTH_RSA_3072", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_3072", "TYPE_RSA_PUBLIC LENGTH_RSA_4096", "TYPE_RSA_PRIVATE LENGTH_RSA_4096", "TYPE_RSA_CRT_PRIVATE LENGTH_RSA_4096"};
+            String[] ECDH_ALGS = {"ALG_EC_SVDP_DH/ALG_EC_SVDP_DH_KDF", "ALG_EC_SVDP_DHC/ALG_EC_SVDP_DHC_KDF", "ALG_EC_SVDP_DH_PLAIN", "ALG_EC_SVDP_DHC_PLAIN", "ALG_EC_PACE_GM", "ALG_EC_SVDP_DH_PLAIN_XY", "ALG_DH_PLAIN"};
+            String[] AES_ALGS = {"TYPE_AES LENGTH_AES_128", "TYPE_AES LENGTH_AES_192", "TYPE_AES LENGTH_AES_256"};
+            String[] SHA2_ALGS = {"ALG_SHA_256", "ALG_SHA_384", "ALG_SHA_512", "ALG_SHA_224"};
+            String[] SHA2_512_ALGS = {"ALG_SHA_512"};
+            String[] SHA3_ALGS = {"ALG_SHA3_224", "ALG_SHA3_256", "ALG_SHA3_384", "ALG_SHA3_512"};
+            String[] DH_PLAIN_ALGS = {"ALG_EC_SVDP_DH_PLAIN_XY", "ALG_EC_SVDP_DHC_PLAIN", "ALG_EC_SVDP_DH_PLAIN", "ALG_DH_PLAIN"};
+            String[] ECDSA_SHA256_ALGS = {"ALG_ECDSA_SHA_256"};
+
+            ArrayList<Integer> eccCards = new ArrayList<>();
+            filteredCards.put("ECC", eccCards);
+            ArrayList<Integer> bigRSACards = new ArrayList<>();
+            filteredCards.put("large RSA", bigRSACards);
+            ArrayList<Integer> ecdhCards = new ArrayList<>();
+            filteredCards.put("ECDH", ecdhCards);
+            ArrayList<Integer> aesCards = new ArrayList<>();
+            filteredCards.put("AES", aesCards);
+            ArrayList<Integer> sha2Cards = new ArrayList<>();
+            filteredCards.put("SHA2", sha2Cards);
+            ArrayList<Integer> sha2_512Cards = new ArrayList<>();
+            filteredCards.put("SHA2_512b", sha2_512Cards);
+            ArrayList<Integer> sha3Cards = new ArrayList<>();
+            filteredCards.put("SHA3", sha3Cards);
+            ArrayList<Integer> plainECDHCards = new ArrayList<>();
+            filteredCards.put("plain ECDH", plainECDHCards);
+            ArrayList<Integer> ecdsaCards = new ArrayList<>();
+            filteredCards.put("ECDSA", ecdsaCards);
+            
+            for (int i = 0; i < filesArray.size(); i++) {
+                if (atLeastOneSupported(filesSupport[i], ECC_ALGS)) { eccCards.add(i); }
+                if (atLeastOneSupported(filesSupport[i], RSA2048BIGGER_ALGS)) { bigRSACards.add(i); }
+                if (atLeastOneSupported(filesSupport[i], ECDH_ALGS)) { ecdhCards.add(i); }
+                if (atLeastOneSupported(filesSupport[i], AES_ALGS)) { aesCards.add(i); }
+                if (atLeastOneSupported(filesSupport[i], SHA2_ALGS)) { sha2Cards.add(i); }
+                if (atLeastOneSupported(filesSupport[i], SHA2_512_ALGS)) { sha2_512Cards.add(i); }
+                if (atLeastOneSupported(filesSupport[i], SHA3_ALGS)) { sha3Cards.add(i); }
+                if (atLeastOneSupported(filesSupport[i], DH_PLAIN_ALGS)) { plainECDHCards.add(i); }
+                if (atLeastOneSupported(filesSupport[i], ECDSA_SHA256_ALGS)) { ecdsaCards.add(i); }
+            }      
+            
+            String eccDir = filterBasePath + "ecc" + File.separator;
+            new File(eccDir + "results").mkdirs(); filteredDirs.put("ecc", eccDir);
+            String largeRSADir = filterBasePath + "largeRSA" + File.separator;
+            new File(largeRSADir + "results").mkdirs(); filteredDirs.put("largeRSA", largeRSADir);
+            String ecdhDir = filterBasePath + "ecdh" + File.separator;
+            new File(ecdhDir + "results").mkdirs(); filteredDirs.put("ecdh", ecdhDir);
+            String aesDir = filterBasePath + "aes" + File.separator;
+            new File(aesDir + "results").mkdirs(); filteredDirs.put("aes", aesDir);
+            String sha2Dir = filterBasePath + "sha2" + File.separator;
+            new File(sha2Dir + "results").mkdirs();filteredDirs.put("sha2", sha2Dir);
+            String sha2_512Dir = filterBasePath + "sha2_512" + File.separator;
+            new File(sha2_512Dir + "results").mkdirs();filteredDirs.put("sha2_512", sha2_512Dir);
+            String sha3Dir = filterBasePath + "sha3" + File.separator;
+            new File(sha3Dir + "results").mkdirs(); filteredDirs.put("sha3", sha3Dir);
+            String ecdhplainDir = filterBasePath + "ecdhplain" + File.separator;
+            new File(ecdhplainDir + "results").mkdirs(); filteredDirs.put("ecdhplain", ecdhplainDir);
+            String ecdsa_sha256Dir = filterBasePath + "ecdsa_sha256" + File.separator;
+            new File(ecdsa_sha256Dir + "results").mkdirs(); filteredDirs.put("ecdsa_sha256", ecdsa_sha256Dir);
+
+            for (int i = 0; i < filesArray.size(); i++) {
+                copyIfAtLeastOneSupported(filesSupport[i], ECC_ALGS, eccDir + "results", filesPath + filesArray.get(i));
+                copyIfAtLeastOneSupported(filesSupport[i], RSA2048BIGGER_ALGS, largeRSADir + "results", filesPath + filesArray.get(i));
+                copyIfAtLeastOneSupported(filesSupport[i], ECDH_ALGS, ecdhDir + "results", filesPath + filesArray.get(i));
+                copyIfAtLeastOneSupported(filesSupport[i], AES_ALGS, aesDir + "results", filesPath + filesArray.get(i));
+                copyIfAtLeastOneSupported(filesSupport[i], SHA2_ALGS, sha2Dir + "results", filesPath + filesArray.get(i));
+                copyIfAtLeastOneSupported(filesSupport[i], SHA2_512_ALGS, sha2_512Dir + "results", filesPath + filesArray.get(i));
+                copyIfAtLeastOneSupported(filesSupport[i], SHA3_ALGS, sha3Dir + "results", filesPath + filesArray.get(i));
+                copyIfAtLeastOneSupported(filesSupport[i], DH_PLAIN_ALGS, ecdhplainDir + "results", filesPath + filesArray.get(i));
+                copyIfAtLeastOneSupported(filesSupport[i], ECDSA_SHA256_ALGS, ecdsa_sha256Dir + "results", filesPath + filesArray.get(i));
+            }      
         }
         else {
             System.out.println("directory '" + filesPath + "' is empty");
@@ -610,6 +804,9 @@ public class SupportTable {
     }
 
     static void parseSupportFile(String filePath, HashMap suppMap) throws IOException {
+        parseSupportFile(filePath, suppMap, true);
+    }
+    static void parseSupportFile(String filePath, HashMap suppMap, boolean bGeneratePackagesSupport) throws IOException {
         try {
             //create BufferedReader to read csv file
             BufferedReader br = new BufferedReader( new FileReader(filePath));
@@ -632,7 +829,7 @@ public class SupportTable {
                 if (strLine.contains("AlgTest applet version")){
                     appletVersion = strLine.substring(AT_APPLET_OFFSET, strLine.length() - 1);
                 }
-                if (strLine.contains("Package_AID_test")) {
+                if (strLine.contains("Package_AID_test") && bGeneratePackagesSupport) {
                     packageAIDTestPath = strLine.substring(PACKAGE_AID_PATH_OFFSET, strLine.length());
                     packageAIDTestPath = packageAIDTestPath.trim();
 
