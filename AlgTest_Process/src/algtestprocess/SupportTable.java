@@ -815,6 +815,7 @@ public class SupportTable {
             int lineNumber = 0;
             int tokenNumber = 0;
             boolean bJCSupportVersionPresent = false;
+            String key_token_prefix = "";
 
             //read comma separated file line by line
             while ((strLine = br.readLine()) != null) {
@@ -847,6 +848,19 @@ public class SupportTable {
                         }
                     }
                 }
+                
+                // Establish prefix for the support key token
+                if (strLine.contains("javacard.security.InitializedMessageDigest.OneShot")) {
+                    key_token_prefix = "INITIALIZEDMESSAGEDIGEST_ONESHOT";
+                } else if (strLine.contains("javacard.security.InitializedMessageDigest")) {
+                    key_token_prefix = "INITIALIZEDMESSAGEDIGEST";
+                } else if (strLine.contains(".OneShot")) {
+                    key_token_prefix = "ONESHOT";
+                } else if (strLine.contains("javacardx.crypto.Cipher.getInstance(byte cipherAlgorithm")) {
+                    key_token_prefix = "";
+                }
+                
+
                 lineNumber++;
 
                 //break comma separated line using ";"
@@ -862,7 +876,19 @@ public class SupportTable {
                     if (tokenNumber == 2) { secondToken = tokenValue; }
                 }
                 if (!firstToken.isEmpty()) {
-                    suppMap.put(firstToken, secondToken);
+                    String keyToken; 
+                    if (key_token_prefix.isEmpty()) {
+                        keyToken = firstToken;
+                    } 
+                    else {
+                        keyToken = String.format("%s__%s", key_token_prefix, firstToken);
+                    }
+                    if (suppMap.containsKey(keyToken)) {
+                        int a = 5;
+                    }
+                    else {
+                        suppMap.put(keyToken, secondToken);
+                    }
                 }
 
                 //reset token number
