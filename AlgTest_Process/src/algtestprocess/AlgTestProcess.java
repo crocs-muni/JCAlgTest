@@ -33,6 +33,8 @@ package algtestprocess;
 
 import algtestjclient.DirtyLogger;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
 /**
@@ -72,16 +74,28 @@ public class AlgTestProcess {
                 if(args[0].length() != 0){ // testing if there is any argument present
                     int pathLength = args[0].length();
                     char lastChar = args[0].charAt(pathLength - 1);    // last character in string
-                    if (lastChar != ('\\' | '/')){
-                    args[0] = args[0] + "/";     // adding '\' if not present
+                    if (lastChar != ('\\' | '/')) {
+                        args[0] = args[0] + "/";     // adding '\' if not present
                     }
                 }
 
                 if(args.length > 1){
                     if (args[1].equals(GENERATE_HTML)){
                         // generating HTML
-                        System.out.println("Generating HTML table.");
-                        SupportTable.generateHTMLTable(args[0]);
+                        System.out.println("Generating HTML tables");
+                        // partial tables
+                        HashMap<String, String> filteredDirs = new HashMap<>();
+                        HashMap<String, ArrayList<Integer>> filteredCards = new HashMap<>();
+
+                        SupportTable.splitBySupport(args[0], filteredDirs, filteredCards);
+                        // All items table    
+                        SupportTable.generateHTMLTable(args[0], "", true, filteredCards);
+/*
+                        for (String dirName : filteredDirs.keySet()) {
+                            System.out.println(String.format("\nGenerating HTML table for %s.\n", filteredDirs.get(dirName)));
+                            SupportTable.generateHTMLTable(filteredDirs.get(dirName), dirName, false, null);
+                        }
+*/
                     }
                     else if (args[1].equals(GENERATE_TPM_HTML)) {
                         System.out.println("Generating HTML table for TPMs.");
