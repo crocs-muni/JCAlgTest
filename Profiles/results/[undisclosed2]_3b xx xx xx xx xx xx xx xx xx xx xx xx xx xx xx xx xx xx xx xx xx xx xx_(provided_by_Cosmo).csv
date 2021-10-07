@@ -7,6 +7,8 @@ Used reader;
 Card ATR; 3b XX XX XX XX XX XX XX XX XX XX XX XX XX XX XX XX XX XX XX XX XX XX XX
 Used protocol; T=1
 
+JavaCard support version;3.0.1;
+
 JCSystem.getVersion()[Major.Minor];3.0;
 JCSystem.isObjectDeletionSupported;yes;
 JCSystem.MEMORY_TYPE_PERSISTENT;>32767B;
