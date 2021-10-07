@@ -62,6 +62,7 @@ def get_vendor_name(cardname):
     if cardname.find('Fidesmo') != -1: return 'Fidesmo', None
     if cardname.find('Infineon') != -1: return 'Infineon', None
     if cardname.find('NXP') != -1: return 'NXP', None
+    if cardname.find('PIVKey') != -1: return 'Taglio', None
 
     return 'unknown vendor', None
 
@@ -96,7 +97,9 @@ def get_os_name(os_id):
     if os_id.find('a006') != -1: return 'G&D Sm@rtCafe'
     if os_id.find('d000') != -1: return 'Gemalto OS'
     if os_id.find('d001') != -1: return 'G&D Sm@rtCafe 7'
-    
+    if os_id.find('010b') != -1: return 'FT-JCOS'
+    if os_id.find('25c3') != -1: return 'FT-JCOS'
+    if os_id.find('4654') != -1: return 'FT-JCOS'
     return ''
 
 
