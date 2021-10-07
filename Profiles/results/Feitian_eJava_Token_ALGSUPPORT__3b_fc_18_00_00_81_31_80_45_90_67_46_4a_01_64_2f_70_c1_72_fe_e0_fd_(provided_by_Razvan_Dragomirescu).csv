@@ -8,6 +8,8 @@ Card ATR; 3b fc 18 00 00 81 31 80 45 90 67 46 4a 01 64 2f 70 c1 72 fe e0 fd
 Card name; Feitian Java Token
 Used protocol; T=1
 
+JavaCard support version;2.2.2;
+
 JCSystem.getVersion()[Major.Minor];2.2;
 JCSystem.isObjectDeletionSupported;yes;
 JCSystem.MEMORY_TYPE_PERSISTENT;>32767B;

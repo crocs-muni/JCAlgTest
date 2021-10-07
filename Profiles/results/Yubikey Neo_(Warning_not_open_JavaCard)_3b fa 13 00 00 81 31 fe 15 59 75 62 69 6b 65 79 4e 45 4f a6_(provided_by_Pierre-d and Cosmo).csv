@@ -7,6 +7,8 @@ Used reader; PC/SC terminal Yubico Yubikey NEO OTP+CCID 0
 Card ATR; 3b fa 13 00 00 81 31 fe 15 59 75 62 69 6b 65 79 4e 45 4f a6 
 Used protocol; T=1
 
+JavaCard support version;3.0.1;
+
 JCSystem.getVersion()[Major.Minor];3.0;
 JCSystem.isObjectDeletionSupported;yes;
 JCSystem.MEMORY_TYPE_PERSISTENT;>32767B;

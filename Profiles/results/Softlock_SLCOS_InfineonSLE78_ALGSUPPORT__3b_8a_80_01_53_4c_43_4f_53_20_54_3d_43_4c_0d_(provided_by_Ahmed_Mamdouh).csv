@@ -8,7 +8,9 @@ Card ATR; 3b 8a 80 01 53 4c 43 4f 53 20 54 3d 43 4c 0d
 Card name; Softlock SLCOS InfineonSLE78
 Used protocol; T=1
 
-JCSystem.getVersion()[Major.Minor];3.4;
+JavaCard support version;3.0.4;
+
+JCSystem.getVersion()[Major.Minor];3.0;
 JCSystem.isObjectDeletionSupported;yes;
 JCSystem.MEMORY_TYPE_PERSISTENT;>32767B;
 JCSystem.MEMORY_TYPE_TRANSIENT_RESET;13347B;

@@ -8,6 +8,8 @@ Card ATR; 3b f9 13 00 00 81 31 fe 45 4a 43 4f 50 32 34 32 52 33 a2
 Card name; FT-K9-NXP-J3E081
 Used protocol; T=1
 
+JavaCard support version;3.0.1;
+
 JCSystem.getVersion()[Major.Minor];3.0;
 JCSystem.isObjectDeletionSupported;yes;
 JCSystem.MEMORY_TYPE_PERSISTENT;>32767B;

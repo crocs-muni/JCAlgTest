@@ -9,6 +9,8 @@ Card name; NXP J3R150 EMV 4K RSA no OKBG no ECC;
 Card provider;https://gdrfid.en.alibaba.com/?spm=a2756.trade-list-buyer.0.0.65f876e9XB9xVc;
 Used protocol; T=0;
 High-power mode supported (relevant only to SIM cards according to ETSI 102 221); no;
+
+JavaCard support version;3.0.5;
 ;;
 JCSystem.getVersion()[Major.Minor];3.0;
 JCSystem.isObjectDeletionSupported;yes;
