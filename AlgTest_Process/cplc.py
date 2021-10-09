@@ -6,24 +6,27 @@ from pathlib import Path
 from graphviz import Digraph
 
 
+# CPLC info collected from:
+# 1. own analysis
+# 2. https://www.javatips.net/api/bankomatinfos-master/src/at/zweng/bankomatinfos/iso7816emv/CPLC.java
+# 3. NIST FIPS140, Common Criteria certificates
+
 def search_files(folder):    
     for root, dirs, files in os.walk(folder):
         yield from [os.path.join(root, x) for x in files]
+
 
 def path_leaf(path):
     head, tail = ntpath.split(path)
     return tail or ntpath.basename(head)
 
-# CPLC info collected from:
-# own analysis
-# https://www.javatips.net/api/bankomatinfos-master/src/at/zweng/bankomatinfos/iso7816emv/CPLC.java
-# NIST FIPS140, CC EAKL certificates
-'''
-Returns human-readable name of fabricator based on provided ICFabricator id
-@param icfab: string realization of 2 bytes ICFabricator (in hexadecimal, e.g., '4090')
-@returns human-readable fabricator string
-'''
+
 def get_fab_name(icfab):
+    """
+    Returns human-readable name of fabricator based on provided ICFabricator id
+    @param icfab: string realization of 2 bytes ICFabricator (in hexadecimal, e.g., '4090')
+    @returns human-readable fabricator string
+    """
     if icfab.find('0003') != -1: return 'Renesas' # https://www.cryptsoft.com/fips140/vendors/140sp485.pdf
     if icfab.find('0005') != -1: return 'Infineon' # https://csrc.nist.gov/csrc/media/projects/cryptographic-module-validation-program/documents/security-policies/140sp2327.pdf
     if icfab.find('008c') != -1: return 'Tongxin' # https://csrc.nist.gov/csrc/media/projects/cryptographic-module-validation-program/documents/security-policies/140sp2327.pdf
@@ -42,13 +45,15 @@ def get_fab_name(icfab):
 
     return 'unknown (' + icfab + ')'
 
-'''
-Returns human-readable name of card vendor based on provided card name 
-@param cardname: string with card name, e.g., 'NXP JCOP J2A080 80K'
-@returns human-readable vendor string
-'''
+
 def get_vendor_name(cardname):
+    """
+    Returns human-readable name of card vendor based on provided card name
+    @param cardname: string with card name, e.g., 'NXP JCOP J2A080 80K'
+    @returns human-readable vendor string
+    """
     if cardname.find('Feitian') != -1: return 'Feitian', None
+    if cardname.find('FeiTian') != -1: return 'Feitian', None
     if cardname.find('G+D') != -1: return 'G&D', None
     if cardname.find('Oberthur') != -1: return 'Oberthur', 'Idemia'
     if cardname.find('Idemia') != -1: return 'Idemia', None
@@ -62,15 +67,17 @@ def get_vendor_name(cardname):
     if cardname.find('Fidesmo') != -1: return 'Fidesmo', None
     if cardname.find('Infineon') != -1: return 'Infineon', None
     if cardname.find('NXP') != -1: return 'NXP', None
+    if cardname.find('PIVKey') != -1: return 'Taglio', None
 
     return 'unknown vendor', None
 
-'''
-Returns human-readable name of operating system based on provided OperatingSystemID 
-@param os_id: string realization of 2 bytes OperatingSystemID (in hexadecimal, e.g., '1291')
-@returns human-readable OS string
-'''
+
 def get_os_name(os_id):
+    """
+    Returns human-readable name of operating system based on provided OperatingSystemID
+    @param os_id: string realization of 2 bytes OperatingSystemID (in hexadecimal, e.g., '1291')
+    @returns human-readable OS string
+    """
     os_id = os_id.lower()
     if os_id.find('0000') != -1: return '(not provided)'
     if os_id.find('ffff') != -1: return '(not provided)'
@@ -96,17 +103,21 @@ def get_os_name(os_id):
     if os_id.find('a006') != -1: return 'G&D Sm@rtCafe'
     if os_id.find('d000') != -1: return 'Gemalto OS'
     if os_id.find('d001') != -1: return 'G&D Sm@rtCafe 7'
+    if os_id.find('010b') != -1: return 'FT-JCOS'
+    if os_id.find('25c3') != -1: return 'FT-JCOS'
+    if os_id.find('4654') != -1: return 'FT-JCOS'
+    if os_id.find('4090') != -1: return 'Secora ID S'
     
     return ''
 
 
-'''
-Returns human-readable name of operating system based on provided OperatingSystemID and OperatingSystemReleaseDate 
-@param os_id: string realization of 2 bytes OperatingSystemID (in hexadecimal, e.g., '1291')
-@param os_date: string realization of 2 bytes OperatingSystemReleaseDate (in hexadecimal, e.g., '6138')
-@returns human-readable os string with release date (if known)
-'''
 def get_osiddate_name(os_id, os_date):
+    """
+    Returns human-readable name of operating system based on provided OperatingSystemID and OperatingSystemReleaseDate
+    @param os_id: string realization of 2 bytes OperatingSystemID (in hexadecimal, e.g., '1291')
+    @param os_date: string realization of 2 bytes OperatingSystemReleaseDate (in hexadecimal, e.g., '6138')
+    @returns human-readable os string with release date (if known)
+    """
     if os_id.find('4051') != -1: 
         if os_date.find('5158') != -1:return 'JCOP 2.2 (2005)'
         if os_date.find('6138') != -1:return 'JCOP 2.2.1 (2006)'
@@ -168,6 +179,7 @@ def get_osiddate_name(os_id, os_date):
 
     return ''
 
+
 def get_ictype_name(icfab, ictype):
     icfab = icfab.lower()
     ictype = ictype.lower()
@@ -188,29 +200,33 @@ def get_ictype_name(icfab, ictype):
     if icfab.find('4180') != -1:
         if ictype.find('0106') != -1: return 'Atmel AT90SC25672RCT'  # https://csrc.nist.gov/CSRC/media/projects/cryptographic-module-validation-program/documents/security-policies/140sp925.pdf
     return ''
-'''
-Returns randomly selected color out of defined
-@returns color string
-'''    
+
+
 def get_random_color():
+    """
+    Returns randomly selected color out of defined
+    @returns color string
+    """
     colors = ['green','red', 'blue', 'magenta', 'brown', 'darkgreen', 'black', 'gray', 'gold', 'chocolate', 'darkorange1', 'deeppink1', 'cadetblue']
     return colors[random.randint(0, len(colors) - 1)]
     
-'''
-Returns randomly selected edge style
-@returns edge style string
-'''    
+
 def get_random_edge_style():
+    """
+    Returns randomly selected edge style
+    @returns edge style string
+    """
     edge_styles = ['solid', 'dashed', 'bold']
     return edge_styles[random.randint(0, len(edge_styles) - 1)]
 
-'''
-Recursively reads files with CPLC info from the provided directory. 
-@param walk_dir: directory with stored results for cards
-@param files_with_cplc: list which will contain hash maps for the cards with CPLC defined
-@param files_without_cplc: list of card names without the CPLC info
-'''
+
 def process_jcalgtest_files(walk_dir, files_with_cplc, files_without_cplc):
+    """
+    Recursively reads files with CPLC info from the provided directory.
+    @param walk_dir: directory with stored results for cards
+    @param files_with_cplc: list which will contain hash maps for the cards with CPLC defined
+    @param files_without_cplc: list of card names without the CPLC info
+    """
     files = []
     print(json.dumps(list(search_files(walk_dir)), indent=2))
     
@@ -258,12 +274,13 @@ def process_jcalgtest_files(walk_dir, files_with_cplc, files_without_cplc):
 # Pick suitable seed so that different lines in graph are rendered with different colors/types (needs manual testing)
 random.seed(10)
 
-""" 
-Visualize CPLC information from the list of cards 
-@param cplc_list: list of hash maps (with CPLC metadata) for the cards to process and visualize  
-@param vendor_name_filter: if empty string '', then all vendors are printed, otherwise only the provided vendor is generated 
-""" 
+
 def generate_graph(cplc_list, vendor_name_filter):
+    """
+    Visualize CPLC information from the list of cards
+    @param cplc_list: list of hash maps (with CPLC metadata) for the cards to process and visualize
+    @param vendor_name_filter: if empty string '', then all vendors are printed, otherwise only the provided vendor is generated
+    """
     dot2 = Digraph(comment='Vendor={}, CPLC from JCAlgTest.org'.format(vendor_name_filter))
     graph_label = ''
     #graph_label = 'Vendor={}, CPLC visualization (JCAlgTest.org database)\n'.format(vendor_name_filter)
@@ -371,8 +388,10 @@ def render_all_vendors():
     print('Cards with CPLC: {}'.format(len(files_with_cplc)))
     print('Cards without CPLC: {}'.format(len(files_without_cplc)))
 
+
 def main():
     render_all_vendors()
+
 
 if __name__ == "__main__":
     main()
