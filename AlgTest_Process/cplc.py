@@ -100,6 +100,8 @@ def get_os_name(os_id):
     if os_id.find('010b') != -1: return 'FT-JCOS'
     if os_id.find('25c3') != -1: return 'FT-JCOS'
     if os_id.find('4654') != -1: return 'FT-JCOS'
+    if os_id.find('4090') != -1: return 'Secora ID S'
+    
     return ''
 
 
