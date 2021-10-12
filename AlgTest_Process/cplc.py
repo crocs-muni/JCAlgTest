@@ -5,7 +5,6 @@ import matplotlib.cbook as cbook
 from pathlib import Path
 from graphviz import Digraph
 
-
 # CPLC info collected from:
 # 1. own analysis
 # 2. https://www.javatips.net/api/bankomatinfos-master/src/at/zweng/bankomatinfos/iso7816emv/CPLC.java
@@ -68,6 +67,7 @@ def get_vendor_name(cardname):
     if cardname.find('Infineon') != -1: return 'Infineon', None
     if cardname.find('NXP') != -1: return 'NXP', None
     if cardname.find('PIVKey') != -1: return 'Taglio', None
+    if cardname.find('Tongxin') != -1: return 'Tongxin', None
 
     return 'unknown vendor', None
 
@@ -107,7 +107,6 @@ def get_os_name(os_id):
     if os_id.find('25c3') != -1: return 'FT-JCOS'
     if os_id.find('4654') != -1: return 'FT-JCOS'
     if os_id.find('4090') != -1: return 'Secora ID S'
-    
     return ''
 
 
@@ -176,6 +175,8 @@ def get_osiddate_name(os_id, os_date):
         if os_date.find('5314') != -1: return 'Axalto (2005)'
     if os_id.find('1981') != -1:
         if os_date.find('3052') != -1: return 'Schlumberger (2003)'
+    if os_id.find('0000') != -1:
+        if os_date.find('9021') != -1: return 'TongXin JCOS (2019)' # THD-89 uses an in-house JCOS that the chip manufacturer TongXin Microelectronics (TMC) also wrote in-house. The OS ID is not set.
 
     return ''
 
