@@ -371,20 +371,42 @@ def generate_graph(cplc_list, vendor_name_filter):
         print(pair)
 
 
+def compute_item_stats(files_with_cplc: dict, cplc_item: str):
+    ic_stats = {}
+    for file in files_with_cplc:
+        icvalue = files_with_cplc[file][cplc_item]
+        if icvalue not in ic_stats:
+            ic_stats[icvalue] = 0
+        ic_stats[icvalue] += 1
+
+    return ic_stats
+
+
+def compute_stats(files_with_cplc: dict):
+    ic_fabricators = compute_item_stats(files_with_cplc, 'ICFabricator')
+    print('ICFabricators (total {}x)'.format(len(ic_fabricators)))
+    print(dict(sorted(ic_fabricators.items(), key=lambda item: item[1], reverse=True)))
+    ic_types = compute_item_stats(files_with_cplc, 'ICType')
+    print('ICType (total {}x)'.format(len(ic_types)))
+    print(dict(sorted(ic_types.items(), key=lambda item: item[1], reverse=True)))
+    ic_oses = compute_item_stats(files_with_cplc, 'OperatingSystemID')
+    print('OperatingSystemID (total {}x)'.format(len(ic_oses)))
+    print(dict(sorted(ic_oses.items(), key=lambda item: item[1], reverse=True)))
+
+
 def render_all_vendors():
     files_with_cplc = {}
     files_without_cplc = []
     
     walk_dir = '..\\Profiles\\results\\'
     process_jcalgtest_files(walk_dir, files_with_cplc, files_without_cplc)
-    
+    compute_stats(files_with_cplc)
 
     vendors = ['', 'NXP', 'Infineon', 'Gemalto', 'Feitian', 'G&D', 'Idemia']
     #vendors = ['']
     #vendors = ['G&D']
     for vendor in vendors:
         generate_graph(files_with_cplc, vendor)
-
 
     print('Cards with CPLC: {}'.format(len(files_with_cplc)))
     print('Cards without CPLC: {}'.format(len(files_without_cplc)))
