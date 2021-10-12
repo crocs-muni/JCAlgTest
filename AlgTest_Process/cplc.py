@@ -253,8 +253,8 @@ def process_jcalgtest_files(walk_dir, files_with_cplc, files_without_cplc):
                 
                 items[0] = items[0].replace('CPLC.', '')
                 
-                values[items[0]] = items[1].strip()    
-                
+                values[items[0]] = items[1].strip().strip(',')
+
             filenameshort = path_leaf(filename)
             if has_cplc: 
                 pos = filenameshort.find('ALGSUPPORT')
