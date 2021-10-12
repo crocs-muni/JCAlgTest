@@ -511,10 +511,14 @@ public class SingleModeTest {
         PACKAGE_AID_NAMES_STR.put("020106A00000015102", "org.globalplatform.contactless v1.2");
         PACKAGE_AID_NAMES_STR.put("030106A00000015102", "org.globalplatform.contactless v1.3");
         PACKAGE_AID_NAMES_STR.put("040106A00000015102", "org.globalplatform.contactless v1.4");
+        PACKAGE_AID_NAMES_STR.put("050106A00000015102", "org.globalplatform.contactless v1.5");
+        PACKAGE_AID_NAMES_STR.put("060106A00000015102", "org.globalplatform.contactless v1.6");
         // org.globalplatform.securechannel
         PACKAGE_AID_NAMES_STR.put("000106A00000015103", "org.globalplatform.securechannel v1.0");
         PACKAGE_AID_NAMES_STR.put("010106A00000015103", "org.globalplatform.securechannel v1.1");
         PACKAGE_AID_NAMES_STR.put("020106A00000015103", "org.globalplatform.securechannel v1.2");
+        PACKAGE_AID_NAMES_STR.put("030106A00000015103", "org.globalplatform.securechannel v1.3");
+        PACKAGE_AID_NAMES_STR.put("040106A00000015103", "org.globalplatform.securechannel v1.4");
         // org.globalplatform.securechannel.provider
         PACKAGE_AID_NAMES_STR.put("000106A00000015104", "org.globalplatform.securechannel.provider v1.0");
         PACKAGE_AID_NAMES_STR.put("010106A00000015104", "org.globalplatform.securechannel.provider v1.1");
