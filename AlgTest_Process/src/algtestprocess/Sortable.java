@@ -147,13 +147,13 @@ public class Sortable {
         return header;
     }
 
-    public static void sortableGenerator(String dir, FileOutputStream file, Integer lp) throws IOException {
+    public static void sortableGenerator(String inputDir, FileOutputStream file, Integer lp) throws IOException {
         List<String> topNames_sym = new ArrayList<>();
         List<String> topAcronyms_sym = new ArrayList<>();
         List<String> topNames_asym = new ArrayList<>();
         List<String> topAcronyms_asym = new ArrayList<>();
         loadTopFunctions(topNames_sym, topAcronyms_sym, topNames_asym, topAcronyms_asym);
-        List<String> files = listFilesForFolder(new File(dir));
+        List<String> files = listFilesForFolder(new File(inputDir));
         lp = 0;
         //file.write("<h3>Note: Sortable tables - click on column name to sort ascendingly/descendingly</h3>".getBytes());
         //
@@ -224,12 +224,12 @@ public class Sortable {
     }
     
     
-    public static void runSortable(String dir) throws FileNotFoundException, IOException {
+    public static void runSortable(String inputDir, String outputDir) throws FileNotFoundException, IOException {
         Integer linePosition = 0;
-        FileOutputStream file = new FileOutputStream(dir + "//" + "comparative-table.html");
+        FileOutputStream file = new FileOutputStream(outputDir + "//" + "comparative-table.html");
         beginSortableHTML(file, "JCAlgTest - Comparative table");
         addInfo(file);
-        sortableGenerator(dir, file, linePosition);
+        sortableGenerator(inputDir, file, linePosition);
         endSortableHTML(file);
         file.write("</div>".getBytes());
         System.out.println("Make sure that CSS & JS files are present in output folder.");
