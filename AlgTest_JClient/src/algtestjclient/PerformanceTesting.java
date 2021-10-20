@@ -1785,7 +1785,7 @@ public class PerformanceTesting {
         testSet.keyClass = keyClass;
         
         if (!m_bTestVariableData) {
-            //testSet.algorithmMethod = JCConsts.Signature_update; // NOTE: Cipher_update is disabled as call on most cards will cause 6f00
+            //testSet.algorithmMethod = JCConsts.Signature_update; // NOTE: Signature_update is disabled as call on most cards will cause 6f00
             //this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_update()");
             testSet.algorithmMethod = JCConsts.Signature_sign;
             this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_sign()");
@@ -2439,7 +2439,7 @@ public class PerformanceTesting {
         if (m_bTestAsymmetricAlgs) {
             testDSAPrivateKey(JCConsts.KeyBuilder_TYPE_DSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_DSA_512, "TYPE_DSA_PRIVATE LENGTH_DSA_512", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testDSAPrivateKey(JCConsts.KeyBuilder_TYPE_DSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_DSA_768, "TYPE_DSA_PRIVATE LENGTH_DSA_768", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testDSAPrivateKey(JCConsts.KeyBuilder_TYPE_DSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_DSA_1024, "TYPE_DSA_PRIVATE LENGTH DSA_1024", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testDSAPrivateKey(JCConsts.KeyBuilder_TYPE_DSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_DSA_1024, "TYPE_DSA_PRIVATE LENGTH_DSA_1024", numRepeatWholeOperation, numRepeatWholeMeasurement);
         }
         else {
             String message = "\n# Measurements excluded for asymmetric algorithms\n";
@@ -2606,16 +2606,16 @@ public class PerformanceTesting {
         String tableName = "\n\nECFPPrivateKey";
         m_perfResultsFile.write(tableName.getBytes());
         if (m_bTestAsymmetricAlgs) {
-            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_112, "TYPE_EC_FP PRIVATE LENGTH_EC_FP_112", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_128, "TYPE_EC_FP PRIVATE LENGTH_EC_FP_128", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_160, "TYPE_EC_FP PRIVATE LENGTH_EC_FP_160", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_192, "TYPE_EC_FP PRIVATE LENGTH_EC_FP_192", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_224, "TYPE_EC_FP PRIVATE LENGTH_EC_FP_224", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_256, "TYPE_EC_FP PRIVATE LENGTH_EC_FP_256", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_320, "TYPE_EC_FP PRIVATE LENGTH_EC_FP_320", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_384, "TYPE_EC_FP PRIVATE LENGTH_EC_FP_384", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_512, "TYPE_EC_FP PRIVATE LENGTH_EC_FP_512", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_521, "TYPE_EC_FP PRIVATE LENGTH_EC_FP_521", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_112, "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_112", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_128, "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_128", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_160, "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_160", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_192, "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_192", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_224, "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_224", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_256, "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_256", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_320, "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_320", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_384, "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_384", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_512, "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_512", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_521, "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_521", numRepeatWholeOperation, numRepeatWholeMeasurement);
         }
         else {
             String message = "\n# Measurements excluded for asymmetric algorithms\n";
