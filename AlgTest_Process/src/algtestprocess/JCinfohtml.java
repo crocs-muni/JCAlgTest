@@ -143,7 +143,7 @@ public class JCinfohtml {
 
         // Transform lines into hashmap
         HashMap<String, String> infoMap = new HashMap<>();
-        for (int i = 0; i < 150; i++) {
+        for (int i = 0; i < ((lines.size() < 150)? lines.size() : 150); i++) {
             info = lines.get(i).split(";");
             if (info.length > 1) {
                 infoMap.put(info[0], info[1]);
@@ -1095,7 +1095,7 @@ public class JCinfohtml {
 
         // Transform lines into hashmap
         HashMap<String, String> infoMap = new HashMap<>();
-        for (int i = 0; i < 150; i++) {
+        for (int i = 0; i < ((lines.size() < 150)? lines.size(): 150); i++) {
             info = lines.get(i).split(";");
             if (info.length > 1) {
                 infoMap.put(info[0], info[1]);
