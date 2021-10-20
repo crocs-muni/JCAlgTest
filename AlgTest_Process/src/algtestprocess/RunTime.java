@@ -292,7 +292,7 @@ public class RunTime {
         
     public static void generateRunTimeMain(String dir, List<String> namesOfCards) throws IOException {
         FileOutputStream page = new FileOutputStream(dir + "/run_time/execution-time.html");
-        beginRunTimeHTML(page, "JCAlgTest - Algortithm execution time");
+        beginRunTimeHTML(page, "JCAlgTest - Algorithm execution time");
         StringBuilder toFile = new StringBuilder();
         toFile.append("\t<div class=\"container\">\n");
         toFile.append("\t\t<div class=\"row\">\n");

@@ -206,7 +206,7 @@ public class RadarGraph {
         toFile.append("\t\t<p>The closest value to <strong>100%</strong> represents the fastest result in particular method from all tested cards. Values closer to <strong>10%</strong> supply slower results. <strong>0%</strong> value means unsupported or not tested algorithms.</p>\n");
         toFile.append("\t\t\t<p>After hovering pointer above some point, the actual execution time of algorithm will be displayed.</p><br>\n");        
         toFile.append("<div class=\"alert alert-info\" role=\"alert\">We generate radar graphs for <a href=\"../top-functions.html\">TOP FUNCTIONS</a> only to preserve clarity of results.\n"
-                + "You can find detailed test results in <a href=\"./run_time/execution-time.html\">PERFORMANCE TESTING - EXECUTION TIME</a> section.\n </div>\n");
+                + "You can find detailed test results in <a href=\"../run_time/execution-time.html\">PERFORMANCE TESTING - EXECUTION TIME</a> section.\n </div>\n");
         toFile.append("\t\t\t</div>\n");
         toFile.append("\t\t\t<div class=\"col-md-5 col-xs-5\" style=\"overflow:hidden; margin:2em auto;\">\n");
         toFile.append("\t\t\t<img src=\"../pics/radar_chart_example.png\" alt=\"Radar chart example\" class=\"img-responsive\" align=\"right\">\n");

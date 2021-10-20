@@ -218,7 +218,7 @@ public class TPMRunTime {
 
     public static void generateRunTimeMain(String dir, List<String> namesOfTpms) throws IOException {
         FileOutputStream page = new FileOutputStream(dir + "/run_time/execution-time.html");
-        beginRunTimeHTML(page, "TPMAlgTest - Algortithm execution time");
+        beginRunTimeHTML(page, "TPMAlgTest - Algorithm execution time");
         StringBuilder toFile = new StringBuilder();
         toFile.append("\t<div class=\"container\">\n");
         toFile.append("\t\t<div class=\"row\">\n");
