@@ -46,7 +46,7 @@ public class CardRunner implements Runnable {
          // cardMngr.m_verbose = false;
          try {
              for (short len = m_bitLength_start; len <= m_bitLength_end; len += m_bitLength_step) {
-                 FileOutputStream file = cardMngr.establishConnection("", String.format("RSA%db_%s", len, m_cardTerminal.getName()), m_cardTerminal);
+                 FileOutputStream file = cardMngr.establishConnection("", String.format("RSA%db_%s", len, m_cardTerminal.getName()), m_cardTerminal, new Args());
                  cardMngr.GenerateAndGetKeys(file, m_numRepeats, -1, m_uploadBeforeStart, len, m_useCrt);
                  cardMngr.DisconnectFromCard();
              }

@@ -242,9 +242,9 @@ public class CardMngr {
         }
     }    
     public FileOutputStream establishConnection() throws Exception{
-        return establishConnection("", "", null);
+        return establishConnection("", "", null, new Args());
     }
-    public FileOutputStream establishConnection(String cardName, String testInfo, CardTerminal selectedTerminal) throws Exception{
+    public FileOutputStream establishConnection(String cardName, String testInfo, CardTerminal selectedTerminal, Args cmdArgs) throws Exception{
         boolean bConnected = false;
         // Connnect to targer card to obtain information
         reader.setLength(0);
@@ -263,6 +263,10 @@ public class CardMngr {
             String fileName = testInfo + "_" + atr + ".csv";
             fileName = fileName.replace(":", "");
             fileName = fileName.replace(" ", "_");
+            // Add output folder if provided
+            if (!cmdArgs.baseOutPath.isEmpty()) {
+                fileName = cmdArgs.baseOutPath + fileName;
+            }
             
             FileOutputStream file = new FileOutputStream(fileName);
             

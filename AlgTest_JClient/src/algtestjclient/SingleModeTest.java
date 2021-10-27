@@ -761,24 +761,33 @@ public class SingleModeTest {
      * @throws IOException
      * @throws Exception
      */
-    public void TestSingleAlg (String[] args, CardTerminal selectedReader) throws IOException, Exception{
+    public void TestSingleAlg(String operation, Args cmdArgs, CardTerminal selectedReader) throws IOException, Exception{
         Scanner br = new Scanner(System.in);  
-        String answ = "";   // When set to 0, program will ask for each algorithm to test.
                 
+        // Read card name if not provided
+        String cardName = "";
         m_SystemOutLogger.print("Specify type of your card (e.g., NXP JCOP CJ2A081): ");
-        String cardName = br.next();
-        m_SystemOutLogger.println(String.format("%s", cardName));
-        cardName += br.nextLine();
-        if (cardName.isEmpty()) {
-            cardName = "noname";
-        }            
-        FileOutputStream file = cardManager.establishConnection(cardName, cardName + "_ALGSUPPORT_", selectedReader);
+        if (cmdArgs.cardName.isEmpty()) {
+            cardName = br.next();
+            m_SystemOutLogger.println(String.format("%s", cardName));
+            cardName += br.nextLine();
+            if (cardName.isEmpty()) { cardName = "noname"; }            
+        }
+        else {
+            cardName = cmdArgs.cardName;
+            m_SystemOutLogger.println(String.format("%s", cmdArgs.cardName));
+        }
+        FileOutputStream file = cardManager.establishConnection(cardName, cardName + "_ALGSUPPORT_", selectedReader, cmdArgs);
     
         // Insert header with explanation of test results
         String message = "\nalgorithm_name; is_supported; time_elapsed; persistent_mem_allocated; ram_deselect_allocated; ram_reset_allocated;\n";
         m_SystemOutLogger.println(message);
         file.write(message.getBytes()); 
         
+        // Run required operation
+        if (operation.compareTo(Args.OP_ALG_SUPPORT_BASIC) == 0) { testBasicAtOnce(file); }
+        else if (operation.compareTo(Args.OP_ALG_SUPPORT_EXTENDED) == 0) { testAllAtOnce(file); }
+/*        
         // Checking for arguments 
         if (args.length > 1){       // in case there are arguments from command line present
             if (Arrays.asList(args).contains(TEST_ALL_ALGORITHMS)){testAllAtOnce(file);}
@@ -804,7 +813,8 @@ public class SingleModeTest {
                 CardMngr.PrintHelp();
             }
         }
-        else{       
+*/        
+        else {       
             long elapsedTimeWholeTest = -System.currentTimeMillis();
             testAllAtOnce(file);
             elapsedTimeWholeTest += System.currentTimeMillis();
@@ -1775,7 +1785,7 @@ public class SingleModeTest {
      * @param file FileOutputStream object containing file for output data.
      * @throws Exception
      */
-    public static void testAllAtOnce (FileOutputStream file) throws Exception{
+    public static void testBasicAtOnce(FileOutputStream file) throws Exception{
         TestClassCipher(file);
         TestClassSignature(file);
         TestClassMessageDigest(file);
@@ -1800,10 +1810,26 @@ public class SingleModeTest {
         TestClassRandomDataOneShot(file);
         TestClassMessageDigestOneShot(file);
         TestClassInitializedMessageDigestOneShot(file);
-
+    }    
+    
+    /**
+     * Method that will test Cipher and Signature algorithms constructed from modular components.
+     * @param file FileOutputStream object containing file for output data.
+     * @throws Exception
+     */
+    public static void testModularAtOnce(FileOutputStream file) throws Exception{
         // Modular getInstance from separate components
         TestClassCipherModular(file);
         TestClassSignatureModular(file);
+    }        
+    /**
+     * Method that will test all algorithms in SingleModeTest class.
+     * @param file FileOutputStream object containing file for output data.
+     * @throws Exception
+     */
+    public static void testAllAtOnce (FileOutputStream file) throws Exception{
+        testBasicAtOnce(file);
+        testModularAtOnce(file);
 
         /* Disabled for now, at it seems to be causing crash for J3H081 cards
         // test RSA exponent

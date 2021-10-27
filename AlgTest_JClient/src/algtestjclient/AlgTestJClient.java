@@ -1,5 +1,5 @@
 /*  
-    Copyright (c) 2008-2014 Petr Svenda <petr@svenda.com>
+    Copyright (c) 2008-2021 Petr Svenda <petr@svenda.com>
 
      LICENSE TERMS
 
@@ -33,6 +33,7 @@ package algtestjclient;
 
 import algtest.JCConsts;
 import cardTools.SimulatedCardTerminal;
+import com.beust.jcommander.JCommander;
 import java.io.*;
 import java.util.List;
 import java.util.Scanner;
@@ -50,19 +51,19 @@ import javax.smartcardio.CardTerminal;
  * @author petr
  */
 public class AlgTestJClient {
-    /* Arguments for choosing which AlgTest version to run. */
-    public static final String ALGTEST_SINGLEPERAPDU = "AT_SINGLEPERAPDU";      // for 'New' AlgTest
-    public static final String ALGTEST_PERFORMANCE = "AT_PERFORMANCE";          // for performance testing
-    public static final String ALGTEST_USE_SIMULATOR = "JCARDSIM";              // use simulator instead of real card
-    public static final String ALGTEST_USE_CUSTOM_AID = "AID=";                 // use custom AID for applet (if default one is changed for some reason)
-
+    /**
+     * Version 1.8.1 (27.10.2021)
+     * + Add better CLI control, interactive and non-interactive mode 
+     * + Fixed incorrect names for measurements
+     */
+    public final static String ALGTEST_JCLIENT_VERSION = "1.8.1";
     /**
      * Version 1.8.0 (19.12.2020)
      * + testing of modular Cipher and Signature .getInstance variants
      * + testing of OneShot variants
      * + testing of InitializedMessageDigest 
      */
-    public final static String ALGTEST_JCLIENT_VERSION_1_8_0 = "1.8.0";
+    //public final static String ALGTEST_JCLIENT_VERSION_1_8_0 = "1.8.0";
     /**
      * Version 1.7.10 (29.11.2020)
      * + parsing memory overhead for object allocation
@@ -165,15 +166,8 @@ public class AlgTestJClient {
      */
     //public final static String ALGTEST_JCLIENT_VERSION_1_0 = "1.0";
  
-    /**
-     * Current version
-     */
-    public final static String ALGTEST_JCLIENT_VERSION = ALGTEST_JCLIENT_VERSION_1_8_0;
     
     public final static int STAT_OK = 0;    
-    
-    // If required to be run with simulator, run as: >java -cp "AlgTestJClient.jar;jcardsim-3.0.5-SNAPSHOT.jar" -noverify algtestjclient.AlgTestJClient JCARDSIM
-    static boolean USE_JCARDSIM = false;
     
     // Unique start time in milisconds
     static long m_appStartTime = 0;
@@ -184,7 +178,23 @@ public class AlgTestJClient {
     
     static DirtyLogger m_SystemOutLogger = null;
     public static void main(String[] args) throws IOException, Exception {
-        String logFileName = String.format("ALGTEST_log_%s.log", AlgTestJClient.getStartTime()); 
+        Args cmdArgs = new Args();
+        if (args.length > 0) {
+            // cli version of tool
+            JCommander.newBuilder()
+              .addObject(cmdArgs)
+              .build()
+              .parse(args); 
+            
+            if (!cmdArgs.baseOutPath.isEmpty()) {
+                char lastChar = cmdArgs.baseOutPath.charAt(cmdArgs.baseOutPath.length() - 1);
+                if ((lastChar != '\\') && (lastChar != '/')) {
+                    cmdArgs.baseOutPath = cmdArgs.baseOutPath + "/";     // adding '/' if not present
+                }                
+            }
+        }
+        
+        String logFileName = String.format(cmdArgs.baseOutPath + "ALGTEST_log_%s.log", AlgTestJClient.getStartTime()); 
         FileOutputStream    systemOutLogger = new FileOutputStream(logFileName);
         m_SystemOutLogger = new DirtyLogger(systemOutLogger, true);
         
@@ -192,48 +202,46 @@ public class AlgTestJClient {
         m_SystemOutLogger.println("JCAlgTest " + ALGTEST_JCLIENT_VERSION + " - comprehensive tool for JavaCard smart card testing.");
         m_SystemOutLogger.println("Visit jcalgtest.org for results from 100+ cards. CRoCS lab 2007-2021.");
         m_SystemOutLogger.println("Please check if you use the latest version at\n  https://github.com/crocs-muni/JCAlgTest/releases/latest.");
-        
+        m_SystemOutLogger.println("Type 'java -jar jcalgtestclient --help' to display help and available commands.");
         m_SystemOutLogger.println("-----------------------------------------------------------------------\n");
         
+        CardTerminal selectedTerminal = null;
+        PerformanceTesting testingPerformance = new PerformanceTesting(m_SystemOutLogger);
+        m_SystemOutLogger.println("NOTE: JCAlgTest applet (AlgTest.cap) must be already installed on tested card.");
+        m_SystemOutLogger.println("The results are stored in CSV files. Use JCAlgProcess for HTML conversion.");
+        m_SystemOutLogger.println();
+
+        if (cmdArgs.help) {
+            JCommander.newBuilder().addObject(cmdArgs).build().usage();            
+        }
+        
         if (args.length > 0) {
-            for (String arg : args) {
-                if (arg.equals(ALGTEST_USE_SIMULATOR)) {
-                    USE_JCARDSIM = true;
+            m_SystemOutLogger.println("Running in non-interactive mode. Run without any parameter to enter interactive mode. Run 'java -jar AlgTestJClient.jar -help' to obtain list of supported arguments.");
+            for (String operation : cmdArgs.operations) {
+                if (operation.compareTo(Args.OP_ALG_SUPPORT_BASIC) == 0 || 
+                    operation.compareTo(Args.OP_ALG_SUPPORT_EXTENDED) == 0) {
+                    selectedTerminal = selectTargetReader(cmdArgs);
+                    if (selectedTerminal != null) {
+                        SingleModeTest singleTest = new SingleModeTest(m_SystemOutLogger);
+                        singleTest.TestSingleAlg(operation, cmdArgs, selectedTerminal);
+                    }
                 }
+                else if (operation.compareTo(Args.OP_ALG_PERFORMANCE_STATIC) == 0 || 
+                    operation.compareTo(Args.OP_ALG_PERFORMANCE_VARIABLE) == 0) {
+                    selectedTerminal = selectTargetReader(cmdArgs);
+                    if (selectedTerminal != null) {
+                        testingPerformance.testPerformance(false, operation, selectedTerminal, cmdArgs);
+                    }
+                }
+                else {
+                    m_SystemOutLogger.println("ERROR: unknown option " + operation);
+                }
+                
             }
         }
-/*                    
-        CardTerminal selectedTerminalDebug = null;
-        PerformanceTesting testingPerformanceDebug = new PerformanceTesting(m_SystemOutLogger);
-        selectedTerminalDebug = selectTargetReader();
-        if (selectedTerminalDebug != null) {
-            testingPerformanceDebug.testDebug(args,  selectedTerminalDebug);
-        }        
-/**/        
-/* fix arguments processing       
-        // If arguments are present. 
-        if(args.length > 0){
-            if (args[0].equals(ALGTEST_SINGLEPERAPDU)){
-                SingleModeTest singleTest = new SingleModeTest(m_SystemOutLogger);
-                singleTest.TestSingleAlg(args, null);
-            }
-            else if (args[0].equals(ALGTEST_PERFORMANCE)){
-                PerformanceTesting testingPerformance = new PerformanceTesting(m_SystemOutLogger);
-                testingPerformance.testPerformance(args, false, null);
-            }
-            // In case of incorect parameter, program will report error and shut down.
-            else {
-                System.err.println("Incorect parameter!");
-                CardMngr.PrintHelp();
-            }
-        }
-        // If there are no arguments present
-        else {   
-*/
-            CardTerminal selectedTerminal = null;
-            PerformanceTesting testingPerformance = new PerformanceTesting(m_SystemOutLogger);
-            m_SystemOutLogger.println("NOTE: JCAlgTest applet (AlgTest.cap) must be already installed on tested card.");
-            m_SystemOutLogger.println("The results are stored in CSV files. Use JCAlgProcess for HTML conversion.");
+        else {
+            // Interactive mode of tool
+            m_SystemOutLogger.println("Running in interactive mode. Run 'java -jar AlgTestJClient.jar -help' to obtain list of supported arguments.");
             m_SystemOutLogger.println("CHOOSE test you want to run:");
             m_SystemOutLogger.println("1 -> SUPPORTED ALGORITHMS\n    List all supported JC API algorithms (2-10 minutes)\n" + 
                               "2 -> PERFORMANCE TEST\n    Test all JC API methods with 256B data length (1-3 hours)\n" + 
@@ -248,38 +256,38 @@ public class AlgTestJClient {
             switch (answ) {
                 // In this case, SinglePerApdu version of AlgTest is used.
                 case 1:
-                    selectedTerminal = selectTargetReader();
+                    selectedTerminal = selectTargetReader(cmdArgs);
                     if (selectedTerminal != null) {
                         SingleModeTest singleTest = new SingleModeTest(m_SystemOutLogger);
-                        singleTest.TestSingleAlg(args, selectedTerminal);
+                        singleTest.TestSingleAlg(Args.OP_ALG_SUPPORT_EXTENDED, cmdArgs, selectedTerminal);
                     }
                     break;
                 // In this case Performance tests are used. 
                 case 2:
-                    selectedTerminal = selectTargetReader();
+                    selectedTerminal = selectTargetReader(cmdArgs);
                     if (selectedTerminal != null) {
-                        testingPerformance.testPerformance(args, false, selectedTerminal);
+                        testingPerformance.testPerformance(true, Args.OP_ALG_PERFORMANCE_STATIC, selectedTerminal, cmdArgs);
                     }
                     break;
                 case 3:
-                    selectedTerminal = selectTargetReader();
+                    selectedTerminal = selectTargetReader(cmdArgs);
                     if (selectedTerminal != null) {
-                        testingPerformance.testPerformance(args, true, selectedTerminal);
+                        testingPerformance.testPerformance(true, Args.OP_ALG_PERFORMANCE_VARIABLE, selectedTerminal, cmdArgs);
                     }
                     break;
                 case 4:
-                    performKeyHarvest();
+                    performKeyHarvest(cmdArgs);
                     break;
                 case 5:
-                    selectedTerminal = selectTargetReader();
+                    selectedTerminal = selectTargetReader(cmdArgs);
                     if (selectedTerminal != null) {
-                        testingPerformance.testPerformanceFingerprint(args, selectedTerminal);
+                        testingPerformance.testPerformanceFingerprint(args, selectedTerminal, cmdArgs);
                     }
                     break;
                 case 6:
-                    selectedTerminal = selectTargetReader();
+                    selectedTerminal = selectTargetReader(cmdArgs);
                     if (selectedTerminal != null) {
-                        testingPerformance.testECCPerformance(args, true, selectedTerminal);
+                        testingPerformance.testECCPerformance(args, true, selectedTerminal, cmdArgs);
                     }
                     break;
                 default:
@@ -287,9 +295,7 @@ public class AlgTestJClient {
                     System.err.println("Incorrect parameter!");
                 break;
             }
-/* fix arguments processing       
         }
-*/
         printSendRequest();
     }
     
@@ -310,7 +316,7 @@ public class AlgTestJClient {
         System.out.println("-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
     }
     
-    static void performKeyHarvest() throws CardException {
+    static void performKeyHarvest(Args cmdArgs) throws CardException {
         KeyHarvest keyHarvest = new KeyHarvest(m_SystemOutLogger);
         Scanner sc = new Scanner(System.in);
         // Remove new line character from stream after load integer as type of test
@@ -412,12 +418,12 @@ public class AlgTestJClient {
             m_SystemOutLogger.println("Wrong number. Number of keys to generate is set to " + numOfKeys + ".");
         }
 
-        keyHarvest.gatherRSAKeys(autoUploadBefore, bitLength_start, bitLength_step, bitLength_end, useCrt, numOfKeys, USE_JCARDSIM);        
+        keyHarvest.gatherRSAKeys(autoUploadBefore, bitLength_start, bitLength_step, bitLength_end, useCrt, numOfKeys, cmdArgs.simulator);        
     }
     
-    static CardTerminal selectTargetReader() {
+    static CardTerminal selectTargetReader(Args cmdArgs) {
         // If required, return simulated card (jCardSim), otherwise let user to choose
-        if (USE_JCARDSIM) {
+        if (cmdArgs.simulator) {
             return new SimulatedCardTerminal();
         }
         else {
