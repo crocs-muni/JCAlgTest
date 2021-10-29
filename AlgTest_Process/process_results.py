@@ -111,6 +111,9 @@ def convert_to_json(walk_dir: str):
                             for item in section_data:
                                 if len(item.keys()) == 7:  # add explicit OK for correctly measured sections
                                     item['status'] = 'OK'
+
+                                if item['method name:'] in values['Measurements'][category].keys():
+                                    print('Already exists ' + item['method name:'] + filename)
                                 values['Measurements'][category][item['method name:']] = item
 
                     i = i + 1
@@ -128,6 +131,7 @@ def convert_to_json(walk_dir: str):
 def prepare_missing_measurements(walk_dir: str):
     files = get_files_to_process(walk_dir, '.json')
     for filename in files:
+        print(filename)
         with open(filename) as json_file:
             measurements = json.load(json_file)
 
@@ -144,6 +148,7 @@ def prepare_missing_measurements(walk_dir: str):
                     else:
                         measured_with_errors.append(ops + ' ' + status + '\n')
 
+            print(filename)
             out_file_name = walk_dir + measurements['Info']['Card name'].replace(' ', '_') + '____PERFORMANCE_SYMMETRIC_ASYMMETRIC_DATAFIXED__already_measured.list'
             correctly_measured.sort()
             measured_with_errors.sort()
@@ -173,17 +178,21 @@ def fix_missing_underscores(walk_dir: str, correct_ops_names: list):
                 i = 0
                 line_corrected = line
                 if line.find('method name:;') != -1:
+                    line_updated = False
+                    # two specifically known issues
                     if line.find('TYPE_EC_FP PRIVATE LENGTH_EC_FP') != -1:
                         line_corrected = line.replace('TYPE_EC_FP PRIVATE LENGTH_EC_FP', 'TYPE_EC_FP_PRIVATE LENGTH_EC_FP')
-                        change_found = True
+                        line_updated = change_found = True
                     if line.find('TYPE_DSA_PRIVATE LENGTH DSA_1024') != -1:
                         line_corrected = line.replace('TYPE_DSA_PRIVATE LENGTH DSA_1024', 'TYPE_DSA_PRIVATE LENGTH_DSA_1024')
-                        change_found = True
+                        line_updated = change_found = True
 
-                    if not change_found:
+                    # all other potential issues against known-good template
+                    if not line_updated:
                         while i < len(correct_ops_names_no_underscore):
                             pos = line.find(correct_ops_names_no_underscore[i])
                             if pos != -1:
+                                print('  ' + line)
                                 pre_part = line[0:pos]
                                 post_part = line[pos + len(correct_ops_names_no_underscore[i]):]
                                 line_corrected = pre_part + correct_ops_names[i].strip() + post_part
@@ -193,8 +202,46 @@ def fix_missing_underscores(walk_dir: str, correct_ops_names: list):
                 lines_corrected.append(line_corrected)
 
             if change_found:
-                with open(filename, 'w') as f:
-                    f.writelines(lines_corrected)
+                with open(filename, 'w') as f_write:
+                    f_write.writelines(lines_corrected)
+
+
+def fix_missing_variable_data_lengths(walk_dir: str):
+    files = get_files_to_process(walk_dir, '.csv')
+
+    for filename in files:
+        print(filename)
+
+        change_found = False
+        with open(filename) as f:
+            values = {}
+            lines = f.readlines()
+            lines_corrected = []
+            index = 0
+            while index < len(lines):
+                line = lines[index]
+                i = 0
+                line_corrected = line
+                if line.find('method name:;') != -1:
+                    if line.rstrip().endswith('()'):  # add data length only to the measurements where it is missing
+                        # look ahead and extract length from measurement config
+                        config_line = lines[index + 1]
+                        if config_line.find('measurement config:') == -1:
+                            print('ERROR: missing measurement config on line ' + str(index + 1))
+                        else:
+                            # measurement config:;appletPrepareINS;34;appletMeasureINS;41;config;00 15 00 02 ff ff ff ff ff ff 00 06 00 10 ff ff ff ff 00 05 00 01
+                            pos = config_line.find(';config;') + 44  # jump to payload with data length
+                            data_len_chars = config_line[pos: pos + 5].replace(' ', '')
+                            data_len = int(data_len_chars, 16)
+                            line_corrected = '{};{};\n'.format(line.strip(), data_len)
+                            change_found = True
+
+                lines_corrected.append(line_corrected)
+                index = index + 1
+
+            if change_found:
+                with open(filename, 'w') as f_write:
+                    f_write.writelines(lines_corrected)
 
 
 def compute_stats(walk_dir: str):
@@ -218,10 +265,7 @@ def compute_stats(walk_dir: str):
         json.dump(stats_sorted, write_file, indent=2, sort_keys=False)
 
 
-@click.command()
-@click.argument("directory", required=True, type=str)
-@click.option("--output-dir", "output_dir", type=str,  help="Base path for output.")
-def main(directory: str, output_dir: str):
+def create_sorted_already_measured_list(directory: str):
     with open(directory + 'template____PERFORMANCE_SYMMETRIC_ASYMMETRIC_DATAFIXED__already_measured.list') as f:
         all_to_measure_ops = f.readlines()
         all_to_measure_ops.sort()
@@ -229,7 +273,24 @@ def main(directory: str, output_dir: str):
         with open(out_file_name, 'w') as f_write:
             f_write.writelines(all_to_measure_ops)
 
+    with open(directory + 'template____PERFORMANCE_SYMMETRIC_ASYMMETRIC_DATADEPEND__already_measured.list') as f:
+        all_to_measure_ops = f.readlines()
+        all_to_measure_ops.sort()
+        out_file_name = directory + 'sorted____PERFORMANCE_SYMMETRIC_ASYMMETRIC_DATADEPEND__already_measured.list'
+        with open(out_file_name, 'w') as f_write:
+            f_write.writelines(all_to_measure_ops)
+
+    return all_to_measure_ops
+
+
+@click.command()
+@click.argument("directory", required=True, type=str)
+@click.option("--output-dir", "output_dir", type=str,  help="Base path for output.")
+def main(directory: str, output_dir: str):
+    all_to_measure_ops = create_sorted_already_measured_list(directory)
+
     fix_missing_underscores(directory, all_to_measure_ops)  # some file had incorrect naming for measured values without _
+    fix_missing_variable_data_lengths(directory)
 
     convert_to_json(directory)  # from csv to json
 
