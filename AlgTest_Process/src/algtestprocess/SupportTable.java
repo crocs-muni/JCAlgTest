@@ -62,8 +62,8 @@ import java.util.TreeSet;
  */
 public class SupportTable {
 
-    //public static final String JCALGTEST_RESULTS_REPO_PATH = "https://github.com/crocs-muni/JCAlgTest/tree/master/Profiles/results/";  // original path within code repository
-    public static final String JCALGTEST_RESULTS_REPO_PATH = "https://github.com/crocs-muni/jcalgtest_results/tree/main/javacard/Profiles/results/";
+    public static final String JCALGTEST_RESULTS_REPO_PATH = "https://github.com/crocs-muni/JCAlgTest/tree/master/Profiles/results/";  // original path within code repository
+    //public static final String JCALGTEST_RESULTS_REPO_PATH = "https://github.com/crocs-muni/jcalgtest_results/tree/main/javacard/Profiles/results/";
 
     // if one card results are generated
     public static final String[] JAVA_CARD_VERSION = {"2.1.2", "2.2.1", "2.2.2"};
