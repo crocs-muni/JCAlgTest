@@ -82,14 +82,14 @@ public class RadarGraph {
         file.write(toFile.getBytes());
     }
         
-    public static List<String> generateRadarGraphs(String dir) throws IOException {
+    public static List<String> generateRadarGraphs(String inputDir, String outputDir) throws IOException {
         // prepare input data - topFunctions, perf results
         List<String> topNames_sym = new ArrayList<>();
         List<String> topAcronyms_sym = new ArrayList<>();
         List<String> topNames_asym = new ArrayList<>();
         List<String> topAcronyms_asym = new ArrayList<>();
         loadTopFunctions(topNames_sym, topAcronyms_sym, topNames_asym, topAcronyms_asym);
-        List<String> files = listFilesForFolder(new File(dir));
+        List<String> files = listFilesForFolder(new File(inputDir));
         List<String> namesOfCards = new ArrayList<>();
         List<List<Float>> rowsData = new ArrayList<>();
         List<List<Float>> rowsDataCopy = new ArrayList<>();
@@ -124,7 +124,7 @@ public class RadarGraph {
             }            
         }
         
-        new File(dir+"/radar_graphs").mkdirs(); 
+        new File(outputDir+"/radar_graphs").mkdirs(); 
     
         for(int i=0; i<namesOfCards.size(); i++){
             String cardNameFile = namesOfCards.get(i);
@@ -133,8 +133,8 @@ public class RadarGraph {
                 cardNameFile = cardNameFile.replaceAll("_", "");
             }
          
-            FileOutputStream html = new FileOutputStream(dir + "/radar_graphs/" + cardNameFile + ".html");
-            FileOutputStream script = new FileOutputStream(dir + "/radar_graphs/" + cardNameFile + ".js");
+            FileOutputStream html = new FileOutputStream(outputDir + "/radar_graphs/" + cardNameFile + ".html");
+            FileOutputStream script = new FileOutputStream(outputDir + "/radar_graphs/" + cardNameFile + ".js");
 
             StringBuilder toFile = new StringBuilder();
 
@@ -192,8 +192,8 @@ public class RadarGraph {
         return namesOfCards;
     }
         
-    public static void generateRadarMain(String dir, List<String> namesOfCards) throws IOException {
-        FileOutputStream page = new FileOutputStream(dir + "/radar_graphs/radar-graphs.html");
+    public static void generateRadarMain(String outputDir, List<String> namesOfCards) throws IOException {
+        FileOutputStream page = new FileOutputStream(outputDir + "/radar_graphs/radar-graphs.html");
         beginRadarHTML(page, "JCAlgTest - Performance radar graphs");
         StringBuilder toFile = new StringBuilder();
         toFile.append("\t<div class=\"container\">\n");
@@ -232,9 +232,9 @@ public class RadarGraph {
         page.close();
     }
     
-    public static void runRadarGraph(String dir) throws FileNotFoundException, IOException{
-        List<String> namesOfCards = generateRadarGraphs(dir);
-        generateRadarMain(dir, namesOfCards);
+    public static void runRadarGraph(String inputDir, String outputDir) throws FileNotFoundException, IOException{
+        List<String> namesOfCards = generateRadarGraphs(inputDir, outputDir);
+        generateRadarMain(outputDir, namesOfCards);
         System.out.println("ADD all necessary scripts (header-1.js, RadarChart.js) to newly generated folder.");        
     }
 }

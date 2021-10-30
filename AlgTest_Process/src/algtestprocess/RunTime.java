@@ -37,6 +37,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -44,7 +45,7 @@ import java.util.List;
  * @author rk
  */
 public class RunTime {   
-    public static final List<String> category = Arrays.asList("MESSAGE DIGEST", "RANDOM GENERATOR", "CIPHER", "SIGNATURE", "CHECKSUM", "AESKey", "DESKey", "KoreanSEEDKey", "DSAPrivateKey", "DSAPublicKey", "ECF2MPublicKey", "ECF2MPrivateKey", "ECFPPublicKey", "HMACKey", "RSAPrivateKey", "RSAPublicKey", "RSAPrivateCRTKey", "KEY PAIR", "UTIL", "SWALGS");
+    public static final List<String> category = Arrays.asList("MESSAGE DIGEST", "RANDOM GENERATOR", "CIPHER", "SIGNATURE", "CHECKSUM", "AESKey", "DESKey", "KoreanSEEDKey", "DSAPrivateKey", "DSAPublicKey", "ECF2MPublicKey", "ECF2MPrivateKey", "ECFPPublicKey", "ECFPPrivateKey", "HMACKey", "RSAPrivateKey", "RSAPublicKey", "RSAPrivateCRTKey", "KEY PAIR", "UTIL", "SWALGS", "KEYAGREEMENT");
     public static final String TABLE_HEAD = "<table cellspacing='0'> <!-- cellspacing='0' is important, must stay -->\n\t<tr><th style=\"width: 330px;\">Name of function</th><th><b>Operation average (ms/op)</b></th><th>Operation minimum (ms/op)</th><th>Operation maximum (ms/op)</th><th>Data length (bytes)</th><th></th><th class=\"minor\">Prepare average (ms/op)</th><th class=\"minor\">Prepare minimum (ms/op)</th><th class=\"minor\">Prepare maximum (ms/op)</th><th class=\"minor\">Iterations & Invocations</th></tr><!-- Table Header -->\n";
     
     public static void beginRunTimeHTML(FileOutputStream file, String title) throws IOException {
@@ -170,6 +171,9 @@ public class RunTime {
         } else {
             toFile += ((tp % 2) == 0) ? "\t<tr>" : "\t<tr class='even'>";
             prepare = lines.get(lp).trim().split(";");
+            if (prepare.length < 2) {
+                System.out.println("Unexpected format of line '" + lines.get(lp) + "'");
+            }
             toFile += "<td><b>"+prepare[1]+"</b></td>";       //classic name without reference to chart
             //toFile += "<td><a class=\"fancybox fancybox.iframe\" href=\"./graphs/" + prepare[1] + ".html\" style=\"font-size:12px;\">" + prepare[1] + "</a></td>";
             lp += 2;
@@ -224,13 +228,14 @@ public class RunTime {
         file.write(toFile.toString().getBytes());
     }
     
-    public static String generateRunTimeFile(String input) throws FileNotFoundException, IOException {
+    public static String generateRunTimeFile(String input, String outBasePath) throws FileNotFoundException, IOException {
         Integer linePosition = 0;        
         StringBuilder cardName = new StringBuilder();
         String cardNameFile = "noname";
         
         List<String> lines = initalize(input, cardName);                            //load lines to from file to List
-        String resultsDir = new File(input).getParentFile().toString();
+        //String resultsDir = new File(input).getParentFile().toString();
+        String resultsDir = outBasePath;
         if (!(cardName.toString().equals("")) && !(cardName.toString().equals(" "))){
             cardNameFile = cardName.toString().replaceAll(" ", "");
             cardNameFile = cardNameFile.replaceAll("_", "");
@@ -252,14 +257,15 @@ public class RunTime {
         return cardName.toString();
     }
     
-    public static List<String> generateRunTimeFolder(String dir) throws IOException {
-        List<String> files = listFilesForFolder(new File(dir));
+    public static List<String> generateRunTimeFolder(String inputPath, String outputPath) throws IOException {
+        List<String> files = listFilesForFolder(new File(inputPath));
         List<String> namesOfCards = new ArrayList<>();
 
         //load data from input files (fixed-size perf data) and store name of card
-        for(String filePath : files)
-            namesOfCards.add(generateRunTimeFile(filePath));
-               
+        for(String filePath : files) {
+            System.out.println("Processing file: " + filePath);
+            namesOfCards.add(generateRunTimeFile(filePath, outputPath));
+        }
         return namesOfCards;
     }
     
@@ -320,9 +326,9 @@ public class RunTime {
         page.close();
     }
     
-    public static void runRunTime(String dir) throws FileNotFoundException, IOException{
-        List<String> namesOfCards = generateRunTimeFolder(dir);
-        generateRunTimeMain(dir, namesOfCards);
+    public static void runRunTime(String inputDir, String outputPath) throws FileNotFoundException, IOException{
+        List<String> namesOfCards = generateRunTimeFolder(inputDir, outputPath);
+        generateRunTimeMain(outputPath, namesOfCards);
       //  System.out.println("ADD all necessary scripts (header-1.js, RadarChart.js) to new generated folder.");        
     }
 }

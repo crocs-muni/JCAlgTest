@@ -117,7 +117,8 @@ public class ScalabilityGraph {
         StringBuilder toFile = new StringBuilder();
         StringBuilder chart = new StringBuilder();
         //end of test details (1st div), end of beginning (2nd div)
-        toFile.append("</br></div>\n</div>\n\t<script type=\"text/javascript\" src=\"https://www.google.com/jsapi\"></script>\n");
+        toFile.append("</br></div>\n</div>\n\t<script type=\"text/javascript\" src=\"https://www.gstatic.com/charts/loader.js\"></script>\n");
+        toFile.append("\n<script>\ngoogle.charts.load('current', {packages: ['corechart']});\n</script>\n");
         Integer lp = 0;
         String methodName = "";
         
@@ -201,7 +202,7 @@ public class ScalabilityGraph {
             toFile.append("\t</div>\n\n");
         }
 
-        toFile.append("</div>\n<script type=\"text/javascript\" src=\"https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['corechart']}]}\"></script>\n");
+        toFile.append("</div>\n<script type=\"text/javascript\" src=\"https://www.gstatic.com/charts/loader.js\"></script>\n");
 
         //quick links to generated charts at the beginning of html file
         String toFileBegin;
@@ -229,19 +230,19 @@ public class ScalabilityGraph {
         file.write(toFile.toString().getBytes());
     }
      
-    public static String generateScalabilityFile(String input, Boolean toponly) throws IOException {
+    public static String generateScalabilityFile(String input, String outDir, Boolean toponly) throws IOException {
         StringBuilder cardName = new StringBuilder();
         String cardNameFile = "noname_scalability";
         
         List<String> lines = initalize(input, cardName);                            //load lines to from file to List
-        String resultsDir = new File(input).getParentFile().toString();
+        String resultsDir = new File(outDir).getParentFile().toString();
         if (!(cardName.toString().equals("")) && !(cardName.toString().equals(" "))){
             cardNameFile = cardName.toString().replaceAll(" ", "");
             cardNameFile = cardNameFile.replaceAll("_", "");
         } 
         
-        new File(resultsDir+"/scalability").mkdirs(); 
-        FileOutputStream file = new FileOutputStream(resultsDir + "/scalability/" + cardNameFile + ".html");
+        new File(outDir + "/scalability").mkdirs(); 
+        FileOutputStream file = new FileOutputStream(outDir + "/scalability/" + cardNameFile + ".html");
         beginScalabilityHTML(file, "JCAlgTest - Scalability graph - " + cardName.toString());
         parseGraphsPage(lines, file, cardName.toString(), toponly);
         endRunTimeHTML(file);
@@ -249,19 +250,19 @@ public class ScalabilityGraph {
         return cardName.toString();
     }
     
-    public static List<String> generateScalabilityFolder(String dir, Boolean toponly) throws IOException {
+    public static List<String> generateScalabilityFolder(String dir, String outDir, Boolean toponly) throws IOException {
         List<String> files = listFilesForFolder(new File(dir));
         List<String> namesOfCards = new ArrayList<>();
 
         //load data from input files (fixed-size perf data) and store name of card
         for(String filePath : files)
-            namesOfCards.add(generateScalabilityFile(filePath, toponly));
+            namesOfCards.add(generateScalabilityFile(filePath, outDir, toponly));
                
         return namesOfCards;
     }
     
-    public static void generateScalabilityMain(String dir, List<String> namesOfCards) throws IOException {
-        FileOutputStream page = new FileOutputStream(dir + "/scalability/scalability.html");
+    public static void generateScalabilityMain(String dir, String outDir, List<String> namesOfCards) throws IOException {
+        FileOutputStream page = new FileOutputStream(outDir + "/scalability/scalability.html");
         beginRunTimeHTML(page, "JCAlgTest - Scalability graphs");
         StringBuilder toFile = new StringBuilder();
         toFile.append("\t<div class=\"container\">\n");
@@ -294,9 +295,9 @@ public class ScalabilityGraph {
         page.close();
     }
         
-    public static void runScalability(String dir, Boolean toponly) throws FileNotFoundException, IOException{
-        List<String> namesOfCards = generateScalabilityFolder(dir, false);
-        generateScalabilityMain(dir, namesOfCards);
+    public static void runScalability(String dir, String outDir, Boolean toponly) throws FileNotFoundException, IOException{
+        List<String> namesOfCards = generateScalabilityFolder(dir, outDir, false);
+        generateScalabilityMain(dir, outDir, namesOfCards);
       //  System.out.println("ADD all necessary scripts (header-1.js, RadarChart.js) to new generated folder.");        
     }
     /*

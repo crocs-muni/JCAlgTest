@@ -7920,7 +7920,7 @@ DESKey - END
 
 
 KoreanSEEDKey
-method name:; TYPE KOREAN SEED LENGTH KOREAN SEED 128 setKey()
+method name:; TYPE_KOREAN_SEED LENGTH_KOREAN_SEED_128 setKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 12 00 80 00 02 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;12.00;13.00;13.00;
 baseline stats (ms):;avg:;13.40;min:;12.00;max:;16.00;;;CHECK
@@ -7928,7 +7928,7 @@ operation raw measurements (ms):;44.60;41.60;41.60;42.60;42.60;
 operation stats (ms/op):;avg op:;0.85;min op:;0.83;max op:;0.89;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE KOREAN SEED LENGTH KOREAN SEED 128 getKey()
+method name:; TYPE_KOREAN_SEED LENGTH_KOREAN_SEED_128 getKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 12 00 80 00 01 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
@@ -7936,7 +7936,7 @@ operation raw measurements (ms):;45.40;40.40;42.40;40.40;41.40;
 operation stats (ms/op):;avg op:;0.84;min op:;0.81;max op:;0.91;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE KOREAN SEED LENGTH KOREAN SEED 128 clearKey()
+method name:; TYPE_KOREAN_SEED LENGTH_KOREAN_SEED_128 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 12 00 80 00 03 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;17.00;13.00;14.00;14.00;13.00;
 baseline stats (ms):;avg:;14.20;min:;13.00;max:;17.00;;;CHECK
@@ -7949,28 +7949,28 @@ KoreanSEEDKey - END
 
 
 DSAPrivateKey
-method name:; TYPE DSA PRIVATE LENGTH DSA 512 setX()
+method name:; TYPE_DSA_PRIVATE LENGTH_DSA_512 setX()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 08 02 00 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE DSA PRIVATE LENGTH DSA 512 getX()
+method name:; TYPE_DSA_PRIVATE LENGTH_DSA_512 getX()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 08 02 00 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
 method name:; TYPE DSA PRIVATE LENGTH DSA 512 clearX()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 08 02 00 00 03 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE DSA PRIVATE LENGTH DSA 768 setX()
+method name:; TYPE_DSA_PRIVATE LENGTH_DSA_768 setX()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 08 03 00 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE DSA PRIVATE LENGTH DSA 768 getX()
+method name:; TYPE_DSA_PRIVATE LENGTH_DSA_768 getX()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 08 03 00 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
 method name:; TYPE DSA PRIVATE LENGTH DSA 768 clearX()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 08 03 00 00 03 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE DSA PRIVATE LENGTH DSA 1024 setX()
+method name:; TYPE_DSA_PRIVATE LENGTH_DSA_1024 setX()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 08 04 00 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE DSA PRIVATE LENGTH DSA 1024 getX()
+method name:; TYPE_DSA_PRIVATE LENGTH_DSA_1024 getX()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 08 04 00 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
 method name:; TYPE DSA PRIVATE LENGTH DSA 1024 clearX()
@@ -7981,28 +7981,28 @@ DSAPrivateKey - END
 
 
 DSAPublicKey
-method name:; TYPE DSA PUBLIC LENGTH DSA 512 setY()
+method name:; TYPE_DSA_PUBLIC LENGTH_DSA_512 setY()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 07 02 00 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE DSA PUBLIC LENGTH DSA 512 getY()
+method name:; TYPE_DSA_PUBLIC LENGTH_DSA_512 getY()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 07 02 00 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
 method name:; TYPE DSA PUBLIC LENGTH DSA 512 clearY()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 07 02 00 00 03 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE DSA PUBLIC LENGTH DSA 768 setY()
+method name:; TYPE_DSA_PUBLIC LENGTH_DSA_768 setY()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 07 03 00 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE DSA PUBLIC LENGTH DSA 768 getY()
+method name:; TYPE_DSA_PUBLIC LENGTH_DSA_768 getY()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 07 03 00 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
 method name:; TYPE DSA PUBLIC LENGTH DSA 768 clearY()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 07 03 00 00 03 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE DSA PUBLIC LENGTH DSA 1024 setY()
+method name:; TYPE_DSA_PUBLIC LENGTH_DSA_1024 setY()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 07 04 00 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE DSA PUBLIC LENGTH DSA 1024 getY()
+method name:; TYPE_DSA_PUBLIC LENGTH_DSA_1024 getY()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 07 04 00 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
 method name:; TYPE DSA PUBLIC LENGTH DSA 1024 clearY()
@@ -8013,37 +8013,37 @@ DSAPublicKey - END
 
 
 ECF2MPublicKey
-method name:; TYPE EC F2M PUBLIC LENGTH EC F2M 113 setW()
+method name:; TYPE_EC_F2M_PUBLIC LENGTH_EC_F2M_113 setW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 09 00 71 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE EC F2M PUBLIC LENGTH EC F2M 113 getW()
+method name:; TYPE_EC_F2M_PUBLIC LENGTH_EC_F2M_113 getW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 09 00 71 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
 method name:; TYPE EC F2M PUBLIC LENGTH EC F2M 113 clearW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 09 00 71 00 03 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE EC F2M PUBLIC LENGTH EC F2M 131 setW()
+method name:; TYPE_EC_F2M_PUBLIC LENGTH_EC_F2M_131 setW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 09 00 83 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE EC F2M PUBLIC LENGTH EC F2M 131 getW()
+method name:; TYPE_EC_F2M_PUBLIC LENGTH_EC_F2M_131 getW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 09 00 83 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
 method name:; TYPE EC F2M PUBLIC LENGTH EC F2M 131 clearW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 09 00 83 00 03 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE EC F2M PUBLIC LENGTH EC F2M 163 setW()
+method name:; TYPE_EC_F2M_PUBLIC LENGTH_EC_F2M_163 setW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 09 00 a3 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE EC F2M PUBLIC LENGTH EC F2M 163 getW()
+method name:; TYPE_EC_F2M_PUBLIC LENGTH_EC_F2M_163 getW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 09 00 a3 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
 method name:; TYPE EC F2M PUBLIC LENGTH EC F2M 163 clearW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 09 00 a3 00 03 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE EC F2M PUBLIC LENGTH EC F2M 193 setW()
+method name:; TYPE_EC_F2M_PUBLIC LENGTH_EC_F2M_193 setW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 09 00 c1 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE EC F2M PUBLIC LENGTH EC F2M 193 getW()
+method name:; TYPE_EC_F2M_PUBLIC LENGTH_EC_F2M_193 getW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 09 00 c1 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
 method name:; TYPE EC F2M PUBLIC LENGTH EC F2M 193 clearW()
@@ -8054,37 +8054,37 @@ ECF2MPublicKey - END
 
 
 ECF2MPrivateKey
-method name:; TYPE EC F2M PRIVATE LENGTH EC F2M 113 setW()
+method name:; TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_113 setW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 0a 00 71 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE EC F2M PRIVATE LENGTH EC F2M 113 getW()
+method name:; TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_113 getW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 0a 00 71 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
 method name:; TYPE EC F2M PRIVATE LENGTH EC F2M 113 clearW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 0a 00 71 00 03 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE EC F2M PRIVATE LENGTH EC F2M 131 setW()
+method name:; TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_131 setW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 0a 00 83 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE EC F2M PRIVATE LENGTH EC F2M 131 getW()
+method name:; TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_131 getW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 0a 00 83 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
 method name:; TYPE EC F2M PRIVATE LENGTH EC F2M 131 clearW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 0a 00 83 00 03 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE EC F2M PRIVATE LENGTH EC F2M 163 setW()
+method name:; TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_163 setW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 0a 00 a3 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE EC F2M PRIVATE LENGTH EC F2M 163 getW()
+method name:; TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_163 getW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 0a 00 a3 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
 method name:; TYPE EC F2M PRIVATE LENGTH EC F2M 163 clearW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 0a 00 a3 00 03 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE EC F2M PRIVATE LENGTH EC F2M 193 setW()
+method name:; TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_193 setW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 0a 00 c1 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE EC F2M PRIVATE LENGTH EC F2M 193 getW()
+method name:; TYPE_EC_F2M_PRIVATE LENGTH_EC_F2M_193 getW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 0a 00 c1 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
 method name:; TYPE EC F2M PRIVATE LENGTH EC F2M 193 clearW()
@@ -8095,73 +8095,73 @@ ECF2MPrivateKey - END
 
 
 ECFPPublicKey
-method name:; TYPE EC FP PUBLIC LENGTH EC FP 112 setW()
+method name:; TYPE_EC_FP_PUBLIC LENGTH_EC_FP_112 setW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 0b 00 70 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE EC FP PUBLIC LENGTH EC FP 112 getW()
+method name:; TYPE_EC_FP_PUBLIC LENGTH_EC_FP_112 getW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 0b 00 70 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
 method name:; TYPE EC FP PUBLIC LENGTH EC FP 112 clearW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 0b 00 70 00 03 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE EC FP PUBLIC LENGTH EC FP 128 setW()
+method name:; TYPE_EC_FP_PUBLIC LENGTH_EC_FP_128 setW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 0b 00 80 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE EC FP PUBLIC LENGTH EC FP 128 getW()
+method name:; TYPE_EC_FP_PUBLIC LENGTH_EC_FP_128 getW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 0b 00 80 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
 method name:; TYPE EC FP PUBLIC LENGTH EC FP 128 clearW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 0b 00 80 00 03 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE EC FP PUBLIC LENGTH EC FP 160 setW()
+method name:; TYPE_EC_FP_PUBLIC LENGTH_EC_FP_160 setW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 0b 00 a0 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE EC FP PUBLIC LENGTH EC FP 160 getW()
+method name:; TYPE_EC_FP_PUBLIC LENGTH_EC_FP_160 getW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 0b 00 a0 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
 method name:; TYPE EC FP PUBLIC LENGTH EC FP 160 clearW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 0b 00 a0 00 03 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE EC FP PUBLIC LENGTH EC FP 192 setW()
+method name:; TYPE_EC_FP_PUBLIC LENGTH_EC_FP_192 setW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 0b 00 c0 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE EC FP PUBLIC LENGTH EC FP 192 getW()
+method name:; TYPE_EC_FP_PUBLIC LENGTH_EC_FP_192 getW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 0b 00 c0 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
 method name:; TYPE EC FP PUBLIC LENGTH EC FP 192 clearW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 0b 00 c0 00 03 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE EC FP PUBLIC LENGTH EC FP 224 setW()
+method name:; TYPE_EC_FP_PUBLIC LENGTH_EC_FP_224 setW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 0b 00 e0 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE EC FP PUBLIC LENGTH EC FP 224 getW()
+method name:; TYPE_EC_FP_PUBLIC LENGTH_EC_FP_224 getW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 0b 00 e0 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
 method name:; TYPE EC FP PUBLIC LENGTH EC FP 224 clearW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 0b 00 e0 00 03 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE EC FP PUBLIC LENGTH EC FP 256 setW()
+method name:; TYPE_EC_FP_PUBLIC LENGTH_EC_FP_256 setW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 0b 01 00 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE EC FP PUBLIC LENGTH EC FP 256 getW()
+method name:; TYPE_EC_FP_PUBLIC LENGTH_EC_FP_256 getW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 0b 01 00 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
 method name:; TYPE EC FP PUBLIC LENGTH EC FP 256 clearW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 0b 01 00 00 03 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE EC FP PUBLIC LENGTH EC FP 384 setW()
+method name:; TYPE_EC_FP_PUBLIC LENGTH_EC_FP_384 setW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 0b 01 80 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE EC FP PUBLIC LENGTH EC FP 384 getW()
+method name:; TYPE_EC_FP_PUBLIC LENGTH_EC_FP_384 getW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 0b 01 80 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
 method name:; TYPE EC FP PUBLIC LENGTH EC FP 384 clearW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 0b 01 80 00 03 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE EC FP PUBLIC LENGTH EC FP 521 setW()
+method name:; TYPE_EC_FP_PUBLIC LENGTH_EC_FP_521 setW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 0b 02 09 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE EC FP PUBLIC LENGTH EC FP 521 getW()
+method name:; TYPE_EC_FP_PUBLIC LENGTH_EC_FP_521 getW()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 0b 02 09 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
 method name:; TYPE EC FP PUBLIC LENGTH EC FP 521 clearW()
@@ -8249,40 +8249,40 @@ ECFPPublicKey - END
 
 
 HMACKey
-method name:; TYPE HMAC SHA-1 LENGTH HMAC 64 setKey()
+method name:; TYPE_HMAC_SHA-1 LENGTH_HMAC_64 setKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 15 00 40 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE HMAC SHA-1 LENGTH HMAC 64 getKey()
+method name:; TYPE_HMAC_SHA-1 LENGTH_HMAC_64 getKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 15 00 40 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE HMAC SHA-1 LENGTH HMAC 64 clearKey()
+method name:; TYPE_HMAC_SHA-1 LENGTH_HMAC_64 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 15 00 40 00 03 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE HMAC SHA-256 LENGTH HMAC 64 setKey()
+method name:; TYPE_HMAC_SHA-256 LENGTH_HMAC_64 setKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 15 00 40 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE HMAC SHA-256 LENGTH HMAC 64 getKey()
+method name:; TYPE_HMAC_SHA-256 LENGTH_HMAC_64 getKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 15 00 40 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE HMAC SHA-256 LENGTH HMAC 64 clearKey()
+method name:; TYPE_HMAC_SHA-256 LENGTH_HMAC_64 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 15 00 40 00 03 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE HMAC SHA-384 LENGTH HMAC 128 setKey()
+method name:; TYPE_HMAC_SHA-384 LENGTH_HMAC_128 setKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 15 00 80 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE HMAC SHA-384 LENGTH HMAC 128 getKey()
+method name:; TYPE_HMAC_SHA-384 LENGTH_HMAC_128 getKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 15 00 80 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE HMAC SHA-384 LENGTH HMAC 128 clearKey()
+method name:; TYPE_HMAC_SHA-384 LENGTH_HMAC_128 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 15 00 80 00 03 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE HMAC SHA-512 LENGTH HMAC 128 setKey()
+method name:; TYPE_HMAC_SHA-512 LENGTH_HMAC_128 setKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 15 00 80 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE HMAC SHA-512 LENGTH HMAC 128 getKey()
+method name:; TYPE_HMAC_SHA-512 LENGTH_HMAC_128 getKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 15 00 80 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE HMAC SHA-512 LENGTH HMAC 128 clearKey()
+method name:; TYPE_HMAC_SHA-512 LENGTH_HMAC_128 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 15 00 80 00 03 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
 
@@ -8290,32 +8290,32 @@ HMACKey - END
 
 
 RSAPrivateCRTKey
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 512 setDP1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_512 setDP1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 02 00 00 01 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;15.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.40;min:;13.00;max:;15.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 512 setDQ1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_512 setDQ1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 02 00 00 04 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;17.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.80;min:;13.00;max:;17.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 512 setP()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_512 setP()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 02 00 00 09 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 512 setPQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_512 setPQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 02 00 00 02 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;12.00;13.00;
 baseline stats (ms):;avg:;13.40;min:;12.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 512 setQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_512 setQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 02 00 00 07 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 512 getDP1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_512 getDP1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 02 00 00 03 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;12.00;13.00;13.00;
 baseline stats (ms):;avg:;13.40;min:;12.00;max:;16.00;;;CHECK
@@ -8323,7 +8323,7 @@ operation raw measurements (ms):;46.60;45.60;45.60;42.60;44.60;
 operation stats (ms/op):;avg op:;0.90;min op:;0.85;max op:;0.93;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 512 getDQ1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_512 getDQ1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 02 00 00 05 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
@@ -8331,7 +8331,7 @@ operation raw measurements (ms):;47.40;43.40;44.40;43.40;45.40;
 operation stats (ms/op):;avg op:;0.90;min op:;0.87;max op:;0.95;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 512 getP()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_512 getP()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 02 00 00 08 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;17.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.80;min:;13.00;max:;17.00;;;CHECK
@@ -8339,7 +8339,7 @@ operation raw measurements (ms):;45.20;42.20;43.20;43.20;43.20;
 operation stats (ms/op):;avg op:;0.87;min op:;0.84;max op:;0.90;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 512 getPQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_512 getPQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 02 00 00 06 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
@@ -8347,7 +8347,7 @@ operation raw measurements (ms):;47.40;43.40;43.40;43.40;44.40;
 operation stats (ms/op):;avg op:;0.89;min op:;0.87;max op:;0.95;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 512 getQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_512 getQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 02 00 00 0a 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
@@ -8355,70 +8355,70 @@ operation raw measurements (ms):;45.40;41.40;43.40;42.40;42.40;
 operation stats (ms/op):;avg op:;0.86;min op:;0.83;max op:;0.91;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 512 clearKey()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_512 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 02 00 00 0b 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;15.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.40;min:;13.00;max:;15.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 736 setDP1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_736 setDP1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 02 e0 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 736 setDQ1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_736 setDQ1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 02 e0 00 04 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 736 setP()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_736 setP()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 02 e0 00 09 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 736 setPQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_736 setPQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 02 e0 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 736 setQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_736 setQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 02 e0 00 07 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 736 getDP1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_736 getDP1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 02 e0 00 03 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 736 getDQ1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_736 getDQ1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 02 e0 00 05 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 736 getP()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_736 getP()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 02 e0 00 08 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 736 getPQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_736 getPQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 02 e0 00 06 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 736 getQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_736 getQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 02 e0 00 0a 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 736 clearKey()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_736 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 02 e0 00 0b 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 768 setDP1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_768 setDP1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 03 00 00 01 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;17.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.80;min:;13.00;max:;17.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 768 setDQ1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_768 setDQ1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 03 00 00 04 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;12.00;13.00;
 baseline stats (ms):;avg:;13.40;min:;12.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 768 setP()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_768 setP()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 03 00 00 09 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;12.00;13.00;
 baseline stats (ms):;avg:;13.40;min:;12.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 768 setPQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_768 setPQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 03 00 00 02 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;14.00;
 baseline stats (ms):;avg:;13.80;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 768 setQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_768 setQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 03 00 00 07 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;15.00;13.00;14.00;14.00;13.00;
 baseline stats (ms):;avg:;13.80;min:;13.00;max:;15.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 768 getDP1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_768 getDP1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 03 00 00 03 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;15.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.40;min:;13.00;max:;15.00;;;CHECK
@@ -8426,7 +8426,7 @@ operation raw measurements (ms):;48.60;44.60;45.60;44.60;43.60;
 operation stats (ms/op):;avg op:;0.91;min op:;0.87;max op:;0.97;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 768 getDQ1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_768 getDQ1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 03 00 00 05 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;17.00;14.00;13.00;13.00;14.00;
 baseline stats (ms):;avg:;14.20;min:;13.00;max:;17.00;;;CHECK
@@ -8434,7 +8434,7 @@ operation raw measurements (ms):;45.80;41.80;40.80;42.80;41.80;
 operation stats (ms/op):;avg op:;0.85;min op:;0.82;max op:;0.92;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 768 getP()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_768 getP()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 03 00 00 08 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
@@ -8442,7 +8442,7 @@ operation raw measurements (ms):;47.40;44.40;44.40;44.40;43.40;
 operation stats (ms/op):;avg op:;0.90;min op:;0.87;max op:;0.95;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 768 getPQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_768 getPQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 03 00 00 06 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;12.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.40;min:;12.00;max:;16.00;;;CHECK
@@ -8450,7 +8450,7 @@ operation raw measurements (ms):;47.60;44.60;43.60;44.60;44.60;
 operation stats (ms/op):;avg op:;0.90;min op:;0.87;max op:;0.95;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 768 getQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_768 getQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 03 00 00 0a 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;30.00;13.00;13.00;12.00;13.00;
 baseline stats (ms):;avg:;16.20;min:;12.00;max:;30.00;;;CHECK
@@ -8458,37 +8458,37 @@ operation raw measurements (ms):;45.80;42.80;42.80;41.80;41.80;
 operation stats (ms/op):;avg op:;0.86;min op:;0.84;max op:;0.92;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 768 clearKey()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_768 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 03 00 00 0b 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;14.00;13.00;
 baseline stats (ms):;avg:;13.80;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 896 setDP1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_896 setDP1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 03 80 00 01 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;14.00;13.00;
 baseline stats (ms):;avg:;13.80;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 896 setDQ1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_896 setDQ1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 03 80 00 04 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;15.00;13.00;13.00;13.00;12.00;
 baseline stats (ms):;avg:;13.20;min:;12.00;max:;15.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 896 setP()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_896 setP()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 03 80 00 09 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 896 setPQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_896 setPQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 03 80 00 02 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;14.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.80;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 896 setQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_896 setQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 03 80 00 07 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;17.00;13.00;13.00;14.00;13.00;
 baseline stats (ms):;avg:;14.00;min:;13.00;max:;17.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 896 getDP1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_896 getDP1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 03 80 00 03 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
@@ -8496,7 +8496,7 @@ operation raw measurements (ms):;47.40;44.40;45.40;46.40;45.40;
 operation stats (ms/op):;avg op:;0.92;min op:;0.89;max op:;0.95;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 896 getDQ1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_896 getDQ1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 03 80 00 05 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;17.00;13.00;13.00;13.00;14.00;
 baseline stats (ms):;avg:;14.00;min:;13.00;max:;17.00;;;CHECK
@@ -8504,7 +8504,7 @@ operation raw measurements (ms):;47.00;44.00;45.00;45.00;44.00;
 operation stats (ms/op):;avg op:;0.90;min op:;0.88;max op:;0.94;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 896 getP()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_896 getP()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 03 80 00 08 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;17.00;30.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;17.20;min:;13.00;max:;30.00;;;CHECK
@@ -8512,7 +8512,7 @@ operation raw measurements (ms):;42.80;38.80;39.80;38.80;39.80;
 operation stats (ms/op):;avg op:;0.80;min op:;0.78;max op:;0.86;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 896 getPQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_896 getPQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 03 80 00 06 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;12.00;13.00;14.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;12.00;max:;16.00;;;CHECK
@@ -8520,7 +8520,7 @@ operation raw measurements (ms):;47.40;44.40;45.40;44.40;45.40;
 operation stats (ms/op):;avg op:;0.91;min op:;0.89;max op:;0.95;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 896 getQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_896 getQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 03 80 00 0a 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
@@ -8528,37 +8528,37 @@ operation raw measurements (ms):;46.40;44.40;47.40;43.40;43.40;
 operation stats (ms/op):;avg op:;0.90;min op:;0.87;max op:;0.95;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 896 clearKey()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_896 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 03 80 00 0b 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1024 setDP1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1024 setDP1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 04 00 00 01 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1024 setDQ1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1024 setDQ1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 04 00 00 04 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;15.00;14.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;15.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1024 setP()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1024 setP()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 04 00 00 09 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;14.00;13.00;
 baseline stats (ms):;avg:;13.80;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1024 setPQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1024 setPQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 04 00 00 02 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;12.00;13.00;13.00;
 baseline stats (ms):;avg:;13.40;min:;12.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1024 setQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1024 setQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 04 00 00 07 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1024 getDP1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1024 getDP1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 04 00 00 03 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;15.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.40;min:;13.00;max:;15.00;;;CHECK
@@ -8566,7 +8566,7 @@ operation raw measurements (ms):;48.60;45.60;44.60;44.60;45.60;
 operation stats (ms/op):;avg op:;0.92;min op:;0.89;max op:;0.97;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1024 getDQ1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1024 getDQ1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 04 00 00 05 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
@@ -8574,7 +8574,7 @@ operation raw measurements (ms):;46.40;43.40;43.40;43.40;43.40;
 operation stats (ms/op):;avg op:;0.88;min op:;0.87;max op:;0.93;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1024 getP()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1024 getP()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 04 00 00 08 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
@@ -8582,7 +8582,7 @@ operation raw measurements (ms):;47.40;45.40;45.40;45.40;43.40;
 operation stats (ms/op):;avg op:;0.91;min op:;0.87;max op:;0.95;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1024 getPQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1024 getPQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 04 00 00 06 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;17.00;13.00;13.00;13.00;14.00;
 baseline stats (ms):;avg:;14.00;min:;13.00;max:;17.00;;;CHECK
@@ -8590,7 +8590,7 @@ operation raw measurements (ms):;48.00;44.00;44.00;44.00;44.00;
 operation stats (ms/op):;avg op:;0.90;min op:;0.88;max op:;0.96;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1024 getQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1024 getQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 04 00 00 0a 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;14.00;12.00;
 baseline stats (ms):;avg:;13.60;min:;12.00;max:;16.00;;;CHECK
@@ -8598,37 +8598,37 @@ operation raw measurements (ms):;48.40;45.40;44.40;45.40;45.40;
 operation stats (ms/op):;avg op:;0.92;min op:;0.89;max op:;0.97;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1024 clearKey()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1024 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 04 00 00 0b 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;17.00;14.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;14.00;min:;13.00;max:;17.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1280 setDP1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1280 setDP1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 05 00 00 01 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;14.00;13.00;14.00;
 baseline stats (ms):;avg:;14.00;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1280 setDQ1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1280 setDQ1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 05 00 00 04 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;12.00;14.00;13.00;14.00;
 baseline stats (ms):;avg:;13.80;min:;12.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1280 setP()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1280 setP()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 05 00 00 09 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;15.00;13.00;13.00;13.00;14.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;15.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1280 setPQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1280 setPQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 05 00 00 02 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1280 setQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1280 setQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 05 00 00 07 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;15.00;13.00;13.00;
 baseline stats (ms):;avg:;14.00;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1280 getDP1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1280 getDP1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 05 00 00 03 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;14.00;13.00;12.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;12.00;max:;16.00;;;CHECK
@@ -8636,7 +8636,7 @@ operation raw measurements (ms):;49.40;45.40;46.40;45.40;46.40;
 operation stats (ms/op):;avg op:;0.93;min op:;0.91;max op:;0.99;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1280 getDQ1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1280 getDQ1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 05 00 00 05 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
@@ -8644,7 +8644,7 @@ operation raw measurements (ms):;49.40;46.40;46.40;46.40;45.40;
 operation stats (ms/op):;avg op:;0.94;min op:;0.91;max op:;0.99;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1280 getP()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1280 getP()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 05 00 00 08 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
@@ -8652,7 +8652,7 @@ operation raw measurements (ms):;47.40;43.40;44.40;44.40;44.40;
 operation stats (ms/op):;avg op:;0.90;min op:;0.87;max op:;0.95;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1280 getPQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1280 getPQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 05 00 00 06 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
@@ -8660,7 +8660,7 @@ operation raw measurements (ms):;49.40;46.40;46.40;46.40;46.40;
 operation stats (ms/op):;avg op:;0.94;min op:;0.93;max op:;0.99;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1280 getQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1280 getQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 05 00 00 0a 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
@@ -8668,37 +8668,37 @@ operation raw measurements (ms):;46.40;44.40;45.40;43.40;43.40;
 operation stats (ms/op):;avg op:;0.89;min op:;0.87;max op:;0.93;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1280 clearKey()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1280 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 05 00 00 0b 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;12.00;14.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;12.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1536 setDP1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1536 setDP1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 06 00 00 01 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;15.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.40;min:;13.00;max:;15.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1536 setDQ1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1536 setDQ1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 06 00 00 04 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1536 setP()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1536 setP()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 06 00 00 09 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;15.00;14.00;13.00;13.00;14.00;
 baseline stats (ms):;avg:;13.80;min:;13.00;max:;15.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1536 setPQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1536 setPQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 06 00 00 02 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;15.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.40;min:;13.00;max:;15.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1536 setQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1536 setQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 06 00 00 07 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;14.00;13.00;14.00;
 baseline stats (ms):;avg:;14.00;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1536 getDP1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1536 getDP1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 06 00 00 03 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;15.00;13.00;13.00;14.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;15.00;;;CHECK
@@ -8706,7 +8706,7 @@ operation raw measurements (ms):;50.40;46.40;45.40;46.40;46.40;
 operation stats (ms/op):;avg op:;0.94;min op:;0.91;max op:;1.01;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1536 getDQ1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1536 getDQ1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 06 00 00 05 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
@@ -8714,7 +8714,7 @@ operation raw measurements (ms):;47.40;44.40;44.40;45.40;45.40;
 operation stats (ms/op):;avg op:;0.91;min op:;0.89;max op:;0.95;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1536 getP()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1536 getP()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 06 00 00 08 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;29.00;
 baseline stats (ms):;avg:;16.80;min:;13.00;max:;29.00;;;CHECK
@@ -8722,7 +8722,7 @@ operation raw measurements (ms):;46.20;42.20;42.20;43.20;42.20;
 operation stats (ms/op):;avg op:;0.86;min op:;0.84;max op:;0.92;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1536 getPQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1536 getPQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 06 00 00 06 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
@@ -8730,7 +8730,7 @@ operation raw measurements (ms):;48.40;46.40;45.40;46.40;46.40;
 operation stats (ms/op):;avg op:;0.93;min op:;0.91;max op:;0.97;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1536 getQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1536 getQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 06 00 00 0a 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;14.00;12.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;12.00;max:;16.00;;;CHECK
@@ -8738,37 +8738,37 @@ operation raw measurements (ms):;50.40;47.40;46.40;47.40;47.40;
 operation stats (ms/op):;avg op:;0.96;min op:;0.93;max op:;1.01;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1536 clearKey()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1536 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 06 00 00 0b 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;14.00;13.00;
 baseline stats (ms):;avg:;13.80;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1984 setDP1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1984 setDP1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 07 c0 00 01 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;14.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.80;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1984 setDQ1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1984 setDQ1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 07 c0 00 04 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1984 setP()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1984 setP()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 07 c0 00 09 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;17.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.80;min:;13.00;max:;17.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1984 setPQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1984 setPQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 07 c0 00 02 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;14.00;13.00;13.00;14.00;
 baseline stats (ms):;avg:;14.00;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1984 setQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1984 setQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 07 c0 00 07 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;17.00;13.00;14.00;13.00;13.00;
 baseline stats (ms):;avg:;14.00;min:;13.00;max:;17.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1984 getDP1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1984 getDP1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 07 c0 00 03 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
@@ -8776,7 +8776,7 @@ operation raw measurements (ms):;50.40;48.40;46.40;47.40;47.40;
 operation stats (ms/op):;avg op:;0.96;min op:;0.93;max op:;1.01;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1984 getDQ1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1984 getDQ1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 07 c0 00 05 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
@@ -8784,7 +8784,7 @@ operation raw measurements (ms):;49.40;47.40;46.40;46.40;47.40;
 operation stats (ms/op):;avg op:;0.95;min op:;0.93;max op:;0.99;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1984 getP()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1984 getP()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 07 c0 00 08 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
@@ -8792,7 +8792,7 @@ operation raw measurements (ms):;49.40;45.40;45.40;45.40;45.40;
 operation stats (ms/op):;avg op:;0.92;min op:;0.91;max op:;0.99;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1984 getPQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1984 getPQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 07 c0 00 06 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;15.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.40;min:;13.00;max:;15.00;;;CHECK
@@ -8800,7 +8800,7 @@ operation raw measurements (ms):;49.60;47.60;47.60;46.60;47.60;
 operation stats (ms/op):;avg op:;0.96;min op:;0.93;max op:;0.99;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1984 getQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1984 getQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 07 c0 00 0a 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
@@ -8808,37 +8808,37 @@ operation raw measurements (ms):;49.40;46.40;45.40;45.40;45.40;
 operation stats (ms/op):;avg op:;0.93;min op:;0.91;max op:;0.99;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 1984 clearKey()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_1984 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 07 c0 00 0b 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;14.00;
 baseline stats (ms):;avg:;13.80;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 2048 setDP1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_2048 setDP1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 08 00 00 01 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 2048 setDQ1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_2048 setDQ1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 08 00 00 04 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;14.00;13.00;14.00;13.00;
 baseline stats (ms):;avg:;14.00;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 2048 setP()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_2048 setP()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 08 00 00 09 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 2048 setPQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_2048 setPQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 08 00 00 02 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;17.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.80;min:;13.00;max:;17.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 2048 setQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_2048 setQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 08 00 00 07 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;14.00;13.00;14.00;13.00;
 baseline stats (ms):;avg:;14.00;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 2048 getDP1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_2048 getDP1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 08 00 00 03 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
@@ -8846,7 +8846,7 @@ operation raw measurements (ms):;50.40;47.40;47.40;46.40;46.40;
 operation stats (ms/op):;avg op:;0.95;min op:;0.93;max op:;1.01;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 2048 getDQ1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_2048 getDQ1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 08 00 00 05 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;17.00;14.00;13.00;14.00;13.00;
 baseline stats (ms):;avg:;14.20;min:;13.00;max:;17.00;;;CHECK
@@ -8854,7 +8854,7 @@ operation raw measurements (ms):;48.80;44.80;45.80;44.80;44.80;
 operation stats (ms/op):;avg op:;0.92;min op:;0.90;max op:;0.98;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 2048 getP()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_2048 getP()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 08 00 00 08 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;15.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.40;min:;13.00;max:;15.00;;;CHECK
@@ -8862,7 +8862,7 @@ operation raw measurements (ms):;49.60;46.60;47.60;47.60;46.60;
 operation stats (ms/op):;avg op:;0.95;min op:;0.93;max op:;0.99;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 2048 getPQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_2048 getPQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 08 00 00 06 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
@@ -8870,7 +8870,7 @@ operation raw measurements (ms):;50.40;46.40;47.40;48.40;47.40;
 operation stats (ms/op):;avg op:;0.96;min op:;0.93;max op:;1.01;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 2048 getQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_2048 getQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 08 00 00 0a 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
@@ -8878,75 +8878,75 @@ operation raw measurements (ms):;50.40;48.40;70.40;47.40;47.40;
 operation stats (ms/op):;avg op:;1.06;min op:;0.95;max op:;1.41;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 2048 clearKey()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_2048 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 08 00 00 0b 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;14.00;14.00;13.00;
 baseline stats (ms):;avg:;14.00;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 3072 setDP1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_3072 setDP1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 0c 00 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 3072 setDQ1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_3072 setDQ1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 0c 00 00 04 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 3072 setP()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_3072 setP()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 0c 00 00 09 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 3072 setPQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_3072 setPQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 0c 00 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 3072 setQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_3072 setQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 0c 00 00 07 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 3072 getDP1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_3072 getDP1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 0c 00 00 03 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 3072 getDQ1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_3072 getDQ1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 0c 00 00 05 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 3072 getP()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_3072 getP()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 0c 00 00 08 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 3072 getPQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_3072 getPQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 0c 00 00 06 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 3072 getQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_3072 getQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 0c 00 00 0a 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 3072 clearKey()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_3072 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 0c 00 00 0b 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 4096 setDP1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_4096 setDP1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 10 00 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 4096 setDQ1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_4096 setDQ1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 10 00 00 04 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 4096 setP()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_4096 setP()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 10 00 00 09 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 4096 setPQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_4096 setPQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 10 00 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 4096 setQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_4096 setQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 10 00 00 07 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 4096 getDP1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_4096 getDP1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 10 00 00 03 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 4096 getDQ1()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_4096 getDQ1()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 10 00 00 05 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 4096 getP()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_4096 getP()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 10 00 00 08 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 4096 getPQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_4096 getPQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 10 00 00 06 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 4096 getQ()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_4096 getQ()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 10 00 00 0a 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE CRT LENGTH RSA 4096 clearKey()
+method name:; TYPE_RSA_PRIVATE_CRT LENGTH_RSA_4096 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 06 10 00 00 0b 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
 
@@ -8954,17 +8954,17 @@ RSAPrivateCRTKey - END
 
 
 RSAPrivateKey
-method name:; TYPE RSA PRIVATE LENGTH RSA 512 setExponent()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_512 setExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 02 00 00 02 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE LENGTH RSA 512 setModulus()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_512 setModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 02 00 00 04 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;17.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.80;min:;13.00;max:;17.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE LENGTH RSA 512 getExponent()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_512 getExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 02 00 00 01 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;14.00;13.00;14.00;14.00;
 baseline stats (ms):;avg:;14.20;min:;13.00;max:;16.00;;;CHECK
@@ -8972,7 +8972,7 @@ operation raw measurements (ms):;40.80;35.80;37.80;36.80;37.80;
 operation stats (ms/op):;avg op:;0.76;min op:;0.72;max op:;0.82;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE LENGTH RSA 512 getModulus()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_512 getModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 02 00 00 03 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;12.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.40;min:;12.00;max:;16.00;;;CHECK
@@ -8980,37 +8980,37 @@ operation raw measurements (ms):;43.60;40.60;41.60;41.60;41.60;
 operation stats (ms/op):;avg op:;0.84;min op:;0.81;max op:;0.87;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE LENGTH RSA 512 clearKey()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_512 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 02 00 00 05 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;14.00;13.00;13.00;
 baseline stats (ms):;avg:;13.80;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE LENGTH RSA 736 setExponent()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_736 setExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 02 e0 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE LENGTH RSA 736 setModulus()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_736 setModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 02 e0 00 04 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE LENGTH RSA 736 getExponent()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_736 getExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 02 e0 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE LENGTH RSA 736 getModulus()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_736 getModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 02 e0 00 03 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE LENGTH RSA 736 clearKey()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_736 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 02 e0 00 05 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE LENGTH RSA 768 setExponent()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_768 setExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 03 00 00 02 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;15.00;13.00;14.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;15.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE LENGTH RSA 768 setModulus()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_768 setModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 03 00 00 04 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;14.00;
 baseline stats (ms):;avg:;13.80;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE LENGTH RSA 768 getExponent()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_768 getExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 03 00 00 01 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
@@ -9018,7 +9018,7 @@ operation raw measurements (ms):;41.40;39.40;38.40;38.40;38.40;
 operation stats (ms/op):;avg op:;0.78;min op:;0.77;max op:;0.83;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE LENGTH RSA 768 getModulus()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_768 getModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 03 00 00 03 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;12.00;13.00;13.00;14.00;
 baseline stats (ms):;avg:;13.60;min:;12.00;max:;16.00;;;CHECK
@@ -9026,22 +9026,22 @@ operation raw measurements (ms):;45.40;42.40;41.40;42.40;42.40;
 operation stats (ms/op):;avg op:;0.86;min op:;0.83;max op:;0.91;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE LENGTH RSA 768 clearKey()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_768 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 03 00 00 05 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;17.00;13.00;13.00;14.00;14.00;
 baseline stats (ms):;avg:;14.20;min:;13.00;max:;17.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE LENGTH RSA 896 setExponent()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_896 setExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 03 80 00 02 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;15.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.40;min:;13.00;max:;15.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE LENGTH RSA 896 setModulus()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_896 setModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 03 80 00 04 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;12.00;13.00;13.00;
 baseline stats (ms):;avg:;13.40;min:;12.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE LENGTH RSA 896 getExponent()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_896 getExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 03 80 00 01 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;17.00;31.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;17.40;min:;13.00;max:;31.00;;;CHECK
@@ -9049,7 +9049,7 @@ operation raw measurements (ms):;39.60;35.60;35.60;36.60;35.60;
 operation stats (ms/op):;avg op:;0.73;min op:;0.71;max op:;0.79;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE LENGTH RSA 896 getModulus()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_896 getModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 03 80 00 03 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;14.00;14.00;13.00;
 baseline stats (ms):;avg:;14.00;min:;13.00;max:;16.00;;;CHECK
@@ -9057,22 +9057,22 @@ operation raw measurements (ms):;44.00;42.00;41.00;42.00;42.00;
 operation stats (ms/op):;avg op:;0.84;min op:;0.82;max op:;0.88;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE LENGTH RSA 896 clearKey()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_896 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 03 80 00 05 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;15.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.40;min:;13.00;max:;15.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE LENGTH RSA 1024 setExponent()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_1024 setExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 04 00 00 02 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE LENGTH RSA 1024 setModulus()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_1024 setModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 04 00 00 04 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE LENGTH RSA 1024 getExponent()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_1024 getExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 04 00 00 01 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;14.00;13.00;13.00;
 baseline stats (ms):;avg:;13.80;min:;13.00;max:;16.00;;;CHECK
@@ -9080,7 +9080,7 @@ operation raw measurements (ms):;42.20;39.20;39.20;39.20;39.20;
 operation stats (ms/op):;avg op:;0.80;min op:;0.78;max op:;0.84;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE LENGTH RSA 1024 getModulus()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_1024 getModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 04 00 00 03 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;14.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.80;min:;13.00;max:;16.00;;;CHECK
@@ -9088,22 +9088,22 @@ operation raw measurements (ms):;46.20;42.20;43.20;44.20;42.20;
 operation stats (ms/op):;avg op:;0.87;min op:;0.84;max op:;0.92;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE LENGTH RSA 1024 clearKey()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_1024 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 04 00 00 05 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;14.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.80;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE LENGTH RSA 1280 setExponent()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_1280 setExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 05 00 00 02 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;12.00;13.00;13.00;14.00;
 baseline stats (ms):;avg:;13.60;min:;12.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE LENGTH RSA 1280 setModulus()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_1280 setModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 05 00 00 04 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;17.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.80;min:;13.00;max:;17.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE LENGTH RSA 1280 getExponent()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_1280 getExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 05 00 00 01 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;35.00;14.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;17.60;min:;13.00;max:;35.00;;;CHECK
@@ -9111,7 +9111,7 @@ operation raw measurements (ms):;39.40;36.40;36.40;36.40;36.40;
 operation stats (ms/op):;avg op:;0.74;min op:;0.73;max op:;0.79;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE LENGTH RSA 1280 getModulus()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_1280 getModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 05 00 00 03 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
@@ -9119,22 +9119,22 @@ operation raw measurements (ms):;47.40;44.40;44.40;44.40;44.40;
 operation stats (ms/op):;avg op:;0.90;min op:;0.89;max op:;0.95;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE LENGTH RSA 1280 clearKey()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_1280 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 05 00 00 05 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE LENGTH RSA 1536 setExponent()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_1536 setExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 06 00 00 02 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;15.00;14.00;13.00;14.00;13.00;
 baseline stats (ms):;avg:;13.80;min:;13.00;max:;15.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE LENGTH RSA 1536 setModulus()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_1536 setModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 06 00 00 04 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE LENGTH RSA 1536 getExponent()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_1536 getExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 06 00 00 01 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;15.00;13.00;13.00;14.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;15.00;;;CHECK
@@ -9142,7 +9142,7 @@ operation raw measurements (ms):;44.40;42.40;42.40;42.40;41.40;
 operation stats (ms/op):;avg op:;0.85;min op:;0.83;max op:;0.89;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE LENGTH RSA 1536 getModulus()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_1536 getModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 06 00 00 03 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
@@ -9150,22 +9150,22 @@ operation raw measurements (ms):;48.40;45.40;44.40;45.40;45.40;
 operation stats (ms/op):;avg op:;0.92;min op:;0.89;max op:;0.97;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE LENGTH RSA 1536 clearKey()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_1536 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 06 00 00 05 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;12.00;13.00;
 baseline stats (ms):;avg:;13.40;min:;12.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE LENGTH RSA 1984 setExponent()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_1984 setExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 07 c0 00 02 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;15.00;12.00;14.00;13.00;12.00;
 baseline stats (ms):;avg:;13.20;min:;12.00;max:;15.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE LENGTH RSA 1984 setModulus()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_1984 setModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 07 c0 00 04 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE LENGTH RSA 1984 getExponent()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_1984 getExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 07 c0 00 01 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;21.00;15.00;
 baseline stats (ms):;avg:;15.60;min:;13.00;max:;21.00;;;CHECK
@@ -9173,7 +9173,7 @@ operation raw measurements (ms):;44.40;42.40;41.40;42.40;41.40;
 operation stats (ms/op):;avg op:;0.85;min op:;0.83;max op:;0.89;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE LENGTH RSA 1984 getModulus()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_1984 getModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 07 c0 00 03 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
@@ -9181,22 +9181,22 @@ operation raw measurements (ms):;50.40;46.40;47.40;47.40;46.40;
 operation stats (ms/op):;avg op:;0.95;min op:;0.93;max op:;1.01;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE LENGTH RSA 1984 clearKey()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_1984 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 07 c0 00 05 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE LENGTH RSA 2048 setExponent()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_2048 setExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 08 00 00 02 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;15.00;13.00;12.00;13.00;13.00;
 baseline stats (ms):;avg:;13.20;min:;12.00;max:;15.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE LENGTH RSA 2048 setModulus()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_2048 setModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 08 00 00 04 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;14.00;13.00;
 baseline stats (ms):;avg:;13.80;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE LENGTH RSA 2048 getExponent()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_2048 getExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 08 00 00 01 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;17.00;13.00;12.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;12.00;max:;17.00;;;CHECK
@@ -9204,7 +9204,7 @@ operation raw measurements (ms):;48.40;43.40;44.40;44.40;43.40;
 operation stats (ms/op):;avg op:;0.90;min op:;0.87;max op:;0.97;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE LENGTH RSA 2048 getModulus()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_2048 getModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 08 00 00 03 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;15.00;12.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.20;min:;12.00;max:;15.00;;;CHECK
@@ -9212,39 +9212,39 @@ operation raw measurements (ms):;50.80;48.80;47.80;48.80;48.80;
 operation stats (ms/op):;avg op:;0.98;min op:;0.96;max op:;1.02;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PRIVATE LENGTH RSA 2048 clearKey()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_2048 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 08 00 00 05 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;12.00;13.00;
 baseline stats (ms):;avg:;13.40;min:;12.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PRIVATE LENGTH RSA 3072 setExponent()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_3072 setExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 0c 00 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE LENGTH RSA 3072 setModulus()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_3072 setModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 0c 00 00 04 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE LENGTH RSA 3072 getExponent()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_3072 getExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 0c 00 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE LENGTH RSA 3072 getModulus()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_3072 getModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 0c 00 00 03 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE LENGTH RSA 3072 clearKey()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_3072 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 0c 00 00 05 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE LENGTH RSA 4096 setExponent()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_4096 setExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 10 00 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE LENGTH RSA 4096 setModulus()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_4096 setModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 10 00 00 04 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE LENGTH RSA 4096 getExponent()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_4096 getExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 10 00 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE LENGTH RSA 4096 getModulus()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_4096 getModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 10 00 00 03 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PRIVATE LENGTH RSA 4096 clearKey()
+method name:; TYPE_RSA_PRIVATE LENGTH_RSA_4096 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 05 10 00 00 05 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
 
@@ -9252,17 +9252,17 @@ RSAPrivateKey - END
 
 
 RSAPublicKey
-method name:; TYPE RSA PUBLIC LENGTH RSA 512 setExponent()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_512 setExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 02 00 00 02 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;17.00;12.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;12.00;max:;17.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PUBLIC LENGTH RSA 512 setModulus()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_512 setModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 02 00 00 04 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;17.00;12.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;12.00;max:;17.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PUBLIC LENGTH RSA 512 getExponent()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_512 getExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 02 00 00 01 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
@@ -9270,7 +9270,7 @@ operation raw measurements (ms):;39.40;37.40;36.40;36.40;36.40;
 operation stats (ms/op):;avg op:;0.74;min op:;0.73;max op:;0.79;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PUBLIC LENGTH RSA 512 getModulus()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_512 getModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 02 00 00 03 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;14.00;13.00;13.00;
 baseline stats (ms):;avg:;13.80;min:;13.00;max:;16.00;;;CHECK
@@ -9278,37 +9278,37 @@ operation raw measurements (ms):;43.20;40.20;40.20;41.20;41.20;
 operation stats (ms/op):;avg op:;0.82;min op:;0.80;max op:;0.86;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PUBLIC LENGTH RSA 512 clearKey()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_512 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 02 00 00 05 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;14.00;13.00;
 baseline stats (ms):;avg:;13.80;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PUBLIC LENGTH RSA 736 setExponent()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_736 setExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 02 e0 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PUBLIC LENGTH RSA 736 setModulus()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_736 setModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 02 e0 00 04 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PUBLIC LENGTH RSA 736 getExponent()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_736 getExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 02 e0 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PUBLIC LENGTH RSA 736 getModulus()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_736 getModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 02 e0 00 03 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PUBLIC LENGTH RSA 736 clearKey()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_736 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 02 e0 00 05 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PUBLIC LENGTH RSA 768 setExponent()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_768 setExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 03 00 00 02 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;15.00;13.00;14.00;13.00;14.00;
 baseline stats (ms):;avg:;13.80;min:;13.00;max:;15.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PUBLIC LENGTH RSA 768 setModulus()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_768 setModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 03 00 00 04 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;14.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.80;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PUBLIC LENGTH RSA 768 getExponent()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_768 getExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 03 00 00 01 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;15.00;13.00;13.00;13.00;12.00;
 baseline stats (ms):;avg:;13.20;min:;12.00;max:;15.00;;;CHECK
@@ -9316,7 +9316,7 @@ operation raw measurements (ms):;38.80;35.80;34.80;35.80;35.80;
 operation stats (ms/op):;avg op:;0.72;min op:;0.70;max op:;0.78;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PUBLIC LENGTH RSA 768 getModulus()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_768 getModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 03 00 00 03 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;14.00;13.00;
 baseline stats (ms):;avg:;13.80;min:;13.00;max:;16.00;;;CHECK
@@ -9324,22 +9324,22 @@ operation raw measurements (ms):;46.20;42.20;43.20;42.20;43.20;
 operation stats (ms/op):;avg op:;0.87;min op:;0.84;max op:;0.92;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PUBLIC LENGTH RSA 768 clearKey()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_768 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 03 00 00 05 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;12.00;14.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;12.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PUBLIC LENGTH RSA 896 setExponent()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_896 setExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 03 80 00 02 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PUBLIC LENGTH RSA 896 setModulus()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_896 setModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 03 80 00 04 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PUBLIC LENGTH RSA 896 getExponent()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_896 getExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 03 80 00 01 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;12.00;
 baseline stats (ms):;avg:;13.40;min:;12.00;max:;16.00;;;CHECK
@@ -9347,7 +9347,7 @@ operation raw measurements (ms):;40.60;36.60;36.60;37.60;37.60;
 operation stats (ms/op):;avg op:;0.76;min op:;0.73;max op:;0.81;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PUBLIC LENGTH RSA 896 getModulus()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_896 getModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 03 80 00 03 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;14.00;14.00;13.00;18.00;
 baseline stats (ms):;avg:;15.00;min:;13.00;max:;18.00;;;CHECK
@@ -9355,22 +9355,22 @@ operation raw measurements (ms):;43.00;41.00;41.00;42.00;41.00;
 operation stats (ms/op):;avg op:;0.83;min op:;0.82;max op:;0.86;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PUBLIC LENGTH RSA 896 clearKey()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_896 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 03 80 00 05 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;37.00;13.00;13.00;
 baseline stats (ms):;avg:;18.40;min:;13.00;max:;37.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PUBLIC LENGTH RSA 1024 setExponent()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_1024 setExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 04 00 00 02 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;14.00;13.00;12.00;14.00;
 baseline stats (ms):;avg:;13.80;min:;12.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PUBLIC LENGTH RSA 1024 setModulus()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_1024 setModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 04 00 00 04 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;17.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.80;min:;13.00;max:;17.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PUBLIC LENGTH RSA 1024 getExponent()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_1024 getExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 04 00 00 01 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;12.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.40;min:;12.00;max:;16.00;;;CHECK
@@ -9378,7 +9378,7 @@ operation raw measurements (ms):;37.60;35.60;35.60;35.60;35.60;
 operation stats (ms/op):;avg op:;0.72;min op:;0.71;max op:;0.75;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PUBLIC LENGTH RSA 1024 getModulus()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_1024 getModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 04 00 00 03 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
@@ -9386,22 +9386,22 @@ operation raw measurements (ms):;47.40;44.40;45.40;44.40;43.40;
 operation stats (ms/op):;avg op:;0.90;min op:;0.87;max op:;0.95;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PUBLIC LENGTH RSA 1024 clearKey()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_1024 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 04 00 00 05 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;17.00;14.00;14.00;13.00;13.00;
 baseline stats (ms):;avg:;14.20;min:;13.00;max:;17.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PUBLIC LENGTH RSA 1280 setExponent()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_1280 setExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 05 00 00 02 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;14.00;13.00;13.00;
 baseline stats (ms):;avg:;13.80;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PUBLIC LENGTH RSA 1280 setModulus()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_1280 setModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 05 00 00 04 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;14.00;14.00;14.00;13.00;
 baseline stats (ms):;avg:;14.20;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PUBLIC LENGTH RSA 1280 getExponent()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_1280 getExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 05 00 00 01 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;14.00;14.00;13.00;
 baseline stats (ms):;avg:;14.00;min:;13.00;max:;16.00;;;CHECK
@@ -9409,7 +9409,7 @@ operation raw measurements (ms):;40.00;36.00;36.00;37.00;36.00;
 operation stats (ms/op):;avg op:;0.74;min op:;0.72;max op:;0.80;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PUBLIC LENGTH RSA 1280 getModulus()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_1280 getModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 05 00 00 03 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;17.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.80;min:;13.00;max:;17.00;;;CHECK
@@ -9417,22 +9417,22 @@ operation raw measurements (ms):;46.20;43.20;43.20;43.20;45.20;
 operation stats (ms/op):;avg op:;0.88;min op:;0.86;max op:;0.92;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PUBLIC LENGTH RSA 1280 clearKey()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_1280 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 05 00 00 05 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PUBLIC LENGTH RSA 1536 setExponent()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_1536 setExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 06 00 00 02 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;14.00;13.00;
 baseline stats (ms):;avg:;13.80;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PUBLIC LENGTH RSA 1536 setModulus()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_1536 setModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 06 00 00 04 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;17.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.80;min:;13.00;max:;17.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PUBLIC LENGTH RSA 1536 getExponent()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_1536 getExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 06 00 00 01 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;14.00;14.00;13.00;
 baseline stats (ms):;avg:;14.00;min:;13.00;max:;16.00;;;CHECK
@@ -9440,7 +9440,7 @@ operation raw measurements (ms):;37.00;35.00;36.00;35.00;35.00;
 operation stats (ms/op):;avg op:;0.71;min op:;0.70;max op:;0.74;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PUBLIC LENGTH RSA 1536 getModulus()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_1536 getModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 06 00 00 03 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;15.00;14.00;14.00;13.00;13.00;
 baseline stats (ms):;avg:;13.80;min:;13.00;max:;15.00;;;CHECK
@@ -9448,22 +9448,22 @@ operation raw measurements (ms):;50.20;46.20;46.20;46.20;46.20;
 operation stats (ms/op):;avg op:;0.94;min op:;0.92;max op:;1.00;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PUBLIC LENGTH RSA 1536 clearKey()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_1536 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 06 00 00 05 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PUBLIC LENGTH RSA 1984 setExponent()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_1984 setExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 07 c0 00 02 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PUBLIC LENGTH RSA 1984 setModulus()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_1984 setModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 07 c0 00 04 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PUBLIC LENGTH RSA 1984 getExponent()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_1984 getExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 07 c0 00 01 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
@@ -9471,7 +9471,7 @@ operation raw measurements (ms):;39.40;36.40;36.40;38.40;36.40;
 operation stats (ms/op):;avg op:;0.75;min op:;0.73;max op:;0.79;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PUBLIC LENGTH RSA 1984 getModulus()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_1984 getModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 07 c0 00 03 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
@@ -9479,22 +9479,22 @@ operation raw measurements (ms):;49.40;45.40;47.40;47.40;47.40;
 operation stats (ms/op):;avg op:;0.95;min op:;0.91;max op:;0.99;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PUBLIC LENGTH RSA 1984 clearKey()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_1984 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 07 c0 00 05 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;14.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.80;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PUBLIC LENGTH RSA 2048 setExponent()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_2048 setExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 08 00 00 02 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;14.00;14.00;13.00;13.00;
 baseline stats (ms):;avg:;14.00;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PUBLIC LENGTH RSA 2048 setModulus()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_2048 setModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 08 00 00 04 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PUBLIC LENGTH RSA 2048 getExponent()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_2048 getExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 08 00 00 01 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
@@ -9502,7 +9502,7 @@ operation raw measurements (ms):;37.40;35.40;34.40;35.40;35.40;
 operation stats (ms/op):;avg op:;0.71;min op:;0.69;max op:;0.75;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PUBLIC LENGTH RSA 2048 getModulus()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_2048 getModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 08 00 00 03 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;16.00;13.00;13.00;13.00;13.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;16.00;;;CHECK
@@ -9510,39 +9510,39 @@ operation raw measurements (ms):;52.40;49.40;48.40;49.40;49.40;
 operation stats (ms/op):;avg op:;1.00;min op:;0.97;max op:;1.05;;CHECK
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE RSA PUBLIC LENGTH RSA 2048 clearKey()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_2048 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 08 00 00 05 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;15.00;13.00;13.00;13.00;14.00;
 baseline stats (ms):;avg:;13.60;min:;13.00;max:;15.00;;;CHECK
 UNKONWN_ERROR-card_has_return_value_6f00
-method name:; TYPE RSA PUBLIC LENGTH RSA 3072 setExponent()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_3072 setExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 0c 00 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PUBLIC LENGTH RSA 3072 setModulus()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_3072 setModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 0c 00 00 04 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PUBLIC LENGTH RSA 3072 getExponent()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_3072 getExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 0c 00 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PUBLIC LENGTH RSA 3072 getModulus()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_3072 getModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 0c 00 00 03 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PUBLIC LENGTH RSA 3072 clearKey()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_3072 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 0c 00 00 05 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PUBLIC LENGTH RSA 4096 setExponent()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_4096 setExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 10 00 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PUBLIC LENGTH RSA 4096 setModulus()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_4096 setModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 10 00 00 04 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PUBLIC LENGTH RSA 4096 getExponent()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_4096 getExponent()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 10 00 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PUBLIC LENGTH RSA 4096 getModulus()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_4096 getModulus()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 10 00 00 03 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
-method name:; TYPE RSA PUBLIC LENGTH RSA 4096 clearKey()
+method name:; TYPE_RSA_PUBLIC LENGTH_RSA_4096 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 04 10 00 00 05 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
 

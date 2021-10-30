@@ -52,7 +52,7 @@ public class StorageTesting {
         m_cardManager = new CardMngr(m_SystemOutLogger);
     }
     
-    public void TestStorage (String[] args, CardTerminal selectedReader) throws IOException, Exception{
+    public void TestStorage (String[] args, CardTerminal selectedReader, Args cmdArgs) throws IOException, Exception{
         Class testClassSingleApdu = null;
         Scanner br = new Scanner(System.in);  
         String answ = "";   // When set to 0, program will ask for each algorithm to test.
@@ -64,7 +64,7 @@ public class StorageTesting {
         if (cardName.isEmpty()) {
             cardName = "noname";
         }            
-        FileOutputStream file = m_cardManager.establishConnection(cardName, cardName + "_STORAGE_", selectedReader);
+        FileOutputStream file = m_cardManager.establishConnection(cardName, cardName + "_STORAGE_", selectedReader, cmdArgs);
         StringBuilder value = new StringBuilder();
         long elapsedTimeWholeTest = -System.currentTimeMillis();
         //testKeysStorage(file, value);

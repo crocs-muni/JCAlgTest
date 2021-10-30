@@ -31,8 +31,8 @@
 
 package algtestprocess;
 
-import algtestjclient.DirtyLogger;
 import java.io.*;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -58,6 +58,8 @@ public class AlgTestProcess {
     public static final String GENERATE_UNKNOWN_RESULTS = "UNKNOWN";    //RESULTS FOR UNKNOWN CARD
     public static final String GENERATE_RADAR_GRAPHS = "RADAR";         //ONE BIG TABLE FOR COMPARE CARDS      
 
+    public static String m_inputBasePath = "";
+    public static String m_outputBasePath = "";
     /**
      * @param args the command line arguments
      * First argument is part to file/folder second is type of processing
@@ -69,14 +71,18 @@ public class AlgTestProcess {
                 printHelp();
             }
             else {
-                /* To be able to run the program even with incomplete parameter (missing '\'). */
-                String arg = new String();
-                if(args[0].length() != 0){ // testing if there is any argument present
-                    int pathLength = args[0].length();
-                    char lastChar = args[0].charAt(pathLength - 1);    // last character in string
-                    if (lastChar != ('\\' | '/')) {
-                        args[0] = args[0] + "/";     // adding '\' if not present
-                    }
+                // Prepare ointput path
+                m_inputBasePath = (args.length > 1) ? args[0] : Paths.get(".").toAbsolutePath().normalize().toString();
+                char lastChar = m_inputBasePath.charAt(m_inputBasePath.length() - 1);
+                if ((lastChar != '\\') && (lastChar != '/')) {
+                    m_inputBasePath = m_inputBasePath + "/";     // adding '\' if not present
+                }
+                
+                // Prepare output path
+                m_outputBasePath = (args.length > 2) ? args[2] : Paths.get(".").toAbsolutePath().normalize().toString();
+                lastChar = m_outputBasePath.charAt(m_outputBasePath.length() - 1);                
+                if ((lastChar != '\\') && (lastChar != '/')) {
+                    m_outputBasePath = m_outputBasePath + "/";     // adding '\' if not present
                 }
 
                 if(args.length > 1){
@@ -87,9 +93,9 @@ public class AlgTestProcess {
                         HashMap<String, String> filteredDirs = new HashMap<>();
                         HashMap<String, ArrayList<Integer>> filteredCards = new HashMap<>();
 
-                        SupportTable.splitBySupport(args[0], filteredDirs, filteredCards);
+                        SupportTable.splitBySupport(m_inputBasePath, filteredDirs, filteredCards);
                         // All items table    
-                        SupportTable.generateHTMLTable(args[0], "", true, filteredCards);
+                        SupportTable.generateHTMLTable(m_inputBasePath, m_outputBasePath, "", true, filteredCards);
 /*
                         for (String dirName : filteredDirs.keySet()) {
                             System.out.println(String.format("\nGenerating HTML table for %s.\n", filteredDirs.get(dirName)));
@@ -99,70 +105,70 @@ public class AlgTestProcess {
                     }
                     else if (args[1].equals(GENERATE_TPM_HTML)) {
                         System.out.println("Generating HTML table for TPMs.");
-                        TPMSupportTable.generateHTMLTable(args[0]);
+                        TPMSupportTable.generateHTMLTable(m_inputBasePath);
                     }
                     else if (args[1].equals(COMPARE_CARDS)){
                         System.out.println("Comparing cards.");
-                        SupportTable.compareSupportedAlgs(args[0]);}
+                        SupportTable.compareSupportedAlgs(m_inputBasePath);}
                     else if (args[1].equals(GENERATE_JCCONSTANTS)){
                         System.out.println("Generating file with JC constants.");
-                        SupportTable.generateJCConstantsFile(args[0]);}
+                        SupportTable.generateJCConstantsFile(m_inputBasePath);}
                     else if (args[1].equals(GENERATE_SORTABLE)){
                         System.out.println("Generating sortable table from all files in directory.");
-                        Sortable.runSortable(args[0]);}
+                        Sortable.runSortable(m_inputBasePath, m_outputBasePath);}
                     else if (args[1].equals(GENERATE_GRAPHS)){
                         System.out.println("Generating graphs from input file to new directory.");
-                        JCinfohtml.runGraphs(args[0]);}
+                        JCinfohtml.runGraphs(m_inputBasePath, m_outputBasePath);}
                     else if (args[1].equals(GENERATE_COMPARE_GRAPH)){
                         System.out.println("Generating compare graph from input dir.");
-                        JCinfohtml.runCompareGraph(args[0]);}
+                        JCinfohtml.runCompareGraph(m_inputBasePath, m_outputBasePath);}
                     else if (args[1].equals(GENERATE_RADAR_GRAPHS)){
                         System.out.println("Generating radar graphs from input dir.");
-                        RadarGraph.runRadarGraph(args[0]);}
+                        RadarGraph.runRadarGraph(m_inputBasePath, m_outputBasePath);}
                     else if (args[1].equals(GENERATE_COMPARE_TABLE)){
                         System.out.println("Generating compare table from input dir.");
-                        JCinfohtml.runCompareTable(args[0]);}
+                        JCinfohtml.runCompareTable(m_inputBasePath, m_outputBasePath);}
                     else if (args[1].equals(GENERATE_UNKNOWN_RESULTS)){
                         if (args.length <= 2) {
                             System.out.println("AlgTestProcess.jar base_path_folder UNKNOWN unknown_csv_path");
                         } else {
                             System.out.println("Generating results page for unknown card.");
-                            JCinfohtml.runUnknownCard(args[0], args[2]);
+                            JCinfohtml.runUnknownCard(m_inputBasePath, m_outputBasePath, args[3]);
                         }
                     }
                     else if (args[1].equals(GENERATE_GRAPHS_ONEPAGE)){
                         System.out.println("Generating graphs page from input file / folder.");
-                        File file = new File(args[0]);
+                        File file = new File(m_inputBasePath);
                         if (file.exists() && file.isDirectory())
                             if((args.length>2) && (args[2].toLowerCase().equals("toponly")))
-                                ScalabilityGraph.runScalability(args[0], true);
+                                ScalabilityGraph.runScalability(m_inputBasePath, m_outputBasePath, true);
                             else
-                                ScalabilityGraph.runScalability(args[0], false);
+                                ScalabilityGraph.runScalability(m_inputBasePath, m_outputBasePath, false);
                         else if (file.exists() && file.isFile())
                             if((args.length>2) && (args[2].toLowerCase().equals("toponly")))
-                                ScalabilityGraph.generateScalabilityFile(args[0], true);
+                                ScalabilityGraph.generateScalabilityFile(m_inputBasePath, m_outputBasePath, true);
                             else
-                                ScalabilityGraph.generateScalabilityFile(args[0], false);
+                                ScalabilityGraph.generateScalabilityFile(m_inputBasePath, m_outputBasePath, false);
                         else
                             System.out.println("ERR: Wrong path to the source file / folder.");
                     }
                     else if (args[1].equals(GENERATE_JCINFO)){
                         System.out.println("Generating JC performance testing to HTML from input file / folder.");
-                        File file = new File(args[0]);
+                        File file = new File(m_inputBasePath);
                         if (file.exists() && file.isDirectory())
-                             RunTime.runRunTime(args[0]);
-                        else if (file.exists() && file.isFile() && (args[0].contains("csv")))
-                            RunTime.generateRunTimeFile(args[0]);
+                             RunTime.runRunTime(m_inputBasePath, m_outputBasePath);
+                        else if (file.exists() && file.isFile() && (m_inputBasePath.contains("csv")))
+                            RunTime.generateRunTimeFile(m_inputBasePath, m_outputBasePath);
                         else
                             System.out.println("ERR: Wrong path to the source file / folder.");
                     }
                     else if (args[1].equals(GENERATE_TPMINFO)) {
                         System.out.println("Generating TPM performance testing to HTML from input file / folder.");
-                        File file = new File(args[0]);
+                        File file = new File(m_inputBasePath);
                         if (file.exists() && file.isDirectory())
-                            TPMRunTime.runRunTime(args[0]);
-                        else if (file.exists() && file.isFile() && (args[0].endsWith(".csv")))
-                            TPMRunTime.generateRunTimeFile(args[0]);
+                            TPMRunTime.runRunTime(m_inputBasePath);
+                        else if (file.exists() && file.isFile() && (m_inputBasePath.endsWith(".csv")))
+                            TPMRunTime.generateRunTimeFile(m_inputBasePath);
                         else
                             System.out.println("ERR: Wrong path to the source file / folder.");
                     }
@@ -174,9 +180,9 @@ public class AlgTestProcess {
                     Scanner sc = new Scanner(System.in);
                     int answ = sc.nextInt();
                     if(answ == 1){
-                        SupportTable.generateHTMLTable(args[0]);}
+                        SupportTable.generateHTMLTable(m_inputBasePath);}
                     else if (answ == 0) {
-                        SupportTable.compareSupportedAlgs(args[0]);
+                        SupportTable.compareSupportedAlgs(m_inputBasePath);
                     }
                     else {
                         System.err.println("Incorrect parameter!");
@@ -188,16 +194,18 @@ public class AlgTestProcess {
         }
         catch (IOException ex) {
             System.out.println("IOException : " + ex);
+            ex.printStackTrace();
         }
         catch (Exception ex) {
             System.out.println("Exception : " + ex);
+            ex.printStackTrace();
         }
     }
 
     private static void printHelp() {
-        System.out.println("Usage: java AlgTestProcess.jar base_path\n"
-                + "  base_path/results/directory should contain *.csv files with results \n"
-                + "  html table will be generated into base_path/AlgTest_html_table.html \n\n" 
+        System.out.println("Usage: java -jar AlgTestProcess.jar INPUT_BASE_PATH [ACTION] OUTPUT_BASE_PATH\n"
+                + "  ACTION can be one of following:"
+                + "    HTML ... generates AlgTest_html_table.html file with supported algorithms matrix\n"
                 + "  AlgTestProcess.jar base_path_folder [JCINFO, RADAR, SIMILARITY, GRAPHSPAGE, SORTABLE, (UNKNOWN unknown_csv_path)]"        
         );
     }

@@ -119,13 +119,18 @@ public class PerformanceTesting {
         return testInfo;
     }
     
-    String requestCardName(Scanner sc) {
-        m_SystemOutLogger.print("Specify type of your card (e.g., NXP JCOP CJ2A081): ");
-        String cardName = sc.next();
-        cardName += sc.nextLine();
-        if (cardName.isEmpty()) {
-            cardName = "noname";
-        }        
+    String requestCardName(Scanner sc, Args cmdArgs) {
+        String cardName;
+        if (cmdArgs.cardName.isEmpty()) {
+            m_SystemOutLogger.print("Specify type of your card (e.g., NXP JCOP CJ2A081): ");
+            cardName = sc.next();
+            cardName += sc.nextLine();
+            if (cardName.isEmpty()) {
+                cardName = "noname";
+            }        
+        } else {
+          cardName = cmdArgs.cardName;  
+        }
         
         return cardName;
     }
@@ -137,56 +142,66 @@ public class PerformanceTesting {
      * @throws IOException
      * @throws Exception
      */        
-    public void testPerformance(String[] args, boolean bTestVariableDataLengths, CardTerminal selectedTerminal) throws IOException, Exception{
+    public void testPerformance(boolean bInteractive, String operation, CardTerminal selectedTerminal, Args cmdArgs) throws IOException, Exception{
         Scanner sc = new Scanner(System.in);
         
-        m_bTestVariableData = bTestVariableDataLengths;
+        if (operation.compareTo(Args.OP_ALG_PERFORMANCE_STATIC) == 0) { m_bTestVariableData = false; }
+        if (operation.compareTo(Args.OP_ALG_PERFORMANCE_VARIABLE) == 0) { m_bTestVariableData = true; }
+        
                 
-
-        m_SystemOutLogger.println("\nCHOOSE which type of performance test you like to execute:");
-        m_SystemOutLogger.println("1 -> All algorithms (estimated time 5-8 hours)\n" + 
-                "2 -> Only algorithms WITHOUT asymmetric cryptography (estimated time 1-2 hours)\n" + 
-                "3 -> Only algorithms WITH asymmetric crypto (estimated time 4-6 hours)");
-        m_SystemOutLogger.print("Test option number: ");
-        int answ = sc.nextInt();
-        m_SystemOutLogger.println(String.format("%d", answ));
-        switch (answ){
-            case 1:
-                m_bTestSymmetricAlgs = true;
-                m_bTestAsymmetricAlgs = true;
-                break;
-            case 2:
-                m_bTestSymmetricAlgs = true;
-                m_bTestAsymmetricAlgs = false;
-                break;
-            case 3:
-                m_bTestSymmetricAlgs = false;
-                m_bTestAsymmetricAlgs = true;
-                break;
-            default:
-                System.err.println("Incorrect parameter, running all tests!");
-                break;
+        if (bInteractive) {
+            m_SystemOutLogger.println("\nCHOOSE which type of performance test you like to execute:");
+            m_SystemOutLogger.println("1 -> All algorithms (estimated time 5-8 hours)\n" + 
+                    "2 -> Only algorithms WITHOUT asymmetric cryptography (estimated time 1-2 hours)\n" + 
+                    "3 -> Only algorithms WITH asymmetric crypto (estimated time 4-6 hours)");
+            m_SystemOutLogger.print("Test option number: ");
+            int answ = sc.nextInt();
+            m_SystemOutLogger.println(String.format("%d", answ));
+            switch (answ){
+                case 1:
+                    m_bTestSymmetricAlgs = true;
+                    m_bTestAsymmetricAlgs = true;
+                    break;
+                case 2:
+                    m_bTestSymmetricAlgs = true;
+                    m_bTestAsymmetricAlgs = false;
+                    break;
+                case 3:
+                    m_bTestSymmetricAlgs = false;
+                    m_bTestAsymmetricAlgs = true;
+                    break;
+                default:
+                    System.err.println("Incorrect parameter, running all tests!");
+                    break;
+            }
         }
+        else {
+            // Measure both options
+            m_bTestSymmetricAlgs = true;
+            m_bTestAsymmetricAlgs = true;
+        }
+                
+        // Set number of operation repeats
         int numRepeatWholeOperation = Consts.NUM_REPEAT_WHOLE_OPERATION;
         if (m_bTestVariableData) {
             numRepeatWholeOperation = Consts.NUM_REPEAT_WHOLE_OPERATION_VARIABLE_DATA;                
         }
 
-        m_cardName = requestCardName(sc);
+        m_cardName = requestCardName(sc, cmdArgs);
 
         // Try to open and load list of already measured algorithms (if provided)
         String testType = getCurrentTestInfoString(false);
-        LoadAlreadyMeasuredAlgs(m_cardName, testType);
+        // Interactive mode allows to continue with previous measurement if found (needs to be confirmed), cmdArgs.fresh can force it to start new measurement
+        boolean bForceFreshMeasurement = bInteractive ? false : cmdArgs.fresh; 
+        LoadAlreadyMeasuredAlgs(m_cardName, testType, bForceFreshMeasurement);
 
         String testInfo = getCurrentTestInfoString(true);
         
         m_elapsedTimeWholeTest = -System.currentTimeMillis();
         
         // Connect to card
-        this.m_perfResultsFile = m_cardManager.establishConnection(m_cardName, testInfo, selectedTerminal);
+        this.m_perfResultsFile = m_cardManager.establishConnection(m_cardName, testInfo, selectedTerminal, cmdArgs);
         m_cardATR = m_cardManager.getATR();
-
-        //testAllUtil(1000, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
 
         // Run all required tests
         testAllMessageDigests(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
@@ -210,7 +225,7 @@ public class PerformanceTesting {
      * @throws IOException
      * @throws Exception
      */
-    public void testPerformanceFingerprint(String[] args, CardTerminal selectedTerminal) throws IOException, Exception {
+    public void testPerformanceFingerprint(String[] args, CardTerminal selectedTerminal, Args cmdArgs) throws IOException, Exception {
         Scanner sc = new Scanner(System.in);
 
         // Fingeprint wants to test only main operation speed => variable data option with 256B only
@@ -221,7 +236,7 @@ public class PerformanceTesting {
         m_bTestSymmetricAlgs = true;
         m_bTestAsymmetricAlgs = true;
 
-        m_cardName = requestCardName(sc);
+        m_cardName = requestCardName(sc, cmdArgs);
 
         // Try to open and load list of already measured algorithms (if provided)
         // NOTE: measure always full: LoadAlreadyMeasuredAlgs(m_cardName);
@@ -231,7 +246,7 @@ public class PerformanceTesting {
         
         m_elapsedTimeWholeTest = -System.currentTimeMillis();
         // Connect to card
-        this.m_perfResultsFile = m_cardManager.establishConnection(m_cardName, testInfo, selectedTerminal);
+        this.m_perfResultsFile = m_cardManager.establishConnection(m_cardName, testInfo, selectedTerminal,cmdArgs);
         m_cardATR = m_cardManager.getATR();
 
         short numRepeatWholeMeasurement = (short) 3;
@@ -306,7 +321,7 @@ public class PerformanceTesting {
      * @throws IOException
      * @throws Exception
      */
-    public void testDebug(String[] args, CardTerminal selectedTerminal) throws IOException, Exception {
+    public void testDebug(String[] args, CardTerminal selectedTerminal, Args cmdArgs) throws IOException, Exception {
         Scanner sc = new Scanner(System.in);
 
         // Fingeprint wants to test only main operation speed => variable data option with 256B only
@@ -327,7 +342,7 @@ public class PerformanceTesting {
 
         m_elapsedTimeWholeTest = -System.currentTimeMillis();
         // Connect to card
-        this.m_perfResultsFile = m_cardManager.establishConnection(m_cardName, testInfo, selectedTerminal);
+        this.m_perfResultsFile = m_cardManager.establishConnection(m_cardName, testInfo, selectedTerminal, cmdArgs);
         m_cardATR = m_cardManager.getATR();
 
         short numRepeatWholeMeasurement = (short) 1;
@@ -368,14 +383,14 @@ public class PerformanceTesting {
      * @throws IOException
      * @throws Exception
      */
-    public void testECCPerformance(String[] args, boolean bTestVariableDataLengths, CardTerminal selectedTerminal) throws IOException, Exception {
+    public void testECCPerformance(String[] args, boolean bTestVariableDataLengths, CardTerminal selectedTerminal, Args cmdArgs) throws IOException, Exception {
         // ECC wants to test only main operation speed => variable data option with 256B only
         m_bTestVariableData = false;
         m_bTestSymmetricAlgs = true;
         m_bTestAsymmetricAlgs = true;
 
         Scanner sc = new Scanner(System.in);
-        m_cardName = requestCardName(sc);
+        m_cardName = requestCardName(sc, cmdArgs);
 
         String testInfo = m_cardName + "___";
         testInfo += "_ECCPERF_";
@@ -383,7 +398,7 @@ public class PerformanceTesting {
 
         m_elapsedTimeWholeTest = -System.currentTimeMillis();
         // Connect to card
-        this.m_perfResultsFile = m_cardManager.establishConnection(m_cardName, testInfo, selectedTerminal);
+        this.m_perfResultsFile = m_cardManager.establishConnection(m_cardName, testInfo, selectedTerminal, cmdArgs);
         m_cardATR = m_cardManager.getATR();
 
         short numRepeatWholeMeasurement = (short) 3;
@@ -468,16 +483,19 @@ public class PerformanceTesting {
         for (String error : m_errorsObserved.keySet()) {
             m_SystemOutLogger.println("  " + error + ": " + m_errorsObserved.get(error).size());
         }
+
+        message = "\n\nCard used: " + m_cardName; 
+        m_SystemOutLogger.println(message);
     }
     
-    void LoadAlreadyMeasuredAlgs(String cardName, String testType) {
+    void LoadAlreadyMeasuredAlgs(String cardName, String testType, boolean bForceFreshmeasurement) {
         String filePath = testType + "_already_measured.list";
         String filePathOld = filePath + ".old";
         File f = new File(filePath);
         File fOld = new File(filePathOld);
         
         try {
-            if (f.exists() && !f.isDirectory()) {
+            if (!bForceFreshmeasurement && f.exists() && !f.isDirectory()) {
                 // Ask user for continuation
                 String message = "File '" + filePath + "' with already measured algorithms found. Do you like to use it and measure only missing algorithms? (y/n)\n";
                 m_SystemOutLogger.print(message);
@@ -1198,7 +1216,7 @@ public class PerformanceTesting {
                 for (Integer length : m_testDataLengths) {
                     testSet.dataLength1 = length.shortValue();
                     if (testSet.dataLength1 <= JCAlgTestApplet.RAM1_ARRAY_LENGTH / 2) {
-                        this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_UTIL, Consts.INS_PERF_TEST_CLASS_UTIL, testSet, info + " " + (String) op.getR());
+                        this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_UTIL, Consts.INS_PERF_TEST_CLASS_UTIL, testSet, info + " " + (String) op.getR() + ";" + length + ";");
                     }
                 }
             }
@@ -1307,7 +1325,7 @@ public class PerformanceTesting {
             testSet.algorithmMethod = JCConsts.MessageDigest_doFinal;
             for (Integer length : m_testDataLengths) {
                 testSet.dataLength1 = length.shortValue();
-                this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_MESSAGEDIGEST, Consts.INS_PERF_TEST_CLASS_MESSAGEDIGEST, testSet, info + " MessageDigest_doFinal()");
+                this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_MESSAGEDIGEST, Consts.INS_PERF_TEST_CLASS_MESSAGEDIGEST, testSet, info + " MessageDigest_doFinal();" + length + ";");
             }
             tableName = "\n\nMESSAGE DIGEST - "  + info + " - variable data - END\n";
             m_perfResultsFile.write(tableName.getBytes());
@@ -1442,12 +1460,12 @@ public class PerformanceTesting {
             testSet.algorithmMethod = JCConsts.Cipher_doFinal;
             for (Integer length : m_testDataLengths) {
                 testSet.dataLength1 = length.shortValue();
-                this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_doFinal()");
+                this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_doFinal();" + length + ";");
             }
             // Measurement of full process - Key.setKey, Cipher.init, Cipher.doFinal
             for (Integer length : m_testDataLengths) {
                 testSet.dataLength1 = length.shortValue();
-                this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER_SETKEYINITDOFINAL, testSet, info + " Cipher_setKeyInitDoFinal()");
+                this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER_SETKEYINITDOFINAL, testSet, info + " Cipher_setKeyInitDoFinal();" + length + ";");
             }
             tableName = "\n\nCIPHER - " + info + " - variable data - END\n";
             m_perfResultsFile.write(tableName.getBytes());
@@ -1785,7 +1803,7 @@ public class PerformanceTesting {
         testSet.keyClass = keyClass;
         
         if (!m_bTestVariableData) {
-            //testSet.algorithmMethod = JCConsts.Signature_update; // NOTE: Cipher_update is disabled as call on most cards will cause 6f00
+            //testSet.algorithmMethod = JCConsts.Signature_update; // NOTE: Signature_update is disabled as call on most cards will cause 6f00
             //this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_update()");
             testSet.algorithmMethod = JCConsts.Signature_sign;
             this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_sign()");
@@ -1801,12 +1819,12 @@ public class PerformanceTesting {
             testSet.algorithmMethod = JCConsts.Signature_sign;
             for (Integer length : m_testDataLengths) {
                 testSet.dataLength1 = length.shortValue();
-                this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_sign()");
+                this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_sign();" + length + ";");
             }
             // Measurement of full process - Key.setKey, Signature.init, Signature.sign
             for (Integer length : m_testDataLengths) {
                 testSet.dataLength1 = length.shortValue();
-                this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE_SETKEYINITSIGN, testSet, info + " Signature_setKeyInitSign()");
+                this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE_SETKEYINITSIGN, testSet, info + " Signature_setKeyInitSign();" + length + ";");
             }
             
             tableName = "\n\nSIGNATURE - "  + info + " - variable data - END\n";
@@ -2211,7 +2229,7 @@ public class PerformanceTesting {
             testSet.algorithmMethod = JCConsts.Checksum_doFinal;
             for (Integer length : m_testDataLengths) {
                 testSet.dataLength1 = length.shortValue();
-                this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CHECKSUM, Consts.INS_PERF_TEST_CLASS_CHECKSUM, testSet, info + " Checksum_doFinal()");
+                this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CHECKSUM, Consts.INS_PERF_TEST_CLASS_CHECKSUM, testSet, info + " Checksum_doFinal();" + length + ";");
             }
             tableName = "\n\nCHECKSUM - "  + info + " - variable data - END\n";
             m_perfResultsFile.write(tableName.getBytes());
@@ -2439,7 +2457,7 @@ public class PerformanceTesting {
         if (m_bTestAsymmetricAlgs) {
             testDSAPrivateKey(JCConsts.KeyBuilder_TYPE_DSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_DSA_512, "TYPE_DSA_PRIVATE LENGTH_DSA_512", numRepeatWholeOperation, numRepeatWholeMeasurement);
             testDSAPrivateKey(JCConsts.KeyBuilder_TYPE_DSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_DSA_768, "TYPE_DSA_PRIVATE LENGTH_DSA_768", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testDSAPrivateKey(JCConsts.KeyBuilder_TYPE_DSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_DSA_1024, "TYPE_DSA_PRIVATE LENGTH DSA_1024", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testDSAPrivateKey(JCConsts.KeyBuilder_TYPE_DSA_PRIVATE, JCConsts.KeyBuilder_LENGTH_DSA_1024, "TYPE_DSA_PRIVATE LENGTH_DSA_1024", numRepeatWholeOperation, numRepeatWholeMeasurement);
         }
         else {
             String message = "\n# Measurements excluded for asymmetric algorithms\n";
@@ -2606,16 +2624,16 @@ public class PerformanceTesting {
         String tableName = "\n\nECFPPrivateKey";
         m_perfResultsFile.write(tableName.getBytes());
         if (m_bTestAsymmetricAlgs) {
-            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_112, "TYPE_EC_FP PRIVATE LENGTH_EC_FP_112", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_128, "TYPE_EC_FP PRIVATE LENGTH_EC_FP_128", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_160, "TYPE_EC_FP PRIVATE LENGTH_EC_FP_160", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_192, "TYPE_EC_FP PRIVATE LENGTH_EC_FP_192", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_224, "TYPE_EC_FP PRIVATE LENGTH_EC_FP_224", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_256, "TYPE_EC_FP PRIVATE LENGTH_EC_FP_256", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_320, "TYPE_EC_FP PRIVATE LENGTH_EC_FP_320", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_384, "TYPE_EC_FP PRIVATE LENGTH_EC_FP_384", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_512, "TYPE_EC_FP PRIVATE LENGTH_EC_FP_512", numRepeatWholeOperation, numRepeatWholeMeasurement);
-            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_521, "TYPE_EC_FP PRIVATE LENGTH_EC_FP_521", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_112, "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_112", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_128, "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_128", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_160, "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_160", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_192, "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_192", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_224, "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_224", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_256, "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_256", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_320, "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_320", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_384, "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_384", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_512, "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_512", numRepeatWholeOperation, numRepeatWholeMeasurement);
+            testECPrivateKey(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_TYPE_EC_FP_PRIVATE, JCConsts.KeyBuilder_LENGTH_EC_FP_521, "TYPE_EC_FP_PRIVATE LENGTH_EC_FP_521", numRepeatWholeOperation, numRepeatWholeMeasurement);
         }
         else {
             String message = "\n# Measurements excluded for asymmetric algorithms\n";
@@ -2881,7 +2899,7 @@ public class PerformanceTesting {
         testSet.algorithmMethod = JCConsts.Cipher_doFinal;
         for (Integer length : m_testDataLengths) {
             testSet.dataLength1 = length.shortValue();
-            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER_SETKEYINITDOFINAL, testSet, info + " Cipher_doFinal()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER_SETKEYINITDOFINAL, testSet, info + " Cipher_doFinal();" + length + ";");
         }
         tableName = "\n\nCIPHER_setKeyInitDoFinal - " + info + " - variable data - END\n";
         m_perfResultsFile.write(tableName.getBytes());

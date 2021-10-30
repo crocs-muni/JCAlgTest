@@ -282,11 +282,11 @@ public class JCinfohtml {
         return files;
     }
     
-    public static void compareTable(String dir, FileOutputStream file) throws IOException {
-        compareTable(dir, file, false, null);
+    public static void compareTable(String inputDir, String outputDir, FileOutputStream file) throws IOException {
+        compareTable(inputDir, outputDir, file, false, null);
     }
     
-    public static void compareTable(String dir, FileOutputStream file,
+    public static void compareTable(String inputDir, String outputDir, FileOutputStream file,
             boolean unknownMode, String unknownCard) throws IOException {
         // prepare input data - topFunctions, perf results
         List<String> topNames_sym = new ArrayList<>();
@@ -294,7 +294,7 @@ public class JCinfohtml {
         List<String> topNames_asym = new ArrayList<>();
         List<String> topAcronyms_asym = new ArrayList<>();
         loadTopFunctions(topNames_sym, topAcronyms_sym, topNames_asym, topAcronyms_asym, true);
-        List<String> files = listFilesForFolder(new File(dir));
+        List<String> files = listFilesForFolder(new File(inputDir));
         if (unknownMode) {
             files.add(0, unknownCard);
         }
@@ -460,9 +460,9 @@ public class JCinfohtml {
 
                 if (j > i) {
                     if (unknownMode)
-                        generateCompareFile(dir, card1, card2, notSupp, notSuppByRow, notSuppByCol, "unknown-compare", topAcronyms_sym, radarData, radarDataCopy, i, j);
+                        generateCompareFile(outputDir, card1, card2, notSupp, notSuppByRow, notSuppByCol, "unknown-compare", topAcronyms_sym, radarData, radarDataCopy, i, j);
                     else
-                        generateCompareFile(dir, card1, card2, notSupp, notSuppByRow, notSuppByCol, "compare", topAcronyms_sym, radarData, radarDataCopy, i, j);
+                        generateCompareFile(outputDir, card1, card2, notSupp, notSuppByRow, notSuppByCol, "compare", topAcronyms_sym, radarData, radarDataCopy, i, j);
                 }
             }
             
@@ -539,7 +539,7 @@ public class JCinfohtml {
         toFile.append("</tbody></table></strong>\n");
     }
     
-    public static void generateCompareFile(String dir, String card1, String card2,
+    public static void generateCompareFile(String outputDir, String card1, String card2,
             List<String> notSupp, List<String> notSuppBy1,
             List<String> notSuppBy2, String subdirectory,
             List<String> topAcronyms_sym, List<List<Float>> radarData, List<List<Float>> radarDataCopy,
@@ -548,9 +548,9 @@ public class JCinfohtml {
         //TODO create subdirectory if not present
         
         String fileNameActual = card1 + "_vs_" + card2 + "_compare";
-        String filename = dir + "//" + subdirectory + "//" + fileNameActual;
+        String filename = outputDir + "//" + subdirectory + "//" + fileNameActual;
         
-        File directory = new File(dir + "//" + subdirectory);
+        File directory = new File(outputDir + "//" + subdirectory);
         if (! directory.exists()){
             directory.mkdir();
         }
@@ -662,14 +662,14 @@ public class JCinfohtml {
         script.close();
     }
       
-    public static void compareGraph(String dir, FileOutputStream file) throws IOException {
+    public static void compareGraph(String inputDir, FileOutputStream file) throws IOException {
         // prepare input data - topFunctions, perf results
         List<String> topNames_sym = new ArrayList<>();
         List<String> topAcronyms_sym = new ArrayList<>();
         List<String> topNames_asym = new ArrayList<>();
         List<String> topAcronyms_asym = new ArrayList<>();
         loadTopFunctions(topNames_sym, topAcronyms_sym, topNames_asym, topAcronyms_asym);
-        List<String> files = listFilesForFolder(new File(dir));
+        List<String> files = listFilesForFolder(new File(inputDir));
         List<String> rows = new ArrayList<>();
         List<List<Float>> rowsData = new ArrayList<>();
         
@@ -1116,10 +1116,10 @@ public class JCinfohtml {
         file.write(toFile.toString().getBytes());
     }
    
-    public static void runGraphs(String input) throws IOException {
+    public static void runGraphs(String inputDir, String outputDir) throws IOException {
         StringBuilder cardName = new StringBuilder();
-        List<String> lines = initalize(input, cardName);
-        String resultsDir = new File(input).getParentFile().toString();
+        List<String> lines = initalize(inputDir, cardName);
+        String resultsDir = outputDir;
         resultsDir = resultsDir.substring(0, resultsDir.lastIndexOf("/")) + "/graphs";
         File dir = new File(resultsDir);
         dir.mkdirs();
@@ -1127,28 +1127,28 @@ public class JCinfohtml {
         System.out.println("Make sure that CSS file & JS files (\"Source\" folder) is present in output folder.");
     }
     
-    public static void runCompareGraph(String dir) throws FileNotFoundException, IOException {
-        FileOutputStream file = new FileOutputStream(dir + "//" + "compareGraph.html");        
+    public static void runCompareGraph(String inputDir, String outputDir) throws FileNotFoundException, IOException {
+        FileOutputStream file = new FileOutputStream(outputDir + "//" + "compareGraph.html");        
         beginHTML(file, "Card performance - comparative graph");
-        compareGraph(dir, file);
+        compareGraph(inputDir, file);
         endHTML(file);
         System.out.println("Make sure that CSS file & JS files (\"Source\" folder) is present in output folder.");
     }
     
-    public static void runCompareTable(String dir) throws FileNotFoundException, IOException {
-        FileOutputStream file = new FileOutputStream(dir + "//" + "similarity-table.html");
+    public static void runCompareTable(String inputDir, String outputDir) throws FileNotFoundException, IOException {
+        FileOutputStream file = new FileOutputStream(outputDir + "//" + "similarity-table.html");
         beginHTML(file, "JCAlgTest - Similarity of smart cards");
         addInfoSimilarity(file);
-        compareTable(dir, file);
+        compareTable(inputDir, outputDir, file);
         endHTML(file);
         System.out.println("Make sure that CSS & JS files are present in output folder.");
     }
     
-    public static void runUnknownCard(String dir, String unknownCard) throws FileNotFoundException, IOException {
-        FileOutputStream file = new FileOutputStream(dir + "//" + "unknown-results.html");
+    public static void runUnknownCard(String inputDir, String outputDir, String unknownCard) throws FileNotFoundException, IOException {
+        FileOutputStream file = new FileOutputStream(outputDir + "//" + "unknown-results.html");
         beginHTML(file, "JCAlgTest - Results for unknown card");
         addInfoUnknown(file, initalize(unknownCard, new StringBuilder("Unknown card")));
-        compareTable(dir, file, true, unknownCard);
+        compareTable(inputDir, outputDir, file, true, unknownCard);
         endHTML(file);
         System.out.println("Make sure that CSS & JS files are present in output folder.");
     }

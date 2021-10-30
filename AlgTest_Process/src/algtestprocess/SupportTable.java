@@ -56,12 +56,14 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
-
 /**
  * Generates pefrormance similarity table, contains tooltips with differences in algorithm support.
  * @author rk
  */
 public class SupportTable {
+
+    public static final String JCALGTEST_RESULTS_REPO_PATH = "https://github.com/crocs-muni/JCAlgTest/tree/master/Profiles/results/";  // original path within code repository
+    //public static final String JCALGTEST_RESULTS_REPO_PATH = "https://github.com/crocs-muni/jcalgtest_results/tree/main/javacard/Profiles/results/";
 
     // if one card results are generated
     public static final String[] JAVA_CARD_VERSION = {"2.1.2", "2.2.1", "2.2.2"};
@@ -84,11 +86,11 @@ public class SupportTable {
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public static void compareSupportedAlgs (String basePath) throws FileNotFoundException, IOException{
+    public static void compareSupportedAlgs (String inputDir) throws FileNotFoundException, IOException{
         /* String containing input file path. */
-        String inputFileName = basePath + "AlgTest_html_table.html";
+        String inputFileName = inputDir + "AlgTest_html_table.html";
         /* String containing output file path. */
-        String outputFileName = basePath + "AlgTest_html_table_comparison.html";
+        String outputFileName = inputDir + "AlgTest_html_table_comparison.html";
         /* String containing line to search for in HTML file. */
         String lineToSearch = "<tr>";
         /* String containing style information for not matching algorithms in HTML file. */
@@ -156,17 +158,17 @@ public class SupportTable {
         return cardShortName;
     }
     
-    public static void generateHTMLTable(String basePath) throws IOException {
-        generateHTMLTable(basePath, "", true, null);
+    public static void generateHTMLTable(String inBasePath) throws IOException {
+        generateHTMLTable(inBasePath, inBasePath, "", true, null);
     }
-    public static void generateHTMLTable(String basePath, String html_name_suffix, boolean bGeneratePackagesSupport, HashMap<String, ArrayList<Integer>> filteredCards) throws IOException {
-        String filesPath = basePath + "results" + File.separator;
+    public static void generateHTMLTable(String inBasePath, String outBasePath, String html_name_suffix, boolean bGeneratePackagesSupport, HashMap<String, ArrayList<Integer>> filteredCards) throws IOException {
+        String filesPath = inBasePath + "results" + File.separator;
         File dir = new File(filesPath);
         String[] allFilesArray = dir.list();
         ArrayList<String> filesArrayUnsorted = new ArrayList<>();
         
         for (int i = 0; i < allFilesArray.length; i++) {
-            File testDir = new File(basePath + "results" + File.separator + allFilesArray[i] + File.separator);
+            File testDir = new File(inBasePath + "results" + File.separator + allFilesArray[i] + File.separator);
             if (!testDir.isDirectory()) {
                 filesArrayUnsorted.add(allFilesArray[i]);
             }
@@ -200,10 +202,10 @@ public class SupportTable {
             //
             String fileName;
             if (html_name_suffix.isEmpty()) {
-                fileName = basePath + "AlgTest_html_table.html";
+                fileName = outBasePath + "AlgTest_html_table.html";
             }
             else {
-                fileName = basePath + String.format("AlgTest_html_table_%s.html", html_name_suffix);
+                fileName = outBasePath + String.format("AlgTest_html_table_%s.html", html_name_suffix);
             }
             FileOutputStream file = new FileOutputStream(fileName);
             String header = "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\r\n<html>\r\n<head>"
@@ -274,7 +276,7 @@ public class SupportTable {
                 }
 
                 String cardRestName = cardIdentification.substring(cardIdentification.indexOf("ATR"));
-                cardList += "<b>c" + i + "</b>	" + "<a href=\"https://github.com/crocs-muni/JCAlgTest/tree/master/Profiles/results/" + filesArray.get(i) + "\">" + cardShortName + "</a> , " + cardRestName + ",";
+                cardList += "<b>c" + i + "</b>	" + "<a href=\"" + JCALGTEST_RESULTS_REPO_PATH + filesArray.get(i) + "\">" + cardShortName + "</a> , " + cardRestName + ",";
 
                 String cardName = "";
                 if (filesSupport[i].containsKey("Performance")) {
@@ -325,7 +327,7 @@ public class SupportTable {
             }                        
             
             // Store ATR to card name mapping
-            String fileNameATRMapping = basePath + "atr_cardname.csv";
+            String fileNameATRMapping = outBasePath + "atr_cardname.csv";
             FileOutputStream fileAtrName = new FileOutputStream(fileNameATRMapping);
             for (String atr : cardNameATRMap.keySet()) {
                 String atr_name = String.format("%s;%s\n\r", atr, cardNameATRMap.get(atr));
