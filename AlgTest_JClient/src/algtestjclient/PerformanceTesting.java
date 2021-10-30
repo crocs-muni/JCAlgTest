@@ -1216,7 +1216,7 @@ public class PerformanceTesting {
                 for (Integer length : m_testDataLengths) {
                     testSet.dataLength1 = length.shortValue();
                     if (testSet.dataLength1 <= JCAlgTestApplet.RAM1_ARRAY_LENGTH / 2) {
-                        this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_UTIL, Consts.INS_PERF_TEST_CLASS_UTIL, testSet, info + " " + (String) op.getR());
+                        this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_UTIL, Consts.INS_PERF_TEST_CLASS_UTIL, testSet, info + " " + (String) op.getR() + ";" + length + ";");
                     }
                 }
             }
@@ -1325,7 +1325,7 @@ public class PerformanceTesting {
             testSet.algorithmMethod = JCConsts.MessageDigest_doFinal;
             for (Integer length : m_testDataLengths) {
                 testSet.dataLength1 = length.shortValue();
-                this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_MESSAGEDIGEST, Consts.INS_PERF_TEST_CLASS_MESSAGEDIGEST, testSet, info + " MessageDigest_doFinal()");
+                this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_MESSAGEDIGEST, Consts.INS_PERF_TEST_CLASS_MESSAGEDIGEST, testSet, info + " MessageDigest_doFinal();" + length + ";");
             }
             tableName = "\n\nMESSAGE DIGEST - "  + info + " - variable data - END\n";
             m_perfResultsFile.write(tableName.getBytes());
@@ -1460,12 +1460,12 @@ public class PerformanceTesting {
             testSet.algorithmMethod = JCConsts.Cipher_doFinal;
             for (Integer length : m_testDataLengths) {
                 testSet.dataLength1 = length.shortValue();
-                this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_doFinal()");
+                this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER, testSet, info + " Cipher_doFinal();" + length + ";");
             }
             // Measurement of full process - Key.setKey, Cipher.init, Cipher.doFinal
             for (Integer length : m_testDataLengths) {
                 testSet.dataLength1 = length.shortValue();
-                this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER_SETKEYINITDOFINAL, testSet, info + " Cipher_setKeyInitDoFinal()");
+                this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER_SETKEYINITDOFINAL, testSet, info + " Cipher_setKeyInitDoFinal();" + length + ";");
             }
             tableName = "\n\nCIPHER - " + info + " - variable data - END\n";
             m_perfResultsFile.write(tableName.getBytes());
@@ -1819,12 +1819,12 @@ public class PerformanceTesting {
             testSet.algorithmMethod = JCConsts.Signature_sign;
             for (Integer length : m_testDataLengths) {
                 testSet.dataLength1 = length.shortValue();
-                this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_sign()");
+                this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE, testSet, info + " Signature_sign();" + length + ";");
             }
             // Measurement of full process - Key.setKey, Signature.init, Signature.sign
             for (Integer length : m_testDataLengths) {
                 testSet.dataLength1 = length.shortValue();
-                this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE_SETKEYINITSIGN, testSet, info + " Signature_setKeyInitSign()");
+                this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_SIGNATURE, Consts.INS_PERF_TEST_CLASS_SIGNATURE_SETKEYINITSIGN, testSet, info + " Signature_setKeyInitSign();" + length + ";");
             }
             
             tableName = "\n\nSIGNATURE - "  + info + " - variable data - END\n";
@@ -2229,7 +2229,7 @@ public class PerformanceTesting {
             testSet.algorithmMethod = JCConsts.Checksum_doFinal;
             for (Integer length : m_testDataLengths) {
                 testSet.dataLength1 = length.shortValue();
-                this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CHECKSUM, Consts.INS_PERF_TEST_CLASS_CHECKSUM, testSet, info + " Checksum_doFinal()");
+                this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CHECKSUM, Consts.INS_PERF_TEST_CLASS_CHECKSUM, testSet, info + " Checksum_doFinal();" + length + ";");
             }
             tableName = "\n\nCHECKSUM - "  + info + " - variable data - END\n";
             m_perfResultsFile.write(tableName.getBytes());
@@ -2899,7 +2899,7 @@ public class PerformanceTesting {
         testSet.algorithmMethod = JCConsts.Cipher_doFinal;
         for (Integer length : m_testDataLengths) {
             testSet.dataLength1 = length.shortValue();
-            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER_SETKEYINITDOFINAL, testSet, info + " Cipher_doFinal()");
+            this.perftest_measure(Consts.CLA_CARD_ALGTEST, Consts.INS_PREPARE_TEST_CLASS_CIPHER, Consts.INS_PERF_TEST_CLASS_CIPHER_SETKEYINITDOFINAL, testSet, info + " Cipher_doFinal();" + length + ";");
         }
         tableName = "\n\nCIPHER_setKeyInitDoFinal - " + info + " - variable data - END\n";
         m_perfResultsFile.write(tableName.getBytes());
