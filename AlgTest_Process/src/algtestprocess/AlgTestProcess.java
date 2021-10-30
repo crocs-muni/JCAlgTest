@@ -141,14 +141,14 @@ public class AlgTestProcess {
                         File file = new File(m_inputBasePath);
                         if (file.exists() && file.isDirectory())
                             if((args.length>2) && (args[2].toLowerCase().equals("toponly")))
-                                ScalabilityGraph.runScalability(m_inputBasePath, true);
+                                ScalabilityGraph.runScalability(m_inputBasePath, m_outputBasePath, true);
                             else
-                                ScalabilityGraph.runScalability(m_inputBasePath, false);
+                                ScalabilityGraph.runScalability(m_inputBasePath, m_outputBasePath, false);
                         else if (file.exists() && file.isFile())
                             if((args.length>2) && (args[2].toLowerCase().equals("toponly")))
-                                ScalabilityGraph.generateScalabilityFile(m_inputBasePath, true);
+                                ScalabilityGraph.generateScalabilityFile(m_inputBasePath, m_outputBasePath, true);
                             else
-                                ScalabilityGraph.generateScalabilityFile(m_inputBasePath, false);
+                                ScalabilityGraph.generateScalabilityFile(m_inputBasePath, m_outputBasePath, false);
                         else
                             System.out.println("ERR: Wrong path to the source file / folder.");
                     }
