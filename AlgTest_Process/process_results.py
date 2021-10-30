@@ -37,7 +37,7 @@ def extract_section(lines: list, start_string: str, perf_measurement: bool):
             section_items = {}
             while i < len(lines) and len(lines[i]) > 0:  # process section till its end (newline)
                 if not just_entered and lines[i].startswith(start_string):   # check if we hit another section
-                    # we hit start fo another section - finnish and let next section to be processed
+                    # we hit start fo another section - finish and let next section to be processed
                     i = i - 1
                     break
 
@@ -46,7 +46,14 @@ def extract_section(lines: list, start_string: str, perf_measurement: bool):
                     pos = len(lines[i])
                 if pos > 0:
                     key = lines[i][0: pos].strip()
-                    value = lines[i][pos:].strip().strip(';').strip()
+                    if lines[i].find('method name:;') != -1:
+                        # do not strip ending ; for line with method for variable data measurements
+                        # method_name;data_length;
+                        value = lines[i][pos:].strip()
+                    else:
+                        # strip ending ;
+                        value = lines[i][pos:].strip().strip(';').strip()
+
                     if perf_measurement and len(value) == 0:  # error status like NO_SUCH_ALGORITHM
                         section_items['status'] = key
                     else:
@@ -138,7 +145,7 @@ def prepare_missing_measurements(walk_dir: str):
             # find all properly measured operations
             correctly_measured = []
             measured_with_errors = []
-            msr = measurements['Measurements'];
+            msr = measurements['Measurements']
             for category in msr:
                 for ops in msr[category].keys():
                     status = msr[category][ops]['status']
@@ -287,10 +294,10 @@ def create_sorted_already_measured_list(directory: str):
 @click.argument("directory", required=True, type=str)
 @click.option("--output-dir", "output_dir", type=str,  help="Base path for output.")
 def main(directory: str, output_dir: str):
-    all_to_measure_ops = create_sorted_already_measured_list(directory)
+    #all_to_measure_ops = create_sorted_already_measured_list(directory)
 
-    fix_missing_underscores(directory, all_to_measure_ops)  # some file had incorrect naming for measured values without _
-    fix_missing_variable_data_lengths(directory)
+    #fix_missing_underscores(directory, all_to_measure_ops)  # some file had incorrect naming for measured values without _
+    #fix_missing_variable_data_lengths(directory)
 
     convert_to_json(directory)  # from csv to json
 
