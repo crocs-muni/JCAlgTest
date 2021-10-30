@@ -8077,15 +8077,15 @@ method name:; TYPE_DSA_PRIVATE LENGTH_DSA_768 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 08 03 00 00 03 01 00 ff ff ff ff 00 01 00 01
 NO_SUCH_ALGORITHM
 
-method name:; TYPE_DSA_PRIVATE LENGTH DSA_1024 setX()
+method name:; TYPE_DSA_PRIVATE LENGTH_DSA_1024 setX()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 08 04 00 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
 
-method name:; TYPE_DSA_PRIVATE LENGTH DSA_1024 getX()
+method name:; TYPE_DSA_PRIVATE LENGTH_DSA_1024 getX()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 08 04 00 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
 
-method name:; TYPE_DSA_PRIVATE LENGTH DSA_1024 clearKey()
+method name:; TYPE_DSA_PRIVATE LENGTH_DSA_1024 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff ff ff 00 08 04 00 00 03 01 00 ff ff ff ff 00 01 00 01
 NO_SUCH_ALGORITHM
 
@@ -8450,19 +8450,19 @@ ECFPPublicKey - END
 
 
 ECFPPrivateKey
-method name:; TYPE_EC_FP PRIVATE LENGTH_EC_FP_112 setS()
+method name:; TYPE_EC_FP_PRIVATE LENGTH_EC_FP_112 setS()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff 00 05 00 0c 00 70 00 01 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
 
-method name:; TYPE_EC_FP PRIVATE LENGTH_EC_FP_112 getS()
+method name:; TYPE_EC_FP_PRIVATE LENGTH_EC_FP_112 getS()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff 00 05 00 0c 00 70 00 02 01 00 ff ff ff ff 00 32 00 01
 NO_SUCH_ALGORITHM
 
-method name:; TYPE_EC_FP PRIVATE LENGTH_EC_FP_112 clearKey()
+method name:; TYPE_EC_FP_PRIVATE LENGTH_EC_FP_112 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff 00 05 00 0c 00 70 00 03 01 00 ff ff ff ff 00 01 00 01
 NO_SUCH_ALGORITHM
 
-method name:; TYPE_EC_FP PRIVATE LENGTH_EC_FP_128 setS()
+method name:; TYPE_EC_FP_PRIVATE LENGTH_EC_FP_128 setS()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff 00 05 00 0c 00 80 00 01 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;57.00;59.00;59.00;59.00;59.00;
 baseline stats (ms):;avg:;59.00;min:;57.00;max:;59.00;
@@ -8470,7 +8470,7 @@ operation raw measurements (ms):;188.00;185.00;185.00;185.00;185.00;
 operation stats (ms/op):;avg op:;3.71;min op:;3.70;max op:;3.76;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE_EC_FP PRIVATE LENGTH_EC_FP_128 getS()
+method name:; TYPE_EC_FP_PRIVATE LENGTH_EC_FP_128 getS()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff 00 05 00 0c 00 80 00 02 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;57.00;61.00;59.00;59.00;59.00;
 baseline stats (ms):;avg:;59.50;min:;57.00;max:;61.00;
@@ -8478,7 +8478,7 @@ operation raw measurements (ms):;36.50;36.50;36.50;36.50;36.50;
 operation stats (ms/op):;avg op:;0.73;min op:;0.73;max op:;0.73;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE_EC_FP PRIVATE LENGTH_EC_FP_128 clearKey()
+method name:; TYPE_EC_FP_PRIVATE LENGTH_EC_FP_128 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff 00 05 00 0c 00 80 00 03 01 00 ff ff ff ff 00 01 00 01
 baseline measurements (ms):;55.00;60.00;60.00;60.00;59.00;
 baseline stats (ms):;avg:;59.75;min:;55.00;max:;60.00;;;CHECK
@@ -8486,7 +8486,7 @@ operation raw measurements (ms):;1.25;
 operation stats (ms/op):;avg op:;1.25;min op:;1.25;max op:;1.25;
 operation info:;data length;256;total iterations;1;total invocations;1;
 
-method name:; TYPE_EC_FP PRIVATE LENGTH_EC_FP_160 setS()
+method name:; TYPE_EC_FP_PRIVATE LENGTH_EC_FP_160 setS()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff 00 05 00 0c 00 a0 00 01 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;57.00;60.00;60.00;60.00;60.00;
 baseline stats (ms):;avg:;60.00;min:;57.00;max:;60.00;
@@ -8494,7 +8494,7 @@ operation raw measurements (ms):;190.00;188.00;189.00;188.00;189.00;
 operation stats (ms/op):;avg op:;3.78;min op:;3.76;max op:;3.80;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE_EC_FP PRIVATE LENGTH_EC_FP_160 getS()
+method name:; TYPE_EC_FP_PRIVATE LENGTH_EC_FP_160 getS()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff 00 05 00 0c 00 a0 00 02 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;57.00;60.00;60.00;60.00;60.00;
 baseline stats (ms):;avg:;60.00;min:;57.00;max:;60.00;
@@ -8502,7 +8502,7 @@ operation raw measurements (ms):;39.00;39.00;39.00;38.00;38.00;
 operation stats (ms/op):;avg op:;0.77;min op:;0.76;max op:;0.78;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE_EC_FP PRIVATE LENGTH_EC_FP_160 clearKey()
+method name:; TYPE_EC_FP_PRIVATE LENGTH_EC_FP_160 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff 00 05 00 0c 00 a0 00 03 01 00 ff ff ff ff 00 01 00 01
 baseline measurements (ms):;55.00;60.00;60.00;60.00;59.00;
 baseline stats (ms):;avg:;59.75;min:;55.00;max:;60.00;;;CHECK
@@ -8510,7 +8510,7 @@ operation raw measurements (ms):;3.25;
 operation stats (ms/op):;avg op:;3.25;min op:;3.25;max op:;3.25;
 operation info:;data length;256;total iterations;1;total invocations;1;
 
-method name:; TYPE_EC_FP PRIVATE LENGTH_EC_FP_192 setS()
+method name:; TYPE_EC_FP_PRIVATE LENGTH_EC_FP_192 setS()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff 00 05 00 0c 00 c0 00 01 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;57.00;60.00;60.00;60.00;60.00;
 baseline stats (ms):;avg:;60.00;min:;57.00;max:;60.00;
@@ -8518,7 +8518,7 @@ operation raw measurements (ms):;190.00;187.00;187.00;187.00;187.00;
 operation stats (ms/op):;avg op:;3.75;min op:;3.74;max op:;3.80;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE_EC_FP PRIVATE LENGTH_EC_FP_192 getS()
+method name:; TYPE_EC_FP_PRIVATE LENGTH_EC_FP_192 getS()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff 00 05 00 0c 00 c0 00 02 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;57.00;60.00;60.00;59.00;60.00;
 baseline stats (ms):;avg:;59.75;min:;57.00;max:;60.00;
@@ -8526,7 +8526,7 @@ operation raw measurements (ms):;38.25;38.25;38.25;37.25;38.25;
 operation stats (ms/op):;avg op:;0.76;min op:;0.75;max op:;0.77;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE_EC_FP PRIVATE LENGTH_EC_FP_192 clearKey()
+method name:; TYPE_EC_FP_PRIVATE LENGTH_EC_FP_192 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff 00 05 00 0c 00 c0 00 03 01 00 ff ff ff ff 00 01 00 01
 baseline measurements (ms):;55.00;60.00;59.00;60.00;60.00;
 baseline stats (ms):;avg:;59.75;min:;55.00;max:;60.00;;;CHECK
@@ -8534,7 +8534,7 @@ operation raw measurements (ms):;4.25;
 operation stats (ms/op):;avg op:;4.25;min op:;4.25;max op:;4.25;
 operation info:;data length;256;total iterations;1;total invocations;1;
 
-method name:; TYPE_EC_FP PRIVATE LENGTH_EC_FP_224 setS()
+method name:; TYPE_EC_FP_PRIVATE LENGTH_EC_FP_224 setS()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff 00 05 00 0c 00 e0 00 01 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;57.00;60.00;60.00;60.00;60.00;
 baseline stats (ms):;avg:;60.00;min:;57.00;max:;60.00;
@@ -8542,7 +8542,7 @@ operation raw measurements (ms):;327.00;324.00;324.00;324.00;325.00;
 operation stats (ms/op):;avg op:;6.50;min op:;6.48;max op:;6.54;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE_EC_FP PRIVATE LENGTH_EC_FP_224 getS()
+method name:; TYPE_EC_FP_PRIVATE LENGTH_EC_FP_224 getS()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff 00 05 00 0c 00 e0 00 02 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;57.00;60.00;60.00;60.00;60.00;
 baseline stats (ms):;avg:;60.00;min:;57.00;max:;60.00;
@@ -8550,7 +8550,7 @@ operation raw measurements (ms):;39.00;39.00;39.00;38.00;38.00;
 operation stats (ms/op):;avg op:;0.77;min op:;0.76;max op:;0.78;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE_EC_FP PRIVATE LENGTH_EC_FP_224 clearKey()
+method name:; TYPE_EC_FP_PRIVATE LENGTH_EC_FP_224 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff 00 05 00 0c 00 e0 00 03 01 00 ff ff ff ff 00 01 00 01
 baseline measurements (ms):;54.00;59.00;60.00;60.00;60.00;
 baseline stats (ms):;avg:;59.75;min:;54.00;max:;60.00;;;CHECK
@@ -8558,7 +8558,7 @@ operation raw measurements (ms):;3.25;
 operation stats (ms/op):;avg op:;3.25;min op:;3.25;max op:;3.25;
 operation info:;data length;256;total iterations;1;total invocations;1;
 
-method name:; TYPE_EC_FP PRIVATE LENGTH_EC_FP_256 setS()
+method name:; TYPE_EC_FP_PRIVATE LENGTH_EC_FP_256 setS()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff 00 05 00 0c 01 00 00 01 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;57.00;60.00;60.00;59.00;60.00;
 baseline stats (ms):;avg:;59.75;min:;57.00;max:;60.00;
@@ -8566,7 +8566,7 @@ operation raw measurements (ms):;190.25;188.25;188.25;187.25;188.25;
 operation stats (ms/op):;avg op:;3.77;min op:;3.75;max op:;3.81;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE_EC_FP PRIVATE LENGTH_EC_FP_256 getS()
+method name:; TYPE_EC_FP_PRIVATE LENGTH_EC_FP_256 getS()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff 00 05 00 0c 01 00 00 02 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;57.00;59.00;59.00;60.00;59.00;
 baseline stats (ms):;avg:;59.25;min:;57.00;max:;60.00;
@@ -8574,7 +8574,7 @@ operation raw measurements (ms):;38.75;38.75;38.75;38.75;39.75;
 operation stats (ms/op):;avg op:;0.78;min op:;0.78;max op:;0.80;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE_EC_FP PRIVATE LENGTH_EC_FP_256 clearKey()
+method name:; TYPE_EC_FP_PRIVATE LENGTH_EC_FP_256 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff 00 05 00 0c 01 00 00 03 01 00 ff ff ff ff 00 01 00 01
 baseline measurements (ms):;54.00;60.00;60.00;60.00;60.00;
 baseline stats (ms):;avg:;60.00;min:;54.00;max:;60.00;;;CHECK
@@ -8582,19 +8582,19 @@ operation raw measurements (ms):;1.00;
 operation stats (ms/op):;avg op:;1.00;min op:;1.00;max op:;1.00;
 operation info:;data length;256;total iterations;1;total invocations;1;
 
-method name:; TYPE_EC_FP PRIVATE LENGTH_EC_FP_320 setS()
+method name:; TYPE_EC_FP_PRIVATE LENGTH_EC_FP_320 setS()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff 00 05 00 0c 01 40 00 01 01 00 ff ff ff ff 00 32 00 01
 UNKONWN_ERROR-card_has_return_value_6a81
 
-method name:; TYPE_EC_FP PRIVATE LENGTH_EC_FP_320 getS()
+method name:; TYPE_EC_FP_PRIVATE LENGTH_EC_FP_320 getS()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff 00 05 00 0c 01 40 00 02 01 00 ff ff ff ff 00 32 00 01
 UNKONWN_ERROR-card_has_return_value_6a81
 
-method name:; TYPE_EC_FP PRIVATE LENGTH_EC_FP_320 clearKey()
+method name:; TYPE_EC_FP_PRIVATE LENGTH_EC_FP_320 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff 00 05 00 0c 01 40 00 03 01 00 ff ff ff ff 00 01 00 01
 UNKONWN_ERROR-card_has_return_value_6a81
 
-method name:; TYPE_EC_FP PRIVATE LENGTH_EC_FP_384 setS()
+method name:; TYPE_EC_FP_PRIVATE LENGTH_EC_FP_384 setS()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff 00 05 00 0c 01 80 00 01 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;57.00;60.00;60.00;60.00;59.00;
 baseline stats (ms):;avg:;59.75;min:;57.00;max:;60.00;
@@ -8602,7 +8602,7 @@ operation raw measurements (ms):;334.25;331.25;331.25;331.25;331.25;
 operation stats (ms/op):;avg op:;6.64;min op:;6.63;max op:;6.69;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE_EC_FP PRIVATE LENGTH_EC_FP_384 getS()
+method name:; TYPE_EC_FP_PRIVATE LENGTH_EC_FP_384 getS()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff 00 05 00 0c 01 80 00 02 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;57.00;60.00;60.00;59.00;60.00;
 baseline stats (ms):;avg:;59.75;min:;57.00;max:;60.00;
@@ -8610,7 +8610,7 @@ operation raw measurements (ms):;43.25;42.25;42.25;42.25;42.25;
 operation stats (ms/op):;avg op:;0.85;min op:;0.85;max op:;0.87;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE_EC_FP PRIVATE LENGTH_EC_FP_384 clearKey()
+method name:; TYPE_EC_FP_PRIVATE LENGTH_EC_FP_384 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff 00 05 00 0c 01 80 00 03 01 00 ff ff ff ff 00 01 00 01
 baseline measurements (ms):;55.00;60.00;60.00;59.00;60.00;
 baseline stats (ms):;avg:;59.75;min:;55.00;max:;60.00;;;CHECK
@@ -8618,19 +8618,19 @@ operation raw measurements (ms):;4.25;
 operation stats (ms/op):;avg op:;4.25;min op:;4.25;max op:;4.25;
 operation info:;data length;256;total iterations;1;total invocations;1;
 
-method name:; TYPE_EC_FP PRIVATE LENGTH_EC_FP_512 setS()
+method name:; TYPE_EC_FP_PRIVATE LENGTH_EC_FP_512 setS()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff 00 05 00 0c 02 00 00 01 01 00 ff ff ff ff 00 32 00 01
 UNKONWN_ERROR-card_has_return_value_6a81
 
-method name:; TYPE_EC_FP PRIVATE LENGTH_EC_FP_512 getS()
+method name:; TYPE_EC_FP_PRIVATE LENGTH_EC_FP_512 getS()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff 00 05 00 0c 02 00 00 02 01 00 ff ff ff ff 00 32 00 01
 UNKONWN_ERROR-card_has_return_value_6a81
 
-method name:; TYPE_EC_FP PRIVATE LENGTH_EC_FP_512 clearKey()
+method name:; TYPE_EC_FP_PRIVATE LENGTH_EC_FP_512 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff 00 05 00 0c 02 00 00 03 01 00 ff ff ff ff 00 01 00 01
 UNKONWN_ERROR-card_has_return_value_6a81
 
-method name:; TYPE_EC_FP PRIVATE LENGTH_EC_FP_521 setS()
+method name:; TYPE_EC_FP_PRIVATE LENGTH_EC_FP_521 setS()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff 00 05 00 0c 02 09 00 01 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;57.00;60.00;60.00;60.00;60.00;
 baseline stats (ms):;avg:;60.00;min:;57.00;max:;60.00;
@@ -8638,7 +8638,7 @@ operation raw measurements (ms):;201.00;198.00;198.00;198.00;198.00;
 operation stats (ms/op):;avg op:;3.97;min op:;3.96;max op:;4.02;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE_EC_FP PRIVATE LENGTH_EC_FP_521 getS()
+method name:; TYPE_EC_FP_PRIVATE LENGTH_EC_FP_521 getS()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff 00 05 00 0c 02 09 00 02 01 00 ff ff ff ff 00 32 00 01
 baseline measurements (ms):;57.00;60.00;60.00;60.00;60.00;
 baseline stats (ms):;avg:;60.00;min:;57.00;max:;60.00;
@@ -8646,7 +8646,7 @@ operation raw measurements (ms):;47.00;47.00;47.00;46.00;46.00;
 operation stats (ms/op):;avg op:;0.93;min op:;0.92;max op:;0.94;
 operation info:;data length;256;total iterations;250;total invocations;250;
 
-method name:; TYPE_EC_FP PRIVATE LENGTH_EC_FP_521 clearKey()
+method name:; TYPE_EC_FP_PRIVATE LENGTH_EC_FP_521 clearKey()
 measurement config:;appletPrepareINS;30;appletMeasureINS;40;config;00 20 ff ff 00 05 00 0c 02 09 00 03 01 00 ff ff ff ff 00 01 00 01
 baseline measurements (ms):;54.00;60.00;60.00;60.00;60.00;
 baseline stats (ms):;avg:;60.00;min:;54.00;max:;60.00;;;CHECK
