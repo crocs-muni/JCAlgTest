@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Collections;
 
 /**
  *
@@ -302,6 +303,7 @@ public class JCinfohtml {
         List<String> topAcronyms_asym = new ArrayList<>();
         loadTopFunctions(topNames_sym, topAcronyms_sym, topNames_asym, topAcronyms_asym, true);
         List<String> files = listFilesForFolder(new File(inputDir));
+        Collections.sort(files);
         if (unknownMode) {
             files.add(0, unknownCard);
         }

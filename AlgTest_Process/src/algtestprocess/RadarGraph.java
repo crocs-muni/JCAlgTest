@@ -37,6 +37,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
 
 /**
  * Class provides generation of Radar graphs for visual card comparison.
@@ -234,6 +235,7 @@ public class RadarGraph {
     
     public static void runRadarGraph(String inputDir, String outputDir) throws FileNotFoundException, IOException{
         List<String> namesOfCards = generateRadarGraphs(inputDir, outputDir);
+        Collections.sort(namesOfCards);
         generateRadarMain(outputDir, namesOfCards);
         System.out.println("ADD all necessary scripts (header-1.js, RadarChart.js) to newly generated folder.");        
     }
