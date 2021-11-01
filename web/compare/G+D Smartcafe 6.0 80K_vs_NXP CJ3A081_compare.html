@@ -1,0 +1,88 @@
+<html lang="en">
+ <head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<meta name="description" content="The JCAlgTest is a tool designed for automatic gathering various performance properties of Java cards. ">
+	<meta name="author" content="JCAlgTest">
+	<title>JCAlgTest - Similarity ofG+D Smartcafe 6.0 80K and NXP CJ3A081</title>
+	<link href="./../dist/css/bootstrap.min.css" rel="stylesheet">
+<script type="text/javascript" src="./../dist/jquery-2.2.3.min.js"></script>
+	<link href="./../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="./../dist/style.css">
+	<script src="http://d3js.org/d3.v3.min.js"></script>
+	<script src="RadarChart.js"></script>
+ </head>
+
+ <body style="margin-top:50px; padding:20px">
+
+ 	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container-fluid">
+		<script type="text/javascript" src="../header-1.js"></script>
+		</div>
+	</nav>
+
+	<div class="container">
+		<div class="row">
+<h1>Comparison of G+D Smartcafe 6.0 80K and NXP CJ3A081</h1><h4>What the numbers do tell?</h4><p>Using performance results, we can compare these two cards.</p>
+		<h2>Radar graph</h2>
+		<p>This is the comparation radar graph of <span style="color:blue;">G+D Smartcafe 6.0 80K</span> and <span style="color:orange;">NXP CJ3A081</span>.</p>
+		<p>The values closer to 100% represent the times close to the fastest result among all tested cards, whereas values close to 10% suggest slower performance in the corresponding algorithm. Value of 0%(NS) indicates a lack of support or occurrence of unexpected error during the tested algorithm.</p><br>
+		<div id="chart"></div>
+		</div>
+		<script type="text/javascript" src="G+D Smartcafe 6.0 80K_vs_NXP CJ3A081_compare.js"></script>
+	</div>
+	<div class="container">
+		<div class="row">
+<br><h3>Dissimilarities in algorithm support</h3>
+<strong><table class="compare" cellspacing="0" style="background:#FEFEFE; border-collapse: separate"><tbody>
+	<tr>
+		<th>Support</th>
+		<th>G+D Smartcafe 6.0 80K</th>
+		<th>NXP CJ3A081</th>
+	</tr>
+	<tr>
+		<th>SWALGS SWAlgs_AES()</th>
+		<td style="background:rgba(200,120,140,0.30);">No</td>
+		<td style="background:rgba(140,200,120,0.30);">Yes</td>
+	</tr>
+	<tr>
+		<th>UTIL Util_arrayCopyNonAtomic_RAM()</th>
+		<td style="background:rgba(200,120,140,0.30);">No</td>
+		<td style="background:rgba(140,200,120,0.30);">Yes</td>
+	</tr>
+	<tr>
+		<th>UTIL Util_arrayCopyNonAtomic_EEPROM()</th>
+		<td style="background:rgba(200,120,140,0.30);">No</td>
+		<td style="background:rgba(140,200,120,0.30);">Yes</td>
+	</tr>
+	<tr>
+		<th>TYPE_RSA_PRIVATE LENGTH_RSA_1024 ALG_RSA_NOPAD Cipher_doFinal()</th>
+		<td style="background:rgba(140,200,120,0.30);">Yes</td>
+		<td style="background:rgba(200,120,140,0.30);">No</td>
+	</tr>
+	<tr>
+		<th>TYPE_RSA_PUBLIC LENGTH_RSA_1024 ALG_RSA_NOPAD Cipher_doFinal()</th>
+		<td style="background:rgba(140,200,120,0.30);">Yes</td>
+		<td style="background:rgba(200,120,140,0.30);">No</td>
+	</tr>
+	<tr>
+		<th>TYPE_RSA_PRIVATE LENGTH_RSA_2048 ALG_RSA_NOPAD Cipher_doFinal()</th>
+		<td style="background:rgba(140,200,120,0.30);">Yes</td>
+		<td style="background:rgba(200,120,140,0.30);">No</td>
+	</tr>
+	<tr>
+		<th>TYPE_RSA_PUBLIC LENGTH_RSA_2048 ALG_RSA_NOPAD Cipher_doFinal()</th>
+		<td style="background:rgba(140,200,120,0.30);">Yes</td>
+		<td style="background:rgba(200,120,140,0.30);">No</td>
+	</tr>
+</tbody></table></strong>
+		</div>	</div>
+	<script type="text/javascript" src="../footer.js"></script>
+<a href="#" class="back-to-top"></a>	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<script>window.jQuery || document.write('<script src="../assets/js/vendor/jquery.min.js"><\/script>')</script>
+	<script src="./../dist/js/bootstrap.min.js"></script>
+	<script src="./../assets/js/ie10-viewport-bug-workaround.js"></script>
+ </body>
+</html>

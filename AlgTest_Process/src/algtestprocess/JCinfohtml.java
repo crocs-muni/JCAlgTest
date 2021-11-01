@@ -39,7 +39,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import org.graalvm.compiler.graph.NodeList;
 
 /**
  *
@@ -65,13 +64,19 @@ public class JCinfohtml {
                     "\t<meta name=\"author\" content=\"JCAlgTest\">\n"  +
                     "\t<title>"+title+"</title>\n";
 
-        toFile += "\t<link href=\"./" + toRoot + "dist/css/bootstrap.min.css\" rel=\"stylesheet\">\n"
-                + "<script type=\"text/javascript\" src=\"./" + toRoot + "dist/jquery-2.2.3.min.js\"></script>\n"
-                + "\t<link href=\"./" + toRoot + "assets/css/ie10-viewport-bug-workaround.css\" rel=\"stylesheet\">\n"                
-                + "\t<link rel=\"stylesheet\" type=\"text/css\" href=\"./" + toRoot + "dist/style.css\">\n";
+//        toFile += "\t<link href=\"./" + toRoot + "dist/css/bootstrap.min.css\" rel=\"stylesheet\">\n"
+//                + "<script type=\"text/javascript\" src=\"./" + toRoot + "dist/jquery-2.2.3.min.js\"></script>\n"
+//                + "\t<link href=\"./" + toRoot + "assets/css/ie10-viewport-bug-workaround.css\" rel=\"stylesheet\">\n"                
+//                + "\t<link rel=\"stylesheet\" type=\"text/css\" href=\"./" + toRoot + "dist/style.css\">\n";
+
+        toFile += "\t<link href=\"" + toRoot + "dist/css/bootstrap.min.css\" rel=\"stylesheet\">\n"
+                + "<script type=\"text/javascript\" src=\"" + toRoot + "dist/jquery-2.2.3.min.js\"></script>\n"
+                + "\t<link href=\"" + toRoot + "assets/css/ie10-viewport-bug-workaround.css\" rel=\"stylesheet\">\n"                
+                + "\t<link rel=\"stylesheet\" type=\"text/css\" href=\"" + toRoot + "dist/style.css\">\n";
+
         
         if (!toRoot.equals(""))
-            toFile += "\t<script src=\"http://d3js.org/d3.v3.min.js\"></script>\n"
+            toFile += "\t<script src=\"../assets/js/d3.v3.min.js\"></script>\n"
                     + "\t<script src=\"RadarChart.js\"></script>\n";
         
         toFile += " </head>\n\n";
@@ -92,8 +97,10 @@ public class JCinfohtml {
                 "<a href=\"#\" class=\"back-to-top\"></a>" +
                 "\t<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js\"></script>\n" +
                 "\t<script>window.jQuery || document.write('<script src=\"../assets/js/vendor/jquery.min.js\"><\\/script>')</script>\n" +
-                "\t<script src=\"./" + toRoot + "dist/js/bootstrap.min.js\"></script>\n" +
-                "\t<script src=\"./" + toRoot + "assets/js/ie10-viewport-bug-workaround.js\"></script>\n";   
+                "\t<script src=\"" + toRoot + "dist/js/bootstrap.min.js\"></script>\n" +
+                "\t<script src=\"" + toRoot + "assets/js/ie10-viewport-bug-workaround.js\"></script>\n";   
+                //"\t<script src=\"./" + toRoot + "dist/js/bootstrap.min.js\"></script>\n" +
+                //"\t<script src=\"./" + toRoot + "assets/js/ie10-viewport-bug-workaround.js\"></script>\n";   
         
         toFile += " </body>\n";
         toFile += "</html>\n";
@@ -556,7 +563,7 @@ public class JCinfohtml {
         }
         
         FileOutputStream file = new FileOutputStream(filename + ".html");
-        beginHTML(file, "JCAlgTest - Similarity of" + card1 +" and " + card2, "../");
+        beginHTML(file, "JCAlgTest - Similarity of " + card1 +" and " + card2, "../");
         addCompareFileInfo(file, card1, card2);
         
         generateCompareGraph(file, filename, fileNameActual, card1, card2, topAcronyms_sym, radarData, radarDataCopy, i, j);
