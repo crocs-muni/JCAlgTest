@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Collections;
 
 /**
  *
@@ -152,7 +153,7 @@ public class JCinfohtml {
         toFile = "";
         toFile += "<div class=\"col-md-5 col-xs-5\">\n";
         toFile += "<h3>Test details</h3>\n";
-        toFile += "<p>Execution date/time: <strong>" + infoMap.get("Execution date/time") + ", <a href=\"https://github.com/crocs-muni/JCAlgTest/tree/master/Profiles/performance\" target=\"_blank\">CSV source data</a></strong></p>\n";
+        toFile += "<p>Execution date/time: <strong>" + infoMap.get("Execution date/time") + ", <a href=\"" + AlgTestProcess.GITHUB_RESULTS_REPO_LINK + "tree/master/javacard/Profiles/performance\" target=\"_blank\">CSV source data</a></strong></p>\n";
         toFile += "<p>AlgTestJClient version: <strong>" + infoMap.get("AlgTestJClient version") + "</strong></p>\n";
         toFile += "<p>AlgTest applet version: <strong>" + infoMap.get("AlgTest applet version") + "</strong></p>\n";
         toFile += "<p>Used reader: <strong>" + infoMap.get("Used reader") + "</strong></p>\n";
@@ -302,6 +303,7 @@ public class JCinfohtml {
         List<String> topAcronyms_asym = new ArrayList<>();
         loadTopFunctions(topNames_sym, topAcronyms_sym, topNames_asym, topAcronyms_asym, true);
         List<String> files = listFilesForFolder(new File(inputDir));
+        Collections.sort(files);
         if (unknownMode) {
             files.add(0, unknownCard);
         }

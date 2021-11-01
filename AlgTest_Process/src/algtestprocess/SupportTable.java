@@ -57,13 +57,12 @@ import java.util.StringTokenizer;
 import java.util.TreeSet;
 
 /**
- * Generates pefrormance similarity table, contains tooltips with differences in algorithm support.
+ * Generates performance similarity table, contains tooltips with differences in algorithm support.
  * @author rk
  */
 public class SupportTable {
 
-    public static final String JCALGTEST_RESULTS_REPO_PATH = "https://github.com/crocs-muni/JCAlgTest/tree/master/Profiles/results/";  // original path within code repository
-    //public static final String JCALGTEST_RESULTS_REPO_PATH = "https://github.com/crocs-muni/jcalgtest_results/tree/main/javacard/Profiles/results/";
+    public static final String JCALGTEST_RESULTS_REPO_PATH = AlgTestProcess.GITHUB_RESULTS_REPO_LINK + "tree/master/javacard/Profiles/results/";  
 
     // if one card results are generated
     public static final String[] JAVA_CARD_VERSION = {"2.1.2", "2.2.1", "2.2.2"};
