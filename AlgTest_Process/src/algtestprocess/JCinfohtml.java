@@ -152,7 +152,7 @@ public class JCinfohtml {
         toFile = "";
         toFile += "<div class=\"col-md-5 col-xs-5\">\n";
         toFile += "<h3>Test details</h3>\n";
-        toFile += "<p>Execution date/time: <strong>" + infoMap.get("Execution date/time") + ", <a href=\"" + AlgTestProcess.GITHUB_RESULTS_REPO_LINK + "tree/master/Profiles/performance\" target=\"_blank\">CSV source data</a></strong></p>\n";
+        toFile += "<p>Execution date/time: <strong>" + infoMap.get("Execution date/time") + ", <a href=\"" + AlgTestProcess.GITHUB_RESULTS_REPO_LINK + "tree/master/javacard/Profiles/performance\" target=\"_blank\">CSV source data</a></strong></p>\n";
         toFile += "<p>AlgTestJClient version: <strong>" + infoMap.get("AlgTestJClient version") + "</strong></p>\n";
         toFile += "<p>AlgTest applet version: <strong>" + infoMap.get("AlgTest applet version") + "</strong></p>\n";
         toFile += "<p>Used reader: <strong>" + infoMap.get("Used reader") + "</strong></p>\n";
