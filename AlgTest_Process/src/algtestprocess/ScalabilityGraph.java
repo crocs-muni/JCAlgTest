@@ -42,6 +42,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Collections;
 
 /**
  * Class provide generation of scalability graphs which shows dependency between length of processed data and operation time.
@@ -297,6 +298,8 @@ public class ScalabilityGraph {
         
     public static void runScalability(String dir, String outDir, Boolean toponly) throws FileNotFoundException, IOException{
         List<String> namesOfCards = generateScalabilityFolder(dir, outDir, false);
+        // sort cards by names
+        Collections.sort(namesOfCards);
         generateScalabilityMain(dir, outDir, namesOfCards);
       //  System.out.println("ADD all necessary scripts (header-1.js, RadarChart.js) to new generated folder.");        
     }
