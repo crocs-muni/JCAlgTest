@@ -174,8 +174,10 @@ public class RunTime {
             if (prepare.length < 2) {
                 System.out.println("Unexpected format of line '" + lines.get(lp) + "'");
             }
-            toFile += "<td><b>"+prepare[1]+"</b></td>";       //classic name without reference to chart
-            //toFile += "<td><a class=\"fancybox fancybox.iframe\" href=\"./graphs/" + prepare[1] + ".html\" style=\"font-size:12px;\">" + prepare[1] + "</a></td>";
+            else {
+                toFile += "<td><b>"+prepare[1]+"</b></td>";       //classic name without reference to chart
+                //toFile += "<td><a class=\"fancybox fancybox.iframe\" href=\"./graphs/" + prepare[1] + ".html\" style=\"font-size:12px;\">" + prepare[1] + "</a></td>";
+            }
             lp += 2;
         }
 
