@@ -58,8 +58,8 @@ public class AlgTestProcess {
     public static final String GENERATE_UNKNOWN_RESULTS = "UNKNOWN";    //RESULTS FOR UNKNOWN CARD
     public static final String GENERATE_RADAR_GRAPHS = "RADAR";         //ONE BIG TABLE FOR COMPARE CARDS      
 
-    public static final String GITHUB_RESULTS_REPO_LINK = "https://github.com/crocs-muni/JCAlgTest/";         
-    //public static final String GITHUB_RESULTS_REPO_LINK = "https://github.com/crocs-muni/algtest_results/";         // base link to github with results     
+    //public static final String GITHUB_RESULTS_REPO_LINK = "https://github.com/crocs-muni/JCAlgTest/";         
+    public static final String GITHUB_RESULTS_REPO_LINK = "https://github.com/crocs-muni/algtest_results/";         // base link to github with results     
 
 
     public static String m_inputBasePath = "";
