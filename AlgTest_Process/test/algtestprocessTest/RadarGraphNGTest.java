@@ -15,7 +15,7 @@ import org.testng.annotations.Test;
 public class RadarGraphNGTest {
 
 	private AlgTestProcessTestUtils utils = new AlgTestProcessTestUtils(
-		"/../Profiles/performance/fixed",
+		"fixed",
 		"radar_graphs",
 		"radar-graphs.html",
 		true
@@ -26,7 +26,8 @@ public class RadarGraphNGTest {
 
 	@BeforeClass
 	public void setUpClass() throws Exception {
-		RadarGraph.runRadarGraph(utils.getDataFolderPath());
+		utils.setUp();
+		RadarGraph.runRadarGraph(utils.getInputBasePath(), utils.getOutputBasePath());
 	}
 
 	@AfterClass

@@ -15,7 +15,7 @@ import org.testng.annotations.Test;
 public class RunTimeNGTest {
 
 	private AlgTestProcessTestUtils utils = new AlgTestProcessTestUtils(
-		"/../Profiles/performance/fixed",
+		"fixed",
 		"run_time",
 		"execution-time.html",
 		true
@@ -26,7 +26,8 @@ public class RunTimeNGTest {
 
 	@BeforeClass
 	public void setUpClass() throws Exception {
-		RunTime.runRunTime(utils.getDataFolderPath());
+		utils.setUp();
+		RunTime.runRunTime(utils.getInputBasePath(), utils.getOutputBasePath());
 	}
 
 	@AfterClass

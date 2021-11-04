@@ -13,20 +13,22 @@ import org.testng.annotations.Test;
  * @author tjaros
  */
 public class JCinfohtmlSimilarityNGTest {
+
 	private AlgTestProcessTestUtils utils = new AlgTestProcessTestUtils(
-		"/../Profiles/performance/fixed",
+		"fixed",
 		"compare",
 		"similarity-table.html",
 		false
 	);
-	
+
 	public JCinfohtmlSimilarityNGTest() {
 	}
 
 	@BeforeClass
 	public void setUpClass() throws Exception {
-		JCinfohtml.runCompareTable(utils.getDataFolderPath());
-		JCinfohtml.runCompareGraph(utils.getDataFolderPath());
+		utils.setUp();
+		JCinfohtml.runCompareTable(utils.getInputBasePath(), utils.getOutputBasePath());
+		JCinfohtml.runCompareGraph(utils.getInputBasePath(), utils.getOutputBasePath());
 	}
 
 	@AfterClass

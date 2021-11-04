@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package algtestprocessTest;
 
 import org.testng.annotations.Test;
@@ -27,7 +22,7 @@ import org.testng.Assert;
 public class ScalabilityGraphNGTest {
 
 	private AlgTestProcessTestUtils utils = new AlgTestProcessTestUtils(
-		"/../Profiles/performance/variable",
+		"variable",
 		"scalability",
 		"scalability.html",
 		true
@@ -38,7 +33,8 @@ public class ScalabilityGraphNGTest {
 
 	@BeforeClass
 	public void setUpClass() throws Exception {
-		ScalabilityGraph.runScalability(utils.getDataFolderPath(), false);
+		utils.setUp();
+		ScalabilityGraph.runScalability(utils.getInputBasePath(), utils.getOutputBasePath(), false);
 	}
 
 	@AfterClass

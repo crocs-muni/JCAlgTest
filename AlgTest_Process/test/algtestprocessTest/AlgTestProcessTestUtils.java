@@ -19,44 +19,60 @@ import org.jsoup.nodes.Element;
  */
 public class AlgTestProcessTestUtils {
 
-	private String pathPrefix = null;
+	private String dataLength = null;
+	private String inputBasePath = null;
+	private String outputBasePath = "/tmp";
 	private String mainFolderName = null;
 	private String mainFileName = null;
 	private boolean mainFileInMainFolder = false;
 
 	public AlgTestProcessTestUtils(
-		String pathPrefix,
+		String dataLength,
 		String mainFolderName,
 		String mainFileName,
 		boolean mainFileInMainFolder
 	) {
-		this.pathPrefix = pathPrefix;
+		this.dataLength = dataLength;
 		this.mainFolderName = mainFolderName;
 		this.mainFileName = mainFileName;
 		this.mainFileInMainFolder = mainFileInMainFolder;
 	}
 
-	private String getAbsPath() {
-		return Paths.get("").toAbsolutePath().toString();
+	public void setUp() throws IOException, InterruptedException {
+		if (!Files.exists(Paths.get("/tmp/jcalgtest_results"))) {
+			String[] command = {"/bin/bash", "-c",
+				"cd /tmp && git clone https://github.com/crocs-muni/jcalgtest_results.git"};
+			Process p = Runtime.getRuntime().exec(command);
+			p.waitFor();
+			if (p.exitValue() != 0) {
+				throw new IOException("Could not clone results for test.");
+			}
+		}
+		this.inputBasePath = "/tmp/jcalgtest_results/javacard/Profiles/performance/" + this.dataLength;
+		this.outputBasePath = "/tmp";
 	}
 
-	public String getDataFolderPath() {
-		return getAbsPath() + "/" + pathPrefix;
+	public String getInputBasePath() {
+		return this.inputBasePath;
+	}
+
+	public String getOutputBasePath() {
+		return this.outputBasePath;
 	}
 
 	public String getMainFolderPath() {
-		return getDataFolderPath() + "/" + mainFolderName;
+		return getOutputBasePath() + "/" + mainFolderName;
 	}
 
 	public String getMainFilePath() {
 		return ((mainFileInMainFolder)
-			? getMainFolderPath() : getDataFolderPath())
+			? getMainFolderPath() : getOutputBasePath())
 			+ "/" + mainFileName + "/";
 
 	}
 
 	public List<Path> getPaths() throws IOException {
-		try ( Stream<Path> walk = Files.walk(Paths.get(this.getMainFolderPath()))) {
+		try ( Stream<Path> walk = Files.walk(Paths.get(getMainFolderPath()))) {
 			return walk
 				.filter(x -> !x.toString().contains(mainFileName) && !Files.isDirectory(x))
 				.collect(Collectors.toList());
