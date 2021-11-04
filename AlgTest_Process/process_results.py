@@ -9,6 +9,36 @@ MEASUREMENT_CATEGORIES = ["MESSAGE DIGEST", "RANDOM GENERATOR", "CIPHER", "SIGNA
              "RSAPrivateKey", "RSAPublicKey", "RSAPrivateCRTKey", "KEY PAIR", "UTIL",
              "SWALGS", "KEYAGREEMENT"]
 
+CARD_EXCEPTION_TO_STRING = {
+    'f101': 'CryptoException_ILLEGAL_VALUE',
+    'f102': 'CryptoException_UNINITIALIZED_KEY',
+    'f103': 'CryptoException_NO_SUCH_ALGORITHM',
+    'f104': 'CryptoException_INVALID_INIT',
+    'f105': 'CryptoException_ILLEGAL_USE',
+    'f201': 'SystemException_ILLEGAL_VALUE',
+    'f202': 'SystemException_NO_TRANSIENT_SPACE',
+    'f203': 'SystemException_ILLEGAL_TRANSIENT',
+    'f204': 'SystemException_ILLEGAL_AID',
+    'f205': 'SystemException_NO_RESOURCE',
+    'f206': 'SystemException_ILLEGAL_USE',
+    'f301': 'PINException_ILLEGAL_VALUE',
+    'f302': 'PINException_ILLEGAL_STATE',
+    'f401': 'TransactionException_IN_PROGRESS',
+    'f402': 'TransactionException_NOT_IN_PROGRESS',
+    'f403': 'TransactionException_BUFFER_FULL',
+    'f404': 'TransactionException_INTERNAL_FAILURE',
+    'f405': 'TransactionException_ILLEGAL_USE',
+    'f500': 'CardRuntimeException',
+    'ff01': 'Exception_GENERIC',
+    'ff02': 'ArrayIndexOutOfBoundsException',
+    'ff03': 'ArithmeticException',
+    'ff04': 'ArrayStoreException',
+    'ff05': 'NullPointerException',
+    'ff06': 'NegativeArraySizeException',
+    'ff': 'Exception_GENERIC',
+    '6a81': 'FUNC_NOT_SUPPORTED',
+    '6f00': 'Exception_GENERIC'
+}
 
 def search_files(folder):
     for root, dirs, files in os.walk(folder):
@@ -47,9 +77,9 @@ def extract_section(lines: list, start_string: str, perf_measurement: bool):
                 if pos > 0:
                     key = lines[i][0: pos].strip()
                     if lines[i].find('method name:;') != -1:
-                        # do not strip ending ; for line with method for variable data measurements
+                        # do not strip ending ; for line with method for variable data measurements, strip only starting
                         # method_name;data_length;
-                        value = lines[i][pos:].strip()
+                        value = lines[i][pos:].lstrip(';').strip()
                     else:
                         # strip ending ;
                         value = lines[i][pos:].strip().strip(';').strip()
@@ -57,7 +87,10 @@ def extract_section(lines: list, start_string: str, perf_measurement: bool):
                     if perf_measurement and len(value) == 0:  # error status like NO_SUCH_ALGORITHM
                         section_items['status'] = key
                     else:
-                        section_items[key] = value
+                        if lines[i].find('Exception') != -1:  # various exceptions
+                            section_items['status'] = key
+                        else:
+                            section_items[key] = value
                 i = i + 1
                 just_entered = False
 
@@ -148,8 +181,10 @@ def prepare_missing_measurements(walk_dir: str):
             msr = measurements['Measurements']
             for category in msr:
                 for ops in msr[category].keys():
+                    if 'status' not in msr[category][ops]:
+                        print(msr[category][ops])
                     status = msr[category][ops]['status']
-                    if status == 'OK' or status == 'NO_SUCH_ALGORITHM':
+                    if status == 'OK' or status == 'NO_SUCH_ALGORITHM' or status.find('FUNC_NOT_SUPPORTED') != -1:
                         correctly_measured.append(ops + '\n')
                         measured_with_errors.append(ops + '\n')
                     else:
@@ -231,7 +266,7 @@ def fix_missing_variable_data_lengths(walk_dir: str):
                 line_corrected = line
                 if line.find('method name:;') != -1:
                     if line.rstrip().endswith('()'):  # add data length only to the measurements where it is missing
-                        # look ahead and extract length from measurement config
+                        # Option 1: look ahead and extract length from measurement config
                         config_line = lines[index + 1]
                         if config_line.find('measurement config:') == -1:
                             print('ERROR: missing measurement config on line ' + str(index + 1))
@@ -240,8 +275,56 @@ def fix_missing_variable_data_lengths(walk_dir: str):
                             pos = config_line.find(';config;') + 44  # jump to payload with data length
                             data_len_chars = config_line[pos: pos + 5].replace(' ', '')
                             data_len = int(data_len_chars, 16)
-                            line_corrected = '{};{};\n'.format(line.strip(), data_len)
-                            change_found = True
+                            data_len_verif = 0
+                            # do sanity check, data_len shall be 16, 32, 64, 128, 256 or 512 or not higher than 512
+                            if data_len not in [16, 32, 64, 128, 256, 512]:
+                            #if data_len > 512:
+                                print('WARNING: unexpected variable data length ' + str(data_len))
+                            else:
+                                # verify against 'data length' item in 'operation info:' (if available)
+                                info_line = lines[index + 6]
+                                if info_line.find('operation info:') != -1:
+                                    # operation info:;data length;16;total iterations;250;total invocations;250;
+                                    # operation info:;data length;-1;total iterations;250;total invocations;250;
+                                    items = info_line.split(';')
+                                    data_len_verif = int(items[2])
+
+                                if data_len_verif == 0 or data_len == data_len_verif:
+                                    line_corrected = '{};{};\n'.format(line.strip(), data_len)
+                                    change_found = True
+                                else:
+                                    print('ERROR: mismatch in extracted data lengths ' + str(data_len) + ' vs. ' + str(data_len_verif))
+
+                lines_corrected.append(line_corrected)
+                index = index + 1
+
+            if change_found:
+                with open(filename, 'w') as f_write:
+                    f_write.writelines(lines_corrected)
+
+
+def fix_error_codes(walk_dir: str):
+    files = get_files_to_process(walk_dir, '.csv')
+
+    for filename in files:
+        print(filename)
+
+        change_found = False
+        with open(filename) as f:
+            lines = f.readlines()
+            lines_corrected = []
+            index = 0
+            while index < len(lines):
+                line = lines[index]
+                i = 0
+                line_corrected = line
+                if line.find('UNKONWN_ERROR-card_has_return_value') != -1:
+                    pos = line.find('UNKONWN_ERROR-card_has_return_value') + len('UNKONWN_ERROR-card_has_return_value') + 1
+                    error_code = line[pos:]
+                    error_code = error_code.strip()
+
+                    line_corrected = CARD_EXCEPTION_TO_STRING.get(error_code, error_code) + ' (' + error_code + ')\n'
+                    change_found = True
 
                 lines_corrected.append(line_corrected)
                 index = index + 1
@@ -294,10 +377,12 @@ def create_sorted_already_measured_list(directory: str):
 @click.argument("directory", required=True, type=str)
 @click.option("--output-dir", "output_dir", type=str,  help="Base path for output.")
 def main(directory: str, output_dir: str):
-    #all_to_measure_ops = create_sorted_already_measured_list(directory)
+    all_to_measure_ops = create_sorted_already_measured_list(directory)
 
-    #fix_missing_underscores(directory, all_to_measure_ops)  # some file had incorrect naming for measured values without _
-    #fix_missing_variable_data_lengths(directory)
+    fix_error_codes(directory)  # error codes not translated into human readable string _
+
+    fix_missing_underscores(directory, all_to_measure_ops)  # some file had incorrect naming for measured values without _
+    fix_missing_variable_data_lengths(directory)
 
     convert_to_json(directory)  # from csv to json
 
