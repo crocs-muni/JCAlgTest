@@ -335,6 +335,55 @@ public class JCinfohtml {
         }        
         
         generateCompareTable(file, similarities, cardNames);
+        generateRadarCharts(inputDir, outputDir);
+    }
+    
+    public static void generateRadarCharts(String inputDir, String outputDir) throws IOException {
+        List<String> files = new ArrayList<>(listFilesForFolder(new File(inputDir)));
+        // prepare input data - topFunctions, perf results
+        List<String> topNames_sym = new ArrayList<>();
+        List<String> topAcronyms_sym = new ArrayList<>();
+        List<String> topNames_asym = new ArrayList<>();
+        List<String> topAcronyms_asym = new ArrayList<>();
+        loadTopFunctions(topNames_sym, topAcronyms_sym, topNames_asym, topAcronyms_asym, false);
+        
+        List<List<Float>> radarData = new ArrayList<>();
+        List<List<Float>> radarDataCopy = new ArrayList<>();
+        
+        topNames_sym.addAll(topNames_asym);
+        topAcronyms_sym.addAll(topAcronyms_asym);
+                
+        for(String acr : topAcronyms_sym) {            
+            radarData.add(new ArrayList<Float>());
+            radarDataCopy.add(new ArrayList<Float>());
+        }
+       
+        List<String> cardNames = new ArrayList<>();
+        for(String fileName : files) {
+            cardNames.add(addCard(topNames_sym, radarData, fileName)); 
+            addCard(topNames_sym, radarDataCopy, fileName);
+        }
+        
+        // Normalize data
+        for(int i=0; i<radarDataCopy.size(); i++){
+            float max = 0.0f;
+            for (float value : radarDataCopy.get(i)){
+                if (value > max)
+                    max = value;
+            }
+            
+            for(int j = 0; j < radarDataCopy.get(i).size(); j++){
+                if(radarDataCopy.get(i).get(j) != 0.0F) {
+                    radarData.get(i).set(j, radarData.get(i).get(j) / (max * 1.11f));
+                }
+            }            
+        }
+        
+        for(int i = 0; i < cardNames.size(); i++){
+            for(int j = 0; j < cardNames.size(); j++){
+                generateCompareFile(outputDir, cardNames.get(i), cardNames.get(j), "compare", topAcronyms_sym, radarData, radarDataCopy, i, j);
+            }
+        }
     }
     
         
@@ -435,8 +484,7 @@ public class JCinfohtml {
     }
     
     public static void generateCompareFile(String outputDir, String card1, String card2,
-            List<String> notSupp, List<String> notSuppBy1,
-            List<String> notSuppBy2, String subdirectory,
+            String subdirectory,
             List<String> topAcronyms_sym, List<List<Float>> radarData, List<List<Float>> radarDataCopy,
             int i, int j) throws IOException {
         
@@ -455,44 +503,6 @@ public class JCinfohtml {
         addCompareFileInfo(file, card1, card2);
         
         generateCompareGraph(file, filename, fileNameActual, card1, card2, topAcronyms_sym, radarData, radarDataCopy, i, j);
-        
-        StringBuilder toFile = new StringBuilder();
-        
-        toFile.append("\t<div class=\"container\">\n");
-        toFile.append("\t\t<div class=\"row\">\n");
-        toFile.append("<br>");
-        toFile.append("<h3>Dissimilarities in algorithm support</h3>\n");
-        
-        if (notSupp.isEmpty()) {
-            toFile.append("<p>There are no differences in tested algorithm support between compared cards.</p>");
-        }
-        else {
-            toFile.append("<strong><table class=\"compare\" cellspacing=\"0\" style=\"background:#FEFEFE; border-collapse: separate\"><tbody>\n");
-            toFile.append("\t<tr>\n");
-            toFile.append("\t\t<th>Support</th>\n");
-            toFile.append("\t\t<th>").append(card1).append("</th>\n");
-            toFile.append("\t\t<th>").append(card2).append("</th>\n");
-            toFile.append("\t</tr>\n");
-            for (String alg : notSupp) {
-                toFile.append("\t<tr>\n");
-                toFile.append("\t\t<th>").append(alg).append("</th>\n");
-                if (notSuppBy1.contains(alg)) {
-                    toFile.append("\t\t<td style=\"background:rgba(200,120,140,0.30);\">").append("No").append("</td>\n");
-                } else {
-                    toFile.append("\t\t<td style=\"background:rgba(140,200,120,0.30);\">").append("Yes").append("</td>\n");
-                }
-                if (notSuppBy2.contains(alg)) {
-                    toFile.append("\t\t<td style=\"background:rgba(200,120,140,0.30);\">").append("No").append("</td>\n");
-                } else {
-                    toFile.append("\t\t<td style=\"background:rgba(140,200,120,0.30);\">").append("Yes").append("</td>\n");
-                }
-                toFile.append("\t</tr>\n");
-            }
-            toFile.append("</tbody></table></strong>\n");
-        }
-        toFile.append("\t\t</div>\t</div>\n");
-        
-        file.write(toFile.toString().getBytes());
         endHTML(file, "../");
     }
     
@@ -774,7 +784,9 @@ public class JCinfohtml {
         
         String tooltip = String.format("<b>%s<br>%s</b>", rowCard, colCard);
 
-        return String.format("\t\t\t<td class='%s' style='%s' data-toggle='tooltip' data-html='true' data-original-title='%s'>%s</td>\n", classes, style, tooltip, value);
+        return String.format("\t\t\t<td class='%s' style='%s' data-toggle='tooltip' data-html='true' data-original-title='%s'>"
+                + "<a href='compare/%s_vs_%s_compare.html'>%s</a>"
+                + "</td>\n", classes, style, tooltip, rowCard, colCard, value);
     }
     
     public static void compareGraphForFunction(String algName, String dir, FileOutputStream file) throws IOException {
