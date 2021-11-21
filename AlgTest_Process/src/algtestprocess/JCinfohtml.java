@@ -37,6 +37,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Collections;
@@ -275,6 +276,33 @@ public class JCinfohtml {
             reader.close();
         }
     }
+    
+    public static List<List<String>> loadAlgorithmNames() {
+        ArrayList<List<String>> result = new ArrayList();
+        ArrayList<String> current = new ArrayList();
+        
+        String[] lineArray;
+        String line;
+        
+        try (BufferedReader reader = new BufferedReader(new FileReader(SIMILARITY_FILE))) {
+            while ((line = reader.readLine()) != null) {
+                if (!line.trim().isEmpty()) {
+                    lineArray = line.split(";");
+                    current.add(lineArray[0]);
+                } else {
+                    result.add(current);
+                    current = new ArrayList();
+                }
+            }
+            if(!current.isEmpty()) {
+                result.add(current);
+            }
+        } catch (IOException e) {
+            System.err.printf("Error: Reading from file %s failed.\n", SIMILARITY_FILE);
+        }
+
+        return result;
+    }
 
     public static List<String> listFilesForFolder(final File folder) {
         List<String> files = new ArrayList<>();
@@ -293,203 +321,110 @@ public class JCinfohtml {
     public static void compareTable(String inputDir, String outputDir, FileOutputStream file) throws IOException {
         compareTable(inputDir, outputDir, file, false, null);
     }
-    
+
     public static void compareTable(String inputDir, String outputDir, FileOutputStream file,
             boolean unknownMode, String unknownCard) throws IOException {
+        List<List<String>> algNames = loadAlgorithmNames();
+
+        List<String> files = new ArrayList<>(listFilesForFolder(new File(inputDir)));
+        files = sortBySimilarity(files, algNames);
+        List<String> cardNames = new ArrayList<>();
+        List<List<List<Double>>> similarities = new ArrayList<>();
+        for(int i = 0; i < algNames.size(); ++i) {
+            similarities.add(computeCardSimilarities(files, cardNames.isEmpty() ? cardNames : null, algNames.get(i)));   
+        }        
+        
+        generateCompareTable(file, similarities, cardNames);
+        generateRadarCharts(inputDir, outputDir);
+    }
+    
+    public static void generateRadarCharts(String inputDir, String outputDir) throws IOException {
+        List<String> files = new ArrayList<>(listFilesForFolder(new File(inputDir)));
         // prepare input data - topFunctions, perf results
         List<String> topNames_sym = new ArrayList<>();
         List<String> topAcronyms_sym = new ArrayList<>();
         List<String> topNames_asym = new ArrayList<>();
         List<String> topAcronyms_asym = new ArrayList<>();
-        loadTopFunctions(topNames_sym, topAcronyms_sym, topNames_asym, topAcronyms_asym, true);
-        List<String> files = listFilesForFolder(new File(inputDir));
-        Collections.sort(files);
-        if (unknownMode) {
-            files.add(0, unknownCard);
-        }
-        List<String> namesOfCards = new ArrayList<>();
-        List<List<Float>> rowsData = new ArrayList<>();
+        loadTopFunctions(topNames_sym, topAcronyms_sym, topNames_asym, topAcronyms_asym, false);
         
         List<List<Float>> radarData = new ArrayList<>();
         List<List<Float>> radarDataCopy = new ArrayList<>();
         
         topNames_sym.addAll(topNames_asym);
         topAcronyms_sym.addAll(topAcronyms_asym);
-        
-        List<Float> unknownResults = new ArrayList<>();
-        
-        //prepare rows (data added later)
-        //one row(ArrayList<Float>) represent one algorithm, one column (get(i) in each row) represent one card
+                
         for(String acr : topAcronyms_sym) {            
-            rowsData.add(new ArrayList<Float>());
             radarData.add(new ArrayList<Float>());
             radarDataCopy.add(new ArrayList<Float>());
         }
-                
-        //beginning of graph table
-        StringBuilder toFile = new StringBuilder();        
-        toFile.append("\t<strong><table class=\"compare\" cellspacing=\"0\" style=\"background:#FEFEFE; border-collapse: separate\"><tbody>\n" +
-                        "\t\t<tr>\n\t\t\t<th>"+"Higher percentage = more similar"+"</th>\n");
        
-        //load data from input files (fixed-size perf data) and store name of card
+        List<String> cardNames = new ArrayList<>();
         for(String fileName : files) {
-            namesOfCards.add(addCard(topNames_sym, rowsData, fileName));
-            addCard(topNames_sym, radarData, fileName); 
+            cardNames.add(addCard(topNames_sym, radarData, fileName)); 
             addCard(topNames_sym, radarDataCopy, fileName);
         }
-           
-        //head of table with cards names
-        for(String name : namesOfCards)
-            toFile.append("\t\t\t<th style=\"text-align: center;\">"+name+"</th>\n");
         
-        //end of head of table
-        toFile.append("\t\t</tr>\n");
-        
-        //normalize data
-        for(int i=0; i<rowsData.size(); i++){
-            Float max = 0.0F;
-            for (Float value : rowsData.get(i)){
-                if (value>max)
-                    max=value;
+        // Normalize data
+        for(int i=0; i<radarDataCopy.size(); i++){
+            float max = 0.0f;
+            for (float value : radarDataCopy.get(i)){
+                if (value > max)
+                    max = value;
             }
             
-            for(int j=0; j<rowsData.get(i).size(); j++){
-                if(rowsData.get(i).get(j) != 0.0F) {
-                    rowsData.get(i).set(j, rowsData.get(i).get(j)/max);
-                    radarData.get(i).set(j, radarData.get(i).get(j)/(max*1.11F));
+            for(int j = 0; j < radarDataCopy.get(i).size(); j++){
+                if(radarDataCopy.get(i).get(j) != 0.0F) {
+                    radarData.get(i).set(j, radarData.get(i).get(j) / (max * 1.11f));
                 }
             }            
         }
         
-       
-        for(int i=0; i<namesOfCards.size(); i++){
-            float avg = 0.0F;
-            int sum = 0;
-            
-            for(int k=0; k<topNames_sym.size(); k++){
-                if(rowsData.get(k).get(i) != 0.0F)
-                    sum++;
-                
-                avg += rowsData.get(k).get(i);
+        for(int i = 0; i < cardNames.size(); i++){
+            for(int j = 0; j < cardNames.size(); j++){
+                generateCompareFile(outputDir, cardNames.get(i), cardNames.get(j), "compare", topAcronyms_sym, radarData, radarDataCopy, i, j);
             }
-                
-            System.out.println(namesOfCards.get(i)+"\t"+Math.abs(1-avg/sum));
+        }
+    }
+    
+        
+    public static List<String> sortBySimilarity(List<String> files, List<List<String>> algNames) throws IOException {
+        List<List<List<Double>>> similarities = new ArrayList<>();
+        for(int i = 0; i < algNames.size(); ++i) {
+            similarities.add(computeCardSimilarities(files, null, algNames.get(i)));   
         }
         
-        if (unknownMode && namesOfCards.get(0).equals("")) {
-            namesOfCards.set(0, "Unknown card");
-        }
-        
-        for(int i=0; i<namesOfCards.size(); i++){
-            toFile.append("\t\t<tr>\n");
-            toFile.append("\t\t\t<th>")
-                    .append((unknownMode && i == 0) ? "<mark>" : "")
-                    .append(namesOfCards.get(i))
-                    .append((unknownMode && i == 0) ? "</mark>" : "")
-                    .append("</th>\n");
+        class Pair implements Comparable<Pair> {
+            public String name;
+            public double value;
             
-            for(int j=0; j<namesOfCards.size(); j++){
-                List<String> notSupp = new ArrayList<>();
-                List<String> notSuppByRow = new ArrayList<>();
-                List<String> notSuppByCol = new ArrayList<>();
-                float sum = 0.0F;
-                int num = 0;
-                if(i==j) {
-                    toFile.append("\t\t\t<th></th>\n");
-                    continue;
-                }
-                
-                double cosineSum = 0.0;
-                double cosineSumI = 0.0;
-                double cosineSumJ = 0.0;
-                for(int k=0; k<topNames_sym.size(); k++){
-                    if (rowsData.get(k).get(i) == 0.0F)
-                        notSuppByRow.add(topNames_sym.get(k));
-                    if (rowsData.get(k).get(j) == 0.0F)
-                        notSuppByCol.add(topNames_sym.get(k));
-                    if((rowsData.get(k).get(i) != 0.0F) || (rowsData.get(k).get(j) != 0.0F)) {
-                        //add method to unsupported list between two cards
-                        if((rowsData.get(k).get(i) == 0.0F) || (rowsData.get(k).get(j) == 0.0F)){
-                                notSupp.add(topNames_sym.get(k));  
-                        } else {   
-                            sum += (rowsData.get(k).get(i) - rowsData.get(k).get(j))*(rowsData.get(k).get(i) - rowsData.get(k).get(j));
-                            cosineSum += (rowsData.get(k).get(i) * rowsData.get(k).get(j));
-                            cosineSumI += (rowsData.get(k).get(i) * rowsData.get(k).get(i));
-                            cosineSumJ += (rowsData.get(k).get(j) * rowsData.get(k).get(j));
-                            num++;
-                        }
-                    }
-                }
-                sum = sum/num;
-                sum = (float)Math.sqrt(sum);
-                sum = Math.abs(sum-1); //convert to percentage, close to 100% = very similar, close to 0% = not similar
-                
-                double cosineSimilarity = 1.0 - 2 * Math.acos(cosineSum / (Math.sqrt(cosineSumI) * Math.sqrt(cosineSumJ))) / Math.PI;
-                //sum = (float) cosineSimilarity;
-                
-                //System.out.println(sum);
-                
-                String card1 = namesOfCards.get(i);
-                String card2 = namesOfCards.get(j);
-                
-                if (unknownMode && i == 0) {
-                    unknownResults.add(sum);
-                }
+            public Pair(String name, double value) {
+                this.name = name;
+                this.value = value;
+            }
 
-                // toFile.append("\t\t\t<td>"+String.format("%.0f", sum).replace(",", ".")+"</td>\n");
-                toFile.append("\t\t\t<td data-toggle=\"tooltip\" class=\"table-tooltip\" data-html=\"true\" data-original-title=\"");
-                toFile.append("<b>" + card1 + "<br>" + card2 + "</b><br>Difference in num. of supported algs: <b>"+notSupp.size()+"/"+topNames_sym.size()+"</b></br>");
-
-                //tooltip info about unsupported algorithms
-                /*for(String ns:notSupp)
-                    toFile.append(ns+"</br>");*/
-
-                float alpha = 0.0F;
-                String color;
-                if (sum > 0.5F) {
-                    alpha = (sum*sum*sum*sum*sum*sum);
-                    color = "140,200,120";
-                }
-                else {
-                    alpha = (Math.abs(sum-1)*Math.abs(sum-1)*Math.abs(sum-1)*Math.abs(sum-1));
-                    color = "200,120,140";
-                }
-
-                if (j < i) {
-                    String temp = card1;
-                    card1 = card2;
-                    card2 = temp;
-                }
-
-                toFile
-                        .append("\" style=\"background:rgba(" + color + ","+String.format("%.2f", alpha).replace(",", ".")).append(");\"><a href='")
-                        .append(unknownMode ? "unknown-" : "").append("compare/").append(card1).append("_vs_").append(card2).append("_compare.html'>")
-                        .append((unknownMode && (i == 0 || j == 0)) ? "<mark>" : "")
-                        .append(String.format("%.2f", sum*100).replace(",", ".")).append((unknownMode && (i == 0 || j == 0)) ? "</mark>" : "").append("</a></td>\n");
-
-                if (j > i) {
-                    if (unknownMode)
-                        generateCompareFile(outputDir, card1, card2, notSupp, notSuppByRow, notSuppByCol, "unknown-compare", topAcronyms_sym, radarData, radarDataCopy, i, j);
-                    else
-                        generateCompareFile(outputDir, card1, card2, notSupp, notSuppByRow, notSuppByCol, "compare", topAcronyms_sym, radarData, radarDataCopy, i, j);
+            @Override
+            public int compareTo(Pair other) {
+                return Double.compare(this.value, other.value);
+            }
+        }
+        
+        List<Pair> pairs = new ArrayList<>();
+        for(int i = 0; i < files.size(); ++i) {
+            double total = 0.0d;
+            for(int j = 0; j < files.size(); ++j) {
+                for(int k = 0; k < similarities.size(); ++k) {
+                    total += similarities.get(k).get(i).get(j);
                 }
             }
-            
-            toFile.append("\t\t</tr>\n");            
+            pairs.add(new Pair(files.get(i), total));
+        }
+        Collections.sort(pairs, Collections.reverseOrder());
+        List<String> sorted = new ArrayList<>();
+        for(Pair p : pairs) {
+            sorted.add(p.name);
         }
         
-        toFile.append("\t\t</tbody></table></strong>\n");
-        toFile.append("<script>\n$(document).ready(function () {\n" +
-            "  $(\"body\").tooltip({   \n" +
-            "    selector: \"[data-toggle='tooltip']\",\n" +
-            "    container: \"body\"\n" +
-            "  })\n" +
-            "});\n</script>\n");
-        
-        if (unknownMode) {
-            addSimilarityUnknownInfo(toFile, namesOfCards.subList(1, namesOfCards.size()), unknownResults);
-        }
-        file.write(toFile.toString().getBytes());
+        return sorted;
     }
     
     public static void addSimilarityUnknownInfo(StringBuilder toFile, List<String> cardNames, List<Float> similarities) {
@@ -549,8 +484,7 @@ public class JCinfohtml {
     }
     
     public static void generateCompareFile(String outputDir, String card1, String card2,
-            List<String> notSupp, List<String> notSuppBy1,
-            List<String> notSuppBy2, String subdirectory,
+            String subdirectory,
             List<String> topAcronyms_sym, List<List<Float>> radarData, List<List<Float>> radarDataCopy,
             int i, int j) throws IOException {
         
@@ -569,44 +503,6 @@ public class JCinfohtml {
         addCompareFileInfo(file, card1, card2);
         
         generateCompareGraph(file, filename, fileNameActual, card1, card2, topAcronyms_sym, radarData, radarDataCopy, i, j);
-        
-        StringBuilder toFile = new StringBuilder();
-        
-        toFile.append("\t<div class=\"container\">\n");
-        toFile.append("\t\t<div class=\"row\">\n");
-        toFile.append("<br>");
-        toFile.append("<h3>Dissimilarities in algorithm support</h3>\n");
-        
-        if (notSupp.isEmpty()) {
-            toFile.append("<p>There are no differences in tested algorithm support between compared cards.</p>");
-        }
-        else {
-            toFile.append("<strong><table class=\"compare\" cellspacing=\"0\" style=\"background:#FEFEFE; border-collapse: separate\"><tbody>\n");
-            toFile.append("\t<tr>\n");
-            toFile.append("\t\t<th>Support</th>\n");
-            toFile.append("\t\t<th>").append(card1).append("</th>\n");
-            toFile.append("\t\t<th>").append(card2).append("</th>\n");
-            toFile.append("\t</tr>\n");
-            for (String alg : notSupp) {
-                toFile.append("\t<tr>\n");
-                toFile.append("\t\t<th>").append(alg).append("</th>\n");
-                if (notSuppBy1.contains(alg)) {
-                    toFile.append("\t\t<td style=\"background:rgba(200,120,140,0.30);\">").append("No").append("</td>\n");
-                } else {
-                    toFile.append("\t\t<td style=\"background:rgba(140,200,120,0.30);\">").append("Yes").append("</td>\n");
-                }
-                if (notSuppBy2.contains(alg)) {
-                    toFile.append("\t\t<td style=\"background:rgba(200,120,140,0.30);\">").append("No").append("</td>\n");
-                } else {
-                    toFile.append("\t\t<td style=\"background:rgba(140,200,120,0.30);\">").append("Yes").append("</td>\n");
-                }
-                toFile.append("\t</tr>\n");
-            }
-            toFile.append("</tbody></table></strong>\n");
-        }
-        toFile.append("\t\t</div>\t</div>\n");
-        
-        file.write(toFile.toString().getBytes());
         endHTML(file, "../");
     }
     
@@ -750,6 +646,149 @@ public class JCinfohtml {
         file.write(toFile.toString().getBytes());
        }
         
+    public static List<List<Double>> computeCardSimilarities(List<String> files, List<String> cardNames, List<String> algIdentifiers) throws IOException {
+        if (cardNames == null) {
+            cardNames = new ArrayList<>();
+        }
+
+        List<List<Float>> rowsData = new ArrayList<>();
+
+        for (String x : algIdentifiers) {
+            rowsData.add(new ArrayList<>());
+        }
+
+        for (String fileName : files) {
+            cardNames.add(addCard(algIdentifiers, rowsData, fileName));
+        }
+
+        //normalize data
+        for (int i = 0; i < rowsData.size(); i++) {
+            Float max = 0.0F;
+            for (Float value : rowsData.get(i)) {
+                if (value > max) {
+                    max = value;
+                }
+            }
+
+            for (int j = 0; j < rowsData.get(i).size(); j++) {
+                if (rowsData.get(i).get(j) != 0.0F) {
+                    rowsData.get(i).set(j, rowsData.get(i).get(j) / max);
+                }
+            }
+        }
+
+        List<List<Double>> similarity = new ArrayList<>();
+        for (int i = 0; i < cardNames.size(); i++) {
+            int support = 0;
+            for (int k = 0; k < algIdentifiers.size(); ++k) {
+                if (rowsData.get(k).get(i) != 0.0f) {
+                    support += 1;
+                }
+            }
+
+            List<Double> similarity_row = new ArrayList<>();
+            for (int j = 0; j < cardNames.size(); j++) {
+                double sum = 0.0F;
+                int num = 0;
+
+                for (int k = 0; k < algIdentifiers.size(); k++) {
+                    if (rowsData.get(k).get(i) == 0.0f && rowsData.get(k).get(j) == 0.0f) {
+                        ;
+                    } else if (rowsData.get(k).get(i) != 0.0f && rowsData.get(k).get(j) != 0.0f) {
+                        sum += (rowsData.get(k).get(i) - rowsData.get(k).get(j)) * (rowsData.get(k).get(i) - rowsData.get(k).get(j));
+                        ++num;
+                    }
+                }
+                if (num == 0) {
+                    sum = 0;
+                } else {
+                    sum = Math.abs(Math.sqrt(sum / num) - 1); //convert to percentage, close to 100% = very similar, close to 0% = not similar
+                }
+                sum = sum * sum;
+                similarity_row.add(sum);
+            }
+            similarity.add(similarity_row);
+        }
+        return similarity;
+    }
+    
+    public static void generateCompareTable(
+            FileOutputStream file,
+            List<List<List<Double>>> similarities,
+            List<String> cardNames
+    ) throws IOException {
+        StringBuilder toFile = new StringBuilder();        
+        toFile.append("\t<strong><table class=\"compare\" cellspacing=\"0\" style=\"background:#FEFEFE; border-collapse: separate\"><tbody>\n" +
+                        "\t\t<tr>\n\t\t\t<th style=\"text-align: center;\">RSA</th><th>RSA CRT</th><th>ECC</th>\n");
+        for(String name : cardNames)
+            toFile.append("\t\t\t<th colspan=\"3\" rowspan=\"2\" style=\"text-align: center; width: 9em;\">" + name + "</th>\n");
+        toFile.append("\t\t</tr>\n");
+        toFile.append("\t\t<tr><th style=\"text-align: center;\">Enc</th><th>Hash</th><th>SW</th></tr>");
+        
+        for(int i = 0; i < cardNames.size(); ++i) {
+            toFile.append("\t\t<tr>\n");
+            toFile.append("\t\t\t<th rowspan=\"2\" colspan=\"3\">").append(cardNames.get(i)).append("</th>\n");
+            for(int j = 0; j < cardNames.size(); ++j) {
+                for(int k = 0; k < similarities.size() / 2; ++k) {
+                    toFile.append(prepareCompareTableCell(i, j, k, cardNames, similarities.get(k)));
+                }
+            }
+            toFile.append("\t\t</tr>\n");
+            
+            toFile.append("\t\t<tr>\n");
+            for(int j = 0; j < cardNames.size(); ++j) {
+                for(int k = similarities.size() / 2; k < similarities.size(); ++k) {
+                    toFile.append(prepareCompareTableCell(i, j, k, cardNames, similarities.get(k)));
+                }
+            }
+            toFile.append("\t\t</tr>\n");
+        }
+        
+        toFile.append("\t\t</tbody></table></strong>\n");
+        toFile.append("<script>\n$(document).ready(function () {\n" +
+            "  $(\"body\").tooltip({   \n" +
+            "    selector: \"[data-toggle='tooltip']\",\n" +
+            "    container: \"body\"\n" +
+            "  })\n" +
+            "});\n</script>\n");
+        file.write(toFile.toString().getBytes());
+    }
+    
+    public static String prepareCompareTableCell(int row, int col, int cell, List<String> cardNames, List<List<Double>> similarities) {
+        String rowCard = cardNames.get(row);
+        String colCard = cardNames.get(col);
+        Double rawValue = similarities.get(row).get(col);
+        
+        String classes = "table-tooltip";
+        if (cell < 3)
+            classes += " top";
+        if (cell % 3 == 0)
+            classes += " left";
+        classes = classes.trim();
+        
+        
+        String style = "width: 3em; height: 3em; ";
+        
+        if(row == col) {
+            return String.format("\t\t\t<td class='%s inactive' style='%s'></td>\n", classes, style);
+        }
+        
+        String value = ((int) Math.round(rawValue * 100)) == 0 ? "" : String.format("%d", (int) Math.round(rawValue * 100));
+
+        if(!value.isEmpty()){
+            float v = Float.parseFloat(value) / 100.0f;
+            style += "background: rgba(" + (v > 0.5 ? "140,200,120," : "200,120,140,") + String.format("%.2f", v > 0.5 ? v : 1 - v).replace(",", ".") + ");";
+        } else {
+            style += "background: #f5f5f5;";
+        }
+        
+        String tooltip = String.format("<b>%s<br>%s</b>", rowCard, colCard);
+
+        return String.format("\t\t\t<td class='%s' style='%s' data-toggle='tooltip' data-html='true' data-original-title='%s'>"
+                + "<a href='compare/%s_vs_%s_compare.html'>%s</a>"
+                + "</td>\n", classes, style, tooltip, rowCard, colCard, value);
+    }
+    
     public static void compareGraphForFunction(String algName, String dir, FileOutputStream file) throws IOException {
         List<String> files = listFilesForFolder(new File(dir));
         List<String> rows = new ArrayList<>();
