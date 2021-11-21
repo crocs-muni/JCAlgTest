@@ -148,8 +148,10 @@ public class Utils {
                 switch (sw2) {
                     case (short) 0x0081:
                         return "FUNC_NOT_SUPPORTED_" + Integer.toHexString(swStatus);
+                }
             default:
                 return "UNKONWN_ERROR-card_has_return_value_" + Integer.toHexString(swStatus);    
         }
     }    
 }
+
