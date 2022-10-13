@@ -15,7 +15,7 @@
 
   <target name="build" description="Builds the CAP file with JCAlgTest applet">
     <javacard jckit="${JC222}">
-      <cap output="!uploader/AlgTest_222.cap" sources="src/algtest/" aid="4a43416c6754657374" >
+      <cap output="!uploader/AlgTest_222.cap" sources="src/AlgTest/" aid="4a43416c6754657374" >
         <applet class="algtest.JCAlgTestApplet" aid="4a43416c675465737431"/>
       </cap>
     </javacard>
@@ -23,7 +23,7 @@
 
   <target name="build222" description="Builds the CAP file with JCAlgTest applet">
     <javacard jckit="${JC222}">
-      <cap output="!uploader/AlgTest_222.cap" sources="src222/algtest/" aid="4a43416c6754657374" >
+      <cap output="!uploader/AlgTest_222.cap" sources="src222/AlgTest/" aid="4a43416c6754657374" >
         <applet class="algtest.JCAlgTestApplet" aid="4a43416c675465737431"/>
       </cap>
     </javacard>
@@ -31,7 +31,7 @@
 
   <target name="build304" description="Builds the CAP file with JCAlgTest applet">
     <javacard jckit="${JC304}">
-      <cap output="!uploader/AlgTest_304.cap" sources="src304/algtest/" aid="4a43416c6754657374" >
+      <cap output="!uploader/AlgTest_304.cap" sources="src304/AlgTest/" aid="4a43416c6754657374" >
         <applet class="algtest.JCAlgTestApplet" aid="4a43416c675465737431"/>
       </cap>
     </javacard>
@@ -39,7 +39,7 @@
 
   <target name="build305" description="Builds the CAP file with JCAlgTest applet">
     <javacard jckit="${JC305}">
-      <cap output="!uploader/AlgTest_305.cap" sources="src305/algtest/" aid="4a43416c6754657374" >
+      <cap output="!uploader/AlgTest_305.cap" sources="src305/AlgTest/" aid="4a43416c6754657374" >
         <applet class="algtest.JCAlgTestApplet" aid="4a43416c675465737431"/>
       </cap>
     </javacard>
