@@ -7,7 +7,7 @@ An automated testing tool for cryptographic algorithms supported by a particular
 
 *Contribution with results for YOUR card is wanted! (and highly appreciated :))*
 
-The processed data are available at [http://jcalgtest.org](https://www.fi.muni.cz/~xsvenda/jcalgtest/)
+The processed data are available at [https://www.fi.muni.cz/~xsvenda/jcalgtest/](https://www.fi.muni.cz/~xsvenda/jcalgtest/)
 
 ## Usage
 
