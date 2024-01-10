@@ -7,7 +7,7 @@ An automated testing tool for cryptographic algorithms supported by a particular
 
 *Contribution with results for YOUR card is wanted! (and highly appreciated :))*
 
-The processed data are available at http://jcalgtest.org
+The processed data are available at [http://jcalgtest.org](https://www.fi.muni.cz/~xsvenda/jcalgtest/)
 
 ## Usage
 
@@ -128,7 +128,7 @@ The data collection application [AlgTestJClient](https://github.com/crocs-muni/J
 ## Contributed cards
 
 Results for (at least) the following smartcards are currently in the database
-(https://www.fi.muni.cz/~xsvenda/jcalgtest/):
+([https://www.fi.muni.cz/~xsvenda/jcalgtest/](https://www.fi.muni.cz/~xsvenda/jcalgtest/)):
 
 ```
 c0	ACS ACOSJ (Combi) , ATR=3b 69 00 02 41 43 4f 53 4a 76 31 30 31 (provided by Alexandre Bouvier),
