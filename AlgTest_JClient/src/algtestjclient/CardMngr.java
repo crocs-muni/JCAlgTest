@@ -550,7 +550,10 @@ public class CardMngr {
      * @throws Exception
      */
     public ResponseAPDU sendAPDU(byte apdu[]) throws Exception {
-        CommandAPDU commandAPDU = new CommandAPDU(apdu);
+        //CommandAPDU commandAPDU = new CommandAPDU(apdu);
+        // Some Gemalto chips expects set return data (Le). Set it always to 256
+        CommandAPDU commandAPDU = new CommandAPDU(apdu[0], apdu[1], apdu[2], apdu[3], apdu, 5, apdu.length - 5, 256);
+
         ResponseAPDU responseAPDU = null;
         m_SystemOutLogger.println(">>>>");
         m_SystemOutLogger.println(commandAPDU.toString());
