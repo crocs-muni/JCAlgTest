@@ -1,15 +1,37 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+/*  
+    Copyright (c) 2008-2024 Petr Svenda <petr@svenda.com>
+
+     LICENSE TERMS
+
+     The free distribution and use of this software in both source and binary
+     form is allowed (with or without changes) provided that:
+
+       1. distributions of this source code include the above copyright
+          notice, this list of conditions and the following disclaimer;
+
+       2. distributions in binary form include the above copyright
+          notice, this list of conditions and the following disclaimer
+          in the documentation and/or other associated materials;
+
+       3. the copyright holder's name is not used to endorse products
+          built using this software without specific written permission.
+
+     ALTERNATIVELY, provided that this notice is retained in full, this product
+     may be distributed under the terms of the GNU General Public License (GPL),
+     in which case the provisions of the GPL apply INSTEAD OF those given above.
+
+     DISCLAIMER
+
+     This software is provided 'as is' with no explicit or implied warranties
+     in respect of its properties, including, but not limited to, correctness
+     and/or fitness for purpose.
+
+    Please, report any bugs to author <petr@svenda.com>
+/**/
 
 package algtestjclient;
 
 import java.io.FileOutputStream;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.smartcardio.CardTerminal;
 
 /**
@@ -50,37 +72,6 @@ public class CardRunner implements Runnable {
                  cardMngr.GenerateAndGetKeys(file, m_numRepeats, -1, m_uploadBeforeStart, len, m_useCrt);
                  cardMngr.DisconnectFromCard();
              }
-             
-/* del 20170506             
-            if (m_bitLength == -1) {
-                // test all possible values between 
-                int RSA_LEN_STEP = 32;
-                ArrayList<Pair<Integer, Boolean>> supported = new ArrayList<>();
-//                for (short len = 1152; len <= 2016; len += RSA_LEN_STEP) {
-                for (short len = 2048; len <= 4096; len += RSA_LEN_STEP) {
-                   FileOutputStream file = cardMngr.establishConnection(null, "", String.format("RSA%db_%s", len, m_cardTerminal.getName()), m_cardTerminal);
-                   cardMngr.GenerateAndGetKeys(file, m_numRepeats, -1, m_uploadBeforeStart, len, m_useCrt);
-                   cardMngr.DisconnectFromCard();
-                   
-                   if (cardMngr.PrepareRSAEngine(file, len, m_useCrt)) {
-                       supported.add(new Pair(len, true));
-                       m_SystemOutLogger.println("OK");
-                   }
-                   else {
-                       supported.add(new Pair(len, false));
-                   }
-        
-                }
-                for (Pair<Integer, Boolean> suppLen : supported) {
-                   m_SystemOutLogger.println(String.format("RSA length %db:\t%s", suppLen.getL(), suppLen.getR() ? "OK" : "unsupported"));
-                }
-            }
-            else {
-               FileOutputStream file = cardMngr.establishConnection(null, "", String.format("RSA%db_%s", m_bitLength, m_cardTerminal.getName()), m_cardTerminal);
-               cardMngr.GenerateAndGetKeys(file, m_numRepeats, -1, m_uploadBeforeStart, m_bitLength, m_useCrt);
-               cardMngr.DisconnectFromCard();
-            }
-*/        
          }
          catch (Exception ex) {
              m_SystemOutLogger.println("Card in terminal "+m_cardTerminal.getName()+" stoped with exception: "+ex.getMessage());
