@@ -19,7 +19,12 @@ Upload proper cap file (based on the supported JavaCard version) file to your
 java -jar gp.jar --install AlgTest_v1.8.0_jc305.cap
 ```
 
-If unsure about the supported version for your card, simply try to upload from the highest version down to the lower one (e.g., start with AlgTest_v1.8.0_jc305.cap, then AlgTest_v1.8.0_jc304.cap, then AlgTest_v1.8.0_jc222.cap). Stop when the card upload succeed.
+If unsure about the supported version for your card, simply try to upload from the highest version down to the lower one (e.g., start with AlgTest_v1.8.0_jc305.cap, then AlgTest_v1.8.0_jc304.cap, then AlgTest_v1.8.0_jc222.cap). Stop when the card upload succeed. 
+
+Hint: If upload fails for all applet versions, try again from the highest, but with **--param 77** added (will postpone allocation from contructor to first select, preventing TransactionException.BUFFER_FULL on some cards): 
+```
+java -jar gp.jar --install AlgTest_v1.8.0_jc305.cap --param 77
+```
 
 Check that the applet was correctly uploaded and installed:
 ```
