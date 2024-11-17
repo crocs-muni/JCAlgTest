@@ -639,6 +639,8 @@ public class SingleModeTest {
         KEYBUILDER_TEST_CFGS.put("TYPE_HMAC_TRANSIENT_DESELECT#2.2.2", new KBTestCfg(JCConsts.KeyBuilder_TYPE_HMAC_TRANSIENT_DESELECT, (short) 64));
         KEYBUILDER_TEST_CFGS.put("TYPE_HMAC LENGTH_HMAC_SHA_1_BLOCK_64#2.2.2", new KBTestCfg(JCConsts.KeyBuilder_TYPE_HMAC, (short) 64));
         KEYBUILDER_TEST_CFGS.put("TYPE_HMAC LENGTH_HMAC_SHA_256_BLOCK_64#2.2.2", new KBTestCfg(JCConsts.KeyBuilder_TYPE_HMAC, (short) 64));
+        KEYBUILDER_TEST_CFGS.put("TYPE_HMAC LENGTH_HMAC_SHA_384_BLOCK_64#2.2.2", new KBTestCfg(JCConsts.KeyBuilder_TYPE_HMAC, (short) 64));
+        KEYBUILDER_TEST_CFGS.put("TYPE_HMAC LENGTH_HMAC_SHA_512_BLOCK_64#2.2.2", new KBTestCfg(JCConsts.KeyBuilder_TYPE_HMAC, (short) 64));
         KEYBUILDER_TEST_CFGS.put("TYPE_HMAC LENGTH_HMAC_SHA_384_BLOCK_128#2.2.2", new KBTestCfg(JCConsts.KeyBuilder_TYPE_HMAC, (short) 128));
         KEYBUILDER_TEST_CFGS.put("TYPE_HMAC LENGTH_HMAC_SHA_512_BLOCK_128#2.2.2", new KBTestCfg(JCConsts.KeyBuilder_TYPE_HMAC, (short) 128));
         KEYBUILDER_TEST_CFGS.put("TYPE_DH_PUBLIC LENGTH_DH_1024#3.0.5", new KBTestCfg(JCConsts.KeyBuilder_TYPE_DH_PUBLIC, JCConsts.KeyBuilder_LENGTH_DH_1024));
@@ -1341,7 +1343,7 @@ public class SingleModeTest {
             String keyBuilderStr = KEYBUILDER_STR[i];
             KBTestCfg cfg = KEYBUILDER_TEST_CFGS.get(keyBuilderStr);
             if (cfg == null) {
-                m_SystemOutLogger.println(keyBuilderStr);
+                m_SystemOutLogger.println("Failed to construct KBTestCfg for " + keyBuilderStr);
             }
             // byte to choose subclass
             apdu[OFFSET_DATA] = cfg.keyBuilderType;
