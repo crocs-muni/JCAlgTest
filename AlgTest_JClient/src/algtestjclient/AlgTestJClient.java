@@ -52,11 +52,20 @@ import javax.smartcardio.CardTerminal;
  */
 public class AlgTestJClient {
     /**
+     * Version 1.8.2 (17.11.2024)
+     * - Update to match applet version with delayed allocation by default 
+     * - Add detailed info for submitting results at beginning  
+     * - fix display of help info
+     * - always send Le=256 to support certain cards (like Gemalto) expecting it
+     *  
+     */
+    public final static String ALGTEST_JCLIENT_VERSION = "1.8.2";
+    /**
      * Version 1.8.1 (27.10.2021)
      * + Add better CLI control, interactive and non-interactive mode 
      * + Fixed incorrect names for measurements
      */
-    public final static String ALGTEST_JCLIENT_VERSION = "1.8.1";
+    //public final static String ALGTEST_JCLIENT_VERSION = "1.8.1";
     /**
      * Version 1.8.0 (19.12.2020)
      * + testing of modular Cipher and Signature .getInstance variants
@@ -208,15 +217,17 @@ public class AlgTestJClient {
         CardTerminal selectedTerminal = null;
         PerformanceTesting testingPerformance = new PerformanceTesting(m_SystemOutLogger);
         m_SystemOutLogger.println("NOTE: JCAlgTest applet (AlgTest.cap) must be already installed on tested card.");
+        m_SystemOutLogger.println("  java -jar gp.jar --install AlgTest_***_jc***.cap");
         m_SystemOutLogger.println("The results are stored in CSV files. Use JCAlgProcess for HTML conversion.");
         m_SystemOutLogger.println();
 
         if (cmdArgs.help) {
-            JCommander.newBuilder().addObject(cmdArgs).build().usage();            
+            JCommander.newBuilder().addObject(cmdArgs).build().usage();     
+            return;
         }
-        
+        printSendRequest();
         if (args.length > 0) {
-            m_SystemOutLogger.println("Running in non-interactive mode. Run without any parameter to enter interactive mode. Run 'java -jar AlgTestJClient.jar -help' to obtain list of supported arguments.");
+            m_SystemOutLogger.println("Running in non-interactive mode. Run without any parameter to enter interactive mode. Run 'java -jar AlgTestJClient.jar --help' to obtain list of supported arguments.");
             for (String operation : cmdArgs.operations) {
                 if (operation.compareTo(Args.OP_ALG_SUPPORT_BASIC) == 0 || 
                     operation.compareTo(Args.OP_ALG_SUPPORT_EXTENDED) == 0) {
@@ -241,7 +252,7 @@ public class AlgTestJClient {
         }
         else {
             // Interactive mode of tool
-            m_SystemOutLogger.println("Running in interactive mode. Run 'java -jar AlgTestJClient.jar -help' to obtain list of supported arguments.");
+            m_SystemOutLogger.println("Running in interactive mode. Run 'java -jar AlgTestJClient.jar --help' to obtain list of supported arguments.");
             m_SystemOutLogger.println("CHOOSE test you want to run:");
             m_SystemOutLogger.println("1 -> SUPPORTED ALGORITHMS\n    List all supported JC API algorithms (2-10 minutes)\n" + 
                               "2 -> PERFORMANCE TEST\n    Test all JC API methods with 256B data length (1-3 hours)\n" + 
@@ -312,8 +323,9 @@ public class AlgTestJClient {
         System.out.println("available to all JavaCard enthusiasts at http://jcalgtest.org.");
         System.out.println("The results are important even if a card of same type is already in database.");
         System.out.println("Send *.log and *.csv files from the current directory to <petr@svenda.com>.");
-        System.out.println("Thank you very much!");
-        System.out.println("-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
+        System.out.println("ESPECIALLY if testing fails, please let us know so we can fix it for you and others.");
+        System.out.println("Thank you very much.");
+        System.out.println("-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n");
     }
     
     static void performKeyHarvest(Args cmdArgs) throws CardException {

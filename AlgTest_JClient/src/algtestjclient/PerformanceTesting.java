@@ -932,7 +932,7 @@ public class PerformanceTesting {
                 }
                 catch (Exception ex) {
                     // Unexpected exception
-                    m_SystemOutLogger.println(ex.toString()); 
+                    m_SystemOutLogger.println(ex.toString() + "\n"); 
                     numFailedRepeats++; 
                     
                     if (numFailedRepeats == 1) {
