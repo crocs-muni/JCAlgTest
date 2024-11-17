@@ -233,7 +233,11 @@ public class JCAlgTestApplet extends javacard.framework.Applet
         // initialization with default offset (AID offset).
         short dataOffset = offset;
         boolean isOP2 = false;
-        boolean bPerformAllocationsNow = true;
+        // Note: NXP JCOP4 J3R180 card (and possibly others) fails with TransactionException.BUFFER_FULL exception
+        // if some transaction is executed in constructor or too many allocations are performed.
+        // Therefore, the default option is to delay the allocation for the first select. 
+        // If required, provide additional parameter Consts.TAG_EARLY_ALLOCATION using gp's --param 66
+        boolean bPerformAllocationsNow = false;
 
         if(length > 9) {
             // Install parameter detail. Compliant with OP 2.0.1.
@@ -245,11 +249,9 @@ public class JCAlgTestApplet extends javacard.framework.Applet
             // go to proprietary data
             dataOffset++;
             
-            // Note: NXP JCOP4 J3R180 card fails with TransactionException.BUFFER_FULL exception
-            // if some transaction is executed in constructor or too many allocations are performed.
-            if (buffer[dataOffset] == Consts.TAG_DELAYED_ALLOCATION) {
-                // Do not allocate now, delay for the first run
-                bPerformAllocationsNow = false;
+            if (buffer[dataOffset] == Consts.TAG_EARLY_ALLOCATION) {
+                // Force early allocation now
+                bPerformAllocationsNow = true;
             }
 
                 
