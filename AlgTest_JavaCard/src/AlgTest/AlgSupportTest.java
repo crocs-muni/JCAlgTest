@@ -112,9 +112,9 @@ public class AlgSupportTest {
         m_freeRAMDeselect = installFreeRAMDeselect;
         m_freeEEPROM = installFreeEEPROM;
         
-        memPersistent = JCSystem.makeTransientShortArray((short) 2, JCSystem.CLEAR_ON_RESET);
-        memDeselect = JCSystem.makeTransientShortArray((short) 2, JCSystem.CLEAR_ON_RESET);
-        memReset = JCSystem.makeTransientShortArray((short) 2, JCSystem.CLEAR_ON_RESET);
+        memPersistent = JCSystem.makeTransientShortArray((short) 2, JCSystem.CLEAR_ON_DESELECT);
+        memDeselect = JCSystem.makeTransientShortArray((short) 2, JCSystem.CLEAR_ON_DESELECT);
+        memReset = JCSystem.makeTransientShortArray((short) 2, JCSystem.CLEAR_ON_DESELECT);
     }
 
     public byte process(APDU apdu) throws ISOException {

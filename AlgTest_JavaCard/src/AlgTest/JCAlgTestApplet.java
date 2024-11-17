@@ -195,6 +195,10 @@ public class JCAlgTestApplet extends javacard.framework.Applet
 
     byte[] ALGTEST_JAVACARD_VERSION_CURRENT = null; // Note: change assignemnt in applet constructor
     
+
+    byte[] AUX_SMALL = {(byte) 0x5f, (byte) 0x61, (byte) 0x75, (byte) 0x78,  
+                        (byte) 0x73, (byte) 0x6d, (byte) 0x61, (byte) 0x6c, (byte) 0x6c};
+
     // lower byte of exception is value as defined in JCSDK/api_classic/constant-values.htm
     final static short SW_Exception = (short) 0xff01;
     final static short SW_ArrayIndexOutOfBoundsException = (short) 0xff02;
@@ -217,13 +221,18 @@ public class JCAlgTestApplet extends javacard.framework.Applet
     short m_freeRAMDeselect = 0;
     short[] m_freeEEPROM = null;
     
-    public final static short RAM1_ARRAY_LENGTH = (short) 600;
+    // Large auxilarity RAM arrays are required for all testing operations
+    public final static short RAM1_ARRAY_LENGTH = (short) 600;  
     public final static short RAM2_ARRAY_LENGTH = (short) 528;
+    // If large auxilarity RAM arrays cannot be obtained, smaller ones can be used for subset of operations
+    public final static short RAM1_ARRAY_SMALLER_LENGTH = (short) 130;  
+    public final static short RAM2_ARRAY_SMALLER_LENGTH = (short) 8;
     byte[] m_ramArray = null;  // auxalarity array used for various purposes. Length of this array is added to value returned as amount of available RAM memory
     byte[] m_ramArray2 = null;  // auxalarity array used for various purposes. Length of this array is added to value returned as amount of available RAM memory
     
     boolean m_allocationsPerformed = false;
-    
+    boolean m_bLargeAuxArraysAvailable = false;
+
     protected JCAlgTestApplet(byte[] buffer, short offset, byte length) {
         ALGTEST_JAVACARD_VERSION_CURRENT = ALGTEST_JAVACARD_VERSION_1_8_0__JC222;
         ALGTEST_JAVACARD_VERSION_CURRENT = ALGTEST_JAVACARD_VERSION_1_8_0__JC304; //jc304
@@ -286,14 +295,35 @@ public class JCAlgTestApplet extends javacard.framework.Applet
     
     void allocateResources() {
         // Allocate all engines
-        m_ramArray = JCSystem.makeTransientByteArray(RAM1_ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);
-        m_ramArray2 = JCSystem.makeTransientByteArray(RAM2_ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);
-    
-        m_supportTest = new AlgSupportTest(m_ramArray, m_ramArray2, m_freeRAMReset, m_freeRAMDeselect, m_freeEEPROM);
-        m_keyHarvest = new AlgKeyHarvest();
-        m_perfTest = new AlgPerformanceTest(m_ramArray, m_ramArray2);
-        m_storageTest = new AlgStorageTest();
+        try {
+            m_ramArray = JCSystem.makeTransientByteArray(RAM1_ARRAY_LENGTH, JCSystem.CLEAR_ON_DESELECT);
+            m_ramArray2 = JCSystem.makeTransientByteArray(RAM2_ARRAY_LENGTH, JCSystem.CLEAR_ON_DESELECT);
+            m_bLargeAuxArraysAvailable = true;  // We successfully allocated large aux arrays
+        }
+        catch (SystemException e) {
+            if (e.getReason() == SystemException.NO_TRANSIENT_SPACE) {
+                try {
+                    m_ramArray = JCSystem.makeTransientByteArray(RAM1_ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);
+                    m_ramArray2 = JCSystem.makeTransientByteArray(RAM2_ARRAY_LENGTH, JCSystem.CLEAR_ON_RESET);
+                    m_bLargeAuxArraysAvailable = true;  // We successfully allocated large aux arrays
+                }
+                catch (SystemException e2) {
+                    if (e2.getReason() == SystemException.NO_TRANSIENT_SPACE) {                // Try to allocate smaller RAM aux arrays
+                        m_ramArray = JCSystem.makeTransientByteArray(RAM1_ARRAY_SMALLER_LENGTH, JCSystem.CLEAR_ON_DESELECT);
+                        m_ramArray2 = JCSystem.makeTransientByteArray(RAM2_ARRAY_SMALLER_LENGTH, JCSystem.CLEAR_ON_DESELECT);
+                        m_bLargeAuxArraysAvailable = false;  // Only smaller ones are available
+                    } else { throw e2; }
+                }
+            } else { throw e; }
+        }
 
+        m_supportTest = new AlgSupportTest(m_ramArray, m_ramArray2, m_freeRAMReset, m_freeRAMDeselect, m_freeEEPROM);
+             
+        m_keyHarvest = new AlgKeyHarvest();
+        if (m_bLargeAuxArraysAvailable) {
+            m_perfTest = new AlgPerformanceTest(m_ramArray, m_ramArray2);
+        }
+        m_storageTest = new AlgStorageTest();
         m_allocationsPerformed = true;
     }
     
@@ -310,11 +340,11 @@ public class JCAlgTestApplet extends javacard.framework.Applet
         // ignore the applet select command dispached to the process
         if (selectingApplet()) { return; }
         
-        performDelayedAllocations();
-        
         byte bProcessed = (byte) 0;
         
         try {
+            performDelayedAllocations();
+
             // Serve get version
             if (apduBuffer[ISO7816.OFFSET_CLA] == Consts.CLA_CARD_ALGTEST) {
                 if (apduBuffer[ISO7816.OFFSET_INS] == Consts.INS_CARD_GETVERSION) {
@@ -325,22 +355,24 @@ public class JCAlgTestApplet extends javacard.framework.Applet
                     JCSystem.requestObjectDeletion();
                     if (apduBuffer[ISO7816.OFFSET_P1] == Consts.P1_CARD_RESET_FREE_CACHE) {
                         // If required, free also RSA objects cache to free some resources
-                        m_perfTest.eraseCachedRSAObjectsExceptSpecifiedTypeLength((byte) -1, (short) -1);                        
+                        if (m_perfTest != null) {
+                            m_perfTest.eraseCachedRSAObjectsExceptSpecifiedTypeLength((byte) -1, (short) -1);                        
+                        }
                     }
                     bProcessed = (byte) 1;
                 }
             }
 
-            if (bProcessed == 0) {
+            if (bProcessed == 0 && m_supportTest != null) {
                 bProcessed = m_supportTest.process(apdu);
             }
-            if (bProcessed == 0) {
+            if (bProcessed == 0 && m_keyHarvest != null) {
                 bProcessed = m_keyHarvest.process(apdu);
             }
-            if (bProcessed == 0) {
+            if (bProcessed == 0 && m_perfTest != null) {
                 bProcessed = m_perfTest.process(apdu);
             }
-            if (bProcessed == 0) {
+            if (bProcessed == 0 && m_storageTest != null) {
                 bProcessed = m_storageTest.process(apdu);
             }
 
@@ -381,8 +413,11 @@ public class JCAlgTestApplet extends javacard.framework.Applet
         byte[]    apdubuf = apdu.getBuffer();
         apdu.setIncomingAndReceive();
 
-        Util.arrayCopyNonAtomic(ALGTEST_JAVACARD_VERSION_CURRENT, (short) 0, apdubuf, (short) 0, (short) ALGTEST_JAVACARD_VERSION_CURRENT.length);
+        short offset = Util.arrayCopyNonAtomic(ALGTEST_JAVACARD_VERSION_CURRENT, (short) 0, apdubuf, (short) 0, (short) ALGTEST_JAVACARD_VERSION_CURRENT.length);
+        if (!m_bLargeAuxArraysAvailable) {
+            offset = Util.arrayCopyNonAtomic(AUX_SMALL, (short) 0, apdubuf, offset, (short) AUX_SMALL.length);
+        }
 
-        apdu.setOutgoingAndSend((byte) 0, (short) ALGTEST_JAVACARD_VERSION_CURRENT.length);
+        apdu.setOutgoingAndSend((byte) 0, offset);
     }    
 }
