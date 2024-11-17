@@ -785,7 +785,10 @@ public class CardMngr {
         }
         return intCode;
     }    
+
+    //    
     // Functions for CPLC taken and modified from https://github.com/martinpaljak/GlobalPlatformPro 
+    //
     private static final byte CLA_GP = (byte) 0x80;     
     private static final byte ISO7816_INS_GET_DATA = (byte) 0xCA;   
     private static final byte[] SELECT_CM = {(byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00, (byte) 0x00};
@@ -872,7 +875,8 @@ public class CardMngr {
                 return m_values;
             }
     }    
-    
+
+   
     public void PrintCPLCInfo(StringBuilder pValue, FileOutputStream pFile, byte[] cplcData) throws IOException {
         String  message = "";
         
@@ -921,6 +925,56 @@ public class CardMngr {
         pFile.write(message.getBytes());
         pValue.append(message);
     }
+
+
+    public void PrintGPInfo(StringBuilder pValue, FileOutputStream pFile, byte[] gpData) throws IOException {
+        String  message = "";
+        
+        message = "\r\nGPDATA (Card data); " + bytesToHex(gpData);
+        m_SystemOutLogger.println(message);
+        pFile.write(message.getBytes());
+        pValue.append(message);            
+        
+        CPLC cplc = new CPLC(gpData);
+
+        HashMap<CPLC.Field, byte[]> cplValues = cplc.values();
+        
+        for (CPLC.Field f : CPLC.Field.values()) {
+            byte[] value = (byte[]) cplValues.get(f);
+            
+            switch (f) {
+                case ICFabricationDate: {
+                    message = "\r\nCPLC." + f.name() + ";" + bytesToHex(value, false) + ";(Y DDD) date in that year";
+                    break;
+                }
+                case ICFabricator: {
+                    String id = bytesToHex(value, false);
+                    String fabricatorName = "unknown";
+                    if (id.equals("3060")) { fabricatorName = "Renesas"; }
+                    if (id.equals("4090")) { fabricatorName = "Infineon"; }
+                    if (id.equals("4180")) { fabricatorName = "Atmel"; }
+                    if (id.equals("4250")) { fabricatorName = "Samsung"; }
+                    if (id.equals("4790")) { fabricatorName = "NXP"; }
+
+                    message = "\r\nCPLC." + f.name() + ";" + bytesToHex(value, false) + ";" + fabricatorName;
+                    break;
+                }
+                default: {
+                    message = "\r\nCPLC." + f.name() + ";" + bytesToHex(value, false);
+                    break;
+                }
+            }
+            m_SystemOutLogger.println(message);
+            pFile.write(message.getBytes());
+            pValue.append(message);            
+        }            
+
+        message += "\r\n";
+
+        pFile.write(message.getBytes());
+        pValue.append(message);
+    }
+
     public int GetGPInfo(StringBuilder pValue, FileOutputStream pFile) throws Exception {
         int         status = STAT_OK;
 
@@ -941,19 +995,19 @@ public class CardMngr {
             m_SystemOutLogger.println("Fail to obtain GPInfo - CPLC");
             pValue.append("error");
         }
-/*        
+        
         // CardData
         try {
             byte[] cardData = fetchCardData();
             if (cardData == null) {
-                m_logger.println("Fail to obtain cardData info");
+                m_SystemOutLogger.println("Fail to obtain cardData info");
             } 
             else {
                 PrintGPInfo(pValue, pFile, cardData);
             }
         }        
         catch (Exception ex) {
-            m_logger.println("Fail to obtain GPInfo - cardData");
+            m_SystemOutLogger.println("Fail to obtain GPInfo - cardData");
             pValue.append("error");
         }
 /*        
