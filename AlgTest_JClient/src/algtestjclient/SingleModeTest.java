@@ -43,6 +43,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javacard.framework.ISO7816;
 import javax.smartcardio.CardTerminal;
 import javax.smartcardio.ResponseAPDU;
 
@@ -736,7 +737,7 @@ public class SingleModeTest {
         FileOutputStream file = cardManager.establishConnection(cardName, cardName + "_ALGSUPPORT_", selectedReader, cmdArgs);
     
         // Insert header with explanation of test results
-        String message = "\nalgorithm_name; is_supported; time_elapsed; persistent_mem_allocated; ram_deselect_allocated; ram_reset_allocated;\n";
+        String message = "\n\nalgorithm_name; is_supported; time_elapsed; persistent_mem_allocated; ram_deselect_allocated; ram_reset_allocated;\n";
         m_SystemOutLogger.println(message);
         file.write(message.getBytes()); 
         
@@ -791,17 +792,24 @@ public class SingleModeTest {
      * @param elapsedCard
      * @throws IOException
      */
-    public static void CheckResult (FileOutputStream file, String name, byte[] responseBuffer, long elapsedCard, int swStatus) throws IOException{
+    public static void CheckResult(FileOutputStream file, String name, byte[] responseBuffer, long elapsedCard, int swStatus, byte expectedClass) throws IOException{
         String message = "";
         String elTimeStr = "";
         
         byte response = UNKNOWN_ERROR;
         if (responseBuffer != null) {
             if (responseBuffer.length > 0) {
-                m_SystemOutLogger.println("RESPONSE: " + responseBuffer[0]);
+                //m_SystemOutLogger.println(String.format("RESPONSE CLASS: 0x%02X", responseBuffer[0]));
+                //m_SystemOutLogger.println(String.format("EXPECTED CLASS: 0x%02X", expectedClass));
             }
-            if (responseBuffer.length > 1) {
-                response = responseBuffer[1];
+            if (responseBuffer.length > 1) { 
+                response = responseBuffer[1];  // Store result of test returned form card (yes/no/...)
+                //m_SystemOutLogger.println(String.format("RESPONSE DECISION: 0x%02X", responseBuffer[1]));
+                
+                // Sanity check, the returned buffer must have first byte as expeceted
+                if (responseBuffer[0] != expectedClass) {  
+                    response = UNKNOWN_ERROR;
+                }
             }
         }        
         
@@ -837,11 +845,11 @@ public class SingleModeTest {
 
                 case INVALID_INIT:
                     supportedString = "error(INVALID_INIT)";
-                break;
+                    break;
 
                 case UNINITIALIZED_KEY:
                     supportedString = "error(UNINITIALIZED_KEY)";
-                break;
+                    break;
                 
                 case UNKNOWN_ERROR: 
                     supportedString = "error(UNKNOWN_ERROR)";
@@ -851,7 +859,7 @@ public class SingleModeTest {
                 case 0x6f:
                     supportedString = "maybe";
                     bParseMemory = false;
-                break;
+                    break;
 
                 default:
                     // OTHER VALUE, IGNORE 
@@ -907,7 +915,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
 
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, Utils.GetAlgorithmName((String) algToTest.getR()), resp, elapsedCard, response.getSW());
+            CheckResult(file, Utils.GetAlgorithmName((String) algToTest.getR()), resp, elapsedCard, response.getSW(), apdu[ISO7816.OFFSET_P1]);
         }    
     }
     
@@ -935,7 +943,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
 
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, Utils.GetAlgorithmName((String) algToTest.getR()), resp, elapsedCard, response.getSW());
+            CheckResult(file, Utils.GetAlgorithmName((String) algToTest.getR()), resp, elapsedCard, response.getSW(), apdu[ISO7816.OFFSET_P1]);
         }    
     }    
     
@@ -978,9 +986,8 @@ public class SingleModeTest {
             elapsedCard += System.currentTimeMillis();
             
             byte[] resp = response.getData();
-
             // Calls method CheckResult - should add to output error messages.
-            CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.CIPHER_STR[i]), resp, elapsedCard, response.getSW());
+            CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.CIPHER_STR[i]), resp, elapsedCard, response.getSW(), cipherClass);
         }        
         
         ArrayList<Pair<Integer, String>> algsToTest = new ArrayList<>();
@@ -1072,7 +1079,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
        
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.SIGNATURE_STR[i]), resp, elapsedCard, response.getSW());
+            CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.SIGNATURE_STR[i]), resp, elapsedCard, response.getSW(), signatureClass);
         }        
     }
     
@@ -1164,7 +1171,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
             
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.MESSAGEDIGEST_STR[i]), resp, elapsedCard, response.getSW());
+            CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.MESSAGEDIGEST_STR[i]), resp, elapsedCard, response.getSW(), digestClass);
         }
         
         ArrayList<Pair<Integer, String>> algsToTest = new ArrayList<>();
@@ -1240,7 +1247,7 @@ public class SingleModeTest {
             elapsedCard += System.currentTimeMillis();
             byte[] resp = response.getData();
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.RANDOMDATA_STR[i]), resp, elapsedCard, response.getSW());
+            CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.RANDOMDATA_STR[i]), resp, elapsedCard, response.getSW(), randomClass);
         }
     }
     
@@ -1286,7 +1293,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
 
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, Utils.GetAlgorithmName(keyBuilderStr), resp, elapsedCard, response.getSW());
+            CheckResult(file, Utils.GetAlgorithmName(keyBuilderStr), resp, elapsedCard, response.getSW(), Consts.CLASS_KEYBUILDER);
         }
     }
     
@@ -1366,7 +1373,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
             
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.KEYAGREEMENT_STR[i]), resp, elapsedCard, response.getSW());
+            CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.KEYAGREEMENT_STR[i]), resp, elapsedCard, response.getSW(), Consts.CLASS_KEYAGREEMENT);
         }
     }
     
@@ -1402,7 +1409,7 @@ public class SingleModeTest {
             elapsedCard += System.currentTimeMillis();
             byte[] resp = response.getData();
             /* Calls method CheckResult - should add to output error messages. */
-            CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.CHECKSUM_STR[i]), resp, elapsedCard, response.getSW());
+            CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.CHECKSUM_STR[i]), resp, elapsedCard, response.getSW(), Consts.CLASS_CHECKSUM);
         }
     }
     
@@ -1443,7 +1450,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
             
             // Calls method CheckResult - should add to output error messages. */
-            CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.KEYPAIR_RSA_STR[i]), resp, elapsedCard, response.getSW());
+            CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.KEYPAIR_RSA_STR[i]), resp, elapsedCard, response.getSW(), Consts.CLASS_KEYPAIR);
         }
     }
     
@@ -1484,7 +1491,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
             
             // Calls method CheckResult - should add to output error messages.
-            CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.KEYPAIR_RSACRT_STR[i]), resp, elapsedCard, response.getSW());
+            CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.KEYPAIR_RSACRT_STR[i]), resp, elapsedCard, response.getSW(), Consts.CLASS_KEYPAIR);
         }
     }
     
@@ -1525,7 +1532,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
             
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.KEYPAIR_DSA_STR[i]), resp, elapsedCard, response.getSW());
+            CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.KEYPAIR_DSA_STR[i]), resp, elapsedCard, response.getSW(), Consts.CLASS_KEYPAIR);
         }
     }
     
@@ -1566,7 +1573,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
             
             // Calls method CheckResult - should add to output error messages.
-            CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.KEYPAIR_EC_F2M_STR[i]), resp, elapsedCard, response.getSW());
+            CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.KEYPAIR_EC_F2M_STR[i]), resp, elapsedCard, response.getSW(), Consts.CLASS_KEYPAIR);
         }
     }
     
@@ -1607,7 +1614,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
             
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.KEYPAIR_EC_FP_STR[i]), resp, elapsedCard, response.getSW());
+            CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.KEYPAIR_EC_FP_STR[i]), resp, elapsedCard, response.getSW(), Consts.CLASS_KEYPAIR);
         }
     }
     
@@ -1645,7 +1652,7 @@ public class SingleModeTest {
             byte[] resp = response.getData();
 
             // Calls method CheckResult - should add to output error messages. 
-            CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.BIOBUILDER_STR[i]), resp, elapsedCard, response.getSW());
+            CheckResult(file, Utils.GetAlgorithmName(SingleModeTest.BIOBUILDER_STR[i]), resp, elapsedCard, response.getSW(), Consts.CLASS_BIOBUILDER);
         }
     }    
     
