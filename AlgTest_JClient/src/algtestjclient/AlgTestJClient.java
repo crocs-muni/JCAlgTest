@@ -55,9 +55,11 @@ public class AlgTestJClient {
      * Version 1.8.2 (17.11.2024)
      * - Update to match applet version with delayed allocation by default 
      * - Add detailed info for submitting results at beginning  
-     * - fix display of help info
-     * - always send Le=256 to support certain cards (like Gemalto) expecting it
-     *  
+     * - Fix display of help info
+     * - Add always send Le=256 to support certain cards (like Gemalto) expecting it
+     * - Add sanity check for returned algtest buffer
+     * - Improved used and fixed issues with CLI parameters  
+     * - Fix missing JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT in results
      */
     public final static String ALGTEST_JCLIENT_VERSION = "1.8.2";
     /**
@@ -214,7 +216,7 @@ public class AlgTestJClient {
         
         m_SystemOutLogger.println("\n-----------------------------------------------------------------------   ");
         m_SystemOutLogger.println("JCAlgTest " + ALGTEST_JCLIENT_VERSION + " - comprehensive tool for JavaCard smart card testing.");
-        m_SystemOutLogger.println("Visit jcalgtest.org for results from 100+ cards. CRoCS lab 2007-2021.");
+        m_SystemOutLogger.println("Visit jcalgtest.org for results from 100+ cards. CRoCS lab 2007-2024.");
         m_SystemOutLogger.println("Please check if you use the latest version at\n  https://github.com/crocs-muni/JCAlgTest/releases/latest.");
         m_SystemOutLogger.println("Type 'java -jar jcalgtestclient --help' to display help and available commands.");
         m_SystemOutLogger.println("-----------------------------------------------------------------------\n");
