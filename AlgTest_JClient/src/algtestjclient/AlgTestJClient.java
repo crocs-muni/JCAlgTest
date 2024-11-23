@@ -202,6 +202,11 @@ public class AlgTestJClient {
                 }                
             }
         }
+        System.out.print("Command line arguments: ");
+        for (int i = 0; i < args.length; i++) {
+            System.out.print(args[i] + " ");
+        }
+        System.out.println();
         
         String logFileName = String.format(cmdArgs.baseOutPath + "ALGTEST_log_%s.log", AlgTestJClient.getStartTime()); 
         FileOutputStream    systemOutLogger = new FileOutputStream(logFileName);
