@@ -739,6 +739,8 @@ public class CardMngr {
                 pValue.append(message);
                 message = String.format("\r\n%s;%s%dB;\n", Utils.GetAlgorithmName(SingleModeTest.JCSYSTEM_STR[5]),(ramDeselectSize == 32767) ? ">" : "", ramDeselectSize); 
                 m_SystemOutLogger.println(message);
+                pFile.write(message.getBytes());
+                pValue.append(message);
                 message = String.format("\r\n%s;%dB;", Utils.GetAlgorithmName(SingleModeTest.JCSYSTEM_STR[6]), maxCommitSize); 
                 m_SystemOutLogger.println(message);
                 pFile.write(message.getBytes());
