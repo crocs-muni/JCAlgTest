@@ -16,10 +16,10 @@ Upload proper cap file (based on the supported JavaCard version) file to your
    smart card using uploader like [GlobalPlatformPro](https://github.com/martinpaljak/GlobalPlatformPro). 
 
 ```
-java -jar gp.jar --install AlgTest_v1.8.0_jc305.cap
+java -jar gp.jar --install AlgTest_v1.8.2_jc305.cap
 ```
 
-If unsure about the supported version for your card, simply try to upload from the highest version down to the lower one (e.g., start with AlgTest_v1.8.0_jc305.cap, then AlgTest_v1.8.0_jc304.cap, then AlgTest_v1.8.0_jc222.cap). Stop when the card upload succeed.
+If unsure about the supported version for your card, simply try to upload from the highest version down to the lower one (e.g., start with AlgTest_v1.8.2_jc305.cap, then AlgTest_v1.8.2_jc304.cap, then AlgTest_v1.8.2_jc222.cap). Stop when the card upload succeed.
 
 Check that the applet was correctly uploaded and installed:
 ```
