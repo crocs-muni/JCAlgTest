@@ -194,7 +194,7 @@ public class AlgTestJClient {
               .addObject(cmdArgs)
               .build()
               .parse(args); 
-            
+
             if (!cmdArgs.baseOutPath.isEmpty()) {
                 char lastChar = cmdArgs.baseOutPath.charAt(cmdArgs.baseOutPath.length() - 1);
                 if ((lastChar != '\\') && (lastChar != '/')) {
@@ -226,7 +226,7 @@ public class AlgTestJClient {
             return;
         }
         printSendRequest();
-        if (args.length > 0) {
+        if (cmdArgs.operations.size() > 0) {
             m_SystemOutLogger.println("Running in non-interactive mode. Run without any parameter to enter interactive mode. Run 'java -jar AlgTestJClient.jar --help' to obtain list of supported arguments.");
             for (String operation : cmdArgs.operations) {
                 if (operation.compareTo(Args.OP_ALG_SUPPORT_BASIC) == 0 || 
