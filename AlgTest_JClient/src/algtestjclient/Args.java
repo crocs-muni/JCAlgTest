@@ -9,6 +9,7 @@ import java.util.List;
  * @author Petr Svenda
  */
 public class Args {
+    // If extending, do not forget to add into @Parameter(names = below
     public static final String OP_ALG_SUPPORT_BASIC = "ALG_SUPPORT_BASIC";          // Test of basic algorithmic support
     public static final String OP_ALG_SUPPORT_EXTENDED = "ALG_SUPPORT_EXTENDED";    // Test of basic + extended algorithmic support
     public static final String OP_ALG_PERFORMANCE_STATIC = "ALG_PERFORMANCE_STATIC";    // Test of performance on static data length
@@ -17,7 +18,8 @@ public class Args {
     @Parameter
     public List<String> parameters = new ArrayList<>();
 
-    @Parameter(names = { "-op"}, description = "Operation(s) to execute (ALG_SUPPORT_SIMPLE | ALG_SUPPORT_ALL)")
+    @Parameter(names = { "-op"}, description = "Operation(s) to execute (" + OP_ALG_SUPPORT_BASIC + " | " + OP_ALG_SUPPORT_EXTENDED 
+                        + " | " + OP_ALG_PERFORMANCE_STATIC + " | " + OP_ALG_PERFORMANCE_VARIABLE + ")")
     public List<String> operations = new ArrayList<>();
 
     @Parameter(names = "-cardname", description = "Name of the tested card")

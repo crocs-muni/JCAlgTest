@@ -1,5 +1,5 @@
 /*  
-    Copyright (c) 2008-2014 Petr Svenda <petr@svenda.com>
+    Copyright (c) 2008-2024 Petr Svenda <petr@svenda.com>
 
      LICENSE TERMS
 
@@ -932,7 +932,7 @@ public class PerformanceTesting {
                 }
                 catch (Exception ex) {
                     // Unexpected exception
-                    m_SystemOutLogger.println(ex.toString()); 
+                    m_SystemOutLogger.println(ex.toString() + "\n"); 
                     numFailedRepeats++; 
                     
                     if (numFailedRepeats == 1) {

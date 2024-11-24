@@ -324,12 +324,24 @@ public class SupportTable {
                     cardNameATRMap.put(cardATR, justName);
                 }
             }                        
+            HashMap<String, String> cardNameCPLC = new HashMap<>(); 
+            for (int i = 0; i < filesArray.size(); i++) {
+                // Store mapping of card name and CPLC
+                String cardATR = (String) filesSupport[i].get("Card ATR");                
+                String cplc = (String) filesSupport[i].get("CPLC");
+                if ((cardATR == null) || (cplc == null)) {
+                    System.out.println(String.format("Warning: Missing card name or CPLC in file %s", filesArray.get(i)));
+                }
+                else {
+                    cardNameCPLC.put(cardATR, cplc);
+                }
+            }                        
             
             // Store ATR to card name mapping
             String fileNameATRMapping = outBasePath + "atr_cardname.csv";
             FileOutputStream fileAtrName = new FileOutputStream(fileNameATRMapping);
             for (String atr : cardNameATRMap.keySet()) {
-                String atr_name = String.format("%s;%s\n\r", atr, cardNameATRMap.get(atr));
+                String atr_name = String.format("%s;%s;%s\n\r", atr, cardNameATRMap.get(atr), cardNameCPLC.get(atr));
                 fileAtrName.write(atr_name.getBytes());
             }
             fileAtrName.close();

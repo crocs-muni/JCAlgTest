@@ -105,10 +105,10 @@ public class JavaCardAES {
       Alogtable = new byte[256];
 // ALOG_MUL     Alogtable_mul2 = new byte[256];
 // ALOG_MUL     Alogtable_mul3 = new byte[256];
-// ALOG_MUL     Alogtable_mul2 = JCSystem.makeTransientByteArray((short)256, JCSystem.CLEAR_ON_RESET);
-// ALOG_MUL     Alogtable_mul3 = JCSystem.makeTransientByteArray((short)256, JCSystem.CLEAR_ON_RESET);
+// ALOG_MUL     Alogtable_mul2 = JCSystem.makeTransientByteArray((short)256, JCSystem.CLEAR_ON_DESELECT);
+// ALOG_MUL     Alogtable_mul3 = JCSystem.makeTransientByteArray((short)256, JCSystem.CLEAR_ON_DESELECT);
       Logtable = new short[256];
-      tempBuffer = JCSystem.makeTransientByteArray(STATELEN, JCSystem.CLEAR_ON_RESET);
+      tempBuffer = JCSystem.makeTransientByteArray(STATELEN, JCSystem.CLEAR_ON_DESELECT);
       MakeSBox();
     }
 

@@ -10,7 +10,8 @@ from graphviz import Digraph
 # 2. https://www.javatips.net/api/bankomatinfos-master/src/at/zweng/bankomatinfos/iso7816emv/CPLC.java
 # 3. NIST FIPS140, Common Criteria certificates
 
-def search_files(folder):    
+
+def search_files(folder):
     for root, dirs, files in os.walk(folder):
         yield from [os.path.join(root, x) for x in files]
 
@@ -398,8 +399,9 @@ def render_all_vendors():
     files_with_cplc = {}
     files_without_cplc = []
     
-    walk_dir = '..\\Profiles\\results\\'
+    walk_dir = '..\\..\\algtest_results\\javacard\\Profiles\\results\\'
     process_jcalgtest_files(walk_dir, files_with_cplc, files_without_cplc)
+    print(files_with_cplc.keys())
     compute_stats(files_with_cplc)
 
     vendors = ['', 'NXP', 'Infineon', 'Gemalto', 'Feitian', 'G&D', 'Idemia']

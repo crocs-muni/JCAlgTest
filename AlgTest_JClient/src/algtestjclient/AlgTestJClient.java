@@ -52,11 +52,22 @@ import javax.smartcardio.CardTerminal;
  */
 public class AlgTestJClient {
     /**
+     * Version 1.8.2 (17.11.2024)
+     * - Update to match applet version with delayed allocation by default 
+     * - Add detailed info for submitting results at beginning  
+     * - Fix display of help info
+     * - Add always send Le=256 to support certain cards (like Gemalto) expecting it
+     * - Add sanity check for returned algtest buffer
+     * - Improved used and fixed issues with CLI parameters  
+     * - Fix missing JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT in results
+     */
+    public final static String ALGTEST_JCLIENT_VERSION = "1.8.2";
+    /**
      * Version 1.8.1 (27.10.2021)
      * + Add better CLI control, interactive and non-interactive mode 
      * + Fixed incorrect names for measurements
      */
-    public final static String ALGTEST_JCLIENT_VERSION = "1.8.1";
+    //public final static String ALGTEST_JCLIENT_VERSION = "1.8.1";
     /**
      * Version 1.8.0 (19.12.2020)
      * + testing of modular Cipher and Signature .getInstance variants
@@ -185,7 +196,7 @@ public class AlgTestJClient {
               .addObject(cmdArgs)
               .build()
               .parse(args); 
-            
+
             if (!cmdArgs.baseOutPath.isEmpty()) {
                 char lastChar = cmdArgs.baseOutPath.charAt(cmdArgs.baseOutPath.length() - 1);
                 if ((lastChar != '\\') && (lastChar != '/')) {
@@ -193,6 +204,11 @@ public class AlgTestJClient {
                 }                
             }
         }
+        System.out.print("Command line arguments: ");
+        for (int i = 0; i < args.length; i++) {
+            System.out.print(args[i] + " ");
+        }
+        System.out.println();
         
         String logFileName = String.format(cmdArgs.baseOutPath + "ALGTEST_log_%s.log", AlgTestJClient.getStartTime()); 
         FileOutputStream    systemOutLogger = new FileOutputStream(logFileName);
@@ -200,7 +216,7 @@ public class AlgTestJClient {
         
         m_SystemOutLogger.println("\n-----------------------------------------------------------------------   ");
         m_SystemOutLogger.println("JCAlgTest " + ALGTEST_JCLIENT_VERSION + " - comprehensive tool for JavaCard smart card testing.");
-        m_SystemOutLogger.println("Visit jcalgtest.org for results from 100+ cards. CRoCS lab 2007-2021.");
+        m_SystemOutLogger.println("Visit jcalgtest.org for results from 100+ cards. CRoCS lab 2007-2024.");
         m_SystemOutLogger.println("Please check if you use the latest version at\n  https://github.com/crocs-muni/JCAlgTest/releases/latest.");
         m_SystemOutLogger.println("Type 'java -jar jcalgtestclient --help' to display help and available commands.");
         m_SystemOutLogger.println("-----------------------------------------------------------------------\n");
@@ -208,15 +224,17 @@ public class AlgTestJClient {
         CardTerminal selectedTerminal = null;
         PerformanceTesting testingPerformance = new PerformanceTesting(m_SystemOutLogger);
         m_SystemOutLogger.println("NOTE: JCAlgTest applet (AlgTest.cap) must be already installed on tested card.");
+        m_SystemOutLogger.println("  java -jar gp.jar --install AlgTest_***_jc***.cap");
         m_SystemOutLogger.println("The results are stored in CSV files. Use JCAlgProcess for HTML conversion.");
         m_SystemOutLogger.println();
 
         if (cmdArgs.help) {
-            JCommander.newBuilder().addObject(cmdArgs).build().usage();            
+            JCommander.newBuilder().addObject(cmdArgs).build().usage();     
+            return;
         }
-        
-        if (args.length > 0) {
-            m_SystemOutLogger.println("Running in non-interactive mode. Run without any parameter to enter interactive mode. Run 'java -jar AlgTestJClient.jar -help' to obtain list of supported arguments.");
+        printSendRequest();
+        if (cmdArgs.operations.size() > 0) {
+            m_SystemOutLogger.println("Running in non-interactive mode. Run without any parameter to enter interactive mode. Run 'java -jar AlgTestJClient.jar --help' to obtain list of supported arguments.");
             for (String operation : cmdArgs.operations) {
                 if (operation.compareTo(Args.OP_ALG_SUPPORT_BASIC) == 0 || 
                     operation.compareTo(Args.OP_ALG_SUPPORT_EXTENDED) == 0) {
@@ -241,7 +259,7 @@ public class AlgTestJClient {
         }
         else {
             // Interactive mode of tool
-            m_SystemOutLogger.println("Running in interactive mode. Run 'java -jar AlgTestJClient.jar -help' to obtain list of supported arguments.");
+            m_SystemOutLogger.println("Running in interactive mode. Run 'java -jar AlgTestJClient.jar --help' to obtain list of supported arguments.");
             m_SystemOutLogger.println("CHOOSE test you want to run:");
             m_SystemOutLogger.println("1 -> SUPPORTED ALGORITHMS\n    List all supported JC API algorithms (2-10 minutes)\n" + 
                               "2 -> PERFORMANCE TEST\n    Test all JC API methods with 256B data length (1-3 hours)\n" + 
@@ -312,8 +330,9 @@ public class AlgTestJClient {
         System.out.println("available to all JavaCard enthusiasts at http://jcalgtest.org.");
         System.out.println("The results are important even if a card of same type is already in database.");
         System.out.println("Send *.log and *.csv files from the current directory to <petr@svenda.com>.");
-        System.out.println("Thank you very much!");
-        System.out.println("-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
+        System.out.println("ESPECIALLY if testing fails, please let us know so we can fix it for you and others.");
+        System.out.println("Thank you very much.");
+        System.out.println("-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n");
     }
     
     static void performKeyHarvest(Args cmdArgs) throws CardException {
@@ -444,8 +463,10 @@ public class AlgTestJClient {
                     m_SystemOutLogger.println("\nAvailable readers:");
                     for (CardTerminal terminal : terminalList) {
                         Card card;
+                        String protocol = System.getenv().getOrDefault("ALGTEST_PROTO", "*");
                         try {
-                            card = terminal.connect("*");
+                            card = terminal.connect(protocol);
+                            //card = terminal.connect("*");
                             ATR atr = card.getATR();
                             m_SystemOutLogger.println(String.format("%d : [*] %s - %s", terminalIndex, terminal.getName(), CardMngr.bytesToHex(atr.getBytes())));
                             terminalIndex++;                        
