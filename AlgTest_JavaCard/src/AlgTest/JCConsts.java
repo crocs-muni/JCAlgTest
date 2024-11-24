@@ -312,6 +312,7 @@ public class JCConsts {
     public static final short KeyBuilder_LENGTH_EC_FP_384                           = 384;
     public static final short KeyBuilder_LENGTH_EC_FP_512                           = 512;
     public static final short KeyBuilder_LENGTH_EC_FP_521                           = 521;
+    public static final short KeyBuilder_LENGTH_EC_FP_640                           = 640;
     public static final short KeyBuilder_LENGTH_AES_128                             = 128;
     public static final short KeyBuilder_LENGTH_AES_192                             = 192;
     public static final short KeyBuilder_LENGTH_AES_256                             = 256;
