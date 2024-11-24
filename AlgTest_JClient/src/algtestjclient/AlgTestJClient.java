@@ -463,8 +463,10 @@ public class AlgTestJClient {
                     m_SystemOutLogger.println("\nAvailable readers:");
                     for (CardTerminal terminal : terminalList) {
                         Card card;
+                        String protocol = System.getenv().getOrDefault("ALGTEST_PROTO", "*");
                         try {
-                            card = terminal.connect("*");
+                            card = terminal.connect(protocol);
+                            //card = terminal.connect("*");
                             ATR atr = card.getATR();
                             m_SystemOutLogger.println(String.format("%d : [*] %s - %s", terminalIndex, terminal.getName(), CardMngr.bytesToHex(atr.getBytes())));
                             terminalIndex++;                        

@@ -415,12 +415,14 @@ public class CardMngr {
                 for (int maxAttempts = 2; maxAttempts > 0; ) {
                     maxAttempts--;
                     m_card = null;
+                    String protocol = System.getenv().getOrDefault("ALGTEST_PROTO", "*");
                     try {
-                        m_card = m_terminal.connect("*");
+                        //m_card = m_terminal.connect("*");
+                        m_card = m_terminal.connect(protocol);
                     }
                     catch (javax.smartcardio.CardException e) {
-                        m_SystemOutLogger.print("Fail to connect(*), trying connect(T=0)...");
-                        m_card = m_terminal.connect("T=0");
+                        m_SystemOutLogger.print(String.format("Fail to connect(%s), trying connect(*)...", protocol));
+                        m_card = m_terminal.connect("*");
                         m_SystemOutLogger.println("done.");
                     }
                     if (m_card != null) {
