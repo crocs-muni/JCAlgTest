@@ -72,8 +72,6 @@ public class AlgStorageTest {
         m_desKey = (DESKey) KeyBuilder.buildKey(KeyBuilder.TYPE_DES, KeyBuilder.LENGTH_DES3_3KEY, false);
         m_aesKey = (AESKey) KeyBuilder.buildKey(KeyBuilder.TYPE_AES, KeyBuilder.LENGTH_AES_128, false);
         m_testSettings = new TestSettings();
-        
-        //m_ramArray = JCSystem.makeTransientByteArray((short) 600, JCSystem.CLEAR_ON_RESET);
     }
 
     public byte process(APDU apdu) throws ISOException {

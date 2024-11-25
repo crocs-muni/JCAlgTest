@@ -9,15 +9,20 @@ import java.util.List;
  * @author Petr Svenda
  */
 public class Args {
+    // If extending, do not forget to add into @Parameter(names = below
     public static final String OP_ALG_SUPPORT_BASIC = "ALG_SUPPORT_BASIC";          // Test of basic algorithmic support
     public static final String OP_ALG_SUPPORT_EXTENDED = "ALG_SUPPORT_EXTENDED";    // Test of basic + extended algorithmic support
     public static final String OP_ALG_PERFORMANCE_STATIC = "ALG_PERFORMANCE_STATIC";    // Test of performance on static data length
     public static final String OP_ALG_PERFORMANCE_VARIABLE = "ALG_PERFORMANCE_VARIABLE";    // Test of performance with variable data lengths
+    public static final String OP_ALG_ECC_PERFORMANCE = "ALG_ECC_PERFORMANCE";          // Test of performance of ECC operations
+    public static final String OP_ALG_FINGERPRINT = "ALG_FINGERPRINT";                  // Test only selected operations
+    public static final String SELFTEST_CARD_NAME = "simul-selftest";                   // Name of the simulated card using during 
 
     @Parameter
     public List<String> parameters = new ArrayList<>();
 
-    @Parameter(names = { "-op"}, description = "Operation(s) to execute (ALG_SUPPORT_SIMPLE | ALG_SUPPORT_ALL)")
+    @Parameter(names = { "-op"}, description = "Operation(s) to execute (" + OP_ALG_SUPPORT_BASIC + " | " + OP_ALG_SUPPORT_EXTENDED 
+                        + " | " + OP_ALG_PERFORMANCE_STATIC + " | " + OP_ALG_PERFORMANCE_VARIABLE + ")")
     public List<String> operations = new ArrayList<>();
 
     @Parameter(names = "-cardname", description = "Name of the tested card")
@@ -34,4 +39,8 @@ public class Args {
 
     @Parameter(names = "-fresh", description = "Force generating new complete measurements")
     public boolean fresh = false;
+
+    @Parameter(names = "-selftest", description = "Executes selftesting using simulator as target.")
+    public boolean selftest = false;
+   
 }

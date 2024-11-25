@@ -122,7 +122,9 @@ public class CardMngr {
     CardChannel m_channel = null;
     Card m_card = null;
     public static String cardUploadersFolder = System.getProperty("user.dir")+File.separator+"!card_uploaders";
-    
+    public static String m_currentFilePath;  // Current file name used for writing (note: we keep FileOutputStream, this variable may not be current)
+
+
     public static final byte selectAppletLegacy[] = {
         (byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00, (byte) 0x09, 
         (byte) 0x6D, (byte) 0x79, (byte) 0x70, (byte) 0x61, (byte) 0x63, (byte) 0x30, (byte) 0x30, (byte) 0x30, (byte) 0x31}; 
@@ -203,6 +205,7 @@ public class CardMngr {
     public static final int CLOCKS_PER_SEC = 1000;
     
     static DirtyLogger m_SystemOutLogger = null;
+
     public CardMngr(DirtyLogger logger) {
         m_SystemOutLogger = logger;
     }
@@ -269,6 +272,7 @@ public class CardMngr {
             }
             
             FileOutputStream file = new FileOutputStream(fileName);
+            m_currentFilePath = fileName;
             
             StringBuilder value = new StringBuilder();
             
@@ -415,12 +419,14 @@ public class CardMngr {
                 for (int maxAttempts = 2; maxAttempts > 0; ) {
                     maxAttempts--;
                     m_card = null;
+                    String protocol = System.getenv().getOrDefault("ALGTEST_PROTO", "*");
                     try {
-                        m_card = m_terminal.connect("*");
+                        //m_card = m_terminal.connect("*");
+                        m_card = m_terminal.connect(protocol);
                     }
                     catch (javax.smartcardio.CardException e) {
-                        m_SystemOutLogger.print("Fail to connect(*), trying connect(T=0)...");
-                        m_card = m_terminal.connect("T=0");
+                        m_SystemOutLogger.print(String.format("Fail to connect(%s), trying connect(*)...", protocol));
+                        m_card = m_terminal.connect("*");
                         m_SystemOutLogger.println("done.");
                     }
                     if (m_card != null) {
@@ -550,7 +556,10 @@ public class CardMngr {
      * @throws Exception
      */
     public ResponseAPDU sendAPDU(byte apdu[]) throws Exception {
-        CommandAPDU commandAPDU = new CommandAPDU(apdu);
+        //CommandAPDU commandAPDU = new CommandAPDU(apdu);
+        // Some Gemalto chips expects set return data (Le). Set it always to 256
+        CommandAPDU commandAPDU = new CommandAPDU(apdu[0], apdu[1], apdu[2], apdu[3], apdu, 5, apdu.length - 5, 256);
+
         ResponseAPDU responseAPDU = null;
         m_SystemOutLogger.println(">>>>");
         m_SystemOutLogger.println(commandAPDU.toString());
@@ -736,6 +745,8 @@ public class CardMngr {
                 pValue.append(message);
                 message = String.format("\r\n%s;%s%dB;\n", Utils.GetAlgorithmName(SingleModeTest.JCSYSTEM_STR[5]),(ramDeselectSize == 32767) ? ">" : "", ramDeselectSize); 
                 m_SystemOutLogger.println(message);
+                pFile.write(message.getBytes());
+                pValue.append(message);
                 message = String.format("\r\n%s;%dB;", Utils.GetAlgorithmName(SingleModeTest.JCSYSTEM_STR[6]), maxCommitSize); 
                 m_SystemOutLogger.println(message);
                 pFile.write(message.getBytes());
@@ -782,7 +793,10 @@ public class CardMngr {
         }
         return intCode;
     }    
+
+    //    
     // Functions for CPLC taken and modified from https://github.com/martinpaljak/GlobalPlatformPro 
+    //
     private static final byte CLA_GP = (byte) 0x80;     
     private static final byte ISO7816_INS_GET_DATA = (byte) 0xCA;   
     private static final byte[] SELECT_CM = {(byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00, (byte) 0x00};
@@ -869,7 +883,8 @@ public class CardMngr {
                 return m_values;
             }
     }    
-    
+
+   
     public void PrintCPLCInfo(StringBuilder pValue, FileOutputStream pFile, byte[] cplcData) throws IOException {
         String  message = "";
         
@@ -918,6 +933,56 @@ public class CardMngr {
         pFile.write(message.getBytes());
         pValue.append(message);
     }
+
+
+    public void PrintGPInfo(StringBuilder pValue, FileOutputStream pFile, byte[] gpData) throws IOException {
+        String  message = "";
+        
+        message = "\r\nGPDATA (Card data); " + bytesToHex(gpData);
+        m_SystemOutLogger.println(message);
+        pFile.write(message.getBytes());
+        pValue.append(message);            
+        
+        CPLC cplc = new CPLC(gpData);
+
+        HashMap<CPLC.Field, byte[]> cplValues = cplc.values();
+        
+        for (CPLC.Field f : CPLC.Field.values()) {
+            byte[] value = (byte[]) cplValues.get(f);
+            
+            switch (f) {
+                case ICFabricationDate: {
+                    message = "\r\nCPLC." + f.name() + ";" + bytesToHex(value, false) + ";(Y DDD) date in that year";
+                    break;
+                }
+                case ICFabricator: {
+                    String id = bytesToHex(value, false);
+                    String fabricatorName = "unknown";
+                    if (id.equals("3060")) { fabricatorName = "Renesas"; }
+                    if (id.equals("4090")) { fabricatorName = "Infineon"; }
+                    if (id.equals("4180")) { fabricatorName = "Atmel"; }
+                    if (id.equals("4250")) { fabricatorName = "Samsung"; }
+                    if (id.equals("4790")) { fabricatorName = "NXP"; }
+
+                    message = "\r\nCPLC." + f.name() + ";" + bytesToHex(value, false) + ";" + fabricatorName;
+                    break;
+                }
+                default: {
+                    message = "\r\nCPLC." + f.name() + ";" + bytesToHex(value, false);
+                    break;
+                }
+            }
+            m_SystemOutLogger.println(message);
+            pFile.write(message.getBytes());
+            pValue.append(message);            
+        }            
+
+        message += "\r\n";
+
+        pFile.write(message.getBytes());
+        pValue.append(message);
+    }
+
     public int GetGPInfo(StringBuilder pValue, FileOutputStream pFile) throws Exception {
         int         status = STAT_OK;
 
@@ -938,19 +1003,19 @@ public class CardMngr {
             m_SystemOutLogger.println("Fail to obtain GPInfo - CPLC");
             pValue.append("error");
         }
-/*        
+        
         // CardData
         try {
             byte[] cardData = fetchCardData();
             if (cardData == null) {
-                m_logger.println("Fail to obtain cardData info");
+                m_SystemOutLogger.println("Fail to obtain cardData info");
             } 
             else {
                 PrintGPInfo(pValue, pFile, cardData);
             }
         }        
         catch (Exception ex) {
-            m_logger.println("Fail to obtain GPInfo - cardData");
+            m_SystemOutLogger.println("Fail to obtain GPInfo - cardData");
             pValue.append("error");
         }
 /*        
