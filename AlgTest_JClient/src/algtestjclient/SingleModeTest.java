@@ -718,8 +718,11 @@ public class SingleModeTest {
      * Calls all other methods in this class.
      * @throws IOException
      * @throws Exception
+     * @return 
      */
-    public void TestSingleAlg(String operation, Args cmdArgs, CardTerminal selectedReader) throws IOException, Exception{
+    public Map<String, String> TestSingleAlg(String operation, Args cmdArgs, CardTerminal selectedReader) throws IOException, Exception{
+        Map<String, String> results = new HashMap<>();
+                
         Scanner br = new Scanner(System.in);  
                 
         // Read card name if not provided
@@ -736,7 +739,8 @@ public class SingleModeTest {
             m_SystemOutLogger.println(String.format("%s", cmdArgs.cardName));
         }
         FileOutputStream file = cardManager.establishConnection(cardName, cardName + "_ALGSUPPORT_", selectedReader, cmdArgs);
-    
+        results.put("out_file_name", cardManager.m_currentFilePath);
+        
         // Insert header with explanation of test results
         String message = "\n\nalgorithm_name; is_supported; time_elapsed; persistent_mem_allocated; ram_deselect_allocated; ram_reset_allocated;\n";
         m_SystemOutLogger.println(message);
@@ -752,11 +756,14 @@ public class SingleModeTest {
             elapsedTimeWholeTest += System.currentTimeMillis();
             message = "\n\nTotal test time:; " + elapsedTimeWholeTest / 1000 + " seconds."; 
             m_SystemOutLogger.println(message);
+            results.put("test_time", String.format("%d", elapsedTimeWholeTest / 1000));
             file.write(message.getBytes());
 
             CloseFile(file);
         }
         CloseFile(file);
+        
+        return results;
     }
     
     /**

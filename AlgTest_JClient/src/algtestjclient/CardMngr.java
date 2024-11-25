@@ -122,7 +122,9 @@ public class CardMngr {
     CardChannel m_channel = null;
     Card m_card = null;
     public static String cardUploadersFolder = System.getProperty("user.dir")+File.separator+"!card_uploaders";
-    
+    public static String m_currentFilePath;  // Current file name used for writing (note: we keep FileOutputStream, this variable may not be current)
+
+
     public static final byte selectAppletLegacy[] = {
         (byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x00, (byte) 0x09, 
         (byte) 0x6D, (byte) 0x79, (byte) 0x70, (byte) 0x61, (byte) 0x63, (byte) 0x30, (byte) 0x30, (byte) 0x30, (byte) 0x31}; 
@@ -203,6 +205,7 @@ public class CardMngr {
     public static final int CLOCKS_PER_SEC = 1000;
     
     static DirtyLogger m_SystemOutLogger = null;
+
     public CardMngr(DirtyLogger logger) {
         m_SystemOutLogger = logger;
     }
@@ -269,6 +272,7 @@ public class CardMngr {
             }
             
             FileOutputStream file = new FileOutputStream(fileName);
+            m_currentFilePath = fileName;
             
             StringBuilder value = new StringBuilder();
             

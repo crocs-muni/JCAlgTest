@@ -14,6 +14,9 @@ public class Args {
     public static final String OP_ALG_SUPPORT_EXTENDED = "ALG_SUPPORT_EXTENDED";    // Test of basic + extended algorithmic support
     public static final String OP_ALG_PERFORMANCE_STATIC = "ALG_PERFORMANCE_STATIC";    // Test of performance on static data length
     public static final String OP_ALG_PERFORMANCE_VARIABLE = "ALG_PERFORMANCE_VARIABLE";    // Test of performance with variable data lengths
+    public static final String OP_ALG_ECC_PERFORMANCE = "ALG_ECC_PERFORMANCE";          // Test of performance of ECC operations
+    public static final String OP_ALG_FINGERPRINT = "ALG_FINGERPRINT";                  // Test only selected operations
+    public static final String SELFTEST_CARD_NAME = "simul-selftest";                   // Name of the simulated card using during 
 
     @Parameter
     public List<String> parameters = new ArrayList<>();
@@ -36,4 +39,8 @@ public class Args {
 
     @Parameter(names = "-fresh", description = "Force generating new complete measurements")
     public boolean fresh = false;
+
+    @Parameter(names = "-selftest", description = "Executes selftesting using simulator as target.")
+    public boolean selftest = false;
+   
 }

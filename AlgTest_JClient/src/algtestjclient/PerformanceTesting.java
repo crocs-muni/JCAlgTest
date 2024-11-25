@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javacard.framework.ISO7816;
 import javax.smartcardio.CardTerminal;
 
@@ -71,6 +72,7 @@ public class PerformanceTesting {
     //public static final byte mask = 0b01111111;
     public FileOutputStream m_perfResultsFile;
     public FileOutputStream m_algsMeasuredFile;
+    public String m_currentFilePath;
     public List<String> m_algsMeasuredList = new ArrayList<>();
     public HashMap<String, double[]> m_algsAvgTime = new HashMap<>();
     public boolean m_bAlgsMeasuredSomeNew = false;
@@ -142,7 +144,10 @@ public class PerformanceTesting {
      * @throws IOException
      * @throws Exception
      */        
-    public void testPerformance(boolean bInteractive, String operation, CardTerminal selectedTerminal, Args cmdArgs) throws IOException, Exception{
+    public Map<String, String> testPerformance(boolean bInteractive, String operation, CardTerminal selectedTerminal, Args cmdArgs) throws IOException, Exception{
+        Map<String, String> results = new HashMap<>();
+        m_errorsObserved.clear();
+
         Scanner sc = new Scanner(System.in);
         
         if (operation.compareTo(Args.OP_ALG_PERFORMANCE_STATIC) == 0) { m_bTestVariableData = false; }
@@ -201,6 +206,7 @@ public class PerformanceTesting {
         
         // Connect to card
         this.m_perfResultsFile = m_cardManager.establishConnection(m_cardName, testInfo, selectedTerminal, cmdArgs);
+        results.put("out_file_name", m_cardManager.m_currentFilePath);
         m_cardATR = m_cardManager.getATR();
 
         // Run all required tests
@@ -214,7 +220,9 @@ public class PerformanceTesting {
         testAllSWAlgs(numRepeatWholeOperation, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);
         testAllKeyPairs(1, Consts.NUM_REPEAT_WHOLE_MEASUREMENT_KEYPAIRGEN);     // for keypair, different repeat settings is used
         testAllKeyAgreement(10, Consts.NUM_REPEAT_WHOLE_MEASUREMENT);           // for KeyAgrement, different repeat settings is used
-        finalizeMeasurement();
+        finalizeMeasurement(results);
+
+        return results;
     }
     
     /**
@@ -225,7 +233,10 @@ public class PerformanceTesting {
      * @throws IOException
      * @throws Exception
      */
-    public void testPerformanceFingerprint(String[] args, CardTerminal selectedTerminal, Args cmdArgs) throws IOException, Exception {
+    public Map<String, String> testPerformanceFingerprint(String[] args, CardTerminal selectedTerminal, Args cmdArgs) throws IOException, Exception {
+        Map<String, String> results = new HashMap<>();
+        m_errorsObserved.clear();
+
         Scanner sc = new Scanner(System.in);
 
         // Fingeprint wants to test only main operation speed => variable data option with 256B only
@@ -247,6 +258,7 @@ public class PerformanceTesting {
         m_elapsedTimeWholeTest = -System.currentTimeMillis();
         // Connect to card
         this.m_perfResultsFile = m_cardManager.establishConnection(m_cardName, testInfo, selectedTerminal,cmdArgs);
+        results.put("out_file_name", m_cardManager.m_currentFilePath);
         m_cardATR = m_cardManager.getATR();
 
         short numRepeatWholeMeasurement = (short) 3;
@@ -310,7 +322,9 @@ public class PerformanceTesting {
         testKeyPair(JCConsts.KeyPair_ALG_EC_F2M, JCConsts.KeyBuilder_LENGTH_EC_F2M_163, "ALG_EC_F2M LENGTH_EC_F2M_163", numRepeatWholeOperation, numRepeatWholeMeasurement);
         testKeyPair(JCConsts.KeyPair_ALG_EC_FP, JCConsts.KeyBuilder_LENGTH_EC_FP_192, "ALG_EC_FP LENGTH_EC_FP_192", numRepeatWholeOperation, numRepeatWholeMeasurement);
 
-        finalizeMeasurement();
+        finalizeMeasurement(results);
+
+        return results;
     }    
     
     /**
@@ -322,7 +336,8 @@ public class PerformanceTesting {
      * @throws IOException
      * @throws Exception
      */
-    public void testDebug(String[] args, CardTerminal selectedTerminal, Args cmdArgs) throws IOException, Exception {
+    public Map<String, String> testDebug(String[] args, CardTerminal selectedTerminal, Args cmdArgs) throws IOException, Exception {
+        Map<String, String> results = new HashMap<>();
         Scanner sc = new Scanner(System.in);
 
         // Fingeprint wants to test only main operation speed => variable data option with 256B only
@@ -344,6 +359,7 @@ public class PerformanceTesting {
         m_elapsedTimeWholeTest = -System.currentTimeMillis();
         // Connect to card
         this.m_perfResultsFile = m_cardManager.establishConnection(m_cardName, testInfo, selectedTerminal, cmdArgs);
+        results.put("out_file_name", m_cardManager.m_currentFilePath);
         m_cardATR = m_cardManager.getATR();
 
         short numRepeatWholeMeasurement = (short) 1;
@@ -370,7 +386,9 @@ public class PerformanceTesting {
         testCipherWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1024, JCConsts.Cipher_ALG_RSA_NOPAD, "TYPE_RSA_CRT_PUBLIC LENGTH_RSA_1024 ALG_RSA_NOPAD", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
         //testCipherWithKeyClass(JCConsts.KeyPair_ALG_RSA_CRT, JCConsts.KeyBuilder_TYPE_RSA_PUBLIC, JCConsts.KeyBuilder_LENGTH_RSA_1024, JCConsts.Cipher_ALG_RSA_PKCS1, "TYPE_RSA_CRT_PUBLIC LENGTH_RSA_1024 ALG_RSA_PKCS1", JCConsts.Cipher_MODE_ENCRYPT, numRepeatWholeOperation, numRepeatWholeMeasurement);
 
-        finalizeMeasurement();
+        finalizeMeasurement(results);
+
+        return results;
     }    
     
     
@@ -384,7 +402,10 @@ public class PerformanceTesting {
      * @throws IOException
      * @throws Exception
      */
-    public void testECCPerformance(String[] args, boolean bTestVariableDataLengths, CardTerminal selectedTerminal, Args cmdArgs) throws IOException, Exception {
+    public Map<String, String> testECCPerformance(String[] args, boolean bTestVariableDataLengths, CardTerminal selectedTerminal, Args cmdArgs) throws IOException, Exception {
+        Map<String, String> results = new HashMap<>();
+        m_errorsObserved.clear();
+
         // ECC wants to test only main operation speed => variable data option with 256B only
         m_bTestVariableData = false;
         m_bTestSymmetricAlgs = true;
@@ -400,6 +421,7 @@ public class PerformanceTesting {
         m_elapsedTimeWholeTest = -System.currentTimeMillis();
         // Connect to card
         this.m_perfResultsFile = m_cardManager.establishConnection(m_cardName, testInfo, selectedTerminal, cmdArgs);
+        results.put("out_file_name", m_cardManager.m_currentFilePath);
         m_cardATR = m_cardManager.getATR();
 
         short numRepeatWholeMeasurement = (short) 3;
@@ -451,18 +473,25 @@ public class PerformanceTesting {
         m_SystemOutLogger.println(csvHeader);
         m_SystemOutLogger.println(csvLine);
         
-        finalizeMeasurement();
+        finalizeMeasurement(results);
+        
+        return results;
     }
 
     void finalizeMeasurement() throws IOException {
+        finalizeMeasurement(null);
+    }
+    void finalizeMeasurement(Map<String, String> results) throws IOException {
         m_elapsedTimeWholeTest += System.currentTimeMillis();
         String message = "";
         message += "\n\nTotal test time:; " + m_elapsedTimeWholeTest / 1000 + " seconds."; 
         m_SystemOutLogger.println(message);
         m_perfResultsFile.write(message.getBytes());
+        if (results != null) { results.put("test_time", String.format("%d", m_elapsedTimeWholeTest / 1000)); } 
         message = "\n\nTotal human interventions (retries with physical resets etc.):; " + m_numHumanInterventions; 
         m_SystemOutLogger.println(message);
         m_perfResultsFile.write(message.getBytes());
+        if (results != null) { results.put("num_human_interventions", String.format("%d", m_numHumanInterventions)); } 
         message = "\n\nTotal reconnects to card:; " + m_numReconnects; 
         m_SystemOutLogger.println(message);
         m_perfResultsFile.write(message.getBytes());
@@ -481,9 +510,13 @@ public class PerformanceTesting {
 
         // Print only aggregated statistics    
         m_SystemOutLogger.println(message);
+        int totalErrors = 0;
         for (String error : m_errorsObserved.keySet()) {
             m_SystemOutLogger.println("  " + error + ": " + m_errorsObserved.get(error).size());
+            totalErrors += m_errorsObserved.get(error).size();
+            if (results != null) { results.put(error, String.format("%d", m_errorsObserved.get(error).size())); } 
         }
+        if (results != null) { results.put("errors_observed", String.format("%d", totalErrors)); } 
 
         message = "\n\nCard used: " + m_cardName; 
         m_SystemOutLogger.println(message);
