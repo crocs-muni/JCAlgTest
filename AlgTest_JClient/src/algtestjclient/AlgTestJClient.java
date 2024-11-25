@@ -598,6 +598,8 @@ public class AlgTestJClient {
         if (!bSelftestSuccess) {
             m_SystemOutLogger.println("ERROR: some test(s) failed");
         }
+        m_SystemOutLogger.println("###### END SELFTEST ####################################");
+
         return bSelftestSuccess;    
     }
 
