@@ -5,7 +5,7 @@ JCAlgTest
 
 An automated testing tool for cryptographic algorithms supported by a particular smart card with JavaCard platform. 
 
-*Contribution with results for YOUR card is wanted! (and highly appreciated :))*
+*Contribution with results for YOUR card is wanted. (and highly appreciated :))*
 
 The processed data are available at [https://www.fi.muni.cz/~xsvenda/jcalgtest/](https://www.fi.muni.cz/~xsvenda/jcalgtest/)
 
@@ -92,7 +92,7 @@ java -jar AlgTestJClient.jar -op ALG_PERFORMANCE_VARIABLE -cardname your_card_na
 ### jcalgtest.org web page
 
 We do periodically update the web page with visualization and sortable tables at http://jcalgtest.org. The raw source files with measurements are available in separate repository https://github.com/crocs-muni/jcalgtest_results/. 
-Visit the page to see all results you also (possibly) contributed to!
+Visit the page to see all results you also (possibly) contributed to.
 
 ### Generate web page yourself
 
