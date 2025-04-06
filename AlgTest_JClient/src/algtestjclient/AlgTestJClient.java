@@ -211,17 +211,18 @@ public class AlgTestJClient {
                 }                
             }
         }
-        System.out.print("Command line arguments: ");
-        for (int i = 0; i < args.length; i++) {
-            System.out.print(args[i] + " ");
-        }
-        System.out.println();
-        
         String logFileName = String.format(cmdArgs.baseOutPath + "ALGTEST_log_%s.log", AlgTestJClient.getStartTime()); 
         FileOutputStream    systemOutLogger = new FileOutputStream(logFileName);
         tempInfo.put("out_file_name", logFileName);
         allResultsMap.put("main", tempInfo);
         m_SystemOutLogger = new DirtyLogger(systemOutLogger, true);
+
+        System.out.print("Command line arguments: ");
+        for (int i = 0; i < args.length; i++) {
+            m_SystemOutLogger.print(args[i] + " ");
+        }
+        m_SystemOutLogger.println();
+
         
         m_SystemOutLogger.println("\n-----------------------------------------------------------------------   ");
         m_SystemOutLogger.println("JCAlgTest " + ALGTEST_JCLIENT_VERSION + " - comprehensive tool for JavaCard smart card testing.");
