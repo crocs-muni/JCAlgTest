@@ -239,7 +239,7 @@ def process_jcalgtest_files(walk_dir, files_with_cplc, files_without_cplc):
         files.append(filename)
         print(filename)
         
-        with open(filename) as f:
+        with open(filename, encoding='utf-8') as f:
             values = {}
             has_cplc = False
             for line in f:

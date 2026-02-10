@@ -54,6 +54,12 @@ import javax.smartcardio.CardTerminal;
  */
 public class AlgTestJClient {
     /**
+     * Version 1.8.3 (10.02.2026)
+     * - Fix incorrect testing of OneShot engines
+     * - print used command line arguments into log
+     */
+    public final static String ALGTEST_JCLIENT_VERSION = "1.8.3";
+    /**
      * Version 1.8.2 (17.11.2024)
      * - Update to match applet version with delayed allocation by default 
      * - Add detailed info for submitting results at beginning  
@@ -64,7 +70,7 @@ public class AlgTestJClient {
      * - Improved used and fixed issues with CLI parameters  
      * - Fix missing JCSystem.MEMORY_TYPE_TRANSIENT_DESELECT in results
      */
-    public final static String ALGTEST_JCLIENT_VERSION = "1.8.2";
+    //public final static String ALGTEST_JCLIENT_VERSION = "1.8.2";
     /**
      * Version 1.8.1 (27.10.2021)
      * + Add better CLI control, interactive and non-interactive mode 
@@ -211,17 +217,18 @@ public class AlgTestJClient {
                 }                
             }
         }
-        System.out.print("Command line arguments: ");
-        for (int i = 0; i < args.length; i++) {
-            System.out.print(args[i] + " ");
-        }
-        System.out.println();
-        
         String logFileName = String.format(cmdArgs.baseOutPath + "ALGTEST_log_%s.log", AlgTestJClient.getStartTime()); 
         FileOutputStream    systemOutLogger = new FileOutputStream(logFileName);
         tempInfo.put("out_file_name", logFileName);
         allResultsMap.put("main", tempInfo);
         m_SystemOutLogger = new DirtyLogger(systemOutLogger, true);
+
+        m_SystemOutLogger.print("Command line arguments: ");
+        for (int i = 0; i < args.length; i++) {
+            m_SystemOutLogger.print(args[i] + " ");
+        }
+        m_SystemOutLogger.println();
+
         
         m_SystemOutLogger.println("\n-----------------------------------------------------------------------   ");
         m_SystemOutLogger.println("JCAlgTest " + ALGTEST_JCLIENT_VERSION + " - comprehensive tool for JavaCard smart card testing.");
