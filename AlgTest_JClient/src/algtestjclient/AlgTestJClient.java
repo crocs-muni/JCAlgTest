@@ -217,7 +217,7 @@ public class AlgTestJClient {
         allResultsMap.put("main", tempInfo);
         m_SystemOutLogger = new DirtyLogger(systemOutLogger, true);
 
-        System.out.print("Command line arguments: ");
+        m_SystemOutLogger.print("Command line arguments: ");
         for (int i = 0; i < args.length; i++) {
             m_SystemOutLogger.print(args[i] + " ");
         }
