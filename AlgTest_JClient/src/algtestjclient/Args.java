@@ -42,5 +42,8 @@ public class Args {
 
     @Parameter(names = "-selftest", description = "Executes selftesting using simulator as target.")
     public boolean selftest = false;
-   
+
+    @Parameter(names = "-verbose", description = "Show detailed per-algorithm output on console (default: detail is written to log file only)")
+    public boolean verbose = false;
+
 }
