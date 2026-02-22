@@ -201,6 +201,20 @@ public class AlgTestJClient {
     
     static DirtyLogger m_SystemOutLogger = null;
     public static void main(String[] args) throws IOException, Exception {
+        try {
+            runMain(args);
+        } catch (Exception ex) {
+            System.err.println("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            System.err.println("Unexpected error: " + ex.getMessage());
+            System.err.println("\nIf this error is unexpected, please report it at:");
+            System.err.println("  https://github.com/crocs-muni/JCAlgTest/issues");
+            System.err.println("Include: your OS, Java version, card ATR, and the .log file from this directory.");
+            System.err.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+            throw ex;
+        }
+    }
+
+    static void runMain(String[] args) throws IOException, Exception {
         Map<String, String> tempInfo = new HashMap<>();
 
         Args cmdArgs = new Args();
