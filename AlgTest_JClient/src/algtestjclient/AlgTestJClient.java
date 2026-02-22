@@ -57,6 +57,7 @@ public class AlgTestJClient {
      * Version 1.8.3 (10.02.2026)
      * - Fix incorrect testing of OneShot engines
      * - print used command line arguments into log
+     * - More detailed help
      */
     public final static String ALGTEST_JCLIENT_VERSION = "1.8.3";
     /**
@@ -221,7 +222,7 @@ public class AlgTestJClient {
         FileOutputStream    systemOutLogger = new FileOutputStream(logFileName);
         tempInfo.put("out_file_name", logFileName);
         allResultsMap.put("main", tempInfo);
-        m_SystemOutLogger = new DirtyLogger(systemOutLogger, true);
+        m_SystemOutLogger = new DirtyLogger(systemOutLogger, true, cmdArgs.verbose);
 
         m_SystemOutLogger.print("Command line arguments: ");
         for (int i = 0; i < args.length; i++) {
@@ -245,7 +246,8 @@ public class AlgTestJClient {
         m_SystemOutLogger.println();
 
         if (cmdArgs.help) {
-            JCommander.newBuilder().addObject(cmdArgs).build().usage();     
+            JCommander.newBuilder().addObject(cmdArgs).build().usage();
+            printHelpExtras();
             return;
         }
 
@@ -364,9 +366,37 @@ public class AlgTestJClient {
 
         if (cmdArgs.selftest) {
             checkSelfTestResults(allResultsMap);
-        }   
+        }
     }
-    
+
+    static void printHelpExtras() {
+        System.out.println("\nExamples:");
+        System.out.println("  # Interactive mode — prompts for reader and test selection:");
+        System.out.println("  java -jar AlgTestJClient.jar\n");
+        System.out.println("  # Interactive mode with simulator — prompts for test selection with simulated card as target:");
+        System.out.println("  java -jar AlgTestJClient.jar -simulator\n");
+        System.out.println("  # Test which algorithms the card supports (non-interactive):");
+        System.out.println("  java -jar AlgTestJClient.jar -op ALG_SUPPORT_EXTENDED -cardname MyCard -fresh\n");
+        System.out.println("  # Fixed-length performance benchmark:");
+        System.out.println("  java -jar AlgTestJClient.jar -op ALG_PERFORMANCE_STATIC -cardname MyCard -fresh\n");
+        System.out.println("  # Variable-length performance benchmark, save results to /tmp/:");
+        System.out.println("  java -jar AlgTestJClient.jar -op ALG_PERFORMANCE_VARIABLE -cardname MyCard -fresh -outpath /tmp/\n");
+        System.out.println("  # Show full per-algorithm detail on console:");
+        System.out.println("  java -jar AlgTestJClient.jar -op ALG_SUPPORT_EXTENDED -cardname MyCard -fresh -verbose\n");
+        System.out.println("Common problems:");
+        System.out.println("  Card not found     -- Is the PC/SC daemon running? On Linux: sudo pcscd");
+        System.out.println("                        On Linux you may also need:");
+        System.out.println("                        -Dsun.security.smartcardio.library=/usr/lib64/libpcsclite.so.1");
+        System.out.println("  Testing hangs      -- The card may not support this algorithm; see KNOWN_ISSUES.md.");
+        System.out.println("                        Re-insert the card and re-run with -fresh to skip ahead.");
+        System.out.println("  Results incomplete -- Re-run with -fresh to discard partial results and start over.");
+        System.out.println("  Console too noisy  -- Run with -verbose only when debugging; default shows high-level");
+        System.out.println("                        progress only; full detail is always saved to the .log file.\n");
+        System.out.println("Reporting bugs:");
+        System.out.println("  https://github.com/crocs-muni/JCAlgTest/issues");
+        System.out.println("  Include: OS, Java version, card ATR, and the .log file from this directory.\n");
+    }
+
     static long getStartTime() {
         if (m_appStartTime == 0) {
             m_appStartTime = System.currentTimeMillis();
@@ -375,6 +405,10 @@ public class AlgTestJClient {
     }
     
     static void printSendRequest() {
+        System.out.println("\n=========================================");
+        System.out.println("Testing complete.");
+        System.out.println("Results written to the current directory (*.csv and *.log).");
+        System.out.println("=========================================");
         System.out.println("\n-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
         System.out.println("KIND REQUEST: Please consider sending us your results to extend info openly");
         System.out.println("available to all JavaCard enthusiasts at http://jcalgtest.org.");
