@@ -966,10 +966,19 @@ public class PerformanceTesting {
                     return -1;
                 }
                 catch (Exception ex) {
-                    // Unexpected exception
-                    m_SystemOutLogger.println(ex.toString() + "\n"); 
-                    numFailedRepeats++; 
-                    
+                    // Unexpected exception — likely card removed or communication failure
+                    String exClass = ex.getClass().getSimpleName();
+                    boolean isCardRemoved = (ex instanceof javax.smartcardio.CardNotPresentException)
+                            || exClass.contains("CardNotPresent")
+                            || (ex.getMessage() != null && (ex.getMessage().contains("SCARD_E_NO_SMARTCARD")
+                                || ex.getMessage().contains("no card")));
+                    if (isCardRemoved) {
+                        m_SystemOutLogger.println("ERROR: Card removed or communication lost during '" + info + "'. Attempting to reconnect...");
+                    } else {
+                        m_SystemOutLogger.println("ERROR: Unexpected exception (" + exClass + ") during '" + info + "': " + ex.getMessage());
+                    }
+                    numFailedRepeats++;
+
                     if (numFailedRepeats == 1) {
                         // For first fail, try to reconnect to card automatically
                         try {
