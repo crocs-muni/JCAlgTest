@@ -1,0 +1,4 @@
+NXP IDENTIFY command
+https://github.com/kaoh/globalplatform/blob/master/gpshell/src/gpshell.1.md#jcop-cards
+https://github.com/AdamLaurie/RFIDIOt/blob/master/jcoptool.py#L308
+https://github.com/martinpaljak/GlobalPlatformPro/blob/master/library/src/main/java/pro/javacard/gp/GPSession.java#L134
