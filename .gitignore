@@ -1,4 +1,5 @@
 /!!!temp/
+/heap/
 /AlgTest_JavaCard/nbproject/private/*
 /AlgTest_JavaCard/!uploader/*
 /AlgTest_JavaCard/build/*
@@ -12,7 +13,8 @@
 /AlgTest_JClient/test/*.jar
 /AlgTest_JClient/dist/*
 /AlgTest_JClient/nbproject/*
-
+/AlgTest_JClient/*.log
+/AlgTest_JClient/store/*
 
 /AlgTest_Process/dist/*
 /AlgTest_Process/test-output/*
