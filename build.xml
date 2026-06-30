@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="AlgTestJClient" default="default" basedir="AlgTest_JClient/">
-    <description>Builds, tests, and runs the project AlgTestJClient.</description>
-    <import file="AlgTest_JClient/nbproject/build-impl.xml"/>
+<project name="JCAlgTest" default="jar" basedir=".">
+    <description>Builds all JCAlgTest subprojects.</description>
+
+    <target name="jar">
+        <ant dir="AlgTest_JClient"  target="jar" inheritAll="false"/>
+        <ant dir="AlgTest_Process"  target="jar" inheritAll="false"/>
+    </target>
+
+    <target name="clean">
+        <ant dir="AlgTest_JClient"  target="clean" inheritAll="false"/>
+        <ant dir="AlgTest_Process"  target="clean" inheritAll="false"/>
+    </target>
+
 </project>
