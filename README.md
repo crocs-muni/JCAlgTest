@@ -219,6 +219,65 @@ The AlgTest applet only performs allocation and cryptographic test operations �
 **Reporting bugs**
 If you encounter an unexpected error, please open an issue at https://github.com/crocs-muni/JCAlgTest/issues and include: your OS, Java version, card ATR (printed at the start of the run), and the `.log` file from the test directory.
 
+## Building from source
+
+### AlgTestJClient and AlgTestProcess (Java)
+
+**Prerequisites:** JDK 8+, Ant 1.8+
+
+Build both projects from the repo root:
+```
+ant jar
+```
+
+Or build individually:
+```
+cd AlgTest_JClient
+ant jar
+```
+```
+cd AlgTest_Process
+ant jar
+```
+
+Output:
+- `AlgTest_JClient/dist/AlgTestJClient.jar`
+- `AlgTest_Process/dist/AlgTestProcess.jar`
+
+To produce a single fat JAR with all dependencies bundled:
+```
+cd AlgTest_JClient
+ant package-for-store
+```
+Output: `AlgTest_JClient/store/AlgTestJClient.jar`
+
+---
+
+### AlgTest JavaCard applet (CAP file)
+
+**Prerequisites:** JDK 8 (required by the JavaCard SDK tools), Ant, Python 3
+
+The applet source in `AlgTest_JavaCard/src/` uses conditional comments to support multiple JavaCard API versions. The Python script preprocesses it into version-specific source trees and then invokes Ant to compile each.
+
+From `AlgTest_JavaCard/`:
+```
+python preprocess_jcapi.py
+```
+
+This produces three CAP files in `AlgTest_JavaCard/!uploader/`:
+- `AlgTest_222.cap` — for JavaCard 2.2.2
+- `AlgTest_304.cap` — for JavaCard 3.0.4
+- `AlgTest_305.cap` — for JavaCard 3.0.5
+
+To build a single variant manually (after the source trees exist):
+```
+ant -f jcbuild.xml build222
+ant -f jcbuild.xml build304
+ant -f jcbuild.xml build305
+```
+
+The build uses [ant-javacard](https://github.com/martinpaljak/ant-javacard) (`ext/ant-javacard.jar`) and the JavaCard SDKs bundled in `AlgTest_JavaCard/ext/`.
+
 ## Future development
 
 Important: We are now working on refactoring the results data presentation and visualization from the Java-based [AlgTestProcess](https://github.com/crocs-muni/JCAlgTest/tree/master/AlgTest_Process) application to Python-based scripts and Jupyter notebooks, and the AlgTestProcess project will be deprecated.
