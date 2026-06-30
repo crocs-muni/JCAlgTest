@@ -234,7 +234,7 @@ device is a native MIFARE IC (``0x0``), an implementation (``0x8``), an applet o
 The supported (work in progress) DESFire communication modes include: 
 PLAINTEXT, PLAINTEXT-MAC, ENCIPHERED-CMAC-3DES, and ENCIPHERED-CMAC-AES128. 
 It should be clear from the prior commands issued in the session which ``CommMode`` 
-congiguration we are supposed to be working within. This command let's the user 
+configuration we are supposed to be working within. This command lets the user
 reset it intentionally at will for testing and debugging purposes. 
 
 The syntax is as follows:
