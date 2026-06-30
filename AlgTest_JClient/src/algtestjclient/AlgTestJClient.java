@@ -239,7 +239,7 @@ public class AlgTestJClient {
             "JCAlgTest " + ALGTEST_JCLIENT_VERSION + " - comprehensive tool for JavaCard smart card testing.\n" +
             "Visit jcalgtest.org for results from 100+ cards. CRoCS lab 2007-2024.\n" +
             "Please check if you use the latest version at\n  https://github.com/crocs-muni/JCAlgTest/releases/latest.\n" +
-            "Type 'java -jar jcalgtestclient --help' to display help and available commands.\n" +
+            "Type 'java -jar AlgTestJClient.jar --help' to display help and available commands.\n" +
             "-----------------------------------------------------------------------\n";
 
         if (cmdArgs.help) {
@@ -408,8 +408,10 @@ public class AlgTestJClient {
         System.out.println("                        On Linux you may also need:");
         System.out.println("                        -Dsun.security.smartcardio.library=/usr/lib64/libpcsclite.so.1");
         System.out.println("  Testing hangs      -- The card may not support this algorithm; see KNOWN_ISSUES.md.");
-        System.out.println("                        Re-insert the card and re-run with -fresh to skip ahead.");
-        System.out.println("  Results incomplete -- Re-run with -fresh to discard partial results and start over.");
+        System.out.println("                        Re-insert the card and re-run WITHOUT -fresh (answer 'y' to");
+        System.out.println("                        continue) — the tool resumes from the last completed algorithm.");
+        System.out.println("  Results incomplete -- Re-run without -fresh to continue, or with -fresh to discard");
+        System.out.println("                        all previous progress and start over.");
         System.out.println("  Console too noisy  -- Run with -verbose only when debugging; default shows high-level");
         System.out.println("                        progress only; full detail is always saved to the .log file.\n");
         System.out.println("Reporting bugs:");
