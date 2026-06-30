@@ -196,7 +196,7 @@ java -Dsun.security.smartcardio.library=/usr/lib64/libpcsclite.so.1 -jar AlgTest
 Try a lower JavaCard version (start from jc305 → jc304 → jc222). If you are using pre-built cap files, the JavaCard version is encoded in their names. Some cards reject unsigned CAP files — check your card's security requirements and the GlobalPlatformPro documentation for authentication options.
 
 **Testing hangs on a specific algorithm.**
-Some cards have firmware bugs that cause them to hang on certain algorithms. See [KNOWN_ISSUES.md](KNOWN_ISSUES.md) for a list of known problem cards and workarounds. Remove and re-insert the card, then re-run the measurement (it will start from the last executed algorithm). If you want to discard previous progress and start fresh, run with the `-fresh` argument.
+Some cards have firmware bugs that cause them to hang on certain algorithms. See [KNOWN_ISSUES.md](KNOWN_ISSUES.md) for a list of known problem cards and workarounds. Remove and re-insert the card, then re-run the measurement without `-fresh` and answer `y` when prompted — the tool will resume from the last completed algorithm. Use `-fresh` only if you want to discard all previous progress and start over from the beginning.
 
 **What do the values in the CSV result file mean?**
 The format for ALG_SUPPORT_EXTENDED operation is the following:
