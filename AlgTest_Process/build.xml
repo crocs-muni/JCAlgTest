@@ -10,6 +10,10 @@
 <project name="AlgTestProcess" default="default" basedir=".">
     <description>Builds, tests, and runs the project AlgTestProcess.</description>
     <import file="nbproject/build-impl.xml"/>
+    <target name="-pre-compile">
+        <ant dir="../AlgTest_JClient" target="jar" inheritAll="false"/>
+    </target>
+
     <!--
 
     There exist several targets which are by default empty and which can be 
