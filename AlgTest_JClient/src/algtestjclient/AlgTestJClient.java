@@ -381,6 +381,7 @@ public class AlgTestJClient {
                 break;
             }
         }
+        printTestingComplete();
         printSendRequest();
 
         if (cmdArgs.selftest) {
@@ -423,11 +424,14 @@ public class AlgTestJClient {
         return m_appStartTime;
     }
     
-    static void printSendRequest() {
+    static void printTestingComplete() {
         System.out.println("\n=========================================");
         System.out.println("Testing complete.");
         System.out.println("Results written to the current directory (*.csv and *.log).");
         System.out.println("=========================================");
+    }
+
+    static void printSendRequest() {
         System.out.println("\n-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
         System.out.println("KIND REQUEST: Please consider sending us your results to extend info openly");
         System.out.println("available to all JavaCard enthusiasts at http://jcalgtest.org.");
