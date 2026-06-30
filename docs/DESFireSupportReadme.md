@@ -251,9 +251,9 @@ DESFire emulation if things suddenly fail after a call to this terminal command.
 Putting the Chameleon through a full power recycle (battery off) should reset the setting 
 to the defaults. 
 
-#### DF_COMM_MODE -- Manually sets the communication mode of the current session
+#### DF_ENCMODE -- Manually sets the encryption mode of the current session
 
-This commanf sets the encryption mode for cryptographic operations. 
+This command sets the encryption mode for cryptographic operations. 
 The two supported modes are ECB and CBC. 
 The default mode for AES and DES (all types) of encryption is ECB mode. 
 This is the supported mode for DESFire tags using the latest Proxmark3 software. 
