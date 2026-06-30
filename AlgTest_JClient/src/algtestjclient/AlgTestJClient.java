@@ -232,7 +232,24 @@ public class AlgTestJClient {
                 }                
             }
         }
-        String logFileName = String.format(cmdArgs.baseOutPath + "ALGTEST_log_%s.log", AlgTestJClient.getStartTime()); 
+
+        
+        String banner =
+            "\n-----------------------------------------------------------------------   \n" +
+            "JCAlgTest " + ALGTEST_JCLIENT_VERSION + " - comprehensive tool for JavaCard smart card testing.\n" +
+            "Visit jcalgtest.org for results from 100+ cards. CRoCS lab 2007-2024.\n" +
+            "Please check if you use the latest version at\n  https://github.com/crocs-muni/JCAlgTest/releases/latest.\n" +
+            "Type 'java -jar jcalgtestclient --help' to display help and available commands.\n" +
+            "-----------------------------------------------------------------------\n";
+
+        if (cmdArgs.help) {
+            System.out.print(banner);
+            JCommander.newBuilder().addObject(cmdArgs).build().usage();
+            printHelpExtras();
+            return;
+        }
+
+        String logFileName = String.format(cmdArgs.baseOutPath + "ALGTEST_log_%s.log", AlgTestJClient.getStartTime());
         FileOutputStream    systemOutLogger = new FileOutputStream(logFileName);
         tempInfo.put("out_file_name", logFileName);
         allResultsMap.put("main", tempInfo);
@@ -244,26 +261,14 @@ public class AlgTestJClient {
         }
         m_SystemOutLogger.println();
 
-        
-        m_SystemOutLogger.println("\n-----------------------------------------------------------------------   ");
-        m_SystemOutLogger.println("JCAlgTest " + ALGTEST_JCLIENT_VERSION + " - comprehensive tool for JavaCard smart card testing.");
-        m_SystemOutLogger.println("Visit jcalgtest.org for results from 100+ cards. CRoCS lab 2007-2024.");
-        m_SystemOutLogger.println("Please check if you use the latest version at\n  https://github.com/crocs-muni/JCAlgTest/releases/latest.");
-        m_SystemOutLogger.println("Type 'java -jar jcalgtestclient --help' to display help and available commands.");
-        m_SystemOutLogger.println("-----------------------------------------------------------------------\n");
-        
+        m_SystemOutLogger.println(banner);
+
         CardTerminal selectedTerminal = null;
         PerformanceTesting testingPerformance = new PerformanceTesting(m_SystemOutLogger);
         m_SystemOutLogger.println("NOTE: JCAlgTest applet (AlgTest.cap) must be already installed on tested card.");
         m_SystemOutLogger.println("  java -jar gp.jar --install AlgTest_***_jc***.cap");
         m_SystemOutLogger.println("The results are stored in CSV files. Use JCAlgProcess for HTML conversion.");
         m_SystemOutLogger.println();
-
-        if (cmdArgs.help) {
-            JCommander.newBuilder().addObject(cmdArgs).build().usage();
-            printHelpExtras();
-            return;
-        }
 
         // If selftest is enabled, then prepare testing session with simulator, execute and check for results
         if (cmdArgs.selftest) {
