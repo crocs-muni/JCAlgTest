@@ -3,7 +3,7 @@ JCAlgTest
 
 [![Build status](https://travis-ci.org/crocs-muni/JCAlgTest.svg?branch=master)](https://travis-ci.org/crocs-muni/JCAlgTest) [![Latest release](https://img.shields.io/github/release/crocs-muni/JCAlgTest.svg)](https://github.com/crocs-muni/JCAlgTest/releases/latest)
 
-An automated testing tool for cryptographic algorithms supported by a particular smart card with JavaCard platform. 
+An automated testing tool for cryptographic algorithms supported by a particular smart card with the JavaCard platform.
 
 *Contribution with results for YOUR card is wanted. (and highly appreciated :))*
 
@@ -15,12 +15,11 @@ JCAlgTest runs three types of measurements, each producing a semicolon-separated
 
 | Mode | What it measures | Useful for |
 |---|---|---|
-| **ALG_SUPPORT_EXTENDED** | Which JCA/JCE algorithms the card firmware supports and which key sizes are accepted | Knowing exactly what a card offers for ussage in your applet; checking whether firmware updates added new algorithms |
+| **ALG_SUPPORT_EXTENDED** | Which JCA/JCE algorithms the card firmware supports and which key sizes are accepted | Knowing exactly what a card offers for usage in your applet; checking whether firmware updates added new algorithms |
 | **ALG_PERFORMANCE_STATIC** | Throughput and latency of every supported algorithm on 256-byte payloads | Comparing the speed of crypto operations across cards or choosing the fastest algorithm for your protocol |
-| **ALG_PERFORMANCE_VARIABLE** | Same as above, using payload sizes from 16 to 512 bytes (16, 32, 64, 128, 256, 512) | Understanding how performance scales with increases data size (due to limited internal memory); |
+| **ALG_PERFORMANCE_VARIABLE** | Same as above, using payload sizes from 16 to 512 bytes (16, 32, 64, 128, 256, 512) | Understanding how performance scales with increased data size (due to limited internal memory) |
 
-All results submitted by community can be found in into the public database at [jcalgtest.org](https://jcalgtest.org), which lets you compare your card against 112+ other models without running the tests yourself. The results submission is NOT automatic - please consider contibuting by sending us results via 
-  https://github.com/crocs-muni/jcalgtest_results or email petr@svenda.com .
+All results submitted by the community can be found in the public database at [jcalgtest.org](https://jcalgtest.org), which lets you compare your card against 112+ other models without running the tests yourself. The results submission is NOT automatic - please consider contributing by sending us results via https://github.com/crocs-muni/jcalgtest_results or email petr@svenda.com.
 
 ## Prerequisites
 
@@ -28,23 +27,23 @@ Before starting, ensure the following are installed:
 
 - **Java** — JDK or JRE 8 or later. Install using your system package manager (`apt install default-jdk`, `brew install openjdk`, etc.).
 - **PC/SC middleware** (required to communicate with the smartcard reader):
-  - **Linux**: `sudo apt install pcscd libpcsclite-dev` (Debian/Ubuntu) or the equivalent for your distribution. The `pcscd` service must be running.
-  - **macOS**: Built into the OS — no installation needed.
-  - **Windows**: Built into Windows via WinSCard — no installation needed.
+  - **Linux**: `sudo apt install pcscd libpcsclite-dev` (Debian/Ubuntu) or the equivalent for your distribution. The `pcscd` service must be running.
+  - **macOS**: Built into the OS — no installation needed.
+  - **Windows**: Built into Windows via WinSCard — no installation needed.
 - **A PC/SC-compatible USB smartcard reader** — most standard readers work out of the box.
 - **GlobalPlatformPro** (`gp.jar`) — needed for step 1 (loading the applet) only. Download the latest release from [github.com/martinpaljak/GlobalPlatformPro/releases](https://github.com/martinpaljak/GlobalPlatformPro/releases).
 
 ## Usage
 
 ### 1. Prepare card with testing applet (AlgTest_*.cap)
-Upload proper cap file (based on the supported JavaCard version) file to your
-   smart card using uploader like [GlobalPlatformPro](https://github.com/martinpaljak/GlobalPlatformPro).
+Upload the proper cap file (based on the supported JavaCard version) to your
+ smart card using uploader like [GlobalPlatformPro](https://github.com/martinpaljak/GlobalPlatformPro).
 
 ```
 java -jar gp.jar --install AlgTest_v1.8.2_jc305.cap
 ```
 
-If unsure about the supported version for your card, simply try to upload from the highest version down to the lower one (e.g., start with AlgTest_v1.8.2_jc305.cap, then AlgTest_v1.8.2_jc304.cap, then AlgTest_v1.8.2_jc222.cap). Stop when the card upload succeed.
+If unsure about the supported version for your card, simply try uploading from the highest version down to a lower one (e.g., start with AlgTest_v1.8.2_jc305.cap, then AlgTest_v1.8.2_jc304.cap, then AlgTest_v1.8.2_jc222.cap). Stop when the card upload succeeds.
 
 Check that the applet was correctly uploaded and installed:
 ```
@@ -69,7 +68,7 @@ PKG: 4A43416C6754657374 (LOADED)
 
 #### Uninstall
 
-To remove the AlgTest applet from the card when you are done (use appropriate name of cap file, here example with `AlgTest_v1.8.2_jc305.cap`):
+To remove the AlgTest applet from the card when you are done (use the appropriate name of the cap file, here example with `AlgTest_v1.8.2_jc305.cap`):
 ```
 java -jar gp.jar --uninstall AlgTest_v1.8.2_jc305.cap
 ```
@@ -81,12 +80,12 @@ java -jar gp.jar --delete 4A43416C6754657374
 
 ### 2. Run data collection application (AlgTestJClient)
 
-Run as interactive application and select from the offered options:
+Run as an interactive application and select from the offered options:
 ```
 java -jar AlgTestJClient.jar
 ```
 
-On Linux you might need to set the smartcardio library, for example use:
+On Linux, you might need to set the smartcardio library, for example, use:
 ```
 java -Dsun.security.smartcardio.library=/usr/lib64/libpcsclite.so.1 -jar AlgTestJClient.jar
 ```
@@ -95,17 +94,17 @@ The interactive menu asks you to select a card reader and then a testing mode. T
 
 - **SUPPORTED ALGORITHMS** (`ALG_SUPPORT_EXTENDED`) — probes the card for every known JCA/JCE algorithm and key size. Produces a CSV listing each algorithm as `yes` (supported), `no` (not supported), or an error code. Takes 10–30 minutes depending on the card.
 - **PERFORMANCE — fixed data length** (`ALG_PERFORMANCE_STATIC`) — benchmarks all supported algorithms with 256-byte payloads, measuring how long each operation takes in milliseconds. Produces a CSV with timing values. Takes 1–4 hours.
-- **PERFORMANCE — variable data length** (`ALG_PERFORMANCE_VARIABLE`) — same benchmark repeated for six payload sizes (16, 32, 64, 128, 256, 512 bytes). Takes several hours (typically 5+ based on number of supported algorithms) but shows how performance scales with data size.
+- **PERFORMANCE — variable data length** (`ALG_PERFORMANCE_VARIABLE`) — same benchmark repeated for six payload sizes (16, 32, 64, 128, 256, 512 bytes). Takes several hours (typically 5+ hours, depending on the number of supported algorithms) but shows how performance scales with data size.
 
 When the run completes, the results are written to CSV and log files in the current directory (named `cardname_OPERATION_ATR....csv`).
 
 ### 3. Contribute your results, please
 
-Please consider sending us (petr@svenda.com) your results. Include both the `*.csv` and `*.log` files produced by the tool. The open database benefits both from cards not yet listed and from newer measurements of already included ones — the set of supported algorithms can expand in later firmware revisions of the same card.
+Please consider sending us (petr@svenda.com) your results. Include both the `*.csv` and `*.log` files produced by the tool. The open database benefits from both cards not yet listed and newer measurements of already included ones — the set of supported algorithms can expand in later firmware revisions of the same card.
 
 ### 4. Automate data collection (non-interactive mode)
 
-The AlgTestJClient can be run in non-interactive mode for usage in scripts, see available options using `--help` option
+The AlgTestJClient can be run in non-interactive mode for usage in scripts, see available options using the `--help` option:
 ```
 java -jar AlgTestJClient.jar --help
 ```
@@ -121,9 +120,9 @@ Run non-interactively (scripts) the performance benchmark with 256 bytes of data
 ```
 java -jar AlgTestJClient.jar -op ALG_PERFORMANCE_STATIC -cardname your_card_name -fresh 
 ```
-Note: if '-fresh' option is omitted, you will be asked to continue previous measurement for same card, if found 
+Note: if the '-fresh' option is omitted, you will be asked to continue the previous measurement for the same card, if found 
 
-#### Non-interactive measurement - performance benchmark on variable data length (16, 32, 64, 128, 256 and 512 bytes) 
+#### Non-interactive measurement - performance benchmark on variable data length (16, 32, 64, 128, 256, and 512 bytes) 
 Run non-interactively (script usage) the performance benchmark with variable data (-op ALG_PERFORMANCE_VARIABLE), with specified card name (-cardname your_card_name) and complete measurement (-fresh):
 ```
 java -jar AlgTestJClient.jar -op ALG_PERFORMANCE_VARIABLE -cardname your_card_name -fresh 
@@ -169,7 +168,7 @@ This step is **optional**. The jcalgtest.org web page is updated periodically wi
 git clone https://github.com/crocs-muni/jcalgtest_results.git
 ```
 
-2. Run AlgTestProcess.jar application to generate algorithms support table
+2. Run AlgTestProcess.jar application to generate the algorithms support table
 ```
 java -jar AlgTestProcess.jar ..\..\algtest_results\javacard\Profiles HTML
 ```
@@ -188,16 +187,16 @@ java -jar AlgTestProcess.jar ..\..\algtest_results\javacard\Profiles\performance
 ## Frequently Asked Questions
 
 **The tool cannot find my card reader.**
-Check that the PC/SC daemon is running (`sudo pcscd` on Linux). Verify the reader is detected by running `pcsc_scan`. On Linux you may also need to set the library path explicitly:
+Check that the PC/SC daemon is running (`sudo pcscd` on Linux). Verify the reader is detected by running `pcsc_scan`. On Linux, you may also need to set the library path explicitly:
 ```
 java -Dsun.security.smartcardio.library=/usr/lib64/libpcsclite.so.1 -jar AlgTestJClient.jar
 ```
 
 **Applet upload with gp.jar fails.**
-Try a lower JavaCard version (start from jc305 → jc304 → jc222). If you are using pre-build cap files, then JavaCard version is encoded in its name. Some cards reject unsigned CAP files — check your card's security requirements and the GlobalPlatformPro documentation for authentication options.
+Try a lower JavaCard version (start from jc305 → jc304 → jc222). If you are using pre-built cap files, the JavaCard version is encoded in their names. Some cards reject unsigned CAP files — check your card's security requirements and the GlobalPlatformPro documentation for authentication options.
 
 **Testing hangs on a specific algorithm.**
-Some cards have firmware bugs that cause them to hang on certain algorithms. See [KNOWN_ISSUES.md](KNOWN_ISSUES.md) for a list of known problem cards and workarounds. Remove and re-insert the card, then re-run the measurement (it will start from the last executed algorithm). If you want to discard previous progress and start a fresh, then run with `-fresh` argument. 
+Some cards have firmware bugs that cause them to hang on certain algorithms. See [KNOWN_ISSUES.md](KNOWN_ISSUES.md) for a list of known problem cards and workarounds. Remove and re-insert the card, then re-run the measurement (it will start from the last executed algorithm). If you want to discard previous progress and start fresh, run with the `-fresh` argument.
 
 **What do the values in the CSV result file mean?**
 The format for ALG_SUPPORT_EXTENDED operation is the following:
@@ -215,21 +214,22 @@ algorithm_name; is_supported; time_elapsed; persistent_mem_allocated; ram_desele
 `persistent_mem_allocated`, `ram_deselect_allocated`, `ram_reset_allocated` - number of bytes of given memory type consumed during algorithm object allocation. May not be present for older measurements.
 
 **Is it safe to run this on a card I use for other purposes?**
-The AlgTest applet only performs allocation and cryptographic test operations — it does not modify persistent card data outside its own applet storage. However, the extensive testing may cause your card to temporarily block/cripple itslef due to faulty firmware. The problem is typically solved after card restart and applet removal, but some cards can be completely blocked (see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)). **ALG_SUPPORT_EXTENDED** operation is typically safe, more extensive performance testing is potentially more dangerous. It is good practice to test on a dedicated card and uninstall the applet when done (see Uninstall above). Assume that your card can be blocked and do not use card you cannot effort to loose.
+The AlgTest applet only performs allocation and cryptographic test operations — it does not modify persistent card data outside its own applet storage. However, the extensive testing may cause your card to temporarily block/cripple itself due to faulty firmware. The problem is typically resolved after a card restart and applet removal, but some cards may be completely blocked (see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)). **ALG_SUPPORT_EXTENDED** operation is typically safe, more extensive performance testing is potentially more dangerous. It is good practice to test on a dedicated card and uninstall the applet when done (see Uninstall above). Assume that your card can be blocked, and do not use a card you cannot afford to lose.
 
 **Reporting bugs**
 If you encounter an unexpected error, please open an issue at https://github.com/crocs-muni/JCAlgTest/issues and include: your OS, Java version, card ATR (printed at the start of the run), and the `.log` file from the test directory.
 
 ## Future development
 
-Important: We are now working on refactoring results data presentation and visualization from Java-based [AlgTestProcess](https://github.com/crocs-muni/JCAlgTest/tree/master/AlgTest_Process) application to Python-based scripts and Jupyter notebooks and AlgTestProcess project will be depricated.
+Important: We are now working on refactoring the results data presentation and visualization from the Java-based [AlgTestProcess](https://github.com/crocs-muni/JCAlgTest/tree/master/AlgTest_Process) application to Python-based scripts and Jupyter notebooks, and the AlgTestProcess project will be deprecated.
 
-The data collection application [AlgTestJClient](https://github.com/crocs-muni/JCAlgTest/tree/master/AlgTest_JClient) and on-card javacard applet [AlgTestJavaCard](https://github.com/crocs-muni/JCAlgTest/tree/master/AlgTest_JavaCard) will continue to be maintained as Java applications. 
+The data collection application [AlgTestJClient](https://github.com/crocs-muni/JCAlgTest/tree/master/AlgTest_JClient) and on-card JavaCard applet [AlgTestJavaCard](https://github.com/crocs-muni/JCAlgTest/tree/master/AlgTest_JavaCard) will continue to be maintained as Java applications.
 
 ## Contributed cards
 
 Results for (at least) the following smartcards are currently in the database
 ([https://www.fi.muni.cz/~xsvenda/jcalgtest/](https://www.fi.muni.cz/~xsvenda/jcalgtest/)):
+
 
 ```
 c0	ACS ACOSJ (Combi) , ATR=3b 69 00 02 41 43 4f 53 4a 76 31 30 31 (provided by Alexandre Bouvier),
@@ -346,4 +346,3 @@ c110	[undisclosed4] , ATR=3b xx xx xx xx xx xx xx xx xx xx xx xx xx xx xx xx xx 
 c111	[undisclosed5] , ATR=3b 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 (provided by Metro),
 c112	[undisclosed6] , ATR=3b 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 (provided by Metro),
 ```
-
