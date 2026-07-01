@@ -429,7 +429,7 @@ public class AlgTestJClient {
     static void printTestingComplete() {
         System.out.println("\n=========================================");
         System.out.println("Testing complete.");
-        System.out.println("Results written to the current directory (*.csv and *.log).");
+        System.out.println("Results written to the output directory (*.csv and *.log).");
         System.out.println("=========================================");
     }
 
@@ -438,7 +438,7 @@ public class AlgTestJClient {
         System.out.println("KIND REQUEST: Please consider sending us your results to extend info openly");
         System.out.println("available to all JavaCard enthusiasts at http://jcalgtest.org.");
         System.out.println("The results are important even if a card of same type is already in database.");
-        System.out.println("Send *.log and *.csv files from the current directory to <petr@svenda.com>.");
+        System.out.println("Send *.log and *.csv files from the output directory to <petr@svenda.com>.");
         System.out.println("ESPECIALLY if testing fails, please let us know so we can fix it for you and others.");
         System.out.println("Thank you very much.");
         System.out.println("-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n");
