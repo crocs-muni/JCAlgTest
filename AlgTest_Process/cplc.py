@@ -191,16 +191,18 @@ def get_ictype_name(icfab, ictype):
         if ictype.find('0015') != -1: return 'Philips P8WE5032'  # Philips P8WE5032, https://www.commoncriteriaportal.org/files/epfiles/2000_06.pdf
     if icfab.find('0005') != -1:
         if ictype.find('0045') != -1: return 'Infineon M7892 B11'   # https://csrc.nist.gov/csrc/media/projects/cryptographic-module-validation-program/documents/security-policies/140sp2327.pdf
-    if icfab.find('0005') != -1:
-        if ictype.find('0045') != -1: return 'Infineon M7892 B11'   # https://csrc.nist.gov/csrc/media/projects/cryptographic-module-validation-program/documents/security-policies/140sp2327.pdf
     if icfab.find('008c') != -1:
         if ictype.find('0089') != -1: return 'Tongxin THD89'   # https://www.commoncriteriaportal.org/files/epfiles/2017-28%20INF-2492.pdf
-    if icfab.find('4070') != -1:
+    if icfab.find('4070') != -1 or icfab.find('4790') != -1:
         if ictype.find('5072') != -1: return 'NXP P5CD144'   # https://csrc.nist.gov/csrc/media/projects/cryptographic-module-validation-program/documents/security-policies/140sp2774.pdf
+        if ictype.find('5167') != -1: return 'NXP P5CC081V1A'  # https://csrc.nist.gov/csrc/media/projects/cryptographic-module-validation-program/documents/security-policies/140sp2774.pdf
+        if ictype.find('5168') != -1: return 'NXP P5CD081V1A'  # https://csrc.nist.gov/csrc/media/projects/cryptographic-module-validation-program/documents/security-policies/140sp2774.pdf
     if icfab.find('5354') != -1:
         if ictype.find('0033') != -1: return 'STM ST31 ARM'  # Feitian D11CR https://docs.google.com/spreadsheets/d/10s3dA_qGvWMajv8RhCWa00x-h-1Dx6SdF9rEKN-1RIg/edit#gid=952816161
     if icfab.find('4180') != -1:
         if ictype.find('0106') != -1: return 'Atmel AT90SC25672RCT'  # https://csrc.nist.gov/CSRC/media/projects/cryptographic-module-validation-program/documents/security-policies/140sp925.pdf
+        if ictype.find('0107') != -1: return 'Atmel AT90SC12872RCFT Revision M'  # https://sec-certs.org/fips/ee14860f6bd0506d/target.pdf
+        if ictype.find('010b') != -1: return 'Atmel AT90SC28872RCU Revision G'  # https://sec-certs.org/fips/311ba2ed6a5b4105/target.pdf
     return ''
 
 

@@ -40,10 +40,19 @@ import java.io.IOException;
 public class DirtyLogger {
     FileOutputStream    m_logFile;
     boolean             m_bOutputSystemOut = true;
+    boolean             m_verbose = false;
+
     public DirtyLogger(FileOutputStream logFile, boolean bOutputSystemOut) {
         m_logFile = logFile;
         m_bOutputSystemOut = bOutputSystemOut;
     }
+
+    public DirtyLogger(FileOutputStream logFile, boolean bOutputSystemOut, boolean verbose) {
+        m_logFile = logFile;
+        m_bOutputSystemOut = bOutputSystemOut;
+        m_verbose = verbose;
+    }
+
     public void println() {
         String logLine = "\n";
         print(logLine);
@@ -62,5 +71,27 @@ public class DirtyLogger {
             } catch (IOException ex) {
             }
         }
-    }    
+    }
+
+    /**
+     * Detail-level output: always written to the log file, but printed to
+     * the console only when the -verbose flag is active.  Use this for
+     * per-algorithm APDU traces and low-level status lines that would
+     * otherwise flood the console during a long test run.
+     */
+    public void printlnDetail(String logLine) {
+        printDetail(logLine + "\n");
+    }
+
+    public void printDetail(String logLine) {
+        if (m_bOutputSystemOut && m_verbose) {
+            System.out.print(logLine);
+        }
+        if (m_logFile != null) {
+            try {
+                m_logFile.write(logLine.getBytes());
+            } catch (IOException ex) {
+            }
+        }
+    }
 }

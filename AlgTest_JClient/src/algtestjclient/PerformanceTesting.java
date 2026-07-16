@@ -518,10 +518,11 @@ public class PerformanceTesting {
         }
         if (results != null) { results.put("errors_observed", String.format("%d", totalErrors)); } 
 
-        message = "\n\nCard used: " + m_cardName; 
+        message = "\n\nCard used: " + m_cardName;
         m_SystemOutLogger.println(message);
+
     }
-    
+
     void LoadAlreadyMeasuredAlgs(String cardName, String testType, boolean bForceFreshmeasurement) {
         String filePath = testType + "_already_measured.list";
         String filePathOld = filePath + ".old";
@@ -965,10 +966,19 @@ public class PerformanceTesting {
                     return -1;
                 }
                 catch (Exception ex) {
-                    // Unexpected exception
-                    m_SystemOutLogger.println(ex.toString() + "\n"); 
-                    numFailedRepeats++; 
-                    
+                    // Unexpected exception — likely card removed or communication failure
+                    String exClass = ex.getClass().getSimpleName();
+                    boolean isCardRemoved = (ex instanceof javax.smartcardio.CardNotPresentException)
+                            || exClass.contains("CardNotPresent")
+                            || (ex.getMessage() != null && (ex.getMessage().contains("SCARD_E_NO_SMARTCARD")
+                                || ex.getMessage().contains("no card")));
+                    if (isCardRemoved) {
+                        m_SystemOutLogger.println("ERROR: Card removed or communication lost during '" + info + "'. Attempting to reconnect...");
+                    } else {
+                        m_SystemOutLogger.println("ERROR: Unexpected exception (" + exClass + ") during '" + info + "': " + ex.getMessage());
+                    }
+                    numFailedRepeats++;
+
                     if (numFailedRepeats == 1) {
                         // For first fail, try to reconnect to card automatically
                         try {
@@ -976,17 +986,18 @@ public class PerformanceTesting {
                             m_cardManager.ConnectToCard();
                         }
                         catch (Exception ex2) {
-                            m_SystemOutLogger.println(ex2.toString()); 
+                            m_SystemOutLogger.println(ex2.toString());
                             numFailedRepeats++;
                         }
                     }
-                    
+
                     if (numFailedRepeats > 1) {
-                        // For second fail, ask user 
-                        m_SystemOutLogger.println("ERROR: unable to measure operation '" + info + "' properly because of exception (" + ex.toString() + ")");
-                        m_SystemOutLogger.println("Current reader is: " + m_cardManager.getTerminalName());
-                        m_SystemOutLogger.println("Current card is: " + m_cardName + " - " + m_cardManager.getATR());
-                        m_SystemOutLogger.println("Try to physically remove card and/or upload applet manually and insert it again. Press 'r' to retry or 's' to skip this algorithm (if retry fails)\n");
+                        // For second fail, ask user
+                        m_SystemOutLogger.println("ERROR: Unable to measure '" + info + "' after reconnect attempt.");
+                        m_SystemOutLogger.println("Current reader: " + m_cardManager.getTerminalName());
+                        m_SystemOutLogger.println("Current card:   " + m_cardName + " - " + m_cardManager.getATR());
+                        m_SystemOutLogger.println("ACTION REQUIRED: Re-insert the card (or power-cycle it), then press:");
+                        m_SystemOutLogger.println("  'r' to retry this algorithm   's' to skip it and continue\n");
                         Scanner sc = new Scanner(System.in);
                         String answ = sc.next();
                         m_SystemOutLogger.println(String.format("%s", answ));

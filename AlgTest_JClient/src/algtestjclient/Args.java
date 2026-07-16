@@ -31,7 +31,7 @@ public class Args {
     @Parameter(names = "-simulator", description = "Use simulator")
     public boolean simulator = false;
 
-    @Parameter(names = "-outpath", description = "Base output path")
+    @Parameter(names = "-outpath", description = "Base output path (current directory by default)")
     public String baseOutPath = "";
 
     @Parameter(names = "--help", help = true, description = "Print program usage")
@@ -40,7 +40,10 @@ public class Args {
     @Parameter(names = "-fresh", description = "Force generating new complete measurements")
     public boolean fresh = false;
 
-    @Parameter(names = "-selftest", description = "Executes selftesting using simulator as target.")
+    @Parameter(names = "-selftest", description = "Executes selftesting using simulator as target")
     public boolean selftest = false;
-   
+
+    @Parameter(names = "-verbose", description = "Show detailed per-algorithm output on console (default: detail is written to log file only)")
+    public boolean verbose = false;
+
 }
