@@ -128,6 +128,69 @@ Run non-interactively (script usage) the performance benchmark with variable dat
 java -jar AlgTestJClient.jar -op ALG_PERFORMANCE_VARIABLE -cardname your_card_name -fresh 
 ```
 
+## Deployment
+
+AlgTestJClient is a plain command-line Java application with no GUI dependency, so the non-interactive options from step 4 above (`-op`, `-cardname`, `-fresh`, `-outpath`) are what make unattended runs possible.
+
+Each invocation writes its CSV and `ALGTEST_log_*.log` files to the `-outpath` directory. Point your automation's log shipping / artifact collection at that directory, and see [Contribute your results](#3-contribute-your-results-please) for submitting them upstream.
+
+### Running on a headless machine
+
+- `pcscd` must be installed and running as a background service (it usually is by default after `apt install pcscd`; verify with `systemctl status pcscd`, and enable it to start on boot with `systemctl enable --now pcscd`).
+- A physical PC/SC reader with the card inserted must be attached to the machine running the JVM — the tool talks to the reader over PC/SC, so it cannot test a card on a different host unless the reader itself is somehow forwarded to that host (e.g., PC/SC-over-IP or USB-over-IP redirection, both untested with this tool).
+
+Pick a fixed output directory and let the tool run non-interactively:
+```
+java -jar AlgTestJClient.jar -op ALG_SUPPORT_EXTENDED -cardname mycard -fresh -outpath /var/lib/jcalgtest/results/
+```
+
+Because performance measurements can take hours and some cards are known to hang on particular algorithms (see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)), wrap long-running invocations with a timeout and retry logic in your automation rather than assuming the process always exits on its own, e.g.:
+```
+timeout 6h java -jar AlgTestJClient.jar -op ALG_PERFORMANCE_STATIC -cardname mycard -fresh -outpath /var/lib/jcalgtest/results/
+```
+If the run is interrupted, re-running the same command **without** `-fresh` resumes from the last completed algorithm instead of starting over.
+
+### Scheduling recurring runs
+
+A simple `systemd` service + timer (or an equivalent `cron` entry) can trigger periodic re-testing, for example after firmware updates are expected:
+```ini
+# /etc/systemd/system/jcalgtest.service
+[Unit]
+Description=JCAlgTest data collection
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/jcalgtest
+ExecStart=/usr/bin/java -jar /opt/jcalgtest/AlgTestJClient.jar -op ALG_SUPPORT_EXTENDED -cardname mycard -fresh -outpath /var/lib/jcalgtest/results/
+```
+```ini
+# /etc/systemd/system/jcalgtest.timer
+[Unit]
+Description=Run JCAlgTest weekly
+
+[Timer]
+OnCalendar=weekly
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+```
+Enable with `systemctl enable --now jcalgtest.timer`.
+
+### Containers
+
+If you run the tool inside Docker or another container, the container needs access to the host's PC/SC socket rather than the reader's raw USB device: run `pcscd` on the host (not inside the container) and bind-mount `/run/pcscd` into the container (e.g., `-v /run/pcscd:/run/pcscd`), then run `AlgTestJClient.jar` inside the container against that mounted socket. Passing through the raw USB device (`--device=/dev/bus/usb/...`) instead and running a second `pcscd` inside the container also works but requires the container to have the appropriate udev/USB permissions.
+
+### Running in CI (no physical card/reader)
+
+A normal CI runner has no PC/SC reader or card attached, so the real measurement modes above cannot run there. Instead, AlgTestJClient ships a `-selftest` mode that targets a simulated card (jCardSim) entirely in software — no `pcscd`, no USB reader, no physical card required.
+
+```
+java -jar AlgTestJClient.jar -selftest
+```
+This runs all test operations (`ALG_SUPPORT_EXTENDED`, `ALG_PERFORMANCE_STATIC`, `ALG_PERFORMANCE_VARIABLE`, `ALG_FINGERPRINT`, `ALG_ECC_PERFORMANCE`) against the simulator and then checks the produced results against known-good expected values.
+
+**Important caveat:** the process currently always exits with code `0`, regardless of whether the selftest checks pass or fail — the pass/fail outcome is only reported in the console/log output (`ERROR: some test(s) failed`). CI jobs must therefore grep the captured output for that string (as in the example above) rather than relying on the process exit code.
 
 ## Results data presentation and visualization
 
