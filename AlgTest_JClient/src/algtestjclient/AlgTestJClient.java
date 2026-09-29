@@ -54,12 +54,19 @@ import javax.smartcardio.CardTerminal;
  */
 public class AlgTestJClient {
     /**
+     * Version 1.8.4 (29.09.2026)
+     * - Improve help and logging
+     * - Fix parameters for Cipher.OneShot and Signature.OneShot
+     * - Clean unused files
+     */
+    public final static String ALGTEST_JCLIENT_VERSION = "1.8.4";
+    /**
      * Version 1.8.3 (10.02.2026)
      * - Fix incorrect testing of OneShot engines
      * - print used command line arguments into log
      * - More detailed help
      */
-    public final static String ALGTEST_JCLIENT_VERSION = "1.8.3";
+    //public final static String ALGTEST_JCLIENT_VERSION = "1.8.3";
     /**
      * Version 1.8.2 (17.11.2024)
      * - Update to match applet version with delayed allocation by default 
