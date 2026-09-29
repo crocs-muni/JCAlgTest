@@ -54,12 +54,19 @@ import javax.smartcardio.CardTerminal;
  */
 public class AlgTestJClient {
     /**
+     * Version 1.8.4 (29.09.2026)
+     * - Improve help and logging
+     * - Fix parameters for Cipher.OneShot and Signature.OneShot
+     * - Clean unused files
+     */
+    public final static String ALGTEST_JCLIENT_VERSION = "1.8.4";
+    /**
      * Version 1.8.3 (10.02.2026)
      * - Fix incorrect testing of OneShot engines
      * - print used command line arguments into log
      * - More detailed help
      */
-    public final static String ALGTEST_JCLIENT_VERSION = "1.8.3";
+    //public final static String ALGTEST_JCLIENT_VERSION = "1.8.3";
     /**
      * Version 1.8.2 (17.11.2024)
      * - Update to match applet version with delayed allocation by default 
@@ -237,7 +244,7 @@ public class AlgTestJClient {
         String banner =
             "\n-----------------------------------------------------------------------   \n" +
             "JCAlgTest " + ALGTEST_JCLIENT_VERSION + " - comprehensive tool for JavaCard smart card testing.\n" +
-            "Visit jcalgtest.org for results from 100+ cards. CRoCS lab 2007-2024.\n" +
+            "Visit jcalgtest.org for results from 100+ cards. CRoCS lab 2007-2026.\n" +
             "Please check if you use the latest version at\n  https://github.com/crocs-muni/JCAlgTest/releases/latest.\n" +
             "Type 'java -jar AlgTestJClient.jar --help' to display help and available commands.\n" +
             "-----------------------------------------------------------------------\n";

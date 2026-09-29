@@ -40,10 +40,10 @@ Upload the proper cap file (based on the supported JavaCard version) to your
  smart card using uploader like [GlobalPlatformPro](https://github.com/martinpaljak/GlobalPlatformPro).
 
 ```
-java -jar gp.jar --install AlgTest_v1.8.2_jc305.cap
+java -jar gp.jar --install AlgTest_v1.8.4_jc305.cap
 ```
 
-If unsure about the supported version for your card, simply try uploading from the highest version down to a lower one (e.g., start with AlgTest_v1.8.2_jc305.cap, then AlgTest_v1.8.2_jc304.cap, then AlgTest_v1.8.2_jc222.cap). Stop when the card upload succeeds.
+If unsure about the supported version for your card, simply try uploading from the highest version down to a lower one (e.g., start with AlgTest_v1.8.4_jc305.cap, then AlgTest_v1.8.4_jc304.cap, then AlgTest_v1.8.4_jc222.cap). Stop when the card upload succeeds.
 
 Check that the applet was correctly uploaded and installed:
 ```
@@ -68,9 +68,9 @@ PKG: 4A43416C6754657374 (LOADED)
 
 #### Uninstall
 
-To remove the AlgTest applet from the card when you are done (use the appropriate name of the cap file, here example with `AlgTest_v1.8.2_jc305.cap`):
+To remove the AlgTest applet from the card when you are done (use the appropriate name of the cap file, here example with `AlgTest_v1.8.4_jc305.cap`):
 ```
-java -jar gp.jar --uninstall AlgTest_v1.8.2_jc305.cap
+java -jar gp.jar --uninstall AlgTest_v1.8.4_jc305.cap
 ```
 Or by AID directly:
 ```
