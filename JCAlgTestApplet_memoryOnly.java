@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2004-2014  Petr Svenda <petr@svenda.com>
+    Copyright (c) 2004-2026  Petr Svenda <petr@svenda.com>
 
      LICENSE TERMS
 

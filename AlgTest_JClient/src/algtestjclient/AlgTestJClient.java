@@ -244,7 +244,7 @@ public class AlgTestJClient {
         String banner =
             "\n-----------------------------------------------------------------------   \n" +
             "JCAlgTest " + ALGTEST_JCLIENT_VERSION + " - comprehensive tool for JavaCard smart card testing.\n" +
-            "Visit jcalgtest.org for results from 100+ cards. CRoCS lab 2007-2024.\n" +
+            "Visit jcalgtest.org for results from 100+ cards. CRoCS lab 2007-2026.\n" +
             "Please check if you use the latest version at\n  https://github.com/crocs-muni/JCAlgTest/releases/latest.\n" +
             "Type 'java -jar AlgTestJClient.jar --help' to display help and available commands.\n" +
             "-----------------------------------------------------------------------\n";
