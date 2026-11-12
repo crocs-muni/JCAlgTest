@@ -53,13 +53,18 @@ import javax.smartcardio.CardTerminal;
  * @author petr
  */
 public class AlgTestJClient {
+        /**
+     * Version 1.8.5 (12.11.2026)
+     * - Fix negative length reset APDU which may prevent garbage collection
+     */
+    public final static String ALGTEST_JCLIENT_VERSION = "1.8.5";
     /**
      * Version 1.8.4 (29.09.2026)
      * - Improve help and logging
      * - Fix parameters for Cipher.OneShot and Signature.OneShot
      * - Clean unused files
      */
-    public final static String ALGTEST_JCLIENT_VERSION = "1.8.4";
+    //public final static String ALGTEST_JCLIENT_VERSION = "1.8.4";
     /**
      * Version 1.8.3 (10.02.2026)
      * - Fix incorrect testing of OneShot engines
