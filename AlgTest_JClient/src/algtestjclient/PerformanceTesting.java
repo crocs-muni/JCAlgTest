@@ -32,7 +32,6 @@
 package algtestjclient;
 
 import java.io.*;
-import java.io.FileOutputStream;
 import java.util.Scanner;
 import javax.smartcardio.ResponseAPDU;
 import algtest.Consts;
@@ -1177,7 +1176,7 @@ public class PerformanceTesting {
             if (Math.abs(substractTime) > 0.0005) { // comparing double to 0
                 // Substract given time (if measured operation requires to perform another unrelated operation, e.g., setKey before clearKey)
                 m_SystemOutLogger.println("Substracting substractTime = " + substractTime + " from measured time"); 
-                time -= substractTime;
+                time -= substractTime * testSet.numRepeatWholeOperation;
             }
             
             sumTimes += time;
