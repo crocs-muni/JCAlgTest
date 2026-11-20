@@ -1296,16 +1296,22 @@ import javacardx.crypto.*;
         // For AES every input is valid but for RSA_PKCS1, structure after decryption is checked
         if ((byte) m_testSettings.initMode == Cipher.MODE_DECRYPT) {
             if ((m_testSettings.algorithmSpecification == JCConsts.Cipher_ALG_RSA_ISO14888) ||
-                (m_testSettings.algorithmSpecification == JCConsts.Cipher_ALG_RSA_ISO9796) ||    
-                (m_testSettings.algorithmSpecification == JCConsts.Cipher_ALG_RSA_NOPAD) ||    
+                (m_testSettings.algorithmSpecification == JCConsts.Cipher_ALG_RSA_ISO9796) ||
+                (m_testSettings.algorithmSpecification == JCConsts.Cipher_ALG_RSA_NOPAD) ||
                 (m_testSettings.algorithmSpecification == JCConsts.Cipher_ALG_RSA_PKCS1) ||
                 (m_testSettings.algorithmSpecification == JCConsts.Cipher_ALG_RSA_PKCS1_OAEP)) {
-                m_cipher.init(m_rsapublic_key, Cipher.MODE_ENCRYPT);
-                chunkDataLen = m_cipher.doFinal(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) 0); 
-                m_cipher.init(m_key1, (byte) m_testSettings.initMode); // init key to be tested again
                 if (m_testSettings.algorithmSpecification == JCConsts.Cipher_ALG_RSA_NOPAD) {
-                    m_ram1[(short) 0] = (byte) 0x00; //Note: for raw RSA, most significant bit must be != 1
+                    // Raw RSA input must be smaller than the modulus. The random data from
+                    // prepare_class_Cipher() would otherwise be >= n with up to ~50% probability
+                    // (CryptoException.ILLEGAL_USE on the encryption below). Clearing the most
+                    // significant byte keeps it below any full-length modulus. RSA always runs
+                    // with numRepeatSubOperation == 1, so byte 0 is the most significant byte.
+                    m_ram1[(short) 0] = (byte) 0x00;
                 }
+                m_cipher.init(m_rsapublic_key, Cipher.MODE_ENCRYPT);
+                // Output c = x^e mod n is always < n, so it is valid input for the decryption below.
+                chunkDataLen = m_cipher.doFinal(m_ram1, (short) 0, chunkDataLen, m_ram1, (short) 0);
+                m_cipher.init(m_key1, (byte) m_testSettings.initMode); // init key to be tested again
             }
         }
         

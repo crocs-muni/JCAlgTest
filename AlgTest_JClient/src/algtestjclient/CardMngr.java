@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import javax.smartcardio.*;
+
 import algtest.Consts;
 import algtest.JCAlgTestApplet;
 import algtest.JCConsts;
@@ -1111,19 +1112,17 @@ public class CardMngr {
         return resetApplet(cla, ins, (byte) 0); 
     }
     public boolean resetApplet(byte cla, byte ins, byte p1) {
+        m_SystemOutLogger.println("\nFree unused card objects...\n");
         try {
-            m_SystemOutLogger.println("\nFree unused card objects...\n");
-            byte apdu[] = {cla,ins,p1,0};
+            // CLA INS P1 P2 Le -- sendAPDU() expects at least 5 bytes (data at offset 5)
+            byte apdu[] = {cla, ins, p1, (byte) 0x00, (byte) 0x00};
             ResponseAPDU resp = sendAPDU(apdu);
-            if (resp.getSW() != 0x9000) {
-                return false;
-            }
-            return true;
-        }
-        catch(Exception e) {
+            return resp.getSW() == 0x9000;
+        } catch (Exception e) {
+            m_SystemOutLogger.println("resetApplet failed: " + e);   // don't swallow silently
             return false;
         }
-    }    
+    } 
     
     public double PerfTestCommand(byte cla, byte ins, TestSettings testSet, byte resetIns) throws Exception {
         long elapsedCard;
