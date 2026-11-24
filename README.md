@@ -27,11 +27,14 @@ Before starting, ensure the following are installed:
 
 - **Java** — JDK or JRE 8 or later. Install using your system package manager (`apt install default-jdk`, `brew install openjdk`, etc.).
 - **PC/SC middleware** (required to communicate with the smartcard reader):
-  - **Linux**: `sudo apt install pcscd libpcsclite-dev` (Debian/Ubuntu) or the equivalent for your distribution. The `pcscd` service must be running.
-  - **macOS**: Built into the OS — no installation needed.
-  - **Windows**: Built into Windows via WinSCard — no installation needed.
+  - **Linux**: `sudo apt install pcscd libpcsclite-dev` (Debian/Ubuntu) or the equivalent for your distribution. The `pcscd` service must be running.
+  - **macOS**: Built into the OS — no installation needed.
+  - **Windows**: Built into Windows via WinSCard — no installation needed.
 - **A PC/SC-compatible USB smartcard reader** — most standard readers work out of the box.
+- **A blank Java Card** — a smartcard with the Java Card platform that lets you install your own applets. Cards sold as "blank", "unfused" or "development" Java Cards usually work. Testing can block a card (see [FAQ](#frequently-asked-questions)), so use a dedicated card you can afford to lose.
 - **GlobalPlatformPro** (`gp.jar`) — needed for step 1 (loading the applet) only. Download the latest release from [github.com/martinpaljak/GlobalPlatformPro/releases](https://github.com/martinpaljak/GlobalPlatformPro/releases).
+  - **Card keys:** GlobalPlatformPro needs the card's management (Security Domain) keys to install the applet. Blank cards usually ship with the default developer key, which `gp.jar` uses automatically. If your card vendor gave you different keys, pass them explicitly´.
+- **Apache Ant** 1.8+ — needed only if you build from source (see [Building from source](#building-from-source)). The pre-built `AlgTestJClient.jar` and CAP files are in [AlgTest_dist_1.8.4.zip](AlgTest_dist_1.8.4.zip). Install with `apt install ant` or `brew install ant`. On Windows, download it from [ant.apache.org](https://ant.apache.org/bindownload.cgi) and add its `bin` directory to `PATH`.
 
 ## Usage
 
