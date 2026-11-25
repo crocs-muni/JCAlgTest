@@ -121,10 +121,13 @@ public class Consts {
 	// end refactor - do we need this?
         
     
-    public static final short NUM_REPEAT_WHOLE_OPERATION        = (short) 50;
-    public static final short NUM_REPEAT_WHOLE_OPERATION_VARIABLE_DATA = (short) 5;
-    public static final short NUM_REPEAT_WHOLE_MEASUREMENT      = (short) 5;
-    public static final short NUM_REPEAT_WHOLE_MEASUREMENT_KEYPAIRGEN      = (short) 10;
+    // Number of actual internal repeats is computed as NUM_REPEAT_WHOLE_OPERATION / NUM_REPEAT_WHOLE_OPERATION_SLOW_FACTOR
+    // Set NUM_REPEAT_WHOLE_OPERATION_SLOW_FACTOR = 1 to have NUM_REPEAT_WHOLE_OPERATION also for slow operations (asymmetric RSA, ECC...)
+    public static final short NUM_REPEAT_WHOLE_OPERATION                = (short) 50;
+    public static final short NUM_REPEAT_WHOLE_OPERATION_VARIABLE_DATA  = (short) 50;
+    public static final short NUM_REPEAT_WHOLE_OPERATION_SLOW_FACTOR    = (short) 10; 
+    public static final short NUM_REPEAT_WHOLE_MEASUREMENT              = (short) 5;
+    public static final short NUM_REPEAT_WHOLE_MEASUREMENT_KEYPAIRGEN   = (short) 3;
     
     public static final byte TAG_EARLY_ALLOCATION      	= (byte) 0x66;
     public static final byte TAG_DELAYED_ALLOCATION     = (byte) 0x77;

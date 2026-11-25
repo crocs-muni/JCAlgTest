@@ -55,11 +55,18 @@ public class JCAlgTestApplet extends javacard.framework.Applet
 {
     // NOTE: when incrementing version, don't forget to update ALGTEST_JAVACARD_VERSION_CURRENT value
     /**
+     * Version 1.8.5 (18.11.2026)
+     * - fixed bug causing some fraction of RSA_NOPAD operations to fail due to too large value to encrypt
+     */
+    final static byte ALGTEST_JAVACARD_VERSION_1_8_5__JC222[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x38, (byte) 0x2e, (byte) 0x35, (byte) 0x5f, (byte) 0x6a, (byte) 0x63, (byte) 0x32, (byte) 0x32, (byte) 0x32};
+    final static byte ALGTEST_JAVACARD_VERSION_1_8_5__JC304[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x38, (byte) 0x2e, (byte) 0x35, (byte) 0x5f, (byte) 0x6a, (byte) 0x63, (byte) 0x33, (byte) 0x30, (byte) 0x34}; //jc304
+    final static byte ALGTEST_JAVACARD_VERSION_1_8_5__JC305[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x38, (byte) 0x2e, (byte) 0x35, (byte) 0x5f, (byte) 0x6a, (byte) 0x63, (byte) 0x33, (byte) 0x30, (byte) 0x35}; //jc305
+    /**
      * Version 1.8.4 (29.09.2026)
      */
-    final static byte ALGTEST_JAVACARD_VERSION_1_8_4__JC222[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x38, (byte) 0x2e, (byte) 0x34, (byte) 0x5f, (byte) 0x6a, (byte) 0x63, (byte) 0x32, (byte) 0x32, (byte) 0x32};
-    final static byte ALGTEST_JAVACARD_VERSION_1_8_4__JC304[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x38, (byte) 0x2e, (byte) 0x34, (byte) 0x5f, (byte) 0x6a, (byte) 0x63, (byte) 0x33, (byte) 0x30, (byte) 0x34}; //jc304
-    final static byte ALGTEST_JAVACARD_VERSION_1_8_4__JC305[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x38, (byte) 0x2e, (byte) 0x34, (byte) 0x5f, (byte) 0x6a, (byte) 0x63, (byte) 0x33, (byte) 0x30, (byte) 0x35}; //jc305
+    //final static byte ALGTEST_JAVACARD_VERSION_1_8_4__JC222[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x38, (byte) 0x2e, (byte) 0x34, (byte) 0x5f, (byte) 0x6a, (byte) 0x63, (byte) 0x32, (byte) 0x32, (byte) 0x32};
+    //final static byte ALGTEST_JAVACARD_VERSION_1_8_4__JC304[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x38, (byte) 0x2e, (byte) 0x34, (byte) 0x5f, (byte) 0x6a, (byte) 0x63, (byte) 0x33, (byte) 0x30, (byte) 0x34}; //jc304
+    //final static byte ALGTEST_JAVACARD_VERSION_1_8_4__JC305[] = {(byte) 0x31, (byte) 0x2e, (byte) 0x38, (byte) 0x2e, (byte) 0x34, (byte) 0x5f, (byte) 0x6a, (byte) 0x63, (byte) 0x33, (byte) 0x30, (byte) 0x35}; //jc305
     /**
      * Version 1.8.2 (17.11.2024)
      * + added autodowngrade function when large RAM is not available to allow at least for INS_CARD_TESTSUPPORTEDMODES_SINGLE testing
@@ -248,9 +255,9 @@ public class JCAlgTestApplet extends javacard.framework.Applet
     boolean m_bLargeAuxArraysAvailable = false;
 
     protected JCAlgTestApplet(byte[] buffer, short offset, byte length) {
-        ALGTEST_JAVACARD_VERSION_CURRENT = ALGTEST_JAVACARD_VERSION_1_8_4__JC222;
-        ALGTEST_JAVACARD_VERSION_CURRENT = ALGTEST_JAVACARD_VERSION_1_8_4__JC304; //jc304
-        ALGTEST_JAVACARD_VERSION_CURRENT = ALGTEST_JAVACARD_VERSION_1_8_4__JC305; //jc305
+        ALGTEST_JAVACARD_VERSION_CURRENT = ALGTEST_JAVACARD_VERSION_1_8_5__JC222;
+        ALGTEST_JAVACARD_VERSION_CURRENT = ALGTEST_JAVACARD_VERSION_1_8_5__JC304; //jc304
+        ALGTEST_JAVACARD_VERSION_CURRENT = ALGTEST_JAVACARD_VERSION_1_8_5__JC305; //jc305
 
         // data offset is used for application specific parameter.
         // initialization with default offset (AID offset).
